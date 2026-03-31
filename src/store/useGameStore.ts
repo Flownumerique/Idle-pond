@@ -77,7 +77,8 @@ export const useGameStore = create<GameState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Reconstruction de l'objet Decimal à la réhydratation
-          state.mana = new Decimal(state.mana);
+          // On utilise setState pour garantir la réactivité React/Zustand plutôt qu'une mutation directe
+          useGameStore.setState({ mana: new Decimal(state.mana) });
         }
       }
     }

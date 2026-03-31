@@ -1,41 +1,37 @@
-import { useEffect, useRef } from 'react';
-import Phaser from 'phaser';
+import React, { useEffect, useRef } from 'react';
+import { Game, AUTO, Scale } from 'phaser';
 import { PondScene } from '../game/scenes/PondScene';
 import { useGameStore } from '../store/useGameStore';
+import { EventBus } from '../game/EventBus';
 
-export const PhaserContainer = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const gameRef = useRef<Phaser.Game | null>(null);
+export const PhaserContainer: React.FC = () => {
+  const gameRef = useRef<Game | null>(null);
 
-  const poissons = useGameStore(state => state.poissons);
+  // S'abonner aux changements du tableau de poissons
+  const ownedFishes = useGameStore(state => state.ownedFishes);
+  const previousFishesCount = useRef(
+    useGameStore.getState().ownedFishes.reduce((acc, fish) => acc + fish.quantite, 0)
+  );
 
-  // Initialize Phaser
   useEffect(() => {
-    if (containerRef.current && !gameRef.current) {
-      const config: Phaser.Types.Core.GameConfig = {
-        type: Phaser.AUTO, // WebGL fallback Canvas
-        parent: containerRef.current,
-        width: 1920,
-        height: 1080,
+    // Initialiser Phaser une seule fois
+    if (!gameRef.current) {
+      gameRef.current = new Game({
+        type: AUTO,
+        parent: 'phaser-container',
+        transparent: true, // Fond transparent selon la demande
         scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
-          autoRound: true,
+          mode: Scale.FIT,
+          autoCenter: Scale.CENTER_BOTH,
+          width: 800,
+          height: 450, // Aspect ratio 16:9
         },
-        transparent: true,
-        scene: [PondScene],
-      };
-
-      gameRef.current = new Phaser.Game(config);
-
-      // Send initial data once scene is ready
-      gameRef.current.events.once('scene-ready', () => {
-        gameRef.current?.events.emit('update-fishes', useGameStore.getState().poissons);
+        scene: [PondScene]
       });
     }
 
+    // Nettoyage à la destruction du composant
     return () => {
-      // Proper cleanup for React Strict Mode
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;
@@ -43,18 +39,27 @@ export const PhaserContainer = () => {
     };
   }, []);
 
-  // Sync state to Phaser Scene (PhaserBridge)
   useEffect(() => {
-    if (gameRef.current) {
-      // Dispatch custom event to Phaser
-      gameRef.current.events.emit('update-fishes', poissons);
+    // Calculer le nombre total actuel de poissons
+    const currentFishesCount = ownedFishes.reduce((acc, fish) => acc + fish.quantite, 0);
+
+    // Si des poissons ont été ajoutés (nouveau total > ancien total)
+    if (currentFishesCount > previousFishesCount.current) {
+      const difference = currentFishesCount - previousFishesCount.current;
+
+      // Émettre l'événement pour chaque nouveau poisson
+      for (let i = 0; i < difference; i++) {
+        EventBus.emit('SPAWN_FISH');
+      }
     }
-  }, [poissons]);
+
+    // Mettre à jour la référence pour la prochaine comparaison
+    previousFishesCount.current = currentFishesCount;
+  }, [ownedFishes]);
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden bg-gray-900"
-    />
+    <div className="absolute inset-0 w-full h-full z-0">
+      <div id="phaser-container" className="w-full h-full" style={{ aspectRatio: '16/9' }} />
+    </div>
   );
 };

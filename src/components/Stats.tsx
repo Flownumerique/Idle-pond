@@ -1,59 +1,55 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useGameStore } from '../store/useGameStore';
-import { formatNumber } from '../utils/formatNumber';
+import { formatNumber } from '../utils/formatter';
 import Decimal from 'break_infinity.js';
 
-export const Stats = () => {
-  const mana = useGameStore(state => state.mana);
-  const gemmes = useGameStore(state => state.gemmes);
-  const poissons = useGameStore(state => state.poissons);
-  const pondSize = useGameStore(state => state.pondSize);
-  const boostActiveUntil = useGameStore(state => state.boostActiveUntil);
+export const Stats: React.FC = () => {
+  const mana = useGameStore((state) => state.mana);
+  const gemmes = useGameStore((state) => state.gemmes);
 
-  const [isBoostActive, setIsBoostActive] = useState(() => boostActiveUntil > Date.now());
+  const [popEffect, setPopEffect] = useState(false);
+  const previousMana = useRef<Decimal>(mana);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsBoostActive(boostActiveUntil > Date.now());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [boostActiveUntil]);
+    // Détecter un gain important de mana
+    if (mana.gt(previousMana.current)) {
+      // Pour éviter le warning ESLint sur le setState synchrone dans un effet,
+      // on peut l'envelopper dans un setTimeout court, ce qui est souvent suffisant
+      // pour sortir du cycle de rendu actuel et faire l'animation correctement.
+      const startTimer = setTimeout(() => {
+        setPopEffect(true);
+      }, 0);
 
-  let manaPerSec = new Decimal(0);
-  for (const fish of poissons) {
-    const multiplier = new Decimal(1.5).pow(fish.level - 1);
-    manaPerSec = manaPerSec.add(new Decimal(fish.baseIncome).mul(multiplier));
-  }
-
-  if (isBoostActive) {
-    manaPerSec = manaPerSec.mul(2);
-  }
+      const endTimer = setTimeout(() => setPopEffect(false), 300); // 300ms correspond à duration-300
+      previousMana.current = mana;
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
+    }
+    previousMana.current = mana;
+  }, [mana]);
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-xl pointer-events-auto min-w-[300px]">
-      <div className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-sm text-blue-300 font-semibold uppercase tracking-wider">Mana</h2>
-          <div className="text-4xl font-bold text-blue-100 font-mono tracking-tight drop-shadow-md">
-            {formatNumber(mana)}
-          </div>
-          <div className="text-sm text-blue-400 mt-1">
-            + {formatNumber(manaPerSec)} / sec {isBoostActive && <span className="text-yellow-400 font-bold ml-1">(x2 BOOST)</span>}
-          </div>
-        </div>
+    <div className="flex gap-4 p-4 pointer-events-auto">
+      {/* Bento Box: Mana */}
+      <div className="flex flex-col items-center justify-center bg-blue-900/30 backdrop-blur-md rounded-2xl p-4 min-w-[120px] shadow-lg border border-blue-500/20">
+        <span className="text-blue-300 text-sm font-semibold uppercase tracking-wider mb-1">Mana</span>
+        <span
+          className={`text-2xl font-bold text-white transition-transform duration-300 ${
+            popEffect ? 'scale-110 text-blue-200 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'scale-100'
+          }`}
+        >
+          {formatNumber(mana)}
+        </span>
+      </div>
 
-        <div className="flex justify-between items-end border-t border-white/10 pt-4 mt-2">
-          <div>
-            <h2 className="text-sm text-emerald-300 font-semibold uppercase tracking-wider">Gemmes</h2>
-            <div className="text-2xl font-bold text-emerald-100">{gemmes}</div>
-          </div>
-          <div className="text-right">
-            <h2 className="text-sm text-cyan-300 font-semibold uppercase tracking-wider">Poissons</h2>
-            <div className="text-2xl font-bold text-cyan-100">
-              {poissons.length} <span className="text-sm text-cyan-500 font-normal">/ {pondSize}</span>
-            </div>
-          </div>
-        </div>
+      {/* Bento Box: Gemmes */}
+      <div className="flex flex-col items-center justify-center bg-purple-900/30 backdrop-blur-md rounded-2xl p-4 min-w-[120px] shadow-lg border border-purple-500/20">
+        <span className="text-purple-300 text-sm font-semibold uppercase tracking-wider mb-1">Gemmes</span>
+        <span className="text-2xl font-bold text-white">
+          {formatNumber(gemmes)}
+        </span>
       </div>
     </div>
   );
