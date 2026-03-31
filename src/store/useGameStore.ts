@@ -4,126 +4,82 @@ import Decimal from 'break_infinity.js';
 
 export interface Fish {
   id: string;
-  type: string;
-  level: number;
-  baseIncome: number;
+  name: string;
+  baseCost: Decimal;
+  growthRate: number;
+  baseIncome: Decimal;
+}
+
+export interface OwnedFish {
+  id: string;
+  quantite: number;
 }
 
 export interface GameState {
   mana: Decimal;
   gemmes: number;
-  poissons: Fish[];
-  pondSize: number;
-  lastSaveTime: number;
-  boostActiveUntil: number;
+  ownedFishes: OwnedFish[];
+  multiplierGlobal: number;
 
-  // Actions
-  addMana: (amount: Decimal | string | number) => void;
-  buyFish: (type: string, baseIncome: number, cost: Decimal | string | number) => boolean;
-  upgradeFish: (id: string, cost: Decimal | string | number) => boolean;
-  spendGemmes: (amount: number) => boolean;
-  activateBoost: () => void;
-  updateLastSaveTime: () => void;
+  addMana: (amount: Decimal) => void;
+  buyFish: (fish: Fish) => void;
 }
 
 export const useGameStore = create<GameState>()(
   persist(
-    (set, get) => ({
-      mana: new Decimal(0),
-      gemmes: 50, // Starting gems
-      poissons: [],
-      pondSize: 10,
-      lastSaveTime: Date.now(),
-      boostActiveUntil: 0,
+    (set) => ({
+      mana: new Decimal(10),
+      gemmes: 0,
+      ownedFishes: [],
+      multiplierGlobal: 1,
 
-      addMana: (amount) => set((state) => ({
-        mana: state.mana.add(new Decimal(amount))
+      addMana: (amount: Decimal) => set((state) => ({
+        mana: state.mana.plus(amount)
       })),
 
-      buyFish: (type, baseIncome, cost) => {
-        const state = get();
-        const costDecimal = new Decimal(cost);
+      buyFish: (fish: Fish) => set((state) => {
+        const owned = state.ownedFishes.find(f => f.id === fish.id);
+        const quantitePossedee = owned ? owned.quantite : 0;
 
-        if (state.mana.gte(costDecimal) && state.poissons.length < state.pondSize) {
-          const newFish: Fish = {
-            id: crypto.randomUUID(),
-            type,
-            level: 1,
-            baseIncome,
+        // Coût = Base * (Multiplicateur ^ Possédés)
+        const cost = fish.baseCost.times(Decimal.pow(fish.growthRate, quantitePossedee));
+
+        if (state.mana.gte(cost)) {
+          const newMana = state.mana.minus(cost);
+          const newOwnedFishes = [...state.ownedFishes];
+
+          if (owned) {
+            const index = newOwnedFishes.findIndex(f => f.id === fish.id);
+            newOwnedFishes[index] = {
+              ...newOwnedFishes[index],
+              quantite: newOwnedFishes[index].quantite + 1
+            };
+          } else {
+            newOwnedFishes.push({ id: fish.id, quantite: 1 });
+          }
+
+          return {
+            mana: newMana,
+            ownedFishes: newOwnedFishes
           };
-
-          set({
-            mana: state.mana.sub(costDecimal),
-            poissons: [...state.poissons, newFish]
-          });
-          return true;
         }
-        return false;
-      },
 
-      upgradeFish: (id, cost) => {
-        const state = get();
-        const costDecimal = new Decimal(cost);
-
-        if (state.mana.gte(costDecimal)) {
-          set((state) => ({
-            mana: state.mana.sub(costDecimal),
-            poissons: state.poissons.map(fish =>
-              fish.id === id ? { ...fish, level: fish.level + 1 } : fish
-            )
-          }));
-          return true;
-        }
-        return false;
-      },
-
-      spendGemmes: (amount) => {
-        const state = get();
-        if (state.gemmes >= amount) {
-          set({ gemmes: state.gemmes - amount });
-          return true;
-        }
-        return false;
-      },
-
-      activateBoost: () => {
-        const BOOST_COST = 10;
-        const BOOST_DURATION_MS = 5 * 60 * 1000; // 5 minutes
-
-        const state = get();
-        if (state.gemmes >= BOOST_COST) {
-          set({
-            gemmes: state.gemmes - BOOST_COST,
-            boostActiveUntil: Date.now() + BOOST_DURATION_MS
-          });
-        }
-      },
-
-      updateLastSaveTime: () => set({ lastSaveTime: Date.now() }),
+        return state; // Pas assez de mana, on ne modifie pas l'état
+      })
     }),
     {
       name: 'etang-des-merveilles-storage',
-      storage: {
-        getItem: (name) => {
-          const str = localStorage.getItem(name);
-          if (!str) return null;
-          try {
-            const parsed = JSON.parse(str);
-            if (parsed && parsed.state && parsed.state.mana) {
-              parsed.state.mana = new Decimal(parsed.state.mana);
-            }
-            return parsed;
-          } catch (e) {
-            console.error(e);
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          // Break infinity JS Decimal is stringified appropriately by JSON.stringify
-          localStorage.setItem(name, JSON.stringify(value));
-        },
-        removeItem: (name) => localStorage.removeItem(name),
-      },
+      partialize: (state) => ({
+        ...state,
+        // Conversion explicite de Decimal en string pour la sérialisation
+        mana: state.mana.toString() as unknown as Decimal,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Reconstruction de l'objet Decimal à la réhydratation
+          state.mana = new Decimal(state.mana);
+        }
+      }
     }
   )
 );
