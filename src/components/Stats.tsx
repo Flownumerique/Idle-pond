@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useGameStore } from '../store/useGameStore';
+import { useGameStore, getPondSize } from '../store/useGameStore';
 import { formatNumber } from '../utils/formatNumber';
 import Decimal from 'break_infinity.js';
+
+const DEPTH_NAMES = ['Peu profond', 'Standard', 'Profond', 'Abyssal', 'Maximum'];
 
 export const Stats = () => {
   const mana = useGameStore(state => state.mana);
   const gemmes = useGameStore(state => state.gemmes);
   const poissons = useGameStore(state => state.poissons);
-  const pondSize = useGameStore(state => state.pondSize);
+  const pondDepth = useGameStore(state => state.pondDepth);
   const boostActiveUntil = useGameStore(state => state.boostActiveUntil);
+
+  const pondSize = getPondSize(pondDepth);
 
   const [isBoostActive, setIsBoostActive] = useState(() => boostActiveUntil > Date.now());
 
@@ -52,6 +56,16 @@ export const Stats = () => {
             <div className="text-2xl font-bold text-cyan-100">
               {poissons.length} <span className="text-sm text-cyan-500 font-normal">/ {pondSize}</span>
             </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm text-teal-300 font-semibold uppercase tracking-wider">Profondeur</h2>
+            <span className="text-xs text-teal-500">⛏️ Niv. {pondDepth}</span>
+          </div>
+          <div className="text-base font-semibold text-teal-200 mt-0.5">
+            {DEPTH_NAMES[pondDepth] ?? 'Maximum'}
           </div>
         </div>
       </div>
