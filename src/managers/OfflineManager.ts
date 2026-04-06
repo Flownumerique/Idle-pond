@@ -1,9 +1,16 @@
-import { useGameStore } from '../store/useGameStore';
 import Decimal from 'break_infinity.js';
+import { useGameStore } from '../store/useGameStore';
+import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
+import { computeBonuses } from '../utils/bonuses';
+import { formatNumber } from '../utils/formatNumber';
+
+const DEEP_FISH_TYPES = new Set(
+  FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
+);
 
 export class OfflineManager {
   private static instance: OfflineManager;
-  private readonly MAX_OFFLINE_MS = 24 * 60 * 60 * 1000; // 24 hours max offline gain
+  private readonly MAX_OFFLINE_MS = 24 * 60 * 60 * 1000;
 
   private constructor() {}
 
@@ -16,50 +23,50 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const poissons = state.poissons;
-    const lastSaveTime = state.lastSaveTime;
+    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
     const now = Date.now();
     const offlineDurationMs = Math.min(now - lastSaveTime, this.MAX_OFFLINE_MS);
+    if (offlineDurationMs < 60 * 1000) return;
 
-    if (offlineDurationMs < 60 * 1000) return; // Less than 1 minute, don't calculate
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
 
-    // Base income calculation
     let baseIncomePerSec = new Decimal(0);
     for (const fish of poissons) {
-      const multiplier = new Decimal(1.5).pow(fish.level - 1);
-      const fishIncome = new Decimal(fish.baseIncome).mul(multiplier);
-      baseIncomePerSec = baseIncomePerSec.add(fishIncome);
+      const levelMult = new Decimal(1.5).pow(fish.level - 1);
+      const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
+      const deepMult = DEEP_FISH_TYPES.has(fish.type) ? bonuses.deepFishIncomeMult : 1;
+      baseIncomePerSec = baseIncomePerSec.add(
+        new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult)
+      );
     }
+
+    const milestoneGlobalMult = getGlobalMultiplier(poissons, bonuses.milestoneLevelReduction);
+    baseIncomePerSec = baseIncomePerSec
+      .mul(milestoneGlobalMult)
+      .mul(bonuses.globalIncomeMult)
+      .mul(bonuses.offlineMult);
 
     const boostEndTime = state.boostActiveUntil;
     let offlineMana = new Decimal(0);
 
     if (boostEndTime > lastSaveTime) {
-      // Boost was active during some or all of the offline time
-      const boostedTimeMs = Math.min(boostEndTime, now) - lastSaveTime;
-      const boostedTimeSec = boostedTimeMs / 1000;
-      const boostedIncome = baseIncomePerSec.mul(2).mul(boostedTimeSec);
-
-      const unboostedTimeMs = offlineDurationMs - boostedTimeMs;
-      if (unboostedTimeMs > 0) {
-        const unboostedTimeSec = unboostedTimeMs / 1000;
-        const unboostedIncome = baseIncomePerSec.mul(unboostedTimeSec);
-        offlineMana = boostedIncome.add(unboostedIncome);
-      } else {
-        offlineMana = boostedIncome;
+      const boostedMs = Math.min(boostEndTime, now) - lastSaveTime;
+      offlineMana = offlineMana.add(baseIncomePerSec.mul(2).mul(boostedMs / 1000));
+      const unboostedMs = offlineDurationMs - boostedMs;
+      if (unboostedMs > 0) {
+        offlineMana = offlineMana.add(baseIncomePerSec.mul(unboostedMs / 1000));
       }
     } else {
-      // No boost active offline
-      const offlineSec = offlineDurationMs / 1000;
-      offlineMana = baseIncomePerSec.mul(offlineSec);
+      offlineMana = baseIncomePerSec.mul(offlineDurationMs / 1000);
     }
 
     if (offlineMana.gt(0)) {
       state.addMana(offlineMana);
-      alert(`Bienvenue de retour ! Vous étiez absent pendant ${Math.round(offlineDurationMs / 60000)} minutes et avez récolté ${offlineMana.toString()} Mana.`);
+      const minutes = Math.round(offlineDurationMs / 60_000);
+      state.setPendingWelcomeBack({ minutes, mana: formatNumber(offlineMana) });
     }
 
     state.updateLastSaveTime();

@@ -1,10 +1,29 @@
 import { useGameStore } from '../store/useGameStore';
+import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
+import { computeBonuses } from '../utils/bonuses';
+import { addSessionMana } from '../utils/session';
+import { pickRandomEvent } from '../data/narrativeEvents';
 import Decimal from 'break_infinity.js';
+
+// Profondeurs des poissons "profonds" (depth 4+) pour le bonus Océanologie
+const DEEP_FISH_TYPES = new Set(
+  FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
+);
 
 export class GameLoopManager {
   private static instance: GameLoopManager;
   private intervalId: number | null = null;
   private readonly TICK_RATE_MS = 100;
+
+  private celestialGemmeAccum = 0;
+  private researchGemmeAccum = 0;
+  private narrativeEventAccum = 0;
+  private narrativeEventIntervalMs = GameLoopManager.randomEventInterval();
+
+  /** Intervalle aléatoire entre 5 et 10 minutes */
+  private static randomEventInterval(): number {
+    return (5 + Math.random() * 5) * 60 * 1000;
+  }
 
   private constructor() {}
 
@@ -17,14 +36,11 @@ export class GameLoopManager {
 
   public start() {
     if (this.intervalId !== null) return;
-
     let lastTick = Date.now();
-
     this.intervalId = window.setInterval(() => {
       const now = Date.now();
       const deltaMs = now - lastTick;
       lastTick = now;
-
       this.tick(deltaMs);
     }, this.TICK_RATE_MS);
   }
@@ -38,33 +54,73 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const poissons = state.poissons;
+    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, pondDepth } = state;
 
-    let baseIncomePerSec = new Decimal(0);
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
+
     if (poissons.length > 0) {
-      // Calculate total base income per second
+      let baseIncomePerSec = new Decimal(0);
+
       for (const fish of poissons) {
-        // Income formula: baseIncome * 1.5 ^ (level - 1)
-        const multiplier = new Decimal(1.5).pow(fish.level - 1);
-        const fishIncome = new Decimal(fish.baseIncome).mul(multiplier);
-        baseIncomePerSec = baseIncomePerSec.add(fishIncome);
+        const levelMult = new Decimal(1.5).pow(fish.level - 1);
+        const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
+        // Bonus Océanologie : multiplicateur supplémentaire pour les poissons profonds
+        const deepMult = DEEP_FISH_TYPES.has(fish.type) ? bonuses.deepFishIncomeMult : 1;
+        baseIncomePerSec = baseIncomePerSec.add(
+          new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult)
+        );
       }
 
-      // Apply boost if active
-      let finalIncomePerSec = baseIncomePerSec;
+      const milestoneGlobalMult = getGlobalMultiplier(poissons, bonuses.milestoneLevelReduction);
+      let finalIncomePerSec = baseIncomePerSec
+        .mul(milestoneGlobalMult)
+        .mul(bonuses.globalIncomeMult);
+
       if (state.boostActiveUntil > Date.now()) {
-        finalIncomePerSec = finalIncomePerSec.mul(2);
+        finalIncomePerSec = finalIncomePerSec.mul(bonuses.boostMultiplier);
       }
 
-      // Convert income per second to income per tick (deltaMs)
       const incomeThisTick = finalIncomePerSec.mul(deltaMs / 1000);
-
       if (incomeThisTick.gt(0)) {
         state.addMana(incomeThisTick);
+        addSessionMana(incomeThisTick);
+      }
+
+      // Gemmes passives du Poisson Céleste (+1 💎/min par exemplaire)
+      const celestialCount = poissons.filter(f => f.type === 'celestial').length;
+      if (celestialCount > 0) {
+        this.celestialGemmeAccum += celestialCount * deltaMs / 60_000;
+        const whole = Math.floor(this.celestialGemmeAccum);
+        if (whole > 0) {
+          this.celestialGemmeAccum -= whole;
+          state.addGemmes(whole);
+        }
       }
     }
 
-    // Periodically update lastSaveTime
+    // Gemmes passives du Corail de Prestige (Mystique + Océanologie)
+    if (bonuses.passiveGemmesPerMin > 0) {
+      this.researchGemmeAccum += bonuses.passiveGemmesPerMin * deltaMs / 60_000;
+      const whole = Math.floor(this.researchGemmeAccum);
+      if (whole > 0) {
+        this.researchGemmeAccum -= whole;
+        state.addGemmes(whole);
+      }
+    }
+
+    // Événements narratifs ambiants (intervalle aléatoire 5-10 min)
+    this.narrativeEventAccum += deltaMs;
+    if (this.narrativeEventAccum >= this.narrativeEventIntervalMs) {
+      this.narrativeEventAccum = 0;
+      this.narrativeEventIntervalMs = GameLoopManager.randomEventInterval();
+      const fishTypes = [...new Set(poissons.map(f => f.type))];
+      const event = pickRandomEvent(pondDepth, fishTypes);
+      if (event) {
+        state.setPendingNarrativeEvent(event.text);
+      }
+    }
+
+    state.checkAchievements();
     state.updateLastSaveTime();
   }
 }
