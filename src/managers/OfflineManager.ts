@@ -1,11 +1,12 @@
+import Decimal from 'break_infinity.js';
 import { useGameStore } from '../store/useGameStore';
 import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
 import { computeBonuses } from '../utils/bonuses';
+import { formatNumber } from '../utils/formatNumber';
 
 const DEEP_FISH_TYPES = new Set(
   FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
 );
-import Decimal from 'break_infinity.js';
 
 export class OfflineManager {
   private static instance: OfflineManager;
@@ -22,7 +23,7 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked } = state;
+    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
@@ -30,7 +31,7 @@ export class OfflineManager {
     const offlineDurationMs = Math.min(now - lastSaveTime, this.MAX_OFFLINE_MS);
     if (offlineDurationMs < 60 * 1000) return;
 
-    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
 
     let baseIncomePerSec = new Decimal(0);
     for (const fish of poissons) {
@@ -64,7 +65,8 @@ export class OfflineManager {
 
     if (offlineMana.gt(0)) {
       state.addMana(offlineMana);
-      alert(`Bienvenue de retour ! Absent ${Math.round(offlineDurationMs / 60000)} min → +${offlineMana.toFixed(0)} Mana.`);
+      const minutes = Math.round(offlineDurationMs / 60_000);
+      state.setPendingWelcomeBack({ minutes, mana: formatNumber(offlineMana) });
     }
 
     state.updateLastSaveTime();

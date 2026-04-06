@@ -48,6 +48,7 @@ export interface GameState {
 
   pendingUnlock: string | null;
   pendingNarrativeEvent: string | null;
+  pendingWelcomeBack: { minutes: number; mana: string } | null;
 
   // Actions
   addMana: (amount: Decimal) => void;
@@ -66,6 +67,7 @@ export interface GameState {
   checkDailyReset: () => void;
   clearPendingUnlock: () => void;
   setPendingNarrativeEvent: (event: string | null) => void;
+  setPendingWelcomeBack: (data: { minutes: number; mana: string } | null) => void;
   updateLastSaveTime: () => void;
 }
 
@@ -90,6 +92,7 @@ export const useGameStore = create<GameState>()(
       lastChallengeDate: '',
       pendingUnlock: null,
       pendingNarrativeEvent: null,
+      pendingWelcomeBack: null,
 
       addMana: (amount) => set((s) => ({ mana: s.mana.plus(amount) })),
 
@@ -267,6 +270,8 @@ export const useGameStore = create<GameState>()(
       clearPendingUnlock: () => set({ pendingUnlock: null }),
 
       setPendingNarrativeEvent: (event) => set({ pendingNarrativeEvent: event }),
+
+      setPendingWelcomeBack: (data) => set({ pendingWelcomeBack: data }),
 
       updateLastSaveTime: () => set({ lastSaveTime: Date.now() }),
     }),

@@ -18,7 +18,12 @@ export class GameLoopManager {
   private celestialGemmeAccum = 0;
   private researchGemmeAccum = 0;
   private narrativeEventAccum = 0;
-  private readonly NARRATIVE_EVENT_INTERVAL_MS = 7 * 60 * 1000; // 7 minutes
+  private narrativeEventIntervalMs = GameLoopManager.randomEventInterval();
+
+  /** Intervalle aléatoire entre 5 et 10 minutes */
+  private static randomEventInterval(): number {
+    return (5 + Math.random() * 5) * 60 * 1000;
+  }
 
   private constructor() {}
 
@@ -103,10 +108,11 @@ export class GameLoopManager {
       }
     }
 
-    // Événements narratifs ambiants (toutes les ~7 minutes)
+    // Événements narratifs ambiants (intervalle aléatoire 5-10 min)
     this.narrativeEventAccum += deltaMs;
-    if (this.narrativeEventAccum >= this.NARRATIVE_EVENT_INTERVAL_MS) {
+    if (this.narrativeEventAccum >= this.narrativeEventIntervalMs) {
       this.narrativeEventAccum = 0;
+      this.narrativeEventIntervalMs = GameLoopManager.randomEventInterval();
       const fishTypes = [...new Set(poissons.map(f => f.type))];
       const event = pickRandomEvent(pondDepth, fishTypes);
       if (event) {

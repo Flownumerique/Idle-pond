@@ -14,6 +14,7 @@ import { Lore } from './components/Lore';
 import { Challenges } from './components/Challenges';
 import { Guide } from './components/Guide';
 import { EventNotification } from './components/EventNotification';
+import { WelcomeBackNotification } from './components/WelcomeBackNotification';
 
 type Panel = 'corail' | 'marche' | 'prestige' | 'journal' | 'defis' | 'guide';
 
@@ -40,6 +41,7 @@ function App() {
   return (
     <div className="relative w-full h-screen overflow-hidden text-white font-sans selection:bg-blue-500/30">
       <PhaserContainer />
+      <WelcomeBackNotification />
       <UnlockNotification />
       <EventNotification />
 
