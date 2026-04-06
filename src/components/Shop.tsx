@@ -1,65 +1,12 @@
 import { useGameStore, getPondUpgradeCost, MAX_FISH_LEVEL } from '../store/useGameStore';
+import { FISH_TYPES, getNextMilestone } from '../data/fishTypes';
 import { formatNumber } from '../utils/formatNumber';
 import Decimal from 'break_infinity.js';
 
-interface FishType {
-  type: string;
-  baseIncome: number;
-  baseCost: number;
-  name: string;
-  desc: string;
-  requiredDepth: number;
-  emoji: string;
-  depthLabel: string;
-}
-
-export const FISH_TYPES: FishType[] = [
-  {
-    type: 'gold',
-    baseIncome: 1,
-    baseCost: 10,
-    name: 'Poisson Or',
-    desc: 'Produit 1 Mana/s',
-    requiredDepth: 0,
-    emoji: '🐟',
-    depthLabel: 'Eaux peu profondes',
-  },
-  {
-    type: 'ruby',
-    baseIncome: 10,
-    baseCost: 150,
-    name: 'Poisson Rubis',
-    desc: 'Produit 10 Mana/s',
-    requiredDepth: 1,
-    emoji: '🐠',
-    depthLabel: 'Eaux intermédiaires',
-  },
-  {
-    type: 'diamond',
-    baseIncome: 100,
-    baseCost: 5000,
-    name: 'Poisson Diamant',
-    desc: 'Produit 100 Mana/s',
-    requiredDepth: 2,
-    emoji: '🐡',
-    depthLabel: 'Eaux profondes',
-  },
-  {
-    type: 'abyssal',
-    baseIncome: 1000,
-    baseCost: 100000,
-    name: 'Poisson Abyssal',
-    desc: 'Produit 1 000 Mana/s',
-    requiredDepth: 3,
-    emoji: '🦑',
-    depthLabel: 'Abysses',
-  },
-];
-
 const DEPTH_NAMES = ['Peu profond', 'Standard', 'Profond', 'Abyssal', 'Maximum'];
 const MAX_DEPTH = 4;
+const MILESTONE_LEVELS = [10, 25, 50, 100];
 
-// Calcul du coût d'achat pour n poissons consécutifs
 const calcBulkCost = (baseCost: number, alreadyOwned: number, count: number): Decimal => {
   let total = new Decimal(0);
   for (let i = 0; i < count; i++) {
@@ -68,7 +15,6 @@ const calcBulkCost = (baseCost: number, alreadyOwned: number, count: number): De
   return total;
 };
 
-// Nombre maximum achetable avec le mana disponible
 const calcMaxBuyable = (baseCost: number, alreadyOwned: number, mana: Decimal): number => {
   let count = 0;
   let total = new Decimal(0);
@@ -100,13 +46,13 @@ export const Shop = () => {
   const nextFish = FISH_TYPES.find(f => f.requiredDepth === nextDepth);
   const canPrestige = pondDepth >= 2;
 
-  const handleBuy = (fish: FishType) => {
+  const handleBuy = (fish: typeof FISH_TYPES[0]) => {
     const ownedCount = poissons.filter(f => f.type === fish.type).length;
     const cost = new Decimal(fish.baseCost).mul(new Decimal(1.15).pow(ownedCount));
     buyFish(fish.type, fish.baseIncome, cost);
   };
 
-  const handleBuyBulk = (fish: FishType, count: number) => {
+  const handleBuyBulk = (fish: typeof FISH_TYPES[0], count: number) => {
     buyFishBulk(fish.type, fish.baseIncome, fish.baseCost, count);
   };
 
@@ -133,16 +79,11 @@ export const Shop = () => {
             </div>
             <div className="text-3xl">🏊</div>
           </div>
-
           {!isMaxDepth ? (
             <>
               <div className="text-xs text-gray-300 mb-3 bg-black/20 rounded p-2 border border-white/5">
                 <div className="font-semibold text-white mb-1">Prochaine amélioration — Niv. {nextDepth}</div>
-                {nextFish && (
-                  <div className="text-yellow-300">
-                    • Débloque : {nextFish.emoji} {nextFish.name}
-                  </div>
-                )}
+                {nextFish && <div className="text-yellow-300">• Débloque : {nextFish.emoji} {nextFish.name}</div>}
               </div>
               <button
                 onClick={upgradePond}
@@ -157,9 +98,7 @@ export const Shop = () => {
               </button>
             </>
           ) : (
-            <div className="text-center text-xs text-gray-500 italic py-2">
-              Profondeur maximale atteinte
-            </div>
+            <div className="text-center text-xs text-gray-500 italic py-2">Profondeur maximale atteinte</div>
           )}
         </div>
       </div>
@@ -201,8 +140,6 @@ export const Shop = () => {
           const cost10 = calcBulkCost(fish.baseCost, ownedCount, 10);
           const maxCount = calcMaxBuyable(fish.baseCost, ownedCount, mana);
           const costMax = calcBulkCost(fish.baseCost, ownedCount, maxCount);
-          const canAfford1 = mana.gte(cost1);
-          const canAfford10 = mana.gte(cost10);
 
           if (!unlocked) {
             return (
@@ -237,25 +174,39 @@ export const Shop = () => {
                   {ownedCount} possédés
                 </div>
               </div>
+
+              {/* Jalons de l'espèce */}
+              <div className="flex gap-1 mb-3">
+                {fish.milestones.map(m => (
+                  <div
+                    key={m.level}
+                    title={`Niv. ${m.level} — ${m.label}${m.globalBonus > 0 ? ` (+${m.globalBonus}% global)` : ''}`}
+                    className={`flex-1 text-center text-[9px] font-bold py-0.5 rounded border ${
+                      ownedCount > 0
+                        ? 'text-gray-400 border-gray-700 bg-gray-800/40'
+                        : 'text-gray-600 border-gray-800 bg-transparent'
+                    }`}
+                  >
+                    {m.level}
+                  </div>
+                ))}
+              </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => handleBuy(fish)}
-                  disabled={!canAfford1}
+                  disabled={!mana.gte(cost1)}
                   className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    canAfford1
-                      ? 'bg-blue-700 hover:bg-blue-600 text-white'
-                      : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
+                    mana.gte(cost1) ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
                   }`}
                 >
                   x1<br/><span className="text-[10px] opacity-80">{formatNumber(cost1)}</span>
                 </button>
                 <button
                   onClick={() => handleBuyBulk(fish, 10)}
-                  disabled={!canAfford10}
+                  disabled={!mana.gte(cost10)}
                   className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    canAfford10
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
+                    mana.gte(cost10) ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
                   }`}
                 >
                   x10<br/><span className="text-[10px] opacity-80">{formatNumber(cost10)}</span>
@@ -264,9 +215,7 @@ export const Shop = () => {
                   onClick={() => handleBuyBulk(fish, maxCount)}
                   disabled={maxCount === 0}
                   className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    maxCount > 0
-                      ? 'bg-blue-500 hover:bg-blue-400 text-white'
-                      : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
+                    maxCount > 0 ? 'bg-blue-500 hover:bg-blue-400 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
                   }`}
                 >
                   max ({maxCount})<br/><span className="text-[10px] opacity-80">{maxCount > 0 ? formatNumber(costMax) : '–'}</span>
@@ -294,38 +243,76 @@ export const Shop = () => {
               const canAfford = !isMaxLevel && mana.gte(upgradeCost);
               const fishEmoji = baseTypeInfo?.emoji || '🐟';
               const fishName = baseTypeInfo?.name || fish.type;
-              const multiplier = new Decimal(1.5).pow(fish.level - 1);
-              const currentIncome = new Decimal(fish.baseIncome).mul(multiplier);
+              const levelMult = new Decimal(1.5).pow(fish.level - 1);
+
+              // Multiplicateur de jalons pour ce poisson
+              const achievedMilestones = (baseTypeInfo?.milestones ?? []).filter(m => fish.level >= m.level);
+              const milestoneMult = achievedMilestones.reduce((acc, m) => acc * m.selfMultiplier, 1);
+
+              const currentIncome = new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult);
+              const nextM = getNextMilestone(fish);
 
               return (
-                <div key={fish.id} className="bg-black/40 rounded-lg p-3 border border-white/5 flex items-center justify-between gap-2">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span>{fishEmoji}</span>
-                      <h4 className="font-bold text-sm text-gray-200">{fishName}</h4>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border ${
-                        isMaxLevel
-                          ? 'bg-yellow-900/50 text-yellow-300 border-yellow-700/50'
-                          : 'bg-indigo-900/50 text-indigo-300 border-indigo-700/50'
-                      }`}>
-                        {isMaxLevel ? 'MAX' : `Lvl ${fish.level}`}
-                      </span>
+                <div key={fish.id} className="bg-black/40 rounded-lg p-3 border border-white/5">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span>{fishEmoji}</span>
+                        <h4 className="font-bold text-sm text-gray-200">{fishName}</h4>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded border ${
+                          isMaxLevel
+                            ? 'bg-yellow-900/50 text-yellow-300 border-yellow-700/50'
+                            : 'bg-indigo-900/50 text-indigo-300 border-indigo-700/50'
+                        }`}>
+                          {isMaxLevel ? 'MAX' : `Lvl ${fish.level}`}
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-300/70">{formatNumber(currentIncome)} Mana/s</p>
                     </div>
-                    <p className="text-xs text-blue-300/70">{formatNumber(currentIncome)} Mana/s</p>
+                    <button
+                      onClick={() => handleUpgrade(fish.id, fish.level, fish.type)}
+                      disabled={!canAfford}
+                      className={`px-3 py-1.5 rounded text-xs font-semibold shadow transition-all shrink-0 ${
+                        isMaxLevel
+                          ? 'bg-yellow-900/40 text-yellow-600 cursor-not-allowed border border-yellow-800/30'
+                          : canAfford
+                            ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-900/50'
+                            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      {isMaxLevel ? 'Max' : <>Améliorer<br/>({formatNumber(upgradeCost)})</>}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleUpgrade(fish.id, fish.level, fish.type)}
-                    disabled={!canAfford}
-                    className={`px-3 py-1.5 rounded text-xs font-semibold shadow transition-all ${
-                      isMaxLevel
-                        ? 'bg-yellow-900/40 text-yellow-600 cursor-not-allowed border border-yellow-800/30'
-                        : canAfford
-                          ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-900/50'
-                          : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    {isMaxLevel ? 'Max' : <>Améliorer<br/>({formatNumber(upgradeCost)})</>}
-                  </button>
+
+                  {/* Barre de jalons */}
+                  <div className="flex gap-1">
+                    {MILESTONE_LEVELS.map(lvl => {
+                      const milestone = baseTypeInfo?.milestones.find(m => m.level === lvl);
+                      const reached = fish.level >= lvl;
+                      const isNext = nextM?.level === lvl;
+                      return (
+                        <div
+                          key={lvl}
+                          title={milestone ? `Niv. ${lvl} — ${milestone.label}${milestone.globalBonus > 0 ? ` | +${milestone.globalBonus}% global` : ''}` : `Niv. ${lvl}`}
+                          className={`flex-1 text-center text-[9px] font-bold py-0.5 rounded border transition-all ${
+                            reached
+                              ? 'bg-yellow-600/30 text-yellow-300 border-yellow-600/40'
+                              : isNext
+                                ? 'bg-indigo-800/30 text-indigo-400 border-indigo-600/30 animate-pulse'
+                                : 'bg-gray-800/30 text-gray-600 border-gray-700/30'
+                          }`}
+                        >
+                          {lvl}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {nextM && (
+                    <div className="text-[10px] text-gray-500 mt-1">
+                      Prochain jalon : Niv. {nextM.level} — {nextM.label}
+                      {nextM.globalBonus > 0 && <span className="text-teal-500"> +{nextM.globalBonus}% global</span>}
+                    </div>
+                  )}
                 </div>
               );
             })}

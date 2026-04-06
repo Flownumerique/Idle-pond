@@ -1,4 +1,5 @@
 import { useGameStore } from '../store/useGameStore';
+import { getSelfMilestoneMultiplier, getGlobalMultiplier } from '../data/fishTypes';
 import Decimal from 'break_infinity.js';
 
 export class GameLoopManager {
@@ -24,7 +25,6 @@ export class GameLoopManager {
       const now = Date.now();
       const deltaMs = now - lastTick;
       lastTick = now;
-
       this.tick(deltaMs);
     }, this.TICK_RATE_MS);
   }
@@ -38,36 +38,32 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const poissons = state.poissons;
+    const { poissons } = state;
 
-    let baseIncomePerSec = new Decimal(0);
     if (poissons.length > 0) {
-      // Calculate total base income per second
+      let baseIncomePerSec = new Decimal(0);
+
       for (const fish of poissons) {
-        // Income formula: baseIncome * 1.5 ^ (level - 1)
-        const multiplier = new Decimal(1.5).pow(fish.level - 1);
-        const fishIncome = new Decimal(fish.baseIncome).mul(multiplier);
+        const levelMult = new Decimal(1.5).pow(fish.level - 1);
+        const milestoneMult = getSelfMilestoneMultiplier(fish);
+        const fishIncome = new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult);
         baseIncomePerSec = baseIncomePerSec.add(fishIncome);
       }
 
-      // Apply boost if active
-      let finalIncomePerSec = baseIncomePerSec;
+      // Multiplicateur global des jalons
+      const globalMult = getGlobalMultiplier(poissons);
+      let finalIncomePerSec = baseIncomePerSec.mul(globalMult);
+
+      // Boost temporaire x2
       if (state.boostActiveUntil > Date.now()) {
         finalIncomePerSec = finalIncomePerSec.mul(2);
       }
 
-      // Convert income per second to income per tick (deltaMs)
       const incomeThisTick = finalIncomePerSec.mul(deltaMs / 1000);
-
-      if (incomeThisTick.gt(0)) {
-        state.addMana(incomeThisTick);
-      }
+      if (incomeThisTick.gt(0)) state.addMana(incomeThisTick);
     }
 
-    // Vérifier les succès à chaque tick
     state.checkAchievements();
-
-    // Periodically update lastSaveTime
     state.updateLastSaveTime();
   }
 }

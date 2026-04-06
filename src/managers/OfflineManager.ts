@@ -1,9 +1,10 @@
 import { useGameStore } from '../store/useGameStore';
+import { getSelfMilestoneMultiplier, getGlobalMultiplier } from '../data/fishTypes';
 import Decimal from 'break_infinity.js';
 
 export class OfflineManager {
   private static instance: OfflineManager;
-  private readonly MAX_OFFLINE_MS = 24 * 60 * 60 * 1000; // 24 hours max offline gain
+  private readonly MAX_OFFLINE_MS = 24 * 60 * 60 * 1000;
 
   private constructor() {}
 
@@ -16,50 +17,43 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const poissons = state.poissons;
-    const lastSaveTime = state.lastSaveTime;
+    const { poissons, lastSaveTime } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
     const now = Date.now();
     const offlineDurationMs = Math.min(now - lastSaveTime, this.MAX_OFFLINE_MS);
+    if (offlineDurationMs < 60 * 1000) return;
 
-    if (offlineDurationMs < 60 * 1000) return; // Less than 1 minute, don't calculate
-
-    // Base income calculation
     let baseIncomePerSec = new Decimal(0);
     for (const fish of poissons) {
-      const multiplier = new Decimal(1.5).pow(fish.level - 1);
-      const fishIncome = new Decimal(fish.baseIncome).mul(multiplier);
-      baseIncomePerSec = baseIncomePerSec.add(fishIncome);
+      const levelMult = new Decimal(1.5).pow(fish.level - 1);
+      const milestoneMult = getSelfMilestoneMultiplier(fish);
+      baseIncomePerSec = baseIncomePerSec.add(
+        new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult)
+      );
     }
+
+    const globalMult = getGlobalMultiplier(poissons);
+    baseIncomePerSec = baseIncomePerSec.mul(globalMult);
 
     const boostEndTime = state.boostActiveUntil;
     let offlineMana = new Decimal(0);
 
     if (boostEndTime > lastSaveTime) {
-      // Boost was active during some or all of the offline time
-      const boostedTimeMs = Math.min(boostEndTime, now) - lastSaveTime;
-      const boostedTimeSec = boostedTimeMs / 1000;
-      const boostedIncome = baseIncomePerSec.mul(2).mul(boostedTimeSec);
-
-      const unboostedTimeMs = offlineDurationMs - boostedTimeMs;
-      if (unboostedTimeMs > 0) {
-        const unboostedTimeSec = unboostedTimeMs / 1000;
-        const unboostedIncome = baseIncomePerSec.mul(unboostedTimeSec);
-        offlineMana = boostedIncome.add(unboostedIncome);
-      } else {
-        offlineMana = boostedIncome;
+      const boostedMs = Math.min(boostEndTime, now) - lastSaveTime;
+      offlineMana = offlineMana.add(baseIncomePerSec.mul(2).mul(boostedMs / 1000));
+      const unboostedMs = offlineDurationMs - boostedMs;
+      if (unboostedMs > 0) {
+        offlineMana = offlineMana.add(baseIncomePerSec.mul(unboostedMs / 1000));
       }
     } else {
-      // No boost active offline
-      const offlineSec = offlineDurationMs / 1000;
-      offlineMana = baseIncomePerSec.mul(offlineSec);
+      offlineMana = baseIncomePerSec.mul(offlineDurationMs / 1000);
     }
 
     if (offlineMana.gt(0)) {
       state.addMana(offlineMana);
-      alert(`Bienvenue de retour ! Vous étiez absent pendant ${Math.round(offlineDurationMs / 60000)} minutes et avez récolté ${offlineMana.toString()} Mana.`);
+      alert(`Bienvenue de retour ! Absent ${Math.round(offlineDurationMs / 60000)} min → +${offlineMana.toFixed(0)} Mana.`);
     }
 
     state.updateLastSaveTime();
