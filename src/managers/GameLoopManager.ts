@@ -64,6 +64,9 @@ export class GameLoopManager {
       }
     }
 
+    // Vérifier les succès à chaque tick
+    state.checkAchievements();
+
     // Periodically update lastSaveTime
     state.updateLastSaveTime();
   }

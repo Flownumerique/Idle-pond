@@ -8,12 +8,13 @@ export const PhaserContainer = () => {
   const gameRef = useRef<Phaser.Game | null>(null);
 
   const poissons = useGameStore(state => state.poissons);
+  const pondDepth = useGameStore(state => state.pondDepth);
 
-  // Initialize Phaser
+  // Initialisation Phaser
   useEffect(() => {
     if (containerRef.current && !gameRef.current) {
       const config: Phaser.Types.Core.GameConfig = {
-        type: Phaser.AUTO, // WebGL fallback Canvas
+        type: Phaser.AUTO,
         parent: containerRef.current,
         width: 1920,
         height: 1080,
@@ -28,14 +29,14 @@ export const PhaserContainer = () => {
 
       gameRef.current = new Phaser.Game(config);
 
-      // Send initial data once scene is ready
       gameRef.current.events.once('scene-ready', () => {
-        gameRef.current?.events.emit('update-fishes', useGameStore.getState().poissons);
+        const state = useGameStore.getState();
+        gameRef.current?.events.emit('update-depth', state.pondDepth);
+        gameRef.current?.events.emit('update-fishes', state.poissons);
       });
     }
 
     return () => {
-      // Proper cleanup for React Strict Mode
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;
@@ -43,13 +44,15 @@ export const PhaserContainer = () => {
     };
   }, []);
 
-  // Sync state to Phaser Scene (PhaserBridge)
+  // Synchroniser les poissons
   useEffect(() => {
-    if (gameRef.current) {
-      // Dispatch custom event to Phaser
-      gameRef.current.events.emit('update-fishes', poissons);
-    }
+    gameRef.current?.events.emit('update-fishes', poissons);
   }, [poissons]);
+
+  // Synchroniser la profondeur
+  useEffect(() => {
+    gameRef.current?.events.emit('update-depth', pondDepth);
+  }, [pondDepth]);
 
   return (
     <div
