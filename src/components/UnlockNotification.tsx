@@ -11,6 +11,9 @@ const DEPTH_NAMES = [
   'Plaine Abyssale',
   'Fosse des Origines',
   'Nexus de Mana',
+  'Cœur Volcanique',
+  'Royaume Céleste',
+  'Dimension Quantique',
 ];
 
 export const UnlockNotification = () => {

@@ -13,8 +13,17 @@ const DEPTH_NAMES = [
   'Plaine Abyssale',
   'Fosse des Origines',
   'Nexus de Mana',
+  'Cœur Volcanique',
+  'Royaume Céleste',
+  'Dimension Quantique',
 ];
-const MAX_DEPTH = 7;
+const MAX_DEPTH = 10;
+
+/** Nombre de prestiges recommandés AVANT de débloquer cette profondeur */
+const DEPTH_PRESTIGE_HINT: Partial<Record<number, number>> = {
+  2: 1, 3: 2, 4: 3, 5: 5,
+  6: 7, 7: 10, 8: 13, 9: 17, 10: 22,
+};
 const MILESTONE_LEVELS = [10, 25, 50, 100];
 
 const calcBulkCost = (baseCost: number, fishCostMult: number, alreadyOwned: number, count: number): Decimal => {
@@ -60,7 +69,7 @@ export const Shop = () => {
     : null;
   const canUpgradePond = pondUpgradeCost ? mana.gte(pondUpgradeCost) : false;
   const nextDepth = pondDepth + 1;
-  const nextFish = FISH_TYPES.find(f => f.requiredDepth === nextDepth);
+  const nextFish = FISH_TYPES.filter(f => f.requiredDepth === nextDepth && !f.requiredPrestiges);
   const canPrestige = pondDepth >= 2;
 
   const handleBuy = (fish: typeof FISH_TYPES[0]) => {
@@ -99,8 +108,12 @@ export const Shop = () => {
           {!isMaxDepth ? (
             <>
               <div className="text-xs text-gray-300 mb-3 bg-black/20 rounded p-2 border border-white/5">
-                <div className="font-semibold text-white mb-1">Prochaine amélioration — Niv. {nextDepth}</div>
-                {nextFish && <div className="text-yellow-300">• Débloque : {nextFish.emoji} {nextFish.name}</div>}
+                <div className="font-semibold text-white mb-1">Prochaine zone — {DEPTH_NAMES[nextDepth]}</div>
+                {nextFish.length > 0 && (
+                  <div className="text-yellow-300 mt-1 leading-5">
+                    {nextFish.map(f => `${f.emoji} ${f.name}`).join('  ·  ')}
+                  </div>
+                )}
                 {bonuses.pondCostMult < 1 && (
                   <div className="text-teal-400 text-[10px] mt-1">
                     Réduction Géologie : -{Math.round((1 - bonuses.pondCostMult) * 100)}%
@@ -118,6 +131,20 @@ export const Shop = () => {
               >
                 ⛏️ Creuser ({formatNumber(pondUpgradeCost!)} Mana)
               </button>
+              {DEPTH_PRESTIGE_HINT[nextDepth] !== undefined && (() => {
+                const hint = DEPTH_PRESTIGE_HINT[nextDepth]!;
+                const met = prestiges >= hint;
+                return (
+                  <div className={`text-xs mt-2 text-center py-1 px-2 rounded border ${
+                    met ? 'text-emerald-400/80 border-transparent' : 'text-amber-300/90 bg-amber-950/30 border-amber-700/30'
+                  }`}>
+                    {met
+                      ? `✓ Prêt — ${hint} prestige${hint > 1 ? 's' : ''} recommandé${hint > 1 ? 's' : ''} pour cette zone`
+                      : `💡 Recommandé : ${hint} prestige${hint > 1 ? 's' : ''} avant cette zone (vous : ${prestiges})`
+                    }
+                  </div>
+                );
+              })()}
             </>
           ) : (
             <div className="text-center text-xs text-gray-500 italic py-2">Profondeur maximale atteinte</div>

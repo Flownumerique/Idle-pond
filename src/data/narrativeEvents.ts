@@ -176,6 +176,91 @@ export const NARRATIVE_EVENTS: NarrativeEvent[] = [
     text: 'La mana déborde brièvement de l\'étang, remontant sous forme de vapeur lumineuse. Quiconque la voit dit ressentir une paix inexplicable.',
     minDepth: 7,
   },
+
+  // ─── Cœur Volcanique (depth 8) ───────────────────────────────────
+  {
+    id: 'volcano_pulse',
+    text: 'Une pulsation rythmée monte du Cœur Volcanique. Les cheminées crachent en cadence, comme un cœur géant qui bat sous la roche.',
+    minDepth: 8,
+  },
+  {
+    id: 'magma_river',
+    text: 'Un fleuve de magma pur s\'est ouvert une nouvelle voie à travers la roche. L\'Esprit de Magma le suit avec une curiosité évidente.',
+    minDepth: 8,
+    requiresFishType: 'lava_spirit',
+  },
+  {
+    id: 'pyro_ballet',
+    text: 'Plusieurs Raies Pyro volent en formation synchronisée au-dessus des cheminées. La chaleur de leur passage fait vibrer la mana dans tout l\'étang.',
+    minDepth: 8,
+    requiresFishType: 'pyro_ray',
+  },
+  {
+    id: 'titan_steps',
+    text: 'Un tremblement sourd traverse les parois. Le Titan de Lave vient de se déplacer. Quelques cristaux de mana tombent des parois comme une pluie dorée.',
+    minDepth: 8,
+    requiresFishType: 'lava_titan',
+  },
+  {
+    id: 'core_resonance',
+    text: 'La fréquence de résonance du Cœur du Monde est passée à un niveau harmonique plus élevé. Tous les poissons ignés semblent plus grands, plus lumineux.',
+    minDepth: 8,
+  },
+
+  // ─── Royaume Céleste (depth 9) ────────────────────────────────────
+  {
+    id: 'celestial_choir',
+    text: 'Une musique inaudible mais ressentie emplit le Royaume Céleste. L\'Ange des Eaux forme une spirale parfaite autour d\'un point de lumière invisible.',
+    minDepth: 9,
+    requiresFishType: 'angel',
+  },
+  {
+    id: 'aurora_bloom',
+    text: 'Le Poisson Aurore a tracé une carte complète du Royaume Céleste dans ses traînées lumineuses. La carte représente quelque chose d\'impossible à identifier.',
+    minDepth: 9,
+    requiresFishType: 'aurora_fish',
+  },
+  {
+    id: 'divine_convergence',
+    text: 'Toutes les créatures célestes se sont immobilisées pendant exactement trois secondes. Puis elles ont repris leur nage, comme si rien n\'était. Quelque chose a été décidé.',
+    minDepth: 9,
+  },
+  {
+    id: 'solar_flare',
+    text: 'Le Sol Aquatique a émis une éruption de mana concentrée. Pendant quelques instants, l\'étang entier a brillé comme en plein jour, quelle que soit la profondeur.',
+    minDepth: 9,
+    requiresFishType: 'sun_fish',
+  },
+
+  // ─── Dimension Quantique (depth 10) ──────────────────────────────
+  {
+    id: 'quantum_flicker',
+    text: 'Les Cyberpoissons ont clignoté simultanément — tous en même temps, tous dans la même direction. Pendant un instant, il y en avait deux fois plus.',
+    minDepth: 10,
+    requiresFishType: 'cyberfish',
+  },
+  {
+    id: 'prism_split',
+    text: 'La Manta Prisme a traversé une couche de réalité et en est revenue accompagnée d\'une version légèrement différente d\'elle-même. Les deux nagent côte à côte sans se percuter.',
+    minDepth: 10,
+    requiresFishType: 'prism_manta',
+  },
+  {
+    id: 'quantum_collapse',
+    text: 'L\'Entité Quantique a observé l\'étang entier pendant une fraction de seconde. Dans ce regard, elle a calculé 10^47 trajectoires possibles pour chaque poisson. Elle a choisi la meilleure.',
+    minDepth: 10,
+    requiresFishType: 'quantum',
+  },
+  {
+    id: 'reality_glitch',
+    text: 'Un glitch dans la structure de la Dimension Quantique a fait apparaître brièvement les schémas de données sous-jacents à la réalité. L\'étang ressemblait à une partition musicale.',
+    minDepth: 10,
+  },
+  {
+    id: 'dimension_complete',
+    text: 'Vous êtes arrivé au bout. La Dimension Quantique reconnaît votre présence. Un message s\'inscrit dans la mana : "Vous avez atteint ce qu\'aucun autre n\'a atteint. Continuez."',
+    minDepth: 10,
+  },
 ];
 
 /** Retourne les événements disponibles selon l'état actuel */
