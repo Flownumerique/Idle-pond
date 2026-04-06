@@ -1,5 +1,7 @@
+import Decimal from 'break_infinity.js';
 import { useGameStore } from '../store/useGameStore';
 import { RESEARCH, type ResearchDef } from '../data/research';
+import { formatNumber } from '../utils/formatNumber';
 
 const BRANCH_META = {
   biologie:    { label: '🧬 Biologie',     color: 'emerald', desc: 'Améliore les revenus de tous les poissons' },
@@ -17,8 +19,8 @@ const COLOR = {
   teal:    { bg: 'bg-teal-900/20',    border: 'border-teal-700/30',    text: 'text-teal-300',    btn: 'bg-teal-700 hover:bg-teal-600'     },
 };
 
-function ResearchCard({ r, gemmes, unlocked, canUnlock }: {
-  r: ResearchDef; gemmes: number; unlocked: boolean; canUnlock: boolean;
+function ResearchCard({ r, mana, unlocked, canUnlock }: {
+  r: ResearchDef; mana: Decimal; unlocked: boolean; canUnlock: boolean;
 }) {
   const unlock = useGameStore(s => s.unlockResearch);
   const meta = BRANCH_META[r.branch];
@@ -46,7 +48,7 @@ function ResearchCard({ r, gemmes, unlocked, canUnlock }: {
               canUnlock ? `${c.btn} text-white` : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-60'
             }`}
           >
-            {r.cost} 💎
+            {formatNumber(r.cost)} 💧
           </button>
         )}
       </div>
@@ -55,7 +57,7 @@ function ResearchCard({ r, gemmes, unlocked, canUnlock }: {
 }
 
 export const Research = () => {
-  const gemmes = useGameStore(s => s.gemmes);
+  const mana = useGameStore(s => s.mana);
   const researchUnlocked = useGameStore(s => s.researchUnlocked);
 
   const branches = (['biologie', 'geologie', 'alchimie', 'mystique', 'oceanologie'] as const).map(branch => ({
@@ -67,7 +69,7 @@ export const Research = () => {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Corail de Prestige</h3>
-        <span className="text-xs text-emerald-300 font-bold">{gemmes} 💎 disponibles</span>
+        <span className="text-xs text-blue-300 font-bold">{formatNumber(mana)} 💧</span>
       </div>
 
       {branches.map(({ branch, items }) => {
@@ -85,9 +87,9 @@ export const Research = () => {
               {items.map(r => {
                 const isUnlocked = researchUnlocked.includes(r.id);
                 const prereqMet = !r.requires || researchUnlocked.includes(r.requires);
-                const canUnlock = !isUnlocked && prereqMet && gemmes >= r.cost;
+                const canUnlock = !isUnlocked && prereqMet && mana.gte(r.cost);
                 return (
-                  <ResearchCard key={r.id} r={r} gemmes={gemmes} unlocked={isUnlocked} canUnlock={canUnlock} />
+                  <ResearchCard key={r.id} r={r} mana={mana} unlocked={isUnlocked} canUnlock={canUnlock} />
                 );
               })}
             </div>

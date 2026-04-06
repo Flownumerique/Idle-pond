@@ -206,18 +206,18 @@ export const useGameStore = create<GameState>()(
         const r = RESEARCH.find(x => x.id === id);
         if (!r) return s;
         if (r.requires && !s.researchUnlocked.includes(r.requires)) return s;
-        if (s.gemmes < r.cost) return s;
-        return { gemmes: s.gemmes - r.cost, researchUnlocked: [...s.researchUnlocked, id] };
+        if (!s.mana.gte(r.cost)) return s;
+        return { mana: s.mana.minus(r.cost), researchUnlocked: [...s.researchUnlocked, id] };
       }),
 
-      // Marché des Perles utilise des GEMMES
+      // Marché des Perles utilise du MANA
       buyPearlUpgrade: (id) => set((s) => {
         if (s.pearlUpgradesUnlocked.includes(id)) return s;
         const p = PEARL_UPGRADES.find(x => x.id === id);
         if (!p) return s;
         if (p.requires && !s.pearlUpgradesUnlocked.includes(p.requires)) return s;
-        if (s.gemmes < p.cost) return s;
-        return { gemmes: s.gemmes - p.cost, pearlUpgradesUnlocked: [...s.pearlUpgradesUnlocked, id] };
+        if (!s.mana.gte(p.cost)) return s;
+        return { mana: s.mana.minus(p.cost), pearlUpgradesUnlocked: [...s.pearlUpgradesUnlocked, id] };
       }),
 
       // Améliorations de Prestige utilisent des PERLES

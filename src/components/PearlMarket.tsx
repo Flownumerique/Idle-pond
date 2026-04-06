@@ -1,8 +1,9 @@
 import { useGameStore } from '../store/useGameStore';
 import { PEARL_UPGRADES } from '../data/pearlUpgrades';
+import { formatNumber } from '../utils/formatNumber';
 
 export const PearlMarket = () => {
-  const gemmes = useGameStore(s => s.gemmes);
+  const mana = useGameStore(s => s.mana);
   const pearlUpgradesUnlocked = useGameStore(s => s.pearlUpgradesUnlocked);
   const buyPearlUpgrade = useGameStore(s => s.buyPearlUpgrade);
 
@@ -10,18 +11,18 @@ export const PearlMarket = () => {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Marché des Perles</h3>
-        <span className="text-xs text-emerald-300 font-bold">{gemmes} 💎 disponibles</span>
+        <span className="text-xs text-blue-300 font-bold">{formatNumber(mana)} 💧</span>
       </div>
 
       <p className="text-xs text-gray-500 -mt-2">
-        Améliorations permanentes achetées avec des Gemmes 💎 (gagnées via les succès).
+        Améliorations permanentes achetées avec du Mana 💧.
       </p>
 
       <div className="flex flex-col gap-2">
         {PEARL_UPGRADES.map(p => {
           const owned = pearlUpgradesUnlocked.includes(p.id);
           const prereqMet = !p.requires || pearlUpgradesUnlocked.includes(p.requires);
-          const canBuy = !owned && prereqMet && gemmes >= p.cost;
+          const canBuy = !owned && prereqMet && mana.gte(p.cost);
 
           return (
             <div
@@ -56,7 +57,7 @@ export const PearlMarket = () => {
                         : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-60'
                     }`}
                   >
-                    {p.cost} 💎
+                    {formatNumber(p.cost)} 💧
                   </button>
                 )}
               </div>

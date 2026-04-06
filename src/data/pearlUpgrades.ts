@@ -1,11 +1,11 @@
-// Le Marché des Perles utilise des GEMMES (💎), pas des Perles.
+// Le Marché des Perles utilise du MANA (💧).
 // Les Perles (🪸) sont réservées aux Améliorations de Prestige.
 
 export interface PearlUpgradeDef {
   id: string;
   name: string;
   description: string;
-  cost: number; // gemmes 💎
+  cost: number; // mana 💧
   requires: string | null;
   effect: {
     globalIncomePercent?: number;
@@ -20,7 +20,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_prod_1',
     name: 'Courant mystique',
     description: '+25% de revenu global',
-    cost: 50,
+    cost: 2_000,
     requires: null,
     effect: { globalIncomePercent: 25 },
   },
@@ -28,7 +28,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_prod_2',
     name: 'Flux abyssal',
     description: '+50% de revenu global',
-    cost: 120,
+    cost: 15_000,
     requires: 'pearl_prod_1',
     effect: { globalIncomePercent: 50 },
   },
@@ -36,7 +36,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_prod_3',
     name: 'Torrent éternel',
     description: '+100% de revenu global',
-    cost: 300,
+    cost: 2_000_000,
     requires: 'pearl_prod_2',
     effect: { globalIncomePercent: 100 },
   },
@@ -46,7 +46,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_cost_1',
     name: 'Pêche efficace',
     description: '-20% coût d\'achat des poissons',
-    cost: 75,
+    cost: 2_500,
     requires: null,
     effect: { fishCostReductionPercent: 20 },
   },
@@ -54,7 +54,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_cost_2',
     name: 'Maîtrise de l\'élevage',
     description: '-30% coût d\'achat des poissons',
-    cost: 200,
+    cost: 20_000,
     requires: 'pearl_cost_1',
     effect: { fishCostReductionPercent: 30 },
   },
@@ -64,7 +64,7 @@ export const PEARL_UPGRADES: PearlUpgradeDef[] = [
     id: 'pearl_offline',
     name: 'Gardien des eaux',
     description: '×2 production hors-ligne',
-    cost: 100,
+    cost: 3_000,
     requires: null,
     effect: { offlineMultPercent: 100 },
   },
