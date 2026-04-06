@@ -71,7 +71,7 @@ export interface GameState {
   updateLastSaveTime: () => void;
 }
 
-const MAX_DEPTH = 7;
+const MAX_DEPTH = 10;
 
 export const useGameStore = create<GameState>()(
   persist(

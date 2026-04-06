@@ -161,11 +161,196 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     check: (s) => s.poissons.some(f => f.type === 'egregore'),
   },
   {
+    id: 'first_phoenix_nexus',
+    name: 'Renaissance Éternelle',
+    description: 'Acheter un Phénix Aquatique',
+    gemReward: 250,
+    check: (s) => s.poissons.some(f => f.type === 'phoenix_nexus'),
+  },
+  {
+    id: 'first_nexus_spirit',
+    name: 'Esprit du Nexus',
+    description: 'Acheter un Esprit du Nexus',
+    gemReward: 300,
+    check: (s) => s.poissons.some(f => f.type === 'nexus_spirit'),
+  },
+  {
     id: 'first_celestial',
     name: 'Divinité Aquatique',
     description: 'Acheter le Poisson Céleste',
     gemReward: 500,
     check: (s) => s.poissons.some(f => f.type === 'celestial'),
+  },
+  // Zone 0
+  {
+    id: 'first_frog',
+    name: 'Bond de Cristal',
+    description: 'Acheter une Grenouille Cristal',
+    gemReward: 6,
+    check: (s) => s.poissons.some(f => f.type === 'frog'),
+  },
+  {
+    id: 'first_duck',
+    name: 'Canard Magique',
+    description: 'Acheter un Canard Mana',
+    gemReward: 7,
+    check: (s) => s.poissons.some(f => f.type === 'duck'),
+  },
+  // Zone 1
+  {
+    id: 'first_cobalt',
+    name: 'Courant Cobalt',
+    description: 'Acheter une Anguille Cobalt',
+    gemReward: 12,
+    check: (s) => s.poissons.some(f => f.type === 'cobalt'),
+  },
+  {
+    id: 'first_nymph',
+    name: 'Chant de Source',
+    description: 'Acheter une Nymphe des Eaux',
+    gemReward: 18,
+    check: (s) => s.poissons.some(f => f.type === 'nymph'),
+  },
+  // Zone 2
+  {
+    id: 'first_snail',
+    name: 'Opale Vivante',
+    description: 'Acheter un Escargot Opale',
+    gemReward: 25,
+    check: (s) => s.poissons.some(f => f.type === 'snail'),
+  },
+  {
+    id: 'first_shrimp',
+    name: 'Nacre Profonde',
+    description: 'Acheter une Crevette Nacre',
+    gemReward: 28,
+    check: (s) => s.poissons.some(f => f.type === 'shrimp'),
+  },
+  // Zone 3
+  {
+    id: 'first_anemone',
+    name: 'Fleur de Ténèbres',
+    description: 'Acheter une Anémone Fantôme',
+    gemReward: 38,
+    check: (s) => s.poissons.some(f => f.type === 'anemone'),
+  },
+  {
+    id: 'first_spectre',
+    name: 'Entre Deux Mondes',
+    description: 'Acheter un Poisson Spectre',
+    gemReward: 45,
+    check: (s) => s.poissons.some(f => f.type === 'spectre'),
+  },
+  // Zone 4
+  {
+    id: 'first_scorpion',
+    name: 'Dard Incandescent',
+    description: 'Acheter un Scorpion de Magma',
+    gemReward: 55,
+    check: (s) => s.poissons.some(f => f.type === 'scorpion'),
+  },
+  {
+    id: 'first_lava_snake',
+    name: 'Ondulation de Lave',
+    description: 'Acheter un Serpent de Lave',
+    gemReward: 65,
+    check: (s) => s.poissons.some(f => f.type === 'lava_snake'),
+  },
+  // Zone 5
+  {
+    id: 'first_dolphin',
+    name: 'Sonar Spectral',
+    description: 'Acheter un Dauphin Spectre',
+    gemReward: 80,
+    check: (s) => s.poissons.some(f => f.type === 'dolphin'),
+  },
+  {
+    id: 'first_whale',
+    name: 'Chant des Abysses',
+    description: 'Acheter une Baleine des Abysses',
+    gemReward: 100,
+    check: (s) => s.poissons.some(f => f.type === 'whale'),
+  },
+  // Zone 6
+  {
+    id: 'first_plesio',
+    name: 'Fossile Vivant',
+    description: 'Acheter un Plésiosaure Cristal',
+    gemReward: 120,
+    check: (s) => s.poissons.some(f => f.type === 'plesio'),
+  },
+  {
+    id: 'first_basilisk',
+    name: 'Regard des Origines',
+    description: 'Acheter un Basilic des Origines',
+    gemReward: 140,
+    check: (s) => s.poissons.some(f => f.type === 'basilisk'),
+  },
+  // Zone 8
+  {
+    id: 'first_lava_spirit',
+    name: 'Conscience de Lave',
+    description: 'Acheter un Esprit de Magma',
+    gemReward: 250,
+    check: (s) => s.poissons.some(f => f.type === 'lava_spirit'),
+  },
+  {
+    id: 'first_pyro_ray',
+    name: 'Battement Volcanique',
+    description: 'Acheter une Raie Pyro',
+    gemReward: 300,
+    check: (s) => s.poissons.some(f => f.type === 'pyro_ray'),
+  },
+  {
+    id: 'first_lava_titan',
+    name: 'Tremblement Primordial',
+    description: 'Acheter un Titan de Lave',
+    gemReward: 400,
+    check: (s) => s.poissons.some(f => f.type === 'lava_titan'),
+  },
+  // Zone 9
+  {
+    id: 'first_angel',
+    name: 'Grâce Divine',
+    description: 'Acheter un Ange des Eaux',
+    gemReward: 500,
+    check: (s) => s.poissons.some(f => f.type === 'angel'),
+  },
+  {
+    id: 'first_aurora_fish',
+    name: 'Aurore Boréale',
+    description: 'Acheter un Poisson Aurore',
+    gemReward: 600,
+    check: (s) => s.poissons.some(f => f.type === 'aurora_fish'),
+  },
+  {
+    id: 'first_sun_fish',
+    name: 'Soleil Vivant',
+    description: 'Acheter un Sol Aquatique',
+    gemReward: 750,
+    check: (s) => s.poissons.some(f => f.type === 'sun_fish'),
+  },
+  // Zone 10
+  {
+    id: 'first_cyberfish',
+    name: 'Intelligence Artificielle',
+    description: 'Acheter un Cyberpoisson',
+    gemReward: 800,
+    check: (s) => s.poissons.some(f => f.type === 'cyberfish'),
+  },
+  {
+    id: 'first_prism_manta',
+    name: 'Réfraction de la Réalité',
+    description: 'Acheter une Manta Prisme',
+    gemReward: 900,
+    check: (s) => s.poissons.some(f => f.type === 'prism_manta'),
+  },
+  {
+    id: 'first_quantum',
+    name: 'Conscience Quantique',
+    description: 'Acheter une Entité Quantique',
+    gemReward: 1000,
+    check: (s) => s.poissons.some(f => f.type === 'quantum'),
   },
 
   // ─── Profondeur ──────────────────────────────────────────────────
@@ -214,9 +399,30 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   {
     id: 'depth_7',
     name: 'Nexus de Mana',
-    description: 'Atteindre la profondeur maximale — le Nexus',
+    description: 'Atteindre la profondeur 7 — le Nexus',
     gemReward: 200,
     check: (s) => s.pondDepth >= 7,
+  },
+  {
+    id: 'depth_8',
+    name: 'Cœur du Monde',
+    description: 'Atteindre la profondeur 8 — le Cœur Volcanique',
+    gemReward: 350,
+    check: (s) => s.pondDepth >= 8,
+  },
+  {
+    id: 'depth_9',
+    name: 'Ascension Céleste',
+    description: 'Atteindre la profondeur 9 — le Royaume Céleste',
+    gemReward: 500,
+    check: (s) => s.pondDepth >= 9,
+  },
+  {
+    id: 'depth_10',
+    name: 'Singularité',
+    description: 'Atteindre la profondeur maximale — la Dimension Quantique',
+    gemReward: 1000,
+    check: (s) => s.pondDepth >= 10,
   },
 
   // ─── Mana ────────────────────────────────────────────────────────
