@@ -5,6 +5,7 @@ import { ACHIEVEMENTS } from '../data/achievements';
 import { CHALLENGE_POOL, getDailyChallengeIds } from '../data/challenges';
 import { RESEARCH } from '../data/research';
 import { PEARL_UPGRADES } from '../data/pearlUpgrades';
+import { PRESTIGE_UPGRADES } from '../data/prestigeUpgrades';
 import { FISH_TYPES } from '../data/fishTypes';
 import { computeBonuses } from '../utils/bonuses';
 import { getSessionManaEarned } from '../utils/session';
@@ -37,16 +38,14 @@ export interface GameState {
   lastSaveTime: number;
   prestiges: number;
 
-  // Progression
   unlockedAchievementIds: string[];
   researchUnlocked: string[];
   pearlUpgradesUnlocked: string[];
+  prestigeUpgradesUnlocked: string[];
 
-  // Défis journaliers
   dailyChallengesCompleted: string[];
   lastChallengeDate: string;
 
-  // Notifications
   pendingUnlock: string | null;
 
   // Actions
@@ -60,6 +59,7 @@ export interface GameState {
   prestige: () => void;
   unlockResearch: (id: string) => void;
   buyPearlUpgrade: (id: string) => void;
+  buyPrestigeUpgrade: (id: string) => void;
   claimChallenge: (id: string) => void;
   checkAchievements: () => void;
   checkDailyReset: () => void;
@@ -83,6 +83,7 @@ export const useGameStore = create<GameState>()(
       unlockedAchievementIds: [],
       researchUnlocked: [],
       pearlUpgradesUnlocked: [],
+      prestigeUpgradesUnlocked: [],
       dailyChallengesCompleted: [],
       lastChallengeDate: '',
       pendingUnlock: null,
@@ -97,14 +98,14 @@ export const useGameStore = create<GameState>()(
         if (!fishDef) return s;
         if (fishDef.requiredPrestiges && s.prestiges < fishDef.requiredPrestiges) return s;
         if (fishDef.maxOwned !== undefined) {
-          const owned = s.poissons.filter(f => f.type === type).length;
-          if (owned >= fishDef.maxOwned) return s;
+          if (s.poissons.filter(f => f.type === type).length >= fishDef.maxOwned) return s;
         }
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
         return {
           mana: s.mana.minus(cost),
           poissons: [...s.poissons, {
             id: `${type}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-            type, baseIncome, level: 1,
+            type, baseIncome, level: bonuses.prestigeStartingLevel,
           }],
         };
       }),
@@ -114,7 +115,7 @@ export const useGameStore = create<GameState>()(
         if (!fishDef) return s;
         if (fishDef.requiredPrestiges && s.prestiges < fishDef.requiredPrestiges) return s;
 
-        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
         const ownedCount = s.poissons.filter(f => f.type === type).length;
 
         let cap = count;
@@ -132,7 +133,7 @@ export const useGameStore = create<GameState>()(
           totalCost = totalCost.plus(cost);
           newFish.push({
             id: `${type}-${Date.now()}-${i}-${Math.random().toString(36).slice(2)}`,
-            type, baseIncome, level: 1,
+            type, baseIncome, level: bonuses.prestigeStartingLevel,
           });
         }
         if (!s.mana.gte(totalCost)) return s;
@@ -150,15 +151,20 @@ export const useGameStore = create<GameState>()(
 
       upgradePond: () => set((s) => {
         if (s.pondDepth >= MAX_DEPTH) return s;
-        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
-        const cost = getPondUpgradeCost(s.pondDepth).mul(bonuses.pondCostMult);
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
+        let costMult = bonuses.pondCostMult;
+        // Bonus prestige : premier creusage -50%
+        if (s.pondDepth === 0 && s.prestigeUpgradesUnlocked.includes('prest_creusage')) {
+          costMult *= 0.5;
+        }
+        const cost = getPondUpgradeCost(s.pondDepth).mul(costMult);
         if (!s.mana.gte(cost)) return s;
         const newDepth = s.pondDepth + 1;
         return { mana: s.mana.minus(cost), pondDepth: newDepth, pendingUnlock: `depth_${newDepth}` };
       }),
 
       activateBoost: () => set((s) => {
-        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
         if (s.gemmes < bonuses.boostCost || s.boostActiveUntil > Date.now()) return s;
         return {
           gemmes: s.gemmes - bonuses.boostCost,
@@ -168,11 +174,21 @@ export const useGameStore = create<GameState>()(
 
       prestige: () => set((s) => {
         if (s.pondDepth < 2) return s;
-        const earned = calcPrestigeReward(s.pondDepth, s.mana);
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
+        const baseReward = calcPrestigeReward(s.pondDepth, s.mana);
+        const earned = Math.ceil(baseReward * bonuses.prestigePearlMult);
+
+        // Conserver un % de poissons
+        let keptFish: PoissonInstance[] = [];
+        if (bonuses.prestigeKeepFishPercent > 0) {
+          const keepCount = Math.max(1, Math.floor(s.poissons.length * bonuses.prestigeKeepFishPercent / 100));
+          keptFish = s.poissons.slice(0, keepCount);
+        }
+
         return {
-          mana: new Decimal(10),
-          poissons: [],
-          pondDepth: 0,
+          mana: new Decimal(bonuses.prestigeStartingMana),
+          poissons: keptFish,
+          pondDepth: bonuses.prestigeStartingDepth,
           boostActiveUntil: 0,
           prestiges: s.prestiges + 1,
           perles: s.perles + earned,
@@ -188,13 +204,24 @@ export const useGameStore = create<GameState>()(
         return { gemmes: s.gemmes - r.cost, researchUnlocked: [...s.researchUnlocked, id] };
       }),
 
+      // Marché des Perles utilise des GEMMES
       buyPearlUpgrade: (id) => set((s) => {
         if (s.pearlUpgradesUnlocked.includes(id)) return s;
         const p = PEARL_UPGRADES.find(x => x.id === id);
         if (!p) return s;
         if (p.requires && !s.pearlUpgradesUnlocked.includes(p.requires)) return s;
+        if (s.gemmes < p.cost) return s;
+        return { gemmes: s.gemmes - p.cost, pearlUpgradesUnlocked: [...s.pearlUpgradesUnlocked, id] };
+      }),
+
+      // Améliorations de Prestige utilisent des PERLES
+      buyPrestigeUpgrade: (id) => set((s) => {
+        if (s.prestigeUpgradesUnlocked.includes(id)) return s;
+        const p = PRESTIGE_UPGRADES.find(x => x.id === id);
+        if (!p) return s;
+        if (p.requires && !s.prestigeUpgradesUnlocked.includes(p.requires)) return s;
         if (s.perles < p.cost) return s;
-        return { perles: s.perles - p.cost, pearlUpgradesUnlocked: [...s.pearlUpgradesUnlocked, id] };
+        return { perles: s.perles - p.cost, prestigeUpgradesUnlocked: [...s.prestigeUpgradesUnlocked, id] };
       }),
 
       claimChallenge: (id) => set((s) => {
@@ -220,7 +247,8 @@ export const useGameStore = create<GameState>()(
           a => !s.unlockedAchievementIds.includes(a.id) && a.check(s)
         );
         if (toUnlock.length === 0) return;
-        const gems = toUnlock.reduce((sum, a) => sum + a.gemReward, 0);
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked, s.prestigeUpgradesUnlocked);
+        const gems = toUnlock.reduce((sum, a) => sum + Math.ceil(a.gemReward * bonuses.gemmeRewardMult), 0);
         set((state) => ({
           unlockedAchievementIds: [...state.unlockedAchievementIds, ...toUnlock.map(a => a.id)],
           gemmes: state.gemmes + gems,

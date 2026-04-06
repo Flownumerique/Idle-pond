@@ -2,7 +2,7 @@ export interface ResearchDef {
   id: string;
   name: string;
   description: string;
-  branch: 'biologie' | 'geologie' | 'alchimie';
+  branch: 'biologie' | 'geologie' | 'alchimie' | 'mystique';
   cost: number; // gemmes
   requires: string | null;
   effect: {
@@ -10,12 +10,15 @@ export interface ResearchDef {
     pondCostReductionPercent?: number;
     boostDurationBonusMs?: number;
     boostCostReduction?: number;
+    boostMultiplierBonus?: number;  // s'ajoute au multiplicateur de base (2)
     milestoneLevelReduction?: number;
+    gemmeRewardMultPercent?: number;
+    passiveGemmesPerMin?: number;
   };
 }
 
 export const RESEARCH: ResearchDef[] = [
-  // Biologie — booste les revenus
+  // ─── Biologie ────────────────────────────────────────────────────
   {
     id: 'bio_1',
     name: 'Alimentation enrichie',
@@ -46,14 +49,23 @@ export const RESEARCH: ResearchDef[] = [
   {
     id: 'bio_4',
     name: 'Mutation magique',
-    description: 'Les jalons de niveau s\'activent 1 niveau plus tôt',
+    description: 'Les jalons s\'activent 1 niveau plus tôt',
     branch: 'biologie',
     cost: 300,
     requires: 'bio_3',
     effect: { milestoneLevelReduction: 1 },
   },
+  {
+    id: 'bio_5',
+    name: 'Transcendance biologique',
+    description: '+75% de revenu global',
+    branch: 'biologie',
+    cost: 700,
+    requires: 'bio_4',
+    effect: { globalIncomePercent: 75 },
+  },
 
-  // Géologie — réduit les coûts de creusage
+  // ─── Géologie ────────────────────────────────────────────────────
   {
     id: 'geo_1',
     name: 'Forage optimisé',
@@ -81,8 +93,17 @@ export const RESEARCH: ResearchDef[] = [
     requires: 'geo_2',
     effect: { pondCostReductionPercent: 40 },
   },
+  {
+    id: 'geo_4',
+    name: 'Art de l\'abîme',
+    description: '-50% coût de creusage',
+    branch: 'geologie',
+    cost: 400,
+    requires: 'geo_3',
+    effect: { pondCostReductionPercent: 50 },
+  },
 
-  // Alchimie — améliore le boost temporaire
+  // ─── Alchimie ────────────────────────────────────────────────────
   {
     id: 'alch_1',
     name: 'Élixir de vitalité',
@@ -109,5 +130,52 @@ export const RESEARCH: ResearchDef[] = [
     cost: 150,
     requires: 'alch_2',
     effect: { boostCostReduction: 5 },
+  },
+  {
+    id: 'alch_4',
+    name: 'Grand Œuvre',
+    description: 'Le boost produit ×3 au lieu de ×2',
+    branch: 'alchimie',
+    cost: 350,
+    requires: 'alch_3',
+    effect: { boostMultiplierBonus: 1 },
+  },
+
+  // ─── Mystique ────────────────────────────────────────────────────
+  {
+    id: 'myst_1',
+    name: 'Intuition des gemmes',
+    description: '+25% de 💎 gagnées par les succès',
+    branch: 'mystique',
+    cost: 40,
+    requires: null,
+    effect: { gemmeRewardMultPercent: 25 },
+  },
+  {
+    id: 'myst_2',
+    name: 'Cristallisation passive',
+    description: 'Génère +1 💎 par minute automatiquement',
+    branch: 'mystique',
+    cost: 100,
+    requires: 'myst_1',
+    effect: { passiveGemmesPerMin: 1 },
+  },
+  {
+    id: 'myst_3',
+    name: 'Flux abyssal',
+    description: 'Génère +2 💎 par minute supplémentaires',
+    branch: 'mystique',
+    cost: 250,
+    requires: 'myst_2',
+    effect: { passiveGemmesPerMin: 2 },
+  },
+  {
+    id: 'myst_4',
+    name: 'Œil de l\'étang',
+    description: '+50% de 💎 gagnées par les succès',
+    branch: 'mystique',
+    cost: 500,
+    requires: 'myst_3',
+    effect: { gemmeRewardMultPercent: 50 },
   },
 ];

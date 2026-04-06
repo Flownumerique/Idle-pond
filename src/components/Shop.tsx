@@ -43,7 +43,8 @@ export const Shop = () => {
   const upgradePond = useGameStore(s => s.upgradePond);
   const prestige = useGameStore(s => s.prestige);
 
-  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+  const prestigeUpgradesUnlocked = useGameStore(s => s.prestigeUpgradesUnlocked);
+  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
   const isMaxDepth = pondDepth >= MAX_DEPTH;
   const pondUpgradeCost = !isMaxDepth
     ? getPondUpgradeCost(pondDepth).mul(bonuses.pondCostMult)
@@ -147,7 +148,7 @@ export const Shop = () => {
         const unlocked = prestiges >= (fish.requiredPrestiges ?? 0) && pondDepth >= fish.requiredDepth;
         const owned = poissons.filter(f => f.type === fish.type).length;
         const atMax = fish.maxOwned !== undefined && owned >= fish.maxOwned;
-        const cost = new Decimal(fish.baseCost);
+        const cost = new Decimal(fish.baseCost).mul(bonuses.celestialCostMult);
         const canAfford = !atMax && mana.gte(cost);
 
         if (!unlocked) return null;

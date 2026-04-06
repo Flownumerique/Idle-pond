@@ -9,16 +9,20 @@ import { Achievements } from './components/Achievements';
 import { UnlockNotification } from './components/UnlockNotification';
 import { Research } from './components/Research';
 import { PearlMarket } from './components/PearlMarket';
+import { PrestigeUpgrades } from './components/PrestigeUpgrades';
 import { Lore } from './components/Lore';
 import { Challenges } from './components/Challenges';
+import { Guide } from './components/Guide';
 
-type Panel = 'research' | 'pearls' | 'journal' | 'challenges';
+type Panel = 'corail' | 'marche' | 'prestige' | 'journal' | 'defis' | 'guide';
 
 const TABS: { id: Panel; icon: string; label: string }[] = [
-  { id: 'research',   icon: '🧬', label: 'Recherche' },
-  { id: 'pearls',     icon: '🪸', label: 'Marché' },
-  { id: 'journal',    icon: '📖', label: 'Journal' },
-  { id: 'challenges', icon: '⚔️', label: 'Défis' },
+  { id: 'corail',   icon: '🧬', label: 'Corail'   },
+  { id: 'marche',   icon: '💎', label: 'Marché'   },
+  { id: 'prestige', icon: '🪸', label: 'Prestige' },
+  { id: 'journal',  icon: '📖', label: 'Journal'  },
+  { id: 'defis',    icon: '⚔️', label: 'Défis'    },
+  { id: 'guide',    icon: '❓', label: 'Guide'    },
 ];
 
 function App() {
@@ -50,26 +54,25 @@ function App() {
           <Stats />
           <BoostOverlay />
 
-          {/* Succès */}
           <div className="relative">
             <Achievements />
           </div>
 
-          {/* Onglets des panneaux */}
-          <div className="pointer-events-auto flex gap-1.5">
+          {/* Barre d'onglets */}
+          <div className="pointer-events-auto grid grid-cols-6 gap-1">
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => togglePanel(tab.id)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all border ${
+                title={tab.label}
+                className={`py-1.5 rounded-lg text-[10px] font-semibold transition-all border flex flex-col items-center gap-0.5 ${
                   activePanel === tab.id
-                    ? 'bg-white/15 border-white/20 text-white'
+                    ? 'bg-white/15 border-white/25 text-white'
                     : 'bg-slate-900/60 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'
                 }`}
-                title={tab.label}
               >
-                <span className="block text-base leading-none mb-0.5">{tab.icon}</span>
-                <span>{tab.label}</span>
+                <span className="text-sm leading-none">{tab.icon}</span>
+                <span className="leading-none">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -77,10 +80,12 @@ function App() {
           {/* Panneau actif */}
           {activePanel && (
             <div className="pointer-events-auto bg-slate-900/70 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl p-4 overflow-y-auto max-h-[45vh]">
-              {activePanel === 'research'   && <Research />}
-              {activePanel === 'pearls'     && <PearlMarket />}
-              {activePanel === 'journal'    && <Lore />}
-              {activePanel === 'challenges' && <Challenges />}
+              {activePanel === 'corail'   && <Research />}
+              {activePanel === 'marche'   && <PearlMarket />}
+              {activePanel === 'prestige' && <PrestigeUpgrades />}
+              {activePanel === 'journal'  && <Lore />}
+              {activePanel === 'defis'    && <Challenges />}
+              {activePanel === 'guide'    && <Guide />}
             </div>
           )}
         </div>

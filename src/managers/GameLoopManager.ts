@@ -9,8 +9,8 @@ export class GameLoopManager {
   private intervalId: number | null = null;
   private readonly TICK_RATE_MS = 100;
 
-  // Accumulateur pour la génération de gemmes du Poisson Céleste
   private celestialGemmeAccum = 0;
+  private researchGemmeAccum = 0;
 
   private constructor() {}
 
@@ -41,9 +41,9 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const { poissons, researchUnlocked, pearlUpgradesUnlocked } = state;
+    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked } = state;
 
-    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
 
     if (poissons.length > 0) {
       let baseIncomePerSec = new Decimal(0);
@@ -62,7 +62,7 @@ export class GameLoopManager {
         .mul(bonuses.globalIncomeMult);
 
       if (state.boostActiveUntil > Date.now()) {
-        finalIncomePerSec = finalIncomePerSec.mul(2);
+        finalIncomePerSec = finalIncomePerSec.mul(bonuses.boostMultiplier);
       }
 
       const incomeThisTick = finalIncomePerSec.mul(deltaMs / 1000);
@@ -71,15 +71,25 @@ export class GameLoopManager {
         addSessionMana(incomeThisTick);
       }
 
-      // Génération de gemmes par le Poisson Céleste (+1 💎/min par exemplaire)
+      // Gemmes passives du Poisson Céleste (+1 💎/min par exemplaire)
       const celestialCount = poissons.filter(f => f.type === 'celestial').length;
       if (celestialCount > 0) {
         this.celestialGemmeAccum += celestialCount * deltaMs / 60_000;
-        const wholeGemmes = Math.floor(this.celestialGemmeAccum);
-        if (wholeGemmes > 0) {
-          this.celestialGemmeAccum -= wholeGemmes;
-          state.addGemmes(wholeGemmes);
+        const whole = Math.floor(this.celestialGemmeAccum);
+        if (whole > 0) {
+          this.celestialGemmeAccum -= whole;
+          state.addGemmes(whole);
         }
+      }
+    }
+
+    // Gemmes passives du Corail de Prestige (Mystique)
+    if (bonuses.passiveGemmesPerMin > 0) {
+      this.researchGemmeAccum += bonuses.passiveGemmesPerMin * deltaMs / 60_000;
+      const whole = Math.floor(this.researchGemmeAccum);
+      if (whole > 0) {
+        this.researchGemmeAccum -= whole;
+        state.addGemmes(whole);
       }
     }
 

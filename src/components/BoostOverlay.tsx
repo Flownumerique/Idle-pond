@@ -9,7 +9,8 @@ export const BoostOverlay = () => {
   const researchUnlocked = useGameStore(s => s.researchUnlocked);
   const pearlUpgradesUnlocked = useGameStore(s => s.pearlUpgradesUnlocked);
 
-  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+  const prestigeUpgradesUnlocked = useGameStore(s => s.prestigeUpgradesUnlocked);
+  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
   const durationMin = Math.round(bonuses.boostDurationMs / 60_000);
 
   const [timeLeft, setTimeLeft] = useState(0);
