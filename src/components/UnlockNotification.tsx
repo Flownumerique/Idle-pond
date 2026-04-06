@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../store/useGameStore';
-import { FISH_TYPES } from './Shop';
+import { FISH_TYPES } from '../data/fishTypes';
 
-const DEPTH_NAMES = ['Peu profond', 'Standard', 'Profond', 'Abyssal', 'Maximum'];
+const DEPTH_NAMES = [
+  'Lac de Surface',
+  'Rivière Souterraine',
+  'Récif Corallien',
+  'Abysses',
+  'Zone Hydrothermale',
+  'Plaine Abyssale',
+  'Fosse des Origines',
+  'Nexus de Mana',
+];
 
 export const UnlockNotification = () => {
   const pendingUnlock = useGameStore(state => state.pendingUnlock);

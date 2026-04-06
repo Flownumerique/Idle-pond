@@ -47,6 +47,7 @@ export interface GameState {
   lastChallengeDate: string;
 
   pendingUnlock: string | null;
+  pendingNarrativeEvent: string | null;
 
   // Actions
   addMana: (amount: Decimal) => void;
@@ -64,10 +65,11 @@ export interface GameState {
   checkAchievements: () => void;
   checkDailyReset: () => void;
   clearPendingUnlock: () => void;
+  setPendingNarrativeEvent: (event: string | null) => void;
   updateLastSaveTime: () => void;
 }
 
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 7;
 
 export const useGameStore = create<GameState>()(
   persist(
@@ -87,6 +89,7 @@ export const useGameStore = create<GameState>()(
       dailyChallengesCompleted: [],
       lastChallengeDate: '',
       pendingUnlock: null,
+      pendingNarrativeEvent: null,
 
       addMana: (amount) => set((s) => ({ mana: s.mana.plus(amount) })),
 
@@ -262,6 +265,8 @@ export const useGameStore = create<GameState>()(
       }),
 
       clearPendingUnlock: () => set({ pendingUnlock: null }),
+
+      setPendingNarrativeEvent: (event) => set({ pendingNarrativeEvent: event }),
 
       updateLastSaveTime: () => set({ lastSaveTime: Date.now() }),
     }),

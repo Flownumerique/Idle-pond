@@ -13,6 +13,7 @@ import { PrestigeUpgrades } from './components/PrestigeUpgrades';
 import { Lore } from './components/Lore';
 import { Challenges } from './components/Challenges';
 import { Guide } from './components/Guide';
+import { EventNotification } from './components/EventNotification';
 
 type Panel = 'corail' | 'marche' | 'prestige' | 'journal' | 'defis' | 'guide';
 
@@ -40,6 +41,7 @@ function App() {
     <div className="relative w-full h-screen overflow-hidden text-white font-sans selection:bg-blue-500/30">
       <PhaserContainer />
       <UnlockNotification />
+      <EventNotification />
 
       <div className="absolute inset-0 pointer-events-none z-10 p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row justify-between gap-4">
 

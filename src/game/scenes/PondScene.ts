@@ -2,25 +2,69 @@ import Phaser from 'phaser';
 import type { PoissonInstance } from '../../store/useGameStore';
 
 const ZONE_HEIGHT = 1080;
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 7;
 const WORLD_HEIGHT = ZONE_HEIGHT * (MAX_DEPTH + 1);
 
 // Couleur de fond et de l'eau par profondeur
 const DEPTH_COLORS = [
-  { bg: 0x0d2a4a, water: 0x1a5a8f },  // 0 – peu profond (bleu clair)
-  { bg: 0x0a1f3a, water: 0x134a72 },  // 1 – standard
-  { bg: 0x071428, water: 0x0d3454 },  // 2 – profond
-  { bg: 0x04090f, water: 0x07182a },  // 3 – abyssal (presque noir)
-  { bg: 0x020507, water: 0x030d16 },  // 4 – maximum
+  { bg: 0x0d2a4a, water: 0x1a5a8f },  // 0 – Lac de Surface (bleu clair)
+  { bg: 0x0a1f3a, water: 0x134a72 },  // 1 – Rivière Souterraine
+  { bg: 0x071428, water: 0x0d3454 },  // 2 – Récif Corallien
+  { bg: 0x04090f, water: 0x07182a },  // 3 – Abysses (presque noir)
+  { bg: 0x1a0500, water: 0x4a1200 },  // 4 – Zone Hydrothermale (rouge sombre)
+  { bg: 0x00040a, water: 0x001428 },  // 5 – Plaine Abyssale (bleu nuit profond)
+  { bg: 0x050003, water: 0x10001f },  // 6 – Fosse des Origines (violet très sombre)
+  { bg: 0x0d0018, water: 0x1f0040 },  // 7 – Nexus de Mana (violet-or mystique)
 ];
 
-const DEPTH_LABELS = ['Eaux peu profondes', 'Eaux intermédiaires', 'Eaux profondes', 'Abysses', 'Fond des océans'];
+const DEPTH_LABELS = [
+  'Lac de Surface',
+  'Rivière Souterraine',
+  'Récif Corallien',
+  'Abysses',
+  'Zone Hydrothermale',
+  'Plaine Abyssale',
+  'Fosse des Origines',
+  'Nexus de Mana',
+];
+
+// Profondeur requise par type de poisson
+const FISH_DEPTH: Record<string, number> = {
+  gold:       0,
+  carpe:      0,
+  ruby:       1,
+  dragonfly:  1,
+  diamond:    2,
+  crab:       2,
+  abyssal:    3,
+  octopus:    3,
+  salamander: 4,
+  eel:        4,
+  jellyfish:  5,
+  shark:      5,
+  dragon:     6,
+  leviathan:  6,
+  egregore:   7,
+  celestial:  7,
+};
 
 const FISH_COLORS: Record<string, number> = {
-  gold:     0xffd700,
-  ruby:     0xe0115f,
-  diamond:  0x00d4ff,
-  abyssal:  0x9b59b6,
+  gold:       0xffd700,
+  carpe:      0xff8c00,
+  ruby:       0xe0115f,
+  dragonfly:  0x4169e1,
+  diamond:    0x00d4ff,
+  crab:       0x00ffcc,
+  abyssal:    0x9b59b6,
+  octopus:    0x4b0082,
+  salamander: 0xff4500,
+  eel:        0xff6600,
+  jellyfish:  0x00ff99,
+  shark:      0x708090,
+  dragon:     0x228b22,
+  leviathan:  0xe8e8e8,
+  egregore:   0xdaa520,
+  celestial:  0xfffacd,
 };
 
 export class PondScene extends Phaser.Scene {
@@ -47,7 +91,8 @@ export class PondScene extends Phaser.Scene {
       this.add.rectangle(width / 2, yStart + ZONE_HEIGHT / 2, width, ZONE_HEIGHT, bg);
 
       // Bulles décoratives
-      for (let i = 0; i < 18; i++) {
+      const bubbleCount = d >= 5 ? 12 : 18;
+      for (let i = 0; i < bubbleCount; i++) {
         this.add.circle(
           Phaser.Math.Between(0, width),
           yStart + Phaser.Math.Between(0, ZONE_HEIGHT),
@@ -55,6 +100,29 @@ export class PondScene extends Phaser.Scene {
           water,
           0.2
         );
+      }
+
+      // Particules de mana pour le Nexus (depth 7)
+      if (d === 7) {
+        for (let i = 0; i < 30; i++) {
+          const star = this.add.circle(
+            Phaser.Math.Between(0, width),
+            yStart + Phaser.Math.Between(0, ZONE_HEIGHT),
+            Phaser.Math.Between(2, 8),
+            0xdaa520,
+            0.6
+          );
+          this.tweens.add({
+            targets: star,
+            alpha: { from: 0.2, to: 0.8 },
+            scaleX: { from: 0.8, to: 1.2 },
+            scaleY: { from: 0.8, to: 1.2 },
+            duration: Phaser.Math.Between(1500, 3500),
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+        }
       }
 
       // Étiquette de zone
@@ -116,14 +184,14 @@ export class PondScene extends Phaser.Scene {
 
     poissons.forEach(fish => {
       if (!this.fishSprites.has(fish.id)) {
-        const fishDepth = ['gold', 'ruby', 'diamond', 'abyssal'].indexOf(fish.type);
-        const zoneY = (fishDepth >= 0 ? fishDepth : 0) * ZONE_HEIGHT;
+        const fishDepthZone = FISH_DEPTH[fish.type] ?? 0;
+        const zoneY = fishDepthZone * ZONE_HEIGHT;
 
         const x = Phaser.Math.Between(60, width - 60);
         const y = zoneY + Phaser.Math.Between(120, ZONE_HEIGHT - 120);
 
         const color = FISH_COLORS[fish.type] ?? 0xffffff;
-        const radius = 12 + fish.level;
+        const radius = 12 + Math.min(fish.level, 50);  // cap visual size at level 50
 
         const sprite = this.add.circle(x, y, radius, color, 0.85);
         sprite.setDepth(2);
@@ -141,7 +209,7 @@ export class PondScene extends Phaser.Scene {
         this.fishSprites.set(fish.id, sprite);
       } else {
         const sprite = this.fishSprites.get(fish.id)!;
-        sprite.setRadius(12 + fish.level);
+        sprite.setRadius(12 + Math.min(fish.level, 50));
       }
     });
 

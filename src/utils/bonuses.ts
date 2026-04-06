@@ -13,6 +13,7 @@ export interface ComputedBonuses {
   milestoneLevelReduction: number;
   gemmeRewardMult: number;       // multiplicateur sur récompenses de succès
   passiveGemmesPerMin: number;   // gemmes générées passivement
+  deepFishIncomeMult: number;    // multiplicateur pour poissons profondeur 4+
   // Effets prestige
   prestigePearlMult: number;     // multiplicateur sur les perles gagnées
   celestialCostMult: number;     // réduction du coût du Poisson Céleste
@@ -41,6 +42,7 @@ export const computeBonuses = (
   let milestoneLevelReduction = 0;
   let gemmeRewardMultPercent = 0;
   let passiveGemmesPerMin = 0;
+  let deepFishIncomePercent = 0;
 
   for (const id of researchUnlocked) {
     const r = RESEARCH.find(x => x.id === id);
@@ -53,6 +55,8 @@ export const computeBonuses = (
     if (r.effect.milestoneLevelReduction)   milestoneLevelReduction   += r.effect.milestoneLevelReduction;
     if (r.effect.gemmeRewardMultPercent)    gemmeRewardMultPercent    += r.effect.gemmeRewardMultPercent;
     if (r.effect.passiveGemmesPerMin)       passiveGemmesPerMin       += r.effect.passiveGemmesPerMin;
+    if (r.effect.fishCostReductionPercent)  fishCostReductionPercent  += r.effect.fishCostReductionPercent;
+    if (r.effect.deepFishIncomePercent)     deepFishIncomePercent     += r.effect.deepFishIncomePercent;
   }
 
   for (const id of pearlUpgradesUnlocked) {
@@ -104,6 +108,7 @@ export const computeBonuses = (
     milestoneLevelReduction,
     gemmeRewardMult: 1 + gemmeRewardMultPercent / 100,
     passiveGemmesPerMin,
+    deepFishIncomeMult: 1 + deepFishIncomePercent / 100,
     prestigePearlMult: 1 + prestigePearlMultPercent / 100,
     celestialCostMult,
     prestigeStartingMana,

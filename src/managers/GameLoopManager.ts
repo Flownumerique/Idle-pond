@@ -1,8 +1,14 @@
 import { useGameStore } from '../store/useGameStore';
-import { getSelfMilestoneMultiplier, getGlobalMultiplier } from '../data/fishTypes';
+import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
 import { computeBonuses } from '../utils/bonuses';
 import { addSessionMana } from '../utils/session';
+import { pickRandomEvent } from '../data/narrativeEvents';
 import Decimal from 'break_infinity.js';
+
+// Profondeurs des poissons "profonds" (depth 4+) pour le bonus Océanologie
+const DEEP_FISH_TYPES = new Set(
+  FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
+);
 
 export class GameLoopManager {
   private static instance: GameLoopManager;
@@ -11,6 +17,8 @@ export class GameLoopManager {
 
   private celestialGemmeAccum = 0;
   private researchGemmeAccum = 0;
+  private narrativeEventAccum = 0;
+  private readonly NARRATIVE_EVENT_INTERVAL_MS = 7 * 60 * 1000; // 7 minutes
 
   private constructor() {}
 
@@ -41,7 +49,7 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked } = state;
+    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, pondDepth } = state;
 
     const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
 
@@ -51,8 +59,10 @@ export class GameLoopManager {
       for (const fish of poissons) {
         const levelMult = new Decimal(1.5).pow(fish.level - 1);
         const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
+        // Bonus Océanologie : multiplicateur supplémentaire pour les poissons profonds
+        const deepMult = DEEP_FISH_TYPES.has(fish.type) ? bonuses.deepFishIncomeMult : 1;
         baseIncomePerSec = baseIncomePerSec.add(
-          new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult)
+          new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult)
         );
       }
 
@@ -83,13 +93,24 @@ export class GameLoopManager {
       }
     }
 
-    // Gemmes passives du Corail de Prestige (Mystique)
+    // Gemmes passives du Corail de Prestige (Mystique + Océanologie)
     if (bonuses.passiveGemmesPerMin > 0) {
       this.researchGemmeAccum += bonuses.passiveGemmesPerMin * deltaMs / 60_000;
       const whole = Math.floor(this.researchGemmeAccum);
       if (whole > 0) {
         this.researchGemmeAccum -= whole;
         state.addGemmes(whole);
+      }
+    }
+
+    // Événements narratifs ambiants (toutes les ~7 minutes)
+    this.narrativeEventAccum += deltaMs;
+    if (this.narrativeEventAccum >= this.NARRATIVE_EVENT_INTERVAL_MS) {
+      this.narrativeEventAccum = 0;
+      const fishTypes = [...new Set(poissons.map(f => f.type))];
+      const event = pickRandomEvent(pondDepth, fishTypes);
+      if (event) {
+        state.setPendingNarrativeEvent(event.text);
       }
     }
 

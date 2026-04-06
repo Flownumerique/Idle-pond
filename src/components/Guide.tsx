@@ -54,9 +54,11 @@ export const Guide = () => (
     </Section>
 
     <Section title="⛏️ Améliorer l'Étang">
-      <p>Creuser plus profond coûte de la <Tag color="blue">Mana</Tag> et débloque de nouvelles espèces de poissons :</p>
-      <p>Niv. 0 → <Tag>🐟 Or</Tag>  ·  Niv. 1 → <Tag>🐠 Rubis</Tag>  ·  Niv. 2 → <Tag>🐡 Diamant</Tag>  ·  Niv. 3 → <Tag>🦑 Abyssal</Tag></p>
-      <p>Niv. 4 → <Tag color="yellow">🌟 Céleste</Tag> (requiert aussi un Prestige)</p>
+      <p>Creuser plus profond coûte de la <Tag color="blue">Mana</Tag> et débloque de nouveaux biomes et espèces :</p>
+      <p>Niv. 0 → <Tag>🐟 Or</Tag> <Tag>🎏 Carpe</Tag>  ·  Niv. 1 → <Tag>🐠 Rubis</Tag> <Tag>🪲 Libellule</Tag></p>
+      <p>Niv. 2 → <Tag>🐡 Diamant</Tag> <Tag>🦀 Crabe</Tag>  ·  Niv. 3 → <Tag>🦑 Abyssal</Tag> <Tag>🐙 Pieuvre</Tag></p>
+      <p>Niv. 4 → <Tag color="yellow">🔥 Salamandre</Tag> <Tag color="yellow">⚡ Anguille</Tag>  ·  Niv. 5 → <Tag>🫧 Méduse</Tag> <Tag>🦈 Requin</Tag></p>
+      <p>Niv. 6 → <Tag>🐉 Dragon</Tag> <Tag>💎 Léviathan</Tag>  ·  Niv. 7 → <Tag color="yellow">✨ Égrégore</Tag> <Tag color="yellow">🌟 Céleste</Tag> (Prestige requis)</p>
       <p>Les zones sont visibles dans la vue de l'étang — utilisez la molette pour naviguer en profondeur.</p>
     </Section>
 
@@ -67,11 +69,12 @@ export const Guide = () => (
     </Section>
 
     <Section title="🧬 Corail de Prestige">
-      <p>Achetez des améliorations permanentes avec des <Tag color="green">Gemmes 💎</Tag>. 4 branches :</p>
+      <p>Achetez des améliorations permanentes avec des <Tag color="green">Gemmes 💎</Tag>. 5 branches :</p>
       <p><strong className="text-emerald-300">Biologie</strong> — Revenu global (+15% → +75% + jalons anticipés)</p>
       <p><strong className="text-amber-300">Géologie</strong> — Coûts de creusage (−15% → −50% cumulable)</p>
       <p><strong className="text-violet-300">Alchimie</strong> — Boost de Mana (durée, coût, ×3 au lieu de ×2)</p>
       <p><strong className="text-cyan-300">Mystique</strong> — Gemmes passives + bonus sur récompenses succès</p>
+      <p><strong className="text-teal-300">Océanologie</strong> — Revenu des profondeurs, coût poissons, +3 💎/min</p>
     </Section>
 
     <Section title="🏪 Marché des Perles">

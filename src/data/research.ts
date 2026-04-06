@@ -2,7 +2,7 @@ export interface ResearchDef {
   id: string;
   name: string;
   description: string;
-  branch: 'biologie' | 'geologie' | 'alchimie' | 'mystique';
+  branch: 'biologie' | 'geologie' | 'alchimie' | 'mystique' | 'oceanologie';
   cost: number; // gemmes
   requires: string | null;
   effect: {
@@ -10,10 +10,12 @@ export interface ResearchDef {
     pondCostReductionPercent?: number;
     boostDurationBonusMs?: number;
     boostCostReduction?: number;
-    boostMultiplierBonus?: number;  // s'ajoute au multiplicateur de base (2)
+    boostMultiplierBonus?: number;
     milestoneLevelReduction?: number;
     gemmeRewardMultPercent?: number;
     passiveGemmesPerMin?: number;
+    fishCostReductionPercent?: number;
+    deepFishIncomePercent?: number;  // bonus pour poissons profondeur 4+
   };
 }
 
@@ -177,5 +179,43 @@ export const RESEARCH: ResearchDef[] = [
     cost: 500,
     requires: 'myst_3',
     effect: { gemmeRewardMultPercent: 50 },
+  },
+
+  // ─── Océanologie ─────────────────────────────────────────────────
+  {
+    id: 'ocean_1',
+    name: 'Cartographie abyssale',
+    description: '+20% de revenu global · Les biomes profonds révèlent leurs secrets',
+    branch: 'oceanologie',
+    cost: 80,
+    requires: null,
+    effect: { globalIncomePercent: 20 },
+  },
+  {
+    id: 'ocean_2',
+    name: 'Courants des profondeurs',
+    description: '-20% coût de tous les poissons',
+    branch: 'oceanologie',
+    cost: 200,
+    requires: 'ocean_1',
+    effect: { fishCostReductionPercent: 20 },
+  },
+  {
+    id: 'ocean_3',
+    name: 'Symbiose abyssale',
+    description: '+50% de revenu des créatures de profondeur 4+',
+    branch: 'oceanologie',
+    cost: 500,
+    requires: 'ocean_2',
+    effect: { deepFishIncomePercent: 50 },
+  },
+  {
+    id: 'ocean_4',
+    name: 'Nexus Connecté',
+    description: '+3 💎/min passifs · +30% de revenu global',
+    branch: 'oceanologie',
+    cost: 1000,
+    requires: 'ocean_3',
+    effect: { passiveGemmesPerMin: 3, globalIncomePercent: 30 },
   },
 ];

@@ -4,8 +4,17 @@ import { computeBonuses } from '../utils/bonuses';
 import { formatNumber } from '../utils/formatNumber';
 import Decimal from 'break_infinity.js';
 
-const DEPTH_NAMES = ['Peu profond', 'Standard', 'Profond', 'Abyssal', 'Maximum'];
-const MAX_DEPTH = 4;
+const DEPTH_NAMES = [
+  'Lac de Surface',
+  'Rivière Souterraine',
+  'Récif Corallien',
+  'Abysses',
+  'Zone Hydrothermale',
+  'Plaine Abyssale',
+  'Fosse des Origines',
+  'Nexus de Mana',
+];
+const MAX_DEPTH = 7;
 const MILESTONE_LEVELS = [10, 25, 50, 100];
 
 const calcBulkCost = (baseCost: number, fishCostMult: number, alreadyOwned: number, count: number): Decimal => {

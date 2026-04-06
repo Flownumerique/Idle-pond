@@ -2,10 +2,11 @@ import { useGameStore } from '../store/useGameStore';
 import { RESEARCH, type ResearchDef } from '../data/research';
 
 const BRANCH_META = {
-  biologie: { label: '🧬 Biologie',  color: 'emerald', desc: 'Améliore les revenus de tous les poissons' },
-  geologie: { label: '⛏️ Géologie',  color: 'amber',   desc: 'Réduit les coûts de creusage' },
-  alchimie: { label: '⚗️ Alchimie',  color: 'violet',  desc: 'Améliore le Boost de Mana' },
-  mystique: { label: '🔮 Mystique',  color: 'cyan',    desc: 'Génère des Gemmes passivement' },
+  biologie:    { label: '🧬 Biologie',     color: 'emerald', desc: 'Améliore les revenus de tous les poissons' },
+  geologie:    { label: '⛏️ Géologie',     color: 'amber',   desc: 'Réduit les coûts de creusage' },
+  alchimie:    { label: '⚗️ Alchimie',     color: 'violet',  desc: 'Améliore le Boost de Mana' },
+  mystique:    { label: '🔮 Mystique',     color: 'cyan',    desc: 'Génère des Gemmes passivement' },
+  oceanologie: { label: '🌊 Océanologie',  color: 'teal',    desc: 'Maîtrise des biomes profonds' },
 } as const;
 
 const COLOR = {
@@ -13,6 +14,7 @@ const COLOR = {
   amber:   { bg: 'bg-amber-900/20',   border: 'border-amber-700/30',   text: 'text-amber-300',   btn: 'bg-amber-700 hover:bg-amber-600'   },
   violet:  { bg: 'bg-violet-900/20',  border: 'border-violet-700/30',  text: 'text-violet-300',  btn: 'bg-violet-700 hover:bg-violet-600' },
   cyan:    { bg: 'bg-cyan-900/20',    border: 'border-cyan-700/30',    text: 'text-cyan-300',    btn: 'bg-cyan-700 hover:bg-cyan-600'     },
+  teal:    { bg: 'bg-teal-900/20',    border: 'border-teal-700/30',    text: 'text-teal-300',    btn: 'bg-teal-700 hover:bg-teal-600'     },
 };
 
 function ResearchCard({ r, gemmes, unlocked, canUnlock }: {
@@ -56,7 +58,7 @@ export const Research = () => {
   const gemmes = useGameStore(s => s.gemmes);
   const researchUnlocked = useGameStore(s => s.researchUnlocked);
 
-  const branches = (['biologie', 'geologie', 'alchimie', 'mystique'] as const).map(branch => ({
+  const branches = (['biologie', 'geologie', 'alchimie', 'mystique', 'oceanologie'] as const).map(branch => ({
     branch,
     items: RESEARCH.filter(r => r.branch === branch),
   }));
