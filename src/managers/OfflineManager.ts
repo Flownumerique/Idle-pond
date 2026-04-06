@@ -1,5 +1,6 @@
 import { useGameStore } from '../store/useGameStore';
 import { getSelfMilestoneMultiplier, getGlobalMultiplier } from '../data/fishTypes';
+import { computeBonuses } from '../utils/bonuses';
 import Decimal from 'break_infinity.js';
 
 export class OfflineManager {
@@ -17,7 +18,7 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const { poissons, lastSaveTime } = state;
+    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
@@ -25,17 +26,22 @@ export class OfflineManager {
     const offlineDurationMs = Math.min(now - lastSaveTime, this.MAX_OFFLINE_MS);
     if (offlineDurationMs < 60 * 1000) return;
 
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+
     let baseIncomePerSec = new Decimal(0);
     for (const fish of poissons) {
       const levelMult = new Decimal(1.5).pow(fish.level - 1);
-      const milestoneMult = getSelfMilestoneMultiplier(fish);
+      const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
       baseIncomePerSec = baseIncomePerSec.add(
         new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult)
       );
     }
 
-    const globalMult = getGlobalMultiplier(poissons);
-    baseIncomePerSec = baseIncomePerSec.mul(globalMult);
+    const milestoneGlobalMult = getGlobalMultiplier(poissons, bonuses.milestoneLevelReduction);
+    baseIncomePerSec = baseIncomePerSec
+      .mul(milestoneGlobalMult)
+      .mul(bonuses.globalIncomeMult)
+      .mul(bonuses.offlineMult);
 
     const boostEndTime = state.boostActiveUntil;
     let offlineMana = new Decimal(0);

@@ -1,5 +1,6 @@
 import { useGameStore, getPondUpgradeCost, MAX_FISH_LEVEL } from '../store/useGameStore';
 import { FISH_TYPES, getNextMilestone } from '../data/fishTypes';
+import { computeBonuses } from '../utils/bonuses';
 import { formatNumber } from '../utils/formatNumber';
 import Decimal from 'break_infinity.js';
 
@@ -7,19 +8,19 @@ const DEPTH_NAMES = ['Peu profond', 'Standard', 'Profond', 'Abyssal', 'Maximum']
 const MAX_DEPTH = 4;
 const MILESTONE_LEVELS = [10, 25, 50, 100];
 
-const calcBulkCost = (baseCost: number, alreadyOwned: number, count: number): Decimal => {
+const calcBulkCost = (baseCost: number, fishCostMult: number, alreadyOwned: number, count: number): Decimal => {
   let total = new Decimal(0);
   for (let i = 0; i < count; i++) {
-    total = total.plus(new Decimal(baseCost).mul(new Decimal(1.15).pow(alreadyOwned + i)));
+    total = total.plus(new Decimal(baseCost).mul(fishCostMult).mul(new Decimal(1.15).pow(alreadyOwned + i)));
   }
   return total;
 };
 
-const calcMaxBuyable = (baseCost: number, alreadyOwned: number, mana: Decimal): number => {
+const calcMaxBuyable = (baseCost: number, fishCostMult: number, alreadyOwned: number, mana: Decimal): number => {
   let count = 0;
   let total = new Decimal(0);
   while (true) {
-    const next = new Decimal(baseCost).mul(new Decimal(1.15).pow(alreadyOwned + count));
+    const next = new Decimal(baseCost).mul(fishCostMult).mul(new Decimal(1.15).pow(alreadyOwned + count));
     if (total.plus(next).gt(mana)) break;
     total = total.plus(next);
     count++;
@@ -29,18 +30,24 @@ const calcMaxBuyable = (baseCost: number, alreadyOwned: number, mana: Decimal): 
 };
 
 export const Shop = () => {
-  const mana = useGameStore(state => state.mana);
-  const poissons = useGameStore(state => state.poissons);
-  const pondDepth = useGameStore(state => state.pondDepth);
-  const perles = useGameStore(state => state.perles);
-  const buyFish = useGameStore(state => state.buyFish);
-  const buyFishBulk = useGameStore(state => state.buyFishBulk);
-  const upgradeFish = useGameStore(state => state.upgradeFish);
-  const upgradePond = useGameStore(state => state.upgradePond);
-  const prestige = useGameStore(state => state.prestige);
+  const mana = useGameStore(s => s.mana);
+  const poissons = useGameStore(s => s.poissons);
+  const pondDepth = useGameStore(s => s.pondDepth);
+  const perles = useGameStore(s => s.perles);
+  const prestiges = useGameStore(s => s.prestiges);
+  const researchUnlocked = useGameStore(s => s.researchUnlocked);
+  const pearlUpgradesUnlocked = useGameStore(s => s.pearlUpgradesUnlocked);
+  const buyFish = useGameStore(s => s.buyFish);
+  const buyFishBulk = useGameStore(s => s.buyFishBulk);
+  const upgradeFish = useGameStore(s => s.upgradeFish);
+  const upgradePond = useGameStore(s => s.upgradePond);
+  const prestige = useGameStore(s => s.prestige);
 
+  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
   const isMaxDepth = pondDepth >= MAX_DEPTH;
-  const pondUpgradeCost = !isMaxDepth ? getPondUpgradeCost(pondDepth) : null;
+  const pondUpgradeCost = !isMaxDepth
+    ? getPondUpgradeCost(pondDepth).mul(bonuses.pondCostMult)
+    : null;
   const canUpgradePond = pondUpgradeCost ? mana.gte(pondUpgradeCost) : false;
   const nextDepth = pondDepth + 1;
   const nextFish = FISH_TYPES.find(f => f.requiredDepth === nextDepth);
@@ -48,19 +55,19 @@ export const Shop = () => {
 
   const handleBuy = (fish: typeof FISH_TYPES[0]) => {
     const ownedCount = poissons.filter(f => f.type === fish.type).length;
-    const cost = new Decimal(fish.baseCost).mul(new Decimal(1.15).pow(ownedCount));
+    const cost = new Decimal(fish.baseCost).mul(bonuses.fishCostMult).mul(new Decimal(1.15).pow(ownedCount));
     buyFish(fish.type, fish.baseIncome, cost);
-  };
-
-  const handleBuyBulk = (fish: typeof FISH_TYPES[0], count: number) => {
-    buyFishBulk(fish.type, fish.baseIncome, fish.baseCost, count);
   };
 
   const handleUpgrade = (id: string, currentLevel: number, type: string) => {
     const baseCost = FISH_TYPES.find(t => t.type === type)?.baseCost || 10;
-    const upgradeCost = new Decimal(baseCost).mul(2).mul(new Decimal(1.5).pow(currentLevel));
-    upgradeFish(id, upgradeCost);
+    upgradeFish(id, new Decimal(baseCost).mul(2).mul(new Decimal(1.5).pow(currentLevel)));
   };
+
+  // Poissons normaux (hors légendaires)
+  const normalFish = FISH_TYPES.filter(f => !f.requiredPrestiges);
+  // Poissons légendaires
+  const legendaryFish = FISH_TYPES.filter(f => f.requiredPrestiges);
 
   return (
     <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-xl pointer-events-auto h-full max-h-[calc(100vh-2rem)] overflow-y-auto w-80 lg:w-96 flex flex-col gap-6">
@@ -84,6 +91,11 @@ export const Shop = () => {
               <div className="text-xs text-gray-300 mb-3 bg-black/20 rounded p-2 border border-white/5">
                 <div className="font-semibold text-white mb-1">Prochaine amélioration — Niv. {nextDepth}</div>
                 {nextFish && <div className="text-yellow-300">• Débloque : {nextFish.emoji} {nextFish.name}</div>}
+                {bonuses.pondCostMult < 1 && (
+                  <div className="text-teal-400 text-[10px] mt-1">
+                    Réduction Géologie : -{Math.round((1 - bonuses.pondCostMult) * 100)}%
+                  </div>
+                )}
               </div>
               <button
                 onClick={upgradePond}
@@ -94,7 +106,7 @@ export const Shop = () => {
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
                 }`}
               >
-                ⛏️ Creuser plus profond ({formatNumber(pondUpgradeCost!)} Mana)
+                ⛏️ Creuser ({formatNumber(pondUpgradeCost!)} Mana)
               </button>
             </>
           ) : (
@@ -130,32 +142,69 @@ export const Shop = () => {
         </div>
       </div>
 
-      {/* Acheter des poissons */}
+      {/* Poissons légendaires */}
+      {legendaryFish.map(fish => {
+        const unlocked = prestiges >= (fish.requiredPrestiges ?? 0) && pondDepth >= fish.requiredDepth;
+        const owned = poissons.filter(f => f.type === fish.type).length;
+        const atMax = fish.maxOwned !== undefined && owned >= fish.maxOwned;
+        const cost = new Decimal(fish.baseCost);
+        const canAfford = !atMax && mana.gte(cost);
+
+        if (!unlocked) return null;
+
+        return (
+          <div key={fish.type} className="flex flex-col gap-2">
+            <h3 className="text-sm font-semibold text-yellow-400 uppercase tracking-wider">Poisson Légendaire</h3>
+            <div className="bg-yellow-900/20 rounded-lg p-4 border border-yellow-700/30">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h4 className="font-bold text-yellow-200 text-lg flex items-center gap-2">
+                    {fish.emoji} {fish.name}
+                  </h4>
+                  <p className="text-xs text-gray-300">{fish.desc}</p>
+                  {atMax && <p className="text-xs text-yellow-500 mt-1">Déjà possédé (unique)</p>}
+                </div>
+                <span className="text-xs bg-yellow-900/50 text-yellow-300 px-2 py-1 rounded border border-yellow-700/50">
+                  {owned} / {fish.maxOwned}
+                </span>
+              </div>
+              <button
+                onClick={() => handleBuy(fish)}
+                disabled={!canAfford}
+                className={`w-full py-2.5 rounded-lg font-bold text-sm transition-all ${
+                  canAfford
+                    ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white'
+                    : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
+                }`}
+              >
+                Acquérir ({formatNumber(cost)} Mana)
+              </button>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Acheter des poissons normaux */}
       <div className="flex flex-col gap-4">
         <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Acheter des poissons</h3>
-        {FISH_TYPES.map((fish) => {
+        {normalFish.map((fish) => {
           const unlocked = pondDepth >= fish.requiredDepth;
           const ownedCount = poissons.filter(f => f.type === fish.type).length;
-          const cost1 = new Decimal(fish.baseCost).mul(new Decimal(1.15).pow(ownedCount));
-          const cost10 = calcBulkCost(fish.baseCost, ownedCount, 10);
-          const maxCount = calcMaxBuyable(fish.baseCost, ownedCount, mana);
-          const costMax = calcBulkCost(fish.baseCost, ownedCount, maxCount);
+          const cost1 = new Decimal(fish.baseCost).mul(bonuses.fishCostMult).mul(new Decimal(1.15).pow(ownedCount));
+          const cost10 = calcBulkCost(fish.baseCost, bonuses.fishCostMult, ownedCount, 10);
+          const maxCount = calcMaxBuyable(fish.baseCost, bonuses.fishCostMult, ownedCount, mana);
+          const costMax = calcBulkCost(fish.baseCost, bonuses.fishCostMult, ownedCount, maxCount);
 
           if (!unlocked) {
             return (
               <div key={fish.type} className="bg-white/[0.03] rounded-lg p-4 border border-white/5 opacity-60">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-bold text-gray-500 flex items-center gap-2">
-                      <span className="grayscale">{fish.emoji}</span>
-                      {fish.name}
-                      <span className="text-[10px] bg-gray-800 text-gray-500 px-1.5 py-0.5 rounded border border-gray-700">🔒</span>
-                    </h4>
-                    <p className="text-xs text-gray-600">{fish.desc}</p>
-                  </div>
-                </div>
+                <h4 className="font-bold text-gray-500 flex items-center gap-2 mb-1">
+                  <span className="grayscale">{fish.emoji}</span>
+                  {fish.name}
+                  <span className="text-[10px] bg-gray-800 text-gray-500 px-1.5 py-0.5 rounded border border-gray-700">🔒</span>
+                </h4>
                 <div className="text-xs text-center text-gray-600 bg-black/20 rounded py-1.5 border border-dashed border-gray-700">
-                  Déverrouillé à la profondeur Niv. {fish.requiredDepth} — {DEPTH_NAMES[fish.requiredDepth]}
+                  Profondeur Niv. {fish.requiredDepth} requise — {DEPTH_NAMES[fish.requiredDepth]}
                 </div>
               </div>
             );
@@ -175,16 +224,14 @@ export const Shop = () => {
                 </div>
               </div>
 
-              {/* Jalons de l'espèce */}
+              {/* Jalons */}
               <div className="flex gap-1 mb-3">
                 {fish.milestones.map(m => (
                   <div
                     key={m.level}
-                    title={`Niv. ${m.level} — ${m.label}${m.globalBonus > 0 ? ` (+${m.globalBonus}% global)` : ''}`}
+                    title={`Niv. ${m.level} — ${m.label}${m.globalBonus > 0 ? ` | +${m.globalBonus}% global` : ''}`}
                     className={`flex-1 text-center text-[9px] font-bold py-0.5 rounded border ${
-                      ownedCount > 0
-                        ? 'text-gray-400 border-gray-700 bg-gray-800/40'
-                        : 'text-gray-600 border-gray-800 bg-transparent'
+                      ownedCount > 0 ? 'text-gray-400 border-gray-700 bg-gray-800/40' : 'text-gray-600 border-gray-800'
                     }`}
                   >
                     {m.level}
@@ -192,34 +239,24 @@ export const Shop = () => {
                 ))}
               </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleBuy(fish)}
-                  disabled={!mana.gte(cost1)}
-                  className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    mana.gte(cost1) ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
-                  }`}
-                >
-                  x1<br/><span className="text-[10px] opacity-80">{formatNumber(cost1)}</span>
-                </button>
-                <button
-                  onClick={() => handleBuyBulk(fish, 10)}
-                  disabled={!mana.gte(cost10)}
-                  className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    mana.gte(cost10) ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
-                  }`}
-                >
-                  x10<br/><span className="text-[10px] opacity-80">{formatNumber(cost10)}</span>
-                </button>
-                <button
-                  onClick={() => handleBuyBulk(fish, maxCount)}
-                  disabled={maxCount === 0}
-                  className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
-                    maxCount > 0 ? 'bg-blue-500 hover:bg-blue-400 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
-                  }`}
-                >
-                  max ({maxCount})<br/><span className="text-[10px] opacity-80">{maxCount > 0 ? formatNumber(costMax) : '–'}</span>
-                </button>
+              <div className="flex gap-1.5">
+                {[
+                  { label: 'x1',  count: 1,        cost: cost1,   canAff: mana.gte(cost1) },
+                  { label: 'x10', count: 10,       cost: cost10,  canAff: mana.gte(cost10) },
+                  { label: `max (${maxCount})`, count: maxCount, cost: costMax, canAff: maxCount > 0 },
+                ].map(({ label, count, cost, canAff }) => (
+                  <button
+                    key={label}
+                    onClick={() => count === 1 ? handleBuy(fish) : buyFishBulk(fish.type, fish.baseIncome, fish.baseCost, count)}
+                    disabled={!canAff}
+                    className={`flex-1 py-1.5 rounded font-semibold text-xs transition-all ${
+                      canAff ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
+                    }`}
+                  >
+                    {label}<br/>
+                    <span className="text-[9px] opacity-80">{count > 0 ? formatNumber(cost) : '–'}</span>
+                  </button>
+                ))}
               </div>
             </div>
           );
@@ -244,13 +281,12 @@ export const Shop = () => {
               const fishEmoji = baseTypeInfo?.emoji || '🐟';
               const fishName = baseTypeInfo?.name || fish.type;
               const levelMult = new Decimal(1.5).pow(fish.level - 1);
-
-              // Multiplicateur de jalons pour ce poisson
-              const achievedMilestones = (baseTypeInfo?.milestones ?? []).filter(m => fish.level >= m.level);
+              const achievedMilestones = (baseTypeInfo?.milestones ?? []).filter(
+                m => fish.level >= Math.max(1, m.level - bonuses.milestoneLevelReduction)
+              );
               const milestoneMult = achievedMilestones.reduce((acc, m) => acc * m.selfMultiplier, 1);
-
               const currentIncome = new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult);
-              const nextM = getNextMilestone(fish);
+              const nextM = getNextMilestone(fish, bonuses.milestoneLevelReduction);
 
               return (
                 <div key={fish.id} className="bg-black/40 rounded-lg p-3 border border-white/5">
@@ -288,12 +324,15 @@ export const Shop = () => {
                   <div className="flex gap-1">
                     {MILESTONE_LEVELS.map(lvl => {
                       const milestone = baseTypeInfo?.milestones.find(m => m.level === lvl);
-                      const reached = fish.level >= lvl;
+                      const effectiveLevel = Math.max(1, lvl - bonuses.milestoneLevelReduction);
+                      const reached = fish.level >= effectiveLevel;
                       const isNext = nextM?.level === lvl;
                       return (
                         <div
                           key={lvl}
-                          title={milestone ? `Niv. ${lvl} — ${milestone.label}${milestone.globalBonus > 0 ? ` | +${milestone.globalBonus}% global` : ''}` : `Niv. ${lvl}`}
+                          title={milestone
+                            ? `Niv. ${effectiveLevel} — ${milestone.label}${milestone.globalBonus > 0 ? ` | +${milestone.globalBonus}% global` : ''}`
+                            : `Niv. ${lvl}`}
                           className={`flex-1 text-center text-[9px] font-bold py-0.5 rounded border transition-all ${
                             reached
                               ? 'bg-yellow-600/30 text-yellow-300 border-yellow-600/40'
@@ -302,14 +341,14 @@ export const Shop = () => {
                                 : 'bg-gray-800/30 text-gray-600 border-gray-700/30'
                           }`}
                         >
-                          {lvl}
+                          {effectiveLevel}
                         </div>
                       );
                     })}
                   </div>
                   {nextM && (
                     <div className="text-[10px] text-gray-500 mt-1">
-                      Prochain jalon : Niv. {nextM.level} — {nextM.label}
+                      Prochain : Niv. {Math.max(1, nextM.level - bonuses.milestoneLevelReduction)} — {nextM.label}
                       {nextM.globalBonus > 0 && <span className="text-teal-500"> +{nextM.globalBonus}% global</span>}
                     </div>
                   )}

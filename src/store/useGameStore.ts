@@ -2,6 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import Decimal from 'break_infinity.js';
 import { ACHIEVEMENTS } from '../data/achievements';
+import { CHALLENGE_POOL, getDailyChallengeIds } from '../data/challenges';
+import { RESEARCH } from '../data/research';
+import { PEARL_UPGRADES } from '../data/pearlUpgrades';
+import { FISH_TYPES } from '../data/fishTypes';
+import { computeBonuses } from '../utils/bonuses';
+import { getSessionManaEarned } from '../utils/session';
 
 export const MAX_FISH_LEVEL = 100;
 
@@ -12,44 +18,55 @@ export interface PoissonInstance {
   level: number;
 }
 
-// Coût pour passer au prochain niveau de profondeur
-export const getPondUpgradeCost = (currentDepth: number): Decimal => {
-  return new Decimal(500).times(Decimal.pow(10, currentDepth));
-};
+export const getPondUpgradeCost = (currentDepth: number): Decimal =>
+  new Decimal(500).times(Decimal.pow(10, currentDepth));
 
-// Perles de prestige gagnées en fonction de la progression
 const calcPrestigeReward = (pondDepth: number, mana: Decimal): number => {
   const depthBonus = pondDepth * 5;
-  const manaBonus = mana.gt(0) ? Math.floor(Math.log10(mana.toNumber() + 1)) : 0;
+  const manaBonus = mana.gt(1) ? Math.floor(Math.log10(mana.toNumber())) : 0;
   return Math.max(1, depthBonus + manaBonus);
 };
 
 export interface GameState {
   mana: Decimal;
   gemmes: number;
-  perles: number;               // Monnaie de prestige
+  perles: number;
   poissons: PoissonInstance[];
   pondDepth: number;
   boostActiveUntil: number;
   lastSaveTime: number;
+  prestiges: number;
+
+  // Progression
   unlockedAchievementIds: string[];
-  pendingUnlock: string | null;  // Notification de déblocage en attente
+  researchUnlocked: string[];
+  pearlUpgradesUnlocked: string[];
+
+  // Défis journaliers
+  dailyChallengesCompleted: string[];
+  lastChallengeDate: string;
+
+  // Notifications
+  pendingUnlock: string | null;
 
   // Actions
   addMana: (amount: Decimal) => void;
+  addGemmes: (amount: number) => void;
   buyFish: (type: string, baseIncome: number, cost: Decimal) => void;
   buyFishBulk: (type: string, baseIncome: number, baseCost: number, count: number) => void;
   upgradeFish: (id: string, cost: Decimal) => void;
   upgradePond: () => void;
   activateBoost: () => void;
   prestige: () => void;
+  unlockResearch: (id: string) => void;
+  buyPearlUpgrade: (id: string) => void;
+  claimChallenge: (id: string) => void;
   checkAchievements: () => void;
+  checkDailyReset: () => void;
   clearPendingUnlock: () => void;
   updateLastSaveTime: () => void;
 }
 
-const BOOST_DURATION_MS = 5 * 60 * 1000;
-const BOOST_COST_GEMMES = 10;
 const MAX_DEPTH = 4;
 
 export const useGameStore = create<GameState>()(
@@ -62,122 +79,159 @@ export const useGameStore = create<GameState>()(
       pondDepth: 0,
       boostActiveUntil: 0,
       lastSaveTime: Date.now(),
+      prestiges: 0,
       unlockedAchievementIds: [],
+      researchUnlocked: [],
+      pearlUpgradesUnlocked: [],
+      dailyChallengesCompleted: [],
+      lastChallengeDate: '',
       pendingUnlock: null,
 
-      addMana: (amount: Decimal) => set((state) => ({
-        mana: state.mana.plus(amount)
-      })),
+      addMana: (amount) => set((s) => ({ mana: s.mana.plus(amount) })),
 
-      buyFish: (type: string, baseIncome: number, cost: Decimal) => set((state) => {
-        if (!state.mana.gte(cost)) return state;
+      addGemmes: (amount) => set((s) => ({ gemmes: s.gemmes + amount })),
 
-        const newFish: PoissonInstance = {
-          id: `${type}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          type,
-          baseIncome,
-          level: 1,
-        };
-
+      buyFish: (type, baseIncome, cost) => set((s) => {
+        if (!s.mana.gte(cost)) return s;
+        const fishDef = FISH_TYPES.find(f => f.type === type);
+        if (!fishDef) return s;
+        if (fishDef.requiredPrestiges && s.prestiges < fishDef.requiredPrestiges) return s;
+        if (fishDef.maxOwned !== undefined) {
+          const owned = s.poissons.filter(f => f.type === type).length;
+          if (owned >= fishDef.maxOwned) return s;
+        }
         return {
-          mana: state.mana.minus(cost),
-          poissons: [...state.poissons, newFish],
+          mana: s.mana.minus(cost),
+          poissons: [...s.poissons, {
+            id: `${type}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            type, baseIncome, level: 1,
+          }],
         };
       }),
 
-      buyFishBulk: (type: string, baseIncome: number, baseCost: number, count: number) => set((state) => {
-        const ownedCount = state.poissons.filter(f => f.type === type).length;
+      buyFishBulk: (type, baseIncome, baseCost, count) => set((s) => {
+        const fishDef = FISH_TYPES.find(f => f.type === type);
+        if (!fishDef) return s;
+        if (fishDef.requiredPrestiges && s.prestiges < fishDef.requiredPrestiges) return s;
+
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
+        const ownedCount = s.poissons.filter(f => f.type === type).length;
+
+        let cap = count;
+        if (fishDef.maxOwned !== undefined) {
+          cap = Math.min(count, fishDef.maxOwned - ownedCount);
+        }
+        if (cap <= 0) return s;
+
         let totalCost = new Decimal(0);
         const newFish: PoissonInstance[] = [];
-
-        for (let i = 0; i < count; i++) {
-          const cost = new Decimal(baseCost).mul(new Decimal(1.15).pow(ownedCount + i));
+        for (let i = 0; i < cap; i++) {
+          const cost = new Decimal(baseCost)
+            .mul(bonuses.fishCostMult)
+            .mul(new Decimal(1.15).pow(ownedCount + i));
           totalCost = totalCost.plus(cost);
           newFish.push({
             id: `${type}-${Date.now()}-${i}-${Math.random().toString(36).slice(2)}`,
-            type,
-            baseIncome,
-            level: 1,
+            type, baseIncome, level: 1,
           });
         }
+        if (!s.mana.gte(totalCost)) return s;
+        return { mana: s.mana.minus(totalCost), poissons: [...s.poissons, ...newFish] };
+      }),
 
-        if (!state.mana.gte(totalCost)) return state;
+      upgradeFish: (id, cost) => set((s) => {
+        if (!s.mana.gte(cost)) return s;
+        const idx = s.poissons.findIndex(f => f.id === id);
+        if (idx === -1 || s.poissons[idx].level >= MAX_FISH_LEVEL) return s;
+        const updated = [...s.poissons];
+        updated[idx] = { ...updated[idx], level: updated[idx].level + 1 };
+        return { mana: s.mana.minus(cost), poissons: updated };
+      }),
 
+      upgradePond: () => set((s) => {
+        if (s.pondDepth >= MAX_DEPTH) return s;
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
+        const cost = getPondUpgradeCost(s.pondDepth).mul(bonuses.pondCostMult);
+        if (!s.mana.gte(cost)) return s;
+        const newDepth = s.pondDepth + 1;
+        return { mana: s.mana.minus(cost), pondDepth: newDepth, pendingUnlock: `depth_${newDepth}` };
+      }),
+
+      activateBoost: () => set((s) => {
+        const bonuses = computeBonuses(s.researchUnlocked, s.pearlUpgradesUnlocked);
+        if (s.gemmes < bonuses.boostCost || s.boostActiveUntil > Date.now()) return s;
         return {
-          mana: state.mana.minus(totalCost),
-          poissons: [...state.poissons, ...newFish],
+          gemmes: s.gemmes - bonuses.boostCost,
+          boostActiveUntil: Date.now() + bonuses.boostDurationMs,
         };
       }),
 
-      upgradeFish: (id: string, cost: Decimal) => set((state) => {
-        if (!state.mana.gte(cost)) return state;
-
-        const index = state.poissons.findIndex(f => f.id === id);
-        if (index === -1) return state;
-        if (state.poissons[index].level >= MAX_FISH_LEVEL) return state;
-
-        const updatedPoissons = [...state.poissons];
-        updatedPoissons[index] = {
-          ...updatedPoissons[index],
-          level: updatedPoissons[index].level + 1,
-        };
-
-        return {
-          mana: state.mana.minus(cost),
-          poissons: updatedPoissons,
-        };
-      }),
-
-      upgradePond: () => set((state) => {
-        if (state.pondDepth >= MAX_DEPTH) return state;
-        const cost = getPondUpgradeCost(state.pondDepth);
-        if (!state.mana.gte(cost)) return state;
-
-        const newDepth = state.pondDepth + 1;
-        return {
-          mana: state.mana.minus(cost),
-          pondDepth: newDepth,
-          pendingUnlock: `depth_${newDepth}`,
-        };
-      }),
-
-      activateBoost: () => set((state) => {
-        if (state.gemmes < BOOST_COST_GEMMES || state.boostActiveUntil > Date.now()) return state;
-
-        return {
-          gemmes: state.gemmes - BOOST_COST_GEMMES,
-          boostActiveUntil: Date.now() + BOOST_DURATION_MS,
-        };
-      }),
-
-      prestige: () => set((state) => {
-        if (state.pondDepth < 2) return state; // Minimum depth 2 to prestige
-
-        const earned = calcPrestigeReward(state.pondDepth, state.mana);
+      prestige: () => set((s) => {
+        if (s.pondDepth < 2) return s;
+        const earned = calcPrestigeReward(s.pondDepth, s.mana);
         return {
           mana: new Decimal(10),
           poissons: [],
           pondDepth: 0,
           boostActiveUntil: 0,
-          perles: state.perles + earned,
-          // Garder : gemmes, perles, unlockedAchievementIds
+          prestiges: s.prestiges + 1,
+          perles: s.perles + earned,
+        };
+      }),
+
+      unlockResearch: (id) => set((s) => {
+        if (s.researchUnlocked.includes(id)) return s;
+        const r = RESEARCH.find(x => x.id === id);
+        if (!r) return s;
+        if (r.requires && !s.researchUnlocked.includes(r.requires)) return s;
+        if (s.gemmes < r.cost) return s;
+        return { gemmes: s.gemmes - r.cost, researchUnlocked: [...s.researchUnlocked, id] };
+      }),
+
+      buyPearlUpgrade: (id) => set((s) => {
+        if (s.pearlUpgradesUnlocked.includes(id)) return s;
+        const p = PEARL_UPGRADES.find(x => x.id === id);
+        if (!p) return s;
+        if (p.requires && !s.pearlUpgradesUnlocked.includes(p.requires)) return s;
+        if (s.perles < p.cost) return s;
+        return { perles: s.perles - p.cost, pearlUpgradesUnlocked: [...s.pearlUpgradesUnlocked, id] };
+      }),
+
+      claimChallenge: (id) => set((s) => {
+        if (s.dailyChallengesCompleted.includes(id)) return s;
+        const challenge = CHALLENGE_POOL.find(c => c.id === id);
+        if (!challenge) return s;
+        const ok = challenge.check({
+          poissons: s.poissons,
+          pondDepth: s.pondDepth,
+          researchUnlocked: s.researchUnlocked,
+          sessionManaEarned: getSessionManaEarned(),
+        });
+        if (!ok) return s;
+        return {
+          perles: s.perles + challenge.pearlReward,
+          dailyChallengesCompleted: [...s.dailyChallengesCompleted, id],
         };
       }),
 
       checkAchievements: () => {
-        const state = get();
+        const s = get();
         const toUnlock = ACHIEVEMENTS.filter(
-          a => !state.unlockedAchievementIds.includes(a.id) && a.check(state)
+          a => !s.unlockedAchievementIds.includes(a.id) && a.check(s)
         );
-
         if (toUnlock.length === 0) return;
-
-        const newGemmes = toUnlock.reduce((sum, a) => sum + a.gemReward, 0);
-        set((s) => ({
-          unlockedAchievementIds: [...s.unlockedAchievementIds, ...toUnlock.map(a => a.id)],
-          gemmes: s.gemmes + newGemmes,
+        const gems = toUnlock.reduce((sum, a) => sum + a.gemReward, 0);
+        set((state) => ({
+          unlockedAchievementIds: [...state.unlockedAchievementIds, ...toUnlock.map(a => a.id)],
+          gemmes: state.gemmes + gems,
         }));
       },
+
+      checkDailyReset: () => set((s) => {
+        const today = new Date().toDateString();
+        if (s.lastChallengeDate === today) return s;
+        return { lastChallengeDate: today, dailyChallengesCompleted: [] };
+      }),
 
       clearPendingUnlock: () => set({ pendingUnlock: null }),
 
@@ -185,15 +239,10 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'etang-des-merveilles-storage',
-      partialize: (state) => ({
-        ...state,
-        mana: state.mana.toString() as unknown as Decimal,
-      }),
+      partialize: (state) => ({ ...state, mana: state.mana.toString() as unknown as Decimal }),
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.mana = new Decimal(state.mana);
-        }
-      }
+        if (state) state.mana = new Decimal(state.mana);
+      },
     }
   )
 );

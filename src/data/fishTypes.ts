@@ -2,8 +2,8 @@ import type { PoissonInstance } from '../store/useGameStore';
 
 export interface MilestoneBoost {
   level: number;
-  selfMultiplier: number;  // Multiplicateur sur le revenu propre du poisson
-  globalBonus: number;     // Bonus % ajouté à la production globale (0 si aucun)
+  selfMultiplier: number;
+  globalBonus: number;  // % ajouté à la production globale
   label: string;
 }
 
@@ -14,6 +14,8 @@ export interface FishType {
   name: string;
   desc: string;
   requiredDepth: number;
+  requiredPrestiges?: number;  // prestige minimum requis
+  maxOwned?: number;           // limite d'exemplaires (undefined = illimité)
   emoji: string;
   depthLabel: string;
   milestones: MilestoneBoost[];
@@ -71,7 +73,7 @@ export const FISH_TYPES: FishType[] = [
   {
     type: 'abyssal',
     baseIncome: 1000,
-    baseCost: 100000,
+    baseCost: 100_000,
     name: 'Poisson Abyssal',
     desc: 'Produit 1 000 Mana/s',
     requiredDepth: 3,
@@ -84,33 +86,53 @@ export const FISH_TYPES: FishType[] = [
       { level: 100, selfMultiplier: 2, globalBonus: 50, label: 'Seigneur des abysses' },
     ],
   },
+  {
+    type: 'celestial',
+    baseIncome: 10_000,
+    baseCost: 10_000_000,
+    name: 'Poisson Céleste',
+    desc: 'Produit 10 000 Mana/s — +1 💎/min',
+    requiredDepth: 4,
+    requiredPrestiges: 1,
+    maxOwned: 1,
+    emoji: '🌟',
+    depthLabel: 'Fond des océans',
+    milestones: [
+      { level: 10,  selfMultiplier: 2, globalBonus: 20,  label: 'Naissance céleste' },
+      { level: 25,  selfMultiplier: 2, globalBonus: 40,  label: 'Ascension' },
+      { level: 50,  selfMultiplier: 2, globalBonus: 80,  label: 'Transcendance' },
+      { level: 100, selfMultiplier: 2, globalBonus: 150, label: 'Divinité aquatique' },
+    ],
+  },
 ];
 
-/** Multiplicateur de jalons pour un poisson donné (sur son propre revenu) */
-export const getSelfMilestoneMultiplier = (fish: PoissonInstance): number => {
+/** Multiplicateur de jalons propre à un poisson (levelReduction = bonus de recherche bio_4) */
+export const getSelfMilestoneMultiplier = (fish: PoissonInstance, levelReduction = 0): number => {
   const type = FISH_TYPES.find(t => t.type === fish.type);
   if (!type) return 1;
   return type.milestones
-    .filter(m => fish.level >= m.level)
+    .filter(m => fish.level >= Math.max(1, m.level - levelReduction))
     .reduce((acc, m) => acc * m.selfMultiplier, 1);
 };
 
 /** Multiplicateur global calculé depuis tous les poissons possédés */
-export const getGlobalMultiplier = (poissons: PoissonInstance[]): number => {
+export const getGlobalMultiplier = (poissons: PoissonInstance[], levelReduction = 0): number => {
   let totalPercent = 0;
   for (const fish of poissons) {
     const type = FISH_TYPES.find(t => t.type === fish.type);
     if (!type) continue;
     for (const m of type.milestones) {
-      if (fish.level >= m.level) totalPercent += m.globalBonus;
+      if (fish.level >= Math.max(1, m.level - levelReduction)) {
+        totalPercent += m.globalBonus;
+      }
     }
   }
   return 1 + totalPercent / 100;
 };
 
 /** Prochain jalon non atteint pour un poisson */
-export const getNextMilestone = (fish: PoissonInstance): MilestoneBoost | null => {
+export const getNextMilestone = (fish: PoissonInstance, levelReduction = 0): MilestoneBoost | null => {
   const type = FISH_TYPES.find(t => t.type === fish.type);
   if (!type) return null;
-  return type.milestones.find(m => fish.level < m.level) ?? null;
+  return type.milestones.find(m => fish.level < Math.max(1, m.level - levelReduction)) ?? null;
 };

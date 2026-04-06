@@ -1,17 +1,22 @@
 import { useGameStore } from '../store/useGameStore';
+import { computeBonuses } from '../utils/bonuses';
 import { useEffect, useState } from 'react';
 
 export const BoostOverlay = () => {
-  const gemmes = useGameStore(state => state.gemmes);
-  const boostActiveUntil = useGameStore(state => state.boostActiveUntil);
-  const activateBoost = useGameStore(state => state.activateBoost);
+  const gemmes = useGameStore(s => s.gemmes);
+  const boostActiveUntil = useGameStore(s => s.boostActiveUntil);
+  const activateBoost = useGameStore(s => s.activateBoost);
+  const researchUnlocked = useGameStore(s => s.researchUnlocked);
+  const pearlUpgradesUnlocked = useGameStore(s => s.pearlUpgradesUnlocked);
+
+  const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked);
+  const durationMin = Math.round(bonuses.boostDurationMs / 60_000);
 
   const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const remaining = boostActiveUntil - Date.now();
-      setTimeLeft(remaining > 0 ? remaining : 0);
+      setTimeLeft(Math.max(0, boostActiveUntil - Date.now()));
     }, 1000);
     return () => clearInterval(interval);
   }, [boostActiveUntil]);
@@ -21,14 +26,13 @@ export const BoostOverlay = () => {
   const seconds = Math.floor((timeLeft % 60000) / 1000);
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-xl pointer-events-auto mt-4 w-fit">
+    <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-xl pointer-events-auto w-fit">
       <div className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-yellow-400 uppercase tracking-wider flex items-center gap-2">
-          <span>⚡ Boost de Mana</span>
+        <h2 className="text-sm font-semibold text-yellow-400 uppercase tracking-wider">
+          ⚡ Boost de Mana
         </h2>
-
         <p className="text-sm text-gray-300">
-          Multipliez votre production par 2 pendant 5 minutes.
+          ×2 production pendant {durationMin} min.
         </p>
 
         {isActive ? (
@@ -41,14 +45,14 @@ export const BoostOverlay = () => {
         ) : (
           <button
             onClick={activateBoost}
-            disabled={gemmes < 10}
+            disabled={gemmes < bonuses.boostCost}
             className={`w-full py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg flex items-center justify-center gap-2 ${
-              gemmes >= 10
+              gemmes >= bonuses.boostCost
                 ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white shadow-amber-900/50 hover:scale-[1.02]'
                 : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-70'
             }`}
           >
-            Activer pour 10 Gemmes
+            Activer pour {bonuses.boostCost} 💎
           </button>
         )}
       </div>
