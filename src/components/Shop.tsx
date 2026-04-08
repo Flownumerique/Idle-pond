@@ -89,7 +89,7 @@ export const Shop = () => {
   const legendaryFish = FISH_TYPES.filter(f => f.requiredPrestiges);
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-xl pointer-events-auto h-full max-h-[calc(100vh-2rem)] overflow-y-auto w-80 lg:w-96 flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pointer-events-auto">
       <h2 className="text-xl font-bold text-white border-b border-white/10 pb-2">Boutique & Améliorations</h2>
 
       {/* Amélioration de l'étang */}
