@@ -8,7 +8,6 @@ export const Challenges = () => {
   const pondDepth = useGameStore(s => s.pondDepth);
   const researchUnlocked = useGameStore(s => s.researchUnlocked);
   const dailyChallengesCompleted = useGameStore(s => s.dailyChallengesCompleted);
-  const lastChallengeDate = useGameStore(s => s.lastChallengeDate);
   const claimChallenge = useGameStore(s => s.claimChallenge);
   const checkDailyReset = useGameStore(s => s.checkDailyReset);
 

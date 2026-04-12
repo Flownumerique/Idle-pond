@@ -1,6 +1,7 @@
 import { RESEARCH } from '../data/research';
 import { PEARL_UPGRADES } from '../data/pearlUpgrades';
 import { PRESTIGE_UPGRADES } from '../data/prestigeUpgrades';
+import { GLOBAL_UPGRADES, ZONE_UPGRADES } from '../data/runUpgrades';
 
 export interface ComputedBonuses {
   globalIncomeMult: number;
@@ -30,7 +31,8 @@ const BASE_BOOST_COST = 10;
 export const computeBonuses = (
   researchUnlocked: string[],
   pearlUpgradesUnlocked: string[],
-  prestigeUpgradesUnlocked: string[] = []
+  prestigeUpgradesUnlocked: string[] = [],
+  runUpgradesOwned: string[] = []
 ): ComputedBonuses => {
   let globalIncomePercent = 0;
   let pondCostReductionPercent = 0;
@@ -96,6 +98,16 @@ export const computeBonuses = (
   }
 
   globalIncomePercent += prestigeGlobalIncomePercent;
+
+  // Améliorations de run (mana)
+  const allRunUpgrades = [...GLOBAL_UPGRADES, ...ZONE_UPGRADES];
+  for (const id of runUpgradesOwned) {
+    const u = allRunUpgrades.find(x => x.id === id);
+    if (!u) continue;
+    if (u.effect.globalIncomePercent)      globalIncomePercent      += u.effect.globalIncomePercent;
+    if (u.effect.pondCostReductionPercent) pondCostReductionPercent += u.effect.pondCostReductionPercent;
+    if (u.effect.fishCostReductionPercent) fishCostReductionPercent += u.effect.fishCostReductionPercent;
+  }
 
   return {
     globalIncomeMult: 1 + globalIncomePercent / 100,

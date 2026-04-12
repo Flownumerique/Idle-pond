@@ -17,8 +17,8 @@ const COLOR = {
   teal:    { bg: 'bg-teal-900/20',    border: 'border-teal-700/30',    text: 'text-teal-300',    btn: 'bg-teal-700 hover:bg-teal-600'     },
 };
 
-function ResearchCard({ r, gemmes, unlocked, canUnlock }: {
-  r: ResearchDef; gemmes: number; unlocked: boolean; canUnlock: boolean;
+function ResearchCard({ r, unlocked, canUnlock }: {
+  r: ResearchDef; unlocked: boolean; canUnlock: boolean;
 }) {
   const unlock = useGameStore(s => s.unlockResearch);
   const meta = BRANCH_META[r.branch];
@@ -87,7 +87,7 @@ export const Research = () => {
                 const prereqMet = !r.requires || researchUnlocked.includes(r.requires);
                 const canUnlock = !isUnlocked && prereqMet && gemmes >= r.cost;
                 return (
-                  <ResearchCard key={r.id} r={r} gemmes={gemmes} unlocked={isUnlocked} canUnlock={canUnlock} />
+                  <ResearchCard key={r.id} r={r} unlocked={isUnlocked} canUnlock={canUnlock} />
                 );
               })}
             </div>

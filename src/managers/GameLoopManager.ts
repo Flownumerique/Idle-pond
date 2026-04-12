@@ -54,9 +54,9 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, pondDepth } = state;
+    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned, pondDepth } = state;
 
-    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned);
 
     if (poissons.length > 0) {
       let baseIncomePerSec = new Decimal(0);

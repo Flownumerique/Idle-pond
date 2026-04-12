@@ -8,6 +8,7 @@ import { BoostOverlay } from './components/BoostOverlay';
 import { Achievements } from './components/Achievements';
 import { UnlockNotification } from './components/UnlockNotification';
 import { Research } from './components/Research';
+import { Ameliorations } from './components/Ameliorations';
 import { PearlMarket } from './components/PearlMarket';
 import { PrestigeUpgrades } from './components/PrestigeUpgrades';
 import { Lore } from './components/Lore';
@@ -15,10 +16,11 @@ import { Challenges } from './components/Challenges';
 import { Guide } from './components/Guide';
 import { EventNotification } from './components/EventNotification';
 import { WelcomeBackNotification } from './components/WelcomeBackNotification';
+import { useGameStore } from './store/useGameStore';
 
 type PrimaryPanel = 'run' | 'gemmes' | 'succes' | 'parametres';
 type SecondaryTab =
-  | 'boutique' | 'corail' | 'defis' | 'guide'
+  | 'boutique' | 'ameliorations' | 'corail' | 'defis' | 'guide'
   | 'marche' | 'prestige-up' | 'boost'
   | 'succes' | 'journal';
 
@@ -28,28 +30,10 @@ const PRIMARY_NAV: { id: PrimaryPanel; icon: string; label: string }[] = [
   { id: 'succes',  icon: '🏆', label: 'Succès' },
 ];
 
-const SECONDARY_CONFIG: Record<PrimaryPanel, { id: SecondaryTab; icon: string; label: string }[]> = {
-  run: [
-    { id: 'boutique', icon: '🛒', label: 'Boutique' },
-    { id: 'corail',   icon: '🧬', label: 'Corail'   },
-    { id: 'defis',    icon: '⚔️', label: 'Défis'    },
-    { id: 'guide',    icon: '❓', label: 'Guide'    },
-  ],
-  gemmes: [
-    { id: 'marche',      icon: '💎', label: 'Marché'   },
-    { id: 'prestige-up', icon: '🪸', label: 'Prestige' },
-    { id: 'boost',       icon: '⚡', label: 'Boost'    },
-  ],
-  succes: [
-    { id: 'succes',  icon: '🏆', label: 'Succès'  },
-    { id: 'journal', icon: '📖', label: 'Journal' },
-  ],
-  parametres: [],
-};
-
 function App() {
   const [activePrimary, setActivePrimary] = useState<PrimaryPanel | null>(null);
   const [activeSecondary, setActiveSecondary] = useState<SecondaryTab | null>(null);
+  const prestiges = useGameStore(s => s.prestiges);
 
   useEffect(() => {
     OfflineManager.getInstance().calculateOfflineGain();
@@ -57,18 +41,48 @@ function App() {
     return () => GameLoopManager.getInstance().stop();
   }, []);
 
+  const getSecondaryConfig = (panel: PrimaryPanel): { id: SecondaryTab; icon: string; label: string }[] => {
+    switch (panel) {
+      case 'run':
+        return [
+          { id: 'boutique',      icon: '🛒', label: 'Boutique' },
+          { id: 'ameliorations', icon: '⚗️', label: 'Améliorations' },
+          { id: 'defis',         icon: '⚔️', label: 'Défis'    },
+          { id: 'guide',         icon: '❓', label: 'Guide'    },
+        ];
+      case 'gemmes': {
+        const tabs: { id: SecondaryTab; icon: string; label: string }[] = [
+          { id: 'marche',      icon: '💎', label: 'Marché'   },
+          { id: 'prestige-up', icon: '🪸', label: 'Prestige' },
+          { id: 'boost',       icon: '⚡', label: 'Boost'    },
+        ];
+        if (prestiges >= 1) {
+          tabs.splice(0, 0, { id: 'corail', icon: '🧬', label: 'Corail' });
+        }
+        return tabs;
+      }
+      case 'succes':
+        return [
+          { id: 'succes',  icon: '🏆', label: 'Succès'  },
+          { id: 'journal', icon: '📖', label: 'Journal' },
+        ];
+      default:
+        return [];
+    }
+  };
+
   const handlePrimaryClick = (id: PrimaryPanel) => {
     if (activePrimary === id) {
       setActivePrimary(null);
       setActiveSecondary(null);
     } else {
       setActivePrimary(id);
-      const tabs = SECONDARY_CONFIG[id];
+      const tabs = getSecondaryConfig(id);
       setActiveSecondary(tabs[0]?.id ?? null);
     }
   };
 
-  const tabs = activePrimary ? SECONDARY_CONFIG[activePrimary] : [];
+  const tabs = activePrimary ? getSecondaryConfig(activePrimary) : [];
   const sidebarOpen = activePrimary !== null && tabs.length > 0;
 
   return (
@@ -151,6 +165,7 @@ function App() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {activeSecondary === 'boutique'    && <Shop />}
+          {activeSecondary === 'ameliorations' && <Ameliorations />}
           {activeSecondary === 'corail'      && <Research />}
           {activeSecondary === 'defis'       && <Challenges />}
           {activeSecondary === 'guide'       && <Guide />}

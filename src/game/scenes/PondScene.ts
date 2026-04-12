@@ -1,28 +1,31 @@
 import Phaser from 'phaser';
 import type { PoissonInstance } from '../../store/useGameStore';
+import { FISH_TYPES } from '../../data/fishTypes';
 
 const ZONE_HEIGHT = 1080;
-const MAX_DEPTH = 10;
+const MAX_DEPTH = 11;
 const WORLD_HEIGHT = ZONE_HEIGHT * (MAX_DEPTH + 1);
 
 const DEPTH_COLORS = [
-  { bg: 0x0d2a4a, water: 0x1a5a8f },  // 0 – Lac de Surface
-  { bg: 0x0a1f3a, water: 0x134a72 },  // 1 – Rivière Souterraine
-  { bg: 0x071428, water: 0x0d3454 },  // 2 – Récif Corallien
-  { bg: 0x04090f, water: 0x07182a },  // 3 – Abysses
-  { bg: 0x1a0500, water: 0x4a1200 },  // 4 – Zone Hydrothermale
-  { bg: 0x00040a, water: 0x001428 },  // 5 – Plaine Abyssale
-  { bg: 0x050003, water: 0x10001f },  // 6 – Fosse des Origines
-  { bg: 0x0d0018, water: 0x1f0040 },  // 7 – Nexus de Mana
-  { bg: 0x1f0200, water: 0x6a0800 },  // 8 – Cœur Volcanique
-  { bg: 0x04000f, water: 0x120030 },  // 9 – Royaume Céleste
-  { bg: 0x000a08, water: 0x001a18 },  // 10 – Dimension Quantique
+  { bg: 0x0d2a4a, water: 0x1a5a8f },  // 0  – Lac de Surface
+  { bg: 0x0a1f3a, water: 0x134a72 },  // 1  – Rivière Souterraine
+  { bg: 0x071428, water: 0x0d3454 },  // 2  – Récif Corallien
+  { bg: 0x052a3a, water: 0x0e6b82 },  // 3  – Océan des Profondeurs
+  { bg: 0x04090f, water: 0x07182a },  // 4  – Abysses
+  { bg: 0x1a0500, water: 0x4a1200 },  // 5  – Zone Hydrothermale
+  { bg: 0x00040a, water: 0x001428 },  // 6  – Plaine Abyssale
+  { bg: 0x050003, water: 0x10001f },  // 7  – Fosse des Origines
+  { bg: 0x0d0018, water: 0x1f0040 },  // 8  – Nexus de Mana
+  { bg: 0x1f0200, water: 0x6a0800 },  // 9  – Cœur Volcanique
+  { bg: 0x04000f, water: 0x120030 },  // 10 – Royaume Céleste
+  { bg: 0x000a08, water: 0x001a18 },  // 11 – Dimension Quantique
 ];
 
 const DEPTH_LABELS = [
   'Lac de Surface',
   'Rivière Souterraine',
   'Récif Corallien',
+  'Océan des Profondeurs',
   'Abysses',
   'Zone Hydrothermale',
   'Plaine Abyssale',
@@ -37,14 +40,15 @@ const FISH_DEPTH: Record<string, number> = {
   gold: 0, carpe: 0, frog: 0, duck: 0,
   ruby: 1, dragonfly: 1, cobalt: 1, nymph: 1,
   diamond: 2, crab: 2, snail: 2, shrimp: 2,
-  abyssal: 3, octopus: 3, anemone: 3, spectre: 3,
-  salamander: 4, eel: 4, scorpion: 4, lava_snake: 4,
-  jellyfish: 5, shark: 5, dolphin: 5, whale: 5,
-  dragon: 6, leviathan: 6, plesio: 6, basilisk: 6,
-  egregore: 7, phoenix_nexus: 7, nexus_spirit: 7, celestial: 7,
-  lava_spirit: 8, pyro_ray: 8, lava_titan: 8,
-  angel: 9, aurora_fish: 9, sun_fish: 9,
-  cyberfish: 10, prism_manta: 10, quantum: 10,
+  clownfish: 3,
+  abyssal: 4, octopus: 4, anemone: 4, spectre: 4,
+  salamander: 5, eel: 5, scorpion: 5, lava_snake: 5,
+  jellyfish: 6, shark: 6, dolphin: 6, whale: 6,
+  dragon: 7, leviathan: 7, plesio: 7, basilisk: 7,
+  egregore: 8, phoenix_nexus: 8, nexus_spirit: 8, celestial: 8,
+  lava_spirit: 9, pyro_ray: 9, lava_titan: 9,
+  angel: 10, aurora_fish: 10, sun_fish: 10,
+  cyberfish: 11, prism_manta: 11, quantum: 11,
 };
 
 const FISH_COLORS: Record<string, number> = {
@@ -54,6 +58,7 @@ const FISH_COLORS: Record<string, number> = {
   cobalt: 0x0088ff,    nymph: 0xff88ff,
   diamond: 0x00d4ff,   crab: 0x00ffcc,
   snail: 0xb088ff,     shrimp: 0xffb0c8,
+  clownfish: 0xff6600,
   abyssal: 0x9b59b6,   octopus: 0x4b0082,
   anemone: 0xff5577,   spectre: 0x88ffff,
   salamander: 0xff4500, eel: 0xff6600,
@@ -72,13 +77,30 @@ const FISH_COLORS: Record<string, number> = {
   quantum: 0x9900ff,
 };
 
+// Fish types that use sprite images (keyed by fish.type → texture key)
+const SPRITE_FISH = new Map<string, string>(
+  FISH_TYPES
+    .filter(f => f.sprite)
+    .map(f => [f.type, f.type])
+);
+
+type FishGameObject = Phaser.GameObjects.Arc | Phaser.GameObjects.Image;
+
 export class PondScene extends Phaser.Scene {
-  private fishSprites = new Map<string, Phaser.GameObjects.Arc>();
+  private fishSprites = new Map<string, FishGameObject>();
   private currentDepth = 0;
   private isDragging = false;
   private lastPointerY = 0;
 
   constructor() { super('PondScene'); }
+
+  preload() {
+    for (const fishDef of FISH_TYPES) {
+      if (fishDef.sprite) {
+        this.load.image(fishDef.type, fishDef.sprite);
+      }
+    }
+  }
 
   create() {
     const width = this.scale.width;
@@ -90,9 +112,18 @@ export class PondScene extends Phaser.Scene {
 
       this.add.rectangle(width / 2, yStart + ZONE_HEIGHT / 2, width, ZONE_HEIGHT, bg);
 
-      // Particules spéciales par zone
-      if (d === 7) {
-        // Nexus : mana dorée pulsante
+      if (d === 3) {
+        // Océan des Profondeurs : bioluminescence et courants
+        for (let i = 0; i < 25; i++) {
+          const orb = this.add.circle(
+            Phaser.Math.Between(0, width),
+            yStart + Phaser.Math.Between(0, ZONE_HEIGHT),
+            Phaser.Math.Between(4, 16), 0x00aacc, 0.4
+          );
+          this.tweens.add({ targets: orb, alpha: { from: 0.1, to: 0.6 }, x: `+=${Phaser.Math.Between(-60, 60)}`, duration: Phaser.Math.Between(2000, 5000), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 2000) });
+        }
+      } else if (d === 8) {
+        // Nexus de Mana : mana dorée pulsante
         for (let i = 0; i < 30; i++) {
           const star = this.add.circle(
             Phaser.Math.Between(0, width),
@@ -101,17 +132,17 @@ export class PondScene extends Phaser.Scene {
           );
           this.tweens.add({ targets: star, alpha: { from: 0.2, to: 0.8 }, scaleX: { from: 0.8, to: 1.2 }, scaleY: { from: 0.8, to: 1.2 }, duration: Phaser.Math.Between(1500, 3500), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
         }
-      } else if (d === 8) {
-        // Cœur Volcanique : particules rouges/oranges qui montent
+      } else if (d === 9) {
+        // Cœur Volcanique : braises qui montent
         for (let i = 0; i < 20; i++) {
           const ember = this.add.circle(
             Phaser.Math.Between(0, width),
             yStart + Phaser.Math.Between(200, ZONE_HEIGHT),
-            Phaser.Math.Between(3, 10), d === 8 ? 0xff4400 : 0xff6600, 0.7
+            Phaser.Math.Between(3, 10), 0xff4400, 0.7
           );
           this.tweens.add({ targets: ember, y: `-=${Phaser.Math.Between(100, 300)}`, alpha: { from: 0.7, to: 0 }, duration: Phaser.Math.Between(2000, 5000), repeat: -1, ease: 'Quad.easeIn', delay: Phaser.Math.Between(0, 3000) });
         }
-      } else if (d === 9) {
+      } else if (d === 10) {
         // Royaume Céleste : étoiles scintillantes
         for (let i = 0; i < 40; i++) {
           const glow = this.add.circle(
@@ -121,7 +152,7 @@ export class PondScene extends Phaser.Scene {
           );
           this.tweens.add({ targets: glow, alpha: { from: 0.1, to: 0.9 }, duration: Phaser.Math.Between(800, 2500), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 2000) });
         }
-      } else if (d === 10) {
+      } else if (d === 11) {
         // Dimension Quantique : grille de données
         for (let i = 0; i < 25; i++) {
           const data = this.add.circle(
@@ -187,28 +218,65 @@ export class PondScene extends Phaser.Scene {
       if (!this.fishSprites.has(fish.id)) {
         const fishDepthZone = FISH_DEPTH[fish.type] ?? 0;
         const zoneY = fishDepthZone * ZONE_HEIGHT;
-        const x = Phaser.Math.Between(60, width - 60);
-        const y = zoneY + Phaser.Math.Between(120, ZONE_HEIGHT - 120);
-        const color = FISH_COLORS[fish.type] ?? 0xffffff;
-        const radius = 12 + Math.min(fish.level, 50);
-        const sprite = this.add.circle(x, y, radius, color, 0.85);
-        sprite.setDepth(2);
-        this.tweens.add({
-          targets: sprite,
-          x: `+=${Phaser.Math.Between(-140, 140)}`,
-          y: `+=${Phaser.Math.Between(-80, 80)}`,
-          duration: Phaser.Math.Between(3000, 7000),
-          yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
-        });
-        this.fishSprites.set(fish.id, sprite);
+        const x = Phaser.Math.Between(80, width - 80);
+        const y = zoneY + Phaser.Math.Between(140, ZONE_HEIGHT - 140);
+
+        let gameObj: FishGameObject;
+
+        if (SPRITE_FISH.has(fish.type) && this.textures.exists(fish.type)) {
+          // Poisson avec sprite image
+          const size = 48 + Math.min(fish.level, 50);
+          const img = this.add.image(x, y, fish.type);
+          img.setDisplaySize(size, size);
+          img.setDepth(2);
+
+          // Nage : mouvement sinusoïdal + flip horizontal au changement de direction
+          const dx = Phaser.Math.Between(-160, 160);
+          img.setFlipX(dx < 0);
+          this.tweens.add({
+            targets: img,
+            x: `+=${dx}`,
+            y: `+=${Phaser.Math.Between(-70, 70)}`,
+            duration: Phaser.Math.Between(3000, 7000),
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            onYoyo: () => img.setFlipX(!img.flipX),
+            onRepeat: () => img.setFlipX(!img.flipX),
+          });
+
+          gameObj = img;
+        } else {
+          // Poisson cercle (défaut)
+          const color = FISH_COLORS[fish.type] ?? 0xffffff;
+          const radius = 12 + Math.min(fish.level, 50);
+          const circle = this.add.circle(x, y, radius, color, 0.85);
+          circle.setDepth(2);
+          this.tweens.add({
+            targets: circle,
+            x: `+=${Phaser.Math.Between(-140, 140)}`,
+            y: `+=${Phaser.Math.Between(-80, 80)}`,
+            duration: Phaser.Math.Between(3000, 7000),
+            yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+          });
+          gameObj = circle;
+        }
+
+        this.fishSprites.set(fish.id, gameObj);
       } else {
-        this.fishSprites.get(fish.id)!.setRadius(12 + Math.min(fish.level, 50));
+        const obj = this.fishSprites.get(fish.id)!;
+        if (obj instanceof Phaser.GameObjects.Arc) {
+          obj.setRadius(12 + Math.min(fish.level, 50));
+        } else if (obj instanceof Phaser.GameObjects.Image) {
+          const size = 48 + Math.min(fish.level, 50);
+          obj.setDisplaySize(size, size);
+        }
       }
     });
 
     const currentIds = new Set(poissons.map(f => f.id));
-    for (const [id, sprite] of this.fishSprites.entries()) {
-      if (!currentIds.has(id)) { sprite.destroy(); this.fishSprites.delete(id); }
+    for (const [id, obj] of this.fishSprites.entries()) {
+      if (!currentIds.has(id)) { obj.destroy(); this.fishSprites.delete(id); }
     }
   }
 }

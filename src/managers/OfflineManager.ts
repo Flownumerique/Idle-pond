@@ -23,7 +23,7 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked } = state;
+    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
@@ -31,7 +31,7 @@ export class OfflineManager {
     const offlineDurationMs = Math.min(now - lastSaveTime, this.MAX_OFFLINE_MS);
     if (offlineDurationMs < 60 * 1000) return;
 
-    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked);
+    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned);
 
     let baseIncomePerSec = new Decimal(0);
     for (const fish of poissons) {

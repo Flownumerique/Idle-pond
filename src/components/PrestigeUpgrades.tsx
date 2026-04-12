@@ -7,9 +7,8 @@ const TIER_META = {
   3: { label: 'Palier III — Puissant',     color: 'text-rose-300',   bg: 'bg-rose-900/15',   border: 'border-rose-700/25'   },
 } as const;
 
-function UpgradeCard({ p, perles, owned, canBuy }: {
+function UpgradeCard({ p, owned, canBuy }: {
   p: PrestigeUpgradeDef;
-  perles: number;
   owned: boolean;
   canBuy: boolean;
 }) {
@@ -90,7 +89,7 @@ export const PrestigeUpgrades = () => {
                 const prereqMet = !p.requires || prestigeUpgradesUnlocked.includes(p.requires);
                 const canBuy = !owned && prereqMet && perles >= p.cost;
                 return (
-                  <UpgradeCard key={p.id} p={p} perles={perles} owned={owned} canBuy={canBuy} />
+                  <UpgradeCard key={p.id} p={p} owned={owned} canBuy={canBuy} />
                 );
               })}
             </div>
