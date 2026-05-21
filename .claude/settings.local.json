@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "c:\\Users\\Maxime\\Documents\\Document_Web\\Hobby\\Idle-pond\\docs\\superpowers"
+    ],
+    "allow": [
+      "Read(//c/Users/Maxime/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/subagent-driven-development/**)"
+    ]
+  }
+}
