@@ -1,14 +1,8 @@
 import { useGameStore } from '../store/useGameStore';
-import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
 import { computeBonuses } from '../utils/bonuses';
+import { computeIncomePerSec } from '../utils/incomeCalc';
 import { addSessionMana } from '../utils/session';
 import { pickRandomEvent } from '../data/narrativeEvents';
-import Decimal from 'break_infinity.js';
-
-// Profondeurs des poissons "profonds" (depth 4+) pour le bonus Océanologie
-const DEEP_FISH_TYPES = new Set(
-  FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
-);
 
 export class GameLoopManager {
   private static instance: GameLoopManager;
@@ -20,7 +14,6 @@ export class GameLoopManager {
   private narrativeEventAccum = 0;
   private narrativeEventIntervalMs = GameLoopManager.randomEventInterval();
 
-  /** Intervalle aléatoire entre 5 et 10 minutes */
   private static randomEventInterval(): number {
     return (5 + Math.random() * 5) * 60 * 1000;
   }
@@ -54,32 +47,17 @@ export class GameLoopManager {
 
   private tick(deltaMs: number) {
     const state = useGameStore.getState();
-    const { poissons, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned, pondDepth } = state;
+    const {
+      poissons, researchUnlocked, pearlUpgradesUnlocked,
+      prestigeUpgradesUnlocked, runUpgradesOwned, pondDepth,
+    } = state;
 
-    const bonuses = computeBonuses(researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned);
+    const bonuses = computeBonuses(
+      researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned
+    );
 
     if (poissons.length > 0) {
-      let baseIncomePerSec = new Decimal(0);
-
-      for (const fish of poissons) {
-        const levelMult = new Decimal(1.5).pow(fish.level - 1);
-        const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
-        // Bonus Océanologie : multiplicateur supplémentaire pour les poissons profonds
-        const deepMult = DEEP_FISH_TYPES.has(fish.type) ? bonuses.deepFishIncomeMult : 1;
-        baseIncomePerSec = baseIncomePerSec.add(
-          new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult)
-        );
-      }
-
-      const milestoneGlobalMult = getGlobalMultiplier(poissons, bonuses.milestoneLevelReduction);
-      let finalIncomePerSec = baseIncomePerSec
-        .mul(milestoneGlobalMult)
-        .mul(bonuses.globalIncomeMult);
-
-      if (state.boostActiveUntil > Date.now()) {
-        finalIncomePerSec = finalIncomePerSec.mul(bonuses.boostMultiplier);
-      }
-
+      const finalIncomePerSec = computeIncomePerSec(poissons, bonuses, state.boostActiveUntil);
       const incomeThisTick = finalIncomePerSec.mul(deltaMs / 1000);
       if (incomeThisTick.gt(0)) {
         state.addMana(incomeThisTick);
@@ -108,7 +86,7 @@ export class GameLoopManager {
       }
     }
 
-    // Événements narratifs ambiants (intervalle aléatoire 5-10 min)
+    // Événements narratifs ambiants (intervalle aléatoire 5–10 min)
     this.narrativeEventAccum += deltaMs;
     if (this.narrativeEventAccum >= this.narrativeEventIntervalMs) {
       this.narrativeEventAccum = 0;
