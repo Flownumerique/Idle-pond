@@ -41,4 +41,21 @@ main.tsx
 - `src/data/` : données du jeu (poissons, succès, défis, recherche, améliorations, lore, événements).
 - `src/game/scenes/PondScene.ts` : scène Phaser, chargement et animation des poissons.
 - `src/managers/` : boucle de jeu et gains hors-ligne.
-- `src/utils/` : calcul du revenu, des bonus
+- `src/utils/` : calcul du revenu, des bonus, formatage des nombres.
+- `public/` : sprites statiques · `public/anim/` : spritesheets d'animation (1024×128, 8 frames).
+
+## Démarrer
+
+```bash
+npm install
+npm run dev        # serveur de dev (http://localhost:5173)
+npm run build      # build de production -> dist/
+npm run preview    # prévisualiser le build
+npm run lint       # ESLint
+```
+
+## Docker
+
+```bash
+docker compose up --build
+```
