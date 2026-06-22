@@ -5,6 +5,8 @@ import { FISH_TYPES } from '../../data/fishTypes';
 const ZONE_HEIGHT = 1080;
 const MAX_DEPTH = 11;
 const WORLD_HEIGHT = ZONE_HEIGHT * (MAX_DEPTH + 1);
+const ANIM_FRAMES = 8;          // frames par spritesheet d'animation
+const ANIM_FRAME_SIZE = 128;    // taille d'une frame (px)
 
 const DEPTH_COLORS = [
   { bg: 0x0d2a4a, water: 0x1a5a8f },  // 0  – Lac de Surface
@@ -84,7 +86,7 @@ const SPRITE_FISH = new Map<string, string>(
     .map(f => [f.type, f.type])
 );
 
-type FishGameObject = Phaser.GameObjects.Arc | Phaser.GameObjects.Image;
+type FishGameObject = Phaser.GameObjects.Arc | Phaser.GameObjects.Sprite;
 
 export class PondScene extends Phaser.Scene {
   private fishSprites = new Map<string, FishGameObject>();
@@ -95,16 +97,35 @@ export class PondScene extends Phaser.Scene {
   constructor() { super('PondScene'); }
 
   preload() {
+    // Chaque sprite est chargé comme spritesheet d'animation (8 frames de 128px).
     for (const fishDef of FISH_TYPES) {
       if (fishDef.sprite) {
-        this.load.image(fishDef.type, fishDef.sprite);
+        this.load.spritesheet(fishDef.type, `/anim${fishDef.sprite}`, {
+          frameWidth: ANIM_FRAME_SIZE,
+          frameHeight: ANIM_FRAME_SIZE,
+        });
       }
+    }
+  }
+
+  private registerAnims() {
+    for (const fishDef of FISH_TYPES) {
+      if (!fishDef.sprite) continue;
+      const key = `${fishDef.type}-swim`;
+      if (this.anims.exists(key) || !this.textures.exists(fishDef.type)) continue;
+      this.anims.create({
+        key,
+        frames: this.anims.generateFrameNumbers(fishDef.type, { start: 0, end: ANIM_FRAMES - 1 }),
+        frameRate: 5,
+        repeat: -1,
+      });
     }
   }
 
   create() {
     const width = this.scale.width;
     this.cameras.main.setBounds(0, 0, width, WORLD_HEIGHT);
+    this.registerAnims();
 
     for (let d = 0; d <= MAX_DEPTH; d++) {
       const yStart = d * ZONE_HEIGHT;
@@ -211,6 +232,20 @@ export class PondScene extends Phaser.Scene {
 
   private onDepthChange(depth: number) { this.currentDepth = depth; }
 
+  // L'ondulation/respiration est jouée par l'animation spritesheet ; ici on
+  // ajoute seulement un léger tangage pour finir de donner vie au mouvement.
+  update(time: number) {
+    const t = time / 1000;
+    for (const obj of this.fishSprites.values()) {
+      if (!(obj instanceof Phaser.GameObjects.Sprite)) continue;
+      const tilt = obj.getData('tilt') as number | undefined;
+      if (tilt === undefined) continue;
+      const phase = obj.getData('phase') as number;
+      const spd = obj.getData('spd') as number;
+      obj.rotation = tilt * Math.sin(t * spd + phase);
+    }
+  }
+
   updateFishes(poissons: PoissonInstance[]) {
     const width = this.scale.width;
 
@@ -224,30 +259,42 @@ export class PondScene extends Phaser.Scene {
         let gameObj: FishGameObject;
 
         if (SPRITE_FISH.has(fish.type) && this.textures.exists(fish.type)) {
-          // Poisson avec sprite image
+          // Poisson animé (spritesheet)
           const size = 48 + Math.min(fish.level, 50);
-          const img = this.add.image(x, y, fish.type);
-          img.setDisplaySize(size, size);
-          img.setDepth(2);
+          const spr = this.add.sprite(x, y, fish.type);
+          spr.setDisplaySize(size, size);
+          spr.setDepth(2);
 
-          // Nage : mouvement sinusoïdal + flip horizontal au changement de direction
-          const dx = Phaser.Math.Between(-160, 160);
-          img.setFlipX(dx < 0);
+          // ondulation/respiration en boucle, désynchronisée d'un poisson à l'autre
+          const key = `${fish.type}-swim`;
+          if (this.anims.exists(key)) {
+            spr.play({ key, startFrame: Phaser.Math.Between(0, ANIM_FRAMES - 1) });
+            spr.anims.timeScale = Phaser.Math.FloatBetween(0.55, 0.85);
+          }
+
+          // tangage léger via update()
+          spr.setData('phase', Phaser.Math.FloatBetween(0, Math.PI * 2));
+          spr.setData('spd', Phaser.Math.FloatBetween(0.8, 1.4));
+          spr.setData('tilt', Phaser.Math.FloatBetween(0.03, 0.06));
+
+          // Nage : déplacement sinusoïdal + flip horizontal selon la direction
+          const dx = Phaser.Math.Between(-100, 100);
+          spr.setFlipX(dx < 0);
           this.tweens.add({
-            targets: img,
+            targets: spr,
             x: `+=${dx}`,
-            y: `+=${Phaser.Math.Between(-70, 70)}`,
-            duration: Phaser.Math.Between(3000, 7000),
+            y: `+=${Phaser.Math.Between(-45, 45)}`,
+            duration: Phaser.Math.Between(6000, 12000),
             yoyo: true,
             repeat: -1,
             ease: 'Sine.easeInOut',
-            onYoyo: () => img.setFlipX(!img.flipX),
-            onRepeat: () => img.setFlipX(!img.flipX),
+            onYoyo: () => spr.setFlipX(!spr.flipX),
+            onRepeat: () => spr.setFlipX(!spr.flipX),
           });
 
-          gameObj = img;
+          gameObj = spr;
         } else {
-          // Poisson cercle (défaut)
+          // Poisson cercle (défaut, si pas de sprite)
           const color = FISH_COLORS[fish.type] ?? 0xffffff;
           const radius = 12 + Math.min(fish.level, 50);
           const circle = this.add.circle(x, y, radius, color, 0.85);
@@ -256,7 +303,7 @@ export class PondScene extends Phaser.Scene {
             targets: circle,
             x: `+=${Phaser.Math.Between(-140, 140)}`,
             y: `+=${Phaser.Math.Between(-80, 80)}`,
-            duration: Phaser.Math.Between(3000, 7000),
+            duration: Phaser.Math.Between(6000, 12000),
             yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
           });
           gameObj = circle;
@@ -267,7 +314,7 @@ export class PondScene extends Phaser.Scene {
         const obj = this.fishSprites.get(fish.id)!;
         if (obj instanceof Phaser.GameObjects.Arc) {
           obj.setRadius(12 + Math.min(fish.level, 50));
-        } else if (obj instanceof Phaser.GameObjects.Image) {
+        } else if (obj instanceof Phaser.GameObjects.Sprite) {
           const size = 48 + Math.min(fish.level, 50);
           obj.setDisplaySize(size, size);
         }
