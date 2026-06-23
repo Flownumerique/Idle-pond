@@ -108,6 +108,20 @@ export interface GameState {
 
 const MAX_DEPTH = 11;
 
+/** Clé localStorage de la sauvegarde — partagée avec la réinitialisation de secours. */
+export const STORAGE_KEY = 'etang-des-merveilles-storage';
+
+/** Parse défensif d'un montant Decimal persisté : valeur invalide -> repli fourni. */
+const safeDecimal = (value: unknown, fallback: Decimal): Decimal => {
+  try {
+    const d = new Decimal(value as Decimal);
+    // Une valeur corrompue produit un mantissa/exponent non fini (NaN).
+    return Number.isFinite(d.mantissa) && Number.isFinite(d.exponent) ? d : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({
@@ -346,7 +360,7 @@ export const useGameStore = create<GameState>()(
       updateLastSaveTime: () => set({ lastSaveTime: Date.now() }),
     }),
     {
-      name: 'etang-des-merveilles-storage',
+      name: STORAGE_KEY,
       version: 1,
       // Migration des sauvegardes existantes lors d'un changement de schéma.
       // v0 (sauvegardes antérieures au versioning) -> v1 : schéma identique,
@@ -360,12 +374,20 @@ export const useGameStore = create<GameState>()(
         mana: state.mana.toString() as unknown as Decimal,
         manaRunHigh: state.manaRunHigh.toString() as unknown as Decimal,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          // Sauvegarde illisible (JSON corrompu, version incompatible…) :
+          // on laisse l'état initial en place plutôt que de planter le rendu.
+          // L'utilisateur démarre une nouvelle partie ; l'ErrorBoundary offre
+          // par ailleurs une réinitialisation explicite.
+          return;
+        }
         if (state) {
-          state.mana = new Decimal(state.mana);
-          state.manaRunHigh = state.manaRunHigh
-            ? new Decimal(state.manaRunHigh)
-            : new Decimal(state.mana);
+          // Les montants Decimal sont persistés en chaîne : on les reconstruit
+          // de façon défensive pour ne jamais propager un NaN dans le rendu.
+          const mana = safeDecimal(state.mana, new Decimal(10));
+          state.mana = mana;
+          state.manaRunHigh = safeDecimal(state.manaRunHigh, mana);
         }
       },
     }
