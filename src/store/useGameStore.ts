@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import Decimal from 'break_infinity.js';
 import { ACHIEVEMENTS } from '../data/achievements';
 import { CHALLENGE_POOL } from '../data/challenges';
@@ -110,6 +110,64 @@ const MAX_DEPTH = 11;
 
 /** Clé localStorage de la sauvegarde — partagée avec la réinitialisation de secours. */
 export const STORAGE_KEY = 'etang-des-merveilles-storage';
+
+/**
+ * localStorage throttlé : la boucle de jeu déclenche ~10-20 écritures/s. On
+ * regroupe ces écritures (au plus une toutes les SAVE_THROTTLE_MS) pour ne pas
+ * bloquer le thread principal, avec un flush immédiat à la fermeture ou quand
+ * l'onglet passe en arrière-plan afin de ne perdre aucun gain récent.
+ */
+const SAVE_THROTTLE_MS = 2000;
+
+const createThrottledStorage = (): StateStorage => {
+  let pendingName: string | null = null;
+  let pendingValue: string | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const flush = () => {
+    if (timer !== null) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    if (pendingName !== null && pendingValue !== null) {
+      try {
+        localStorage.setItem(pendingName, pendingValue);
+      } catch {
+        // Quota dépassé / stockage indisponible : on ignore, le jeu continue.
+      }
+      pendingName = null;
+      pendingValue = null;
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', flush);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flush();
+    });
+  }
+
+  return {
+    getItem: (name) => localStorage.getItem(name),
+    setItem: (name, value) => {
+      pendingName = name;
+      pendingValue = value;
+      if (timer === null) {
+        timer = setTimeout(flush, SAVE_THROTTLE_MS);
+      }
+    },
+    removeItem: (name) => {
+      // Annule toute écriture en attente avant de purger (réinitialisation).
+      pendingName = null;
+      pendingValue = null;
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      localStorage.removeItem(name);
+    },
+  };
+};
 
 /** Parse défensif d'un montant Decimal persisté : valeur invalide -> repli fourni. */
 const safeDecimal = (value: unknown, fallback: Decimal): Decimal => {
@@ -362,6 +420,7 @@ export const useGameStore = create<GameState>()(
     {
       name: STORAGE_KEY,
       version: 1,
+      storage: createJSONStorage(createThrottledStorage),
       // Migration des sauvegardes existantes lors d'un changement de schéma.
       // v0 (sauvegardes antérieures au versioning) -> v1 : schéma identique,
       // on conserve l'état tel quel. Ajouter ici les transformations futures.
