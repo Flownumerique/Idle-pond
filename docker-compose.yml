@@ -1,15 +1,9 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
     ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: npm run dev -- --host
+      - "8080:80"
+    restart: unless-stopped

@@ -56,6 +56,10 @@ npm run lint       # ESLint
 
 ## Docker
 
+Build de production multi-stage (Vite → nginx) servant les fichiers statiques :
+
 ```bash
-docker compose up --build
+docker compose up --build      # http://localhost:8080
 ```
+
+Pour le développement avec rechargement à chaud, utiliser plutôt `npm run dev`.

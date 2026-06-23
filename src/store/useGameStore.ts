@@ -179,7 +179,7 @@ export const useGameStore = create<GameState>()(
         const ownedCount = s.poissons.filter(f => f.type === type).length;
 
         const maxOwned = fishDef.maxOwned ?? 1;
-        let cap = Math.min(count, maxOwned - ownedCount);
+        const cap = Math.min(count, maxOwned - ownedCount);
         if (cap <= 0) return s;
 
         let totalCost = new Decimal(0);
@@ -347,6 +347,14 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'etang-des-merveilles-storage',
+      version: 1,
+      // Migration des sauvegardes existantes lors d'un changement de schéma.
+      // v0 (sauvegardes antérieures au versioning) -> v1 : schéma identique,
+      // on conserve l'état tel quel. Ajouter ici les transformations futures.
+      migrate: (persisted, version) => {
+        void version;
+        return persisted as GameState;
+      },
       partialize: (state) => ({
         ...state,
         mana: state.mana.toString() as unknown as Decimal,

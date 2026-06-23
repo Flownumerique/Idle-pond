@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGameStore } from '../store/useGameStore';
 import { FISH_TYPES } from '../data/fishTypes';
 
@@ -19,31 +19,21 @@ const DEPTH_NAMES = [
 export const UnlockNotification = () => {
   const pendingUnlock = useGameStore(state => state.pendingUnlock);
   const clearPendingUnlock = useGameStore(state => state.clearPendingUnlock);
-  const [visible, setVisible] = useState(false);
-  const [content, setContent] = useState<{ depth: number; fish: typeof FISH_TYPES[0] | undefined } | null>(null);
 
+  // L'événement vit dans le store : on le purge 4 s après son apparition, sans
+  // recopier la valeur en state local (évite react-hooks/set-state-in-effect).
   useEffect(() => {
     if (!pendingUnlock) return;
-
-    // Extraire le niveau depuis l'id "depth_X"
-    const match = pendingUnlock.match(/^depth_(\d+)$/);
-    if (!match) {
-      clearPendingUnlock();
-      return;
-    }
-
-    const depth = parseInt(match[1], 10);
-    const fish = FISH_TYPES.find(f => f.requiredDepth === depth);
-
-    setContent({ depth, fish });
-    setVisible(true);
-    clearPendingUnlock();
-
-    const timer = setTimeout(() => setVisible(false), 4000);
+    const timer = setTimeout(() => clearPendingUnlock(), 4000);
     return () => clearTimeout(timer);
   }, [pendingUnlock, clearPendingUnlock]);
 
-  if (!visible || !content) return null;
+  // Le contenu est dérivé du store pendant le rendu (id de la forme "depth_X").
+  const match = pendingUnlock?.match(/^depth_(\d+)$/);
+  if (!match) return null;
+  const depth = parseInt(match[1], 10);
+  const fish = FISH_TYPES.find(f => f.requiredDepth === depth);
+  const content = { depth, fish };
 
   return (
     <div

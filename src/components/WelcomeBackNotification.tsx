@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGameStore } from '../store/useGameStore';
 
 const formatDuration = (minutes: number): string => {
@@ -11,21 +11,18 @@ const formatDuration = (minutes: number): string => {
 export const WelcomeBackNotification = () => {
   const pendingWelcomeBack = useGameStore(s => s.pendingWelcomeBack);
   const setPendingWelcomeBack = useGameStore(s => s.setPendingWelcomeBack);
-  const [visible, setVisible] = useState(false);
-  const [data, setData] = useState<{ minutes: number; mana: string } | null>(null);
 
+  // L'événement vit dans le store : on l'affiche directement et on le purge
+  // après 6 s, sans dupliquer la valeur dans un state local (évite les
+  // re-renders en cascade signalés par react-hooks/set-state-in-effect).
   useEffect(() => {
     if (!pendingWelcomeBack) return;
-
-    setData(pendingWelcomeBack);
-    setVisible(true);
-    setPendingWelcomeBack(null);
-
-    const timer = setTimeout(() => setVisible(false), 6000);
+    const timer = setTimeout(() => setPendingWelcomeBack(null), 6000);
     return () => clearTimeout(timer);
   }, [pendingWelcomeBack, setPendingWelcomeBack]);
 
-  if (!visible || !data) return null;
+  if (!pendingWelcomeBack) return null;
+  const data = pendingWelcomeBack;
 
   return (
     <div

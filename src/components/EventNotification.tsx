@@ -1,27 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGameStore } from '../store/useGameStore';
 
 export const EventNotification = () => {
   const pendingNarrativeEvent = useGameStore(s => s.pendingNarrativeEvent);
   const setPendingNarrativeEvent = useGameStore(s => s.setPendingNarrativeEvent);
-  const [visible, setVisible] = useState(false);
-  const [currentText, setCurrentText] = useState('');
 
+  // L'événement vit dans le store : affiché directement, purgé après 7 s, sans
+  // state local miroir (évite react-hooks/set-state-in-effect).
   useEffect(() => {
     if (!pendingNarrativeEvent) return;
-
-    setCurrentText(pendingNarrativeEvent);
-    setVisible(true);
-    setPendingNarrativeEvent(null);
-
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 7000);
-
+    const timer = setTimeout(() => setPendingNarrativeEvent(null), 7000);
     return () => clearTimeout(timer);
   }, [pendingNarrativeEvent, setPendingNarrativeEvent]);
 
-  if (!visible || !currentText) return null;
+  if (!pendingNarrativeEvent) return null;
+  const currentText = pendingNarrativeEvent;
 
   return (
     <div

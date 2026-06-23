@@ -137,16 +137,16 @@ function BottomHUD() {
   const canDig   = pondDepth < 11 && mana.gte(pondCost);
   const progress = pondDepth < 11 ? Math.min(mana.div(pondCost).toNumber(), 1) : 1;
 
-  const boosted = boostActiveUntil > Date.now();
-  const [boostLeft, setBoostLeft] = useState(0);
+  // `now` est rafraîchi chaque seconde par l'intervalle (setState dans un
+  // callback, jamais dans le corps de l'effet) ; `boosted`/`boostLeft` en sont
+  // dérivés de façon pure pendant le rendu (pas d'appel à Date.now() ici).
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    if (!boosted) { setBoostLeft(0); return; }
-    const id = setInterval(
-      () => setBoostLeft(Math.max(0, Math.ceil((boostActiveUntil - Date.now()) / 1000))),
-      1000
-    );
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [boosted, boostActiveUntil]);
+  }, []);
+  const boosted   = boostActiveUntil > now;
+  const boostLeft = boosted ? Math.max(0, Math.ceil((boostActiveUntil - now) / 1000)) : 0;
 
   const totalFish = poissons.length;
   const species   = new Set(poissons.map(f => f.type)).size;
