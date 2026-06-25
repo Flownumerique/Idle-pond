@@ -1887,9 +1887,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 .lg-dock-tab.active { background: #fff; color: #0E9CAB; font-weight: 800; }
 .lg-dock-body { flex: 1; overflow-y: auto; padding: 16px; }
-.lg-dock-body.is-shop { background: var(--lg-surface); }
-/* Compatible dark-teal surface for not-yet-rebranded panels (Phase 2) */
-.lg-dock-body:not(.is-shop) { background: #0B3D47; }
+.lg-dock-body.is-light { background: var(--lg-surface); }
+/* Compatible dark-teal surface for not-yet-rebranded panels (Améliorations, Journal) */
+.lg-dock-body:not(.is-light) { background: #0B3D47; }
 
 /* ─── Candy Shop cards ─────────────────────────────────────── */
 .lg-shop { display: flex; flex-direction: column; gap: 13px; }
@@ -2017,3 +2017,89 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .lg-mtabs button .ic { font-size: 19px; font-family: "Baloo 2"; }
   .lg-mtabs button.active { color: #0E9CAB; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   LAGON VIF — Phase 2: shared candy kit for dock panels
+   ════════════════════════════════════════════════════════════ */
+
+/* ─── Panel scaffolding ────────────────────────────────────── */
+.lg-panel { display: flex; flex-direction: column; gap: 13px; }
+.lg-panel-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.lg-panel-head h3 {
+  margin: 0; font-family: "Baloo 2"; font-weight: 800; font-size: 17px; color: #0B5566;
+}
+.lg-panel-note {
+  font-family: "Nunito"; font-weight: 600; font-size: 12px; color: #6E97A0; line-height: 1.4;
+}
+.lg-section-eyebrow {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: #7AA1A8;
+}
+.lg-chip {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #0E9CAB;
+  background: #DCF3F4; padding: 3px 10px; border-radius: 999px;
+}
+.lg-chip.gold { color: #A87A12; background: #FFE9A8; }
+
+/* ─── Generic candy card ───────────────────────────────────── */
+.lg-card {
+  background: #fff; border-radius: 18px; padding: 14px;
+  box-shadow: 0 6px 16px rgba(11,85,102,.1);
+  border: 2px solid transparent;
+}
+.lg-card--gold {
+  background: linear-gradient(180deg,#FFF8E8,#FFF1CF);
+  border-color: #FFC23C; box-shadow: 0 6px 16px rgba(229,148,18,.15);
+}
+.lg-card--hot { border-color: #FF9E80; background: #FFF4EF; }
+.lg-card--done { background: #F2F8F9; box-shadow: none; opacity: .7; }
+.lg-card--locked { background: #F2F8F9; box-shadow: none; opacity: .55; }
+.lg-card-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.lg-card-title { font-family: "Baloo 2"; font-weight: 800; font-size: 14px; color: #0B5566; line-height: 1.2; }
+.lg-card--done .lg-card-title, .lg-card--locked .lg-card-title { color: #7AA1A8; }
+.lg-card-desc { font-family: "Nunito"; font-weight: 600; font-size: 11.5px; color: #6E97A0; line-height: 1.35; margin-top: 2px; }
+.lg-card-flavour { font-family: "Nunito"; font-weight: 600; font-style: italic; font-size: 10.5px; color: #9DBAC0; margin-top: 3px; }
+.lg-card-prereq { font-family: "Nunito"; font-weight: 700; font-size: 10px; color: #C98A0F; margin-top: 3px; }
+.lg-card-reward { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #C13E81; white-space: nowrap; }
+.lg-card-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+
+/* ─── Extra candy button variants ──────────────────────────── */
+.cbtn--teal    { background: linear-gradient(180deg,#3AD6D2,#0E9CAB); box-shadow: 0 4px 0 #0A7C88; }
+.cbtn--emerald { background: linear-gradient(180deg,#5BE3A0,#2FB873); box-shadow: 0 4px 0 #1F8E54; }
+.cbtn--sm { padding: 8px 13px; border-radius: 12px; font-size: 12px; }
+.cbtn--xs { padding: 6px 11px; border-radius: 11px; font-size: 11px; }
+
+/* ─── Stats hero (Profil) ──────────────────────────────────── */
+.lg-stat-hero {
+  background: linear-gradient(135deg,#E9FBFB,#CDEFF2);
+  border-radius: 18px; padding: 16px;
+}
+.lg-stat-hero .lab { font-family: "Nunito"; font-weight: 800; font-size: 11px; letter-spacing: .06em; color: #15A0AE; }
+.lg-stat-hero .big { font-family: "Baloo 2"; font-weight: 800; font-size: 34px; color: #0B5566; line-height: 1; }
+.lg-stat-hero .rate { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: #2FB873; margin-top: 3px; }
+.lg-stat-hero .rate .boost { color: #E59412; font-weight: 800; }
+.lg-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lg-stat-cell { background: #fff; border-radius: 16px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(11,85,102,.08); }
+.lg-stat-cell .lab { font-family: "Nunito"; font-weight: 800; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: #8AAEB4; }
+.lg-stat-cell .val { font-family: "Baloo 2"; font-weight: 800; font-size: 22px; line-height: 1.1; margin-top: 2px; color: #0B5566; }
+.lg-stat-cell.gemme .val { color: #1B6B43; } .lg-stat-cell.gemme .lab { color: #3FA570; }
+.lg-stat-cell.perle .val { color: #A83A72; } .lg-stat-cell.perle .lab { color: #D86AA0; }
+.lg-stat-cell .sub { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #7AA1A8; }
+
+/* ─── Progress bar (Challenges) ────────────────────────────── */
+.lg-prog { height: 7px; border-radius: 999px; background: #E4F1F3; overflow: hidden; margin-top: 9px; }
+.lg-prog > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#16C8C4,#FF8A63); }
+.lg-prog.met > i { background: linear-gradient(90deg,#5BE3A0,#2FB873); }
+
+/* ─── Branch group (Corail) ────────────────────────────────── */
+.lg-branch { border-radius: 18px; padding: 13px; background: #fff; box-shadow: 0 6px 16px rgba(11,85,102,.08); }
+.lg-branch-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.lg-branch-title { font-family: "Baloo 2"; font-weight: 800; font-size: 14px; }
+.lg-branch-desc { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #8AAEB4; margin-bottom: 10px; }
+.lg-branch-nodes { display: flex; flex-direction: column; gap: 8px; }
+.lg-node { border-radius: 14px; padding: 11px 13px; background: #F4FAFB; border: 1.5px solid #E1F0F2; }
+.lg-node.buyable { border-color: var(--branch-c, #16C8C4); background: #fff; }
+.lg-node.done { opacity: .6; }
+.lg-node-cost { font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #3FA570; }

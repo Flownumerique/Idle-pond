@@ -30,74 +30,56 @@ export const Challenges = () => {
   const minsLeft = Math.floor((msLeft % 3_600_000) / 60_000);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Défis du Jour</h3>
-        <span className="text-[10px] text-gray-500">
-          Reset dans {hoursLeft}h {minsLeft}m
-        </span>
+    <div className="lg-panel">
+      <div className="lg-panel-head">
+        <h3>Défis du Jour</h3>
+        <span className="lg-section-eyebrow">Reset dans {hoursLeft}h {minsLeft}m</span>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {challenges.map(ch => {
-          const completed = dailyChallengesCompleted.includes(ch.id);
-          const met = ch.check({
-            poissons,
-            pondDepth,
-            researchUnlocked,
-            sessionManaEarned: getSessionManaEarned(),
-          });
+      {challenges.map(ch => {
+        const completed = dailyChallengesCompleted.includes(ch.id);
+        const met = ch.check({
+          poissons,
+          pondDepth,
+          researchUnlocked,
+          sessionManaEarned: getSessionManaEarned(),
+        });
 
-          return (
-            <div
-              key={ch.id}
-              className={`rounded-lg p-4 border transition-all ${
-                completed
-                  ? 'bg-green-900/15 border-green-700/20 opacity-70'
-                  : met
-                    ? 'bg-orange-900/20 border-orange-600/30'
-                    : 'bg-white/[0.03] border-white/5'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className={`font-semibold text-sm ${completed ? 'text-gray-400' : 'text-white'}`}>
-                    {completed ? '✓ ' : ''}{ch.name}
-                  </div>
-                  <div className="text-xs text-gray-400 mt-0.5">{ch.description}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-xs font-bold text-purple-300">+{ch.pearlReward} 🪸</div>
-                  {!completed && (
-                    <button
-                      onClick={() => claimChallenge(ch.id)}
-                      disabled={!met}
-                      className={`mt-1.5 px-2.5 py-1 rounded text-xs font-bold transition-all ${
-                        met
-                          ? 'bg-orange-600 hover:bg-orange-500 text-white'
-                          : 'bg-gray-800 text-gray-600 cursor-not-allowed opacity-60'
-                      }`}
-                    >
-                      {met ? 'Réclamer' : 'En cours'}
-                    </button>
-                  )}
-                </div>
+        return (
+          <div
+            key={ch.id}
+            className={`lg-card${completed ? ' lg-card--done' : met ? ' lg-card--hot' : ''}`}
+          >
+            <div className="lg-card-row">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="lg-card-title">{completed ? '✓ ' : ''}{ch.name}</div>
+                <div className="lg-card-desc">{ch.description}</div>
               </div>
-
-              {/* Barre de progression visuelle */}
-              {!completed && (
-                <div className="mt-2 h-1 rounded-full bg-white/5 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all ${met ? 'bg-orange-500 w-full' : 'bg-indigo-700 w-1/3'}`}
-                  />
-                </div>
-              )}
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div className="lg-card-reward">+{ch.pearlReward} 🪸</div>
+                {!completed && (
+                  <button
+                    onClick={() => claimChallenge(ch.id)}
+                    disabled={!met}
+                    className="cbtn cbtn--coral cbtn--xs"
+                    style={{ marginTop: 6 }}
+                  >
+                    {met ? 'Réclamer' : 'En cours'}
+                  </button>
+                )}
+              </div>
             </div>
-          );
-        })}
-      </div>
 
-      <p className="text-[10px] text-gray-600 text-center">
+            {!completed && (
+              <div className={`lg-prog${met ? ' met' : ''}`}>
+                <i style={{ width: met ? '100%' : '33%' }} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <p className="lg-panel-note" style={{ textAlign: 'center', fontSize: 11 }}>
         3 défis renouvelés chaque jour à minuit
       </p>
     </div>
