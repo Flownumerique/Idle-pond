@@ -91,6 +91,31 @@ function LeftRail({ active, setActive, onPrestige, prestigeReady }: {
   );
 }
 
+function MobileTabs({ active, setActive, onPrestige }: {
+  active: PanelId;
+  setActive: (id: PanelId) => void;
+  onPrestige: () => void;
+}) {
+  return (
+    <div className="lg-mtabs">
+      {RAIL_ITEMS.map(item => (
+        <button
+          key={item.id}
+          className={active === item.id ? 'active' : ''}
+          onClick={() => setActive(item.id)}
+        >
+          <span className="ic">{item.icon}</span>
+          <span>{item.label}</span>
+        </button>
+      ))}
+      <button onClick={onPrestige}>
+        <span className="ic">𓆟</span>
+        <span>Renew</span>
+      </button>
+    </div>
+  );
+}
+
 // ─── Top HUD ──────────────────────────────────────────────────
 
 function TopHUD() {
@@ -305,6 +330,9 @@ export default function App() {
     shop: 'fish', pearls: 'market', journal: 'lore',
   });
   const [showPrestige, setShowPrestige] = useState(false);
+  const [dockOpenMobile, setDockOpenMobile] = useState(false);
+
+  const openPanel = (id: PanelId) => { setActivePanel(id); setDockOpenMobile(true); };
 
   useEffect(() => {
     useGameStore.getState().checkDailyReset();
@@ -353,7 +381,11 @@ export default function App() {
         <BottomActionBar />
       </div>
 
-      <RightDock panel={activePanel} tab={currentTab} setTab={setTab} />
+      <div className={`lg-dock-scrim${dockOpenMobile ? ' open' : ''}`} onClick={() => setDockOpenMobile(false)} />
+      <div className={`lg-dock-wrap${dockOpenMobile ? ' open' : ''}`}>
+        <RightDock panel={activePanel} tab={currentTab} setTab={setTab} />
+      </div>
+      <MobileTabs active={activePanel} setActive={openPanel} onPrestige={() => setShowPrestige(true)} />
 
       {showPrestige && <PrestigeModal onClose={() => setShowPrestige(false)} />}
 
