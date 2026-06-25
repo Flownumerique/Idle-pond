@@ -7,6 +7,7 @@ import {
 import { computeBonuses } from './utils/bonuses';
 import { computeIncomePerSec } from './utils/incomeCalc';
 import { formatNumber } from './utils/formatNumber';
+import { FISH_TYPES } from './data/fishTypes';
 import { GameLoopManager } from './managers/GameLoopManager';
 import { OfflineManager } from './managers/OfflineManager';
 import { PhaserContainer } from './components/PhaserContainer';
@@ -55,6 +56,8 @@ const DEPTH_NAMES = [
   'Abysses', 'Zone Hydrothermale', 'Plaine Abyssale', 'Fosse des Origines',
   'Nexus de Mana', 'Cœur Volcanique', 'Royaume Céleste', 'Dimension Quantique',
 ];
+
+const FISH_META = new Map(FISH_TYPES.map(f => [f.type, f]));
 
 // ─── Left rail ────────────────────────────────────────────────
 
@@ -185,18 +188,46 @@ function BottomActionBar() {
   const boostLeft = boosted ? Math.max(0, Math.ceil((boostActiveUntil - now) / 1000)) : 0;
 
   const totalFish = poissons.length;
-  const species   = new Set(poissons.map(f => f.type)).size;
+
+  // Distinct species present, most-owned first, for the collection avatars.
+  const speciesCounts = new Map<string, number>();
+  for (const f of poissons) speciesCounts.set(f.type, (speciesCounts.get(f.type) ?? 0) + 1);
+  const speciesSorted = [...speciesCounts.entries()].sort((a, b) => b[1] - a[1]).map(([type]) => type);
+  const species = speciesSorted.length;
 
   return (
     <div className="lg-actionbar">
       <div className="lg-ab-revenue">
-        <div className="lab">REVENU</div>
-        <div className="val">{formatNumber(incomePerSec)}<span className="per">/s</span></div>
-        {boosted && <div className="boost">boost ×{bonuses.boostMultiplier} · {boostLeft}s</div>}
+        <div className="lg-ab-coin mana" />
+        <div className="lg-ab-revcol">
+          <div className="lab">
+            REVENU
+            {boosted && <span className="boostbadge">⚡ ×{bonuses.boostMultiplier} · {boostLeft}s</span>}
+          </div>
+          <div className="val">{formatNumber(incomePerSec)}<span className="per">/s</span></div>
+          <div className="sub">≈ {formatNumber(incomePerSec.mul(60))} <span className="u">/min</span></div>
+        </div>
       </div>
       <div className="lg-ab-fish">
-        <div className="big">{totalFish}</div>
-        <div className="sub">poissons · {species} esp.</div>
+        <div className="lg-ab-fishcol">
+          <div className="big">{totalFish} <span className="u">poissons</span></div>
+          <div className="sub">{species} espèce{species > 1 ? 's' : ''}</div>
+        </div>
+        {species > 0 && (
+          <div className="lg-ab-species">
+            {speciesSorted.slice(0, 5).map(type => {
+              const meta = FISH_META.get(type);
+              return (
+                <div key={type} className="av" title={meta?.name}>
+                  {meta?.sprite
+                    ? <img src={meta.sprite} alt={meta.name} />
+                    : <span>{meta?.emoji ?? '🐟'}</span>}
+                </div>
+              );
+            })}
+            {species > 5 && <span className="more">+{species - 5}</span>}
+          </div>
+        )}
       </div>
       <div className="lg-ab-progress">
         <div className="row">
