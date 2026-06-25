@@ -2067,7 +2067,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 
 /* ─── Extra candy button variants ──────────────────────────── */
 .cbtn--teal    { background: linear-gradient(180deg,#3AD6D2,#0E9CAB); box-shadow: 0 4px 0 #0A7C88; }
-.cbtn--emerald { background: linear-gradient(180deg,#5BE3A0,#2FB873); box-shadow: 0 4px 0 #1F8E54; }
+.cbtn--emerald { background: linear-gradient(180deg,#7CEBB0,#34C480); box-shadow: 0 4px 0 #1F9A5E; color: #064A2C; }
 .cbtn--sm { padding: 8px 13px; border-radius: 12px; font-size: 12px; }
 .cbtn--xs { padding: 6px 11px; border-radius: 11px; font-size: 11px; }
 
