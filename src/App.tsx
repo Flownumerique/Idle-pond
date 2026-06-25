@@ -248,14 +248,6 @@ function RightDock({ panel, tab, setTab }: {
 }) {
   const meta = PANEL_META[panel];
   const tabs = TABS_BY_PANEL[panel];
-  // Panels rebranded to the candy DA render on the light surface; the rest
-  // (Améliorations tab, Journal) keep the dark compatible surface for now.
-  const isLight =
-    (panel === 'shop' && tab === 'fish') ||
-    panel === 'research' ||
-    panel === 'pearls' ||
-    panel === 'profile';
-
   return (
     <div className="lg-dock">
       <div className="lg-dock-head">
@@ -273,7 +265,7 @@ function RightDock({ panel, tab, setTab }: {
           </div>
         )}
       </div>
-      <div className={`lg-dock-body${isLight ? ' is-light' : ''}`}>
+      <div className="lg-dock-body is-light">
         <PanelBody panel={panel} tab={tab} />
       </div>
     </div>

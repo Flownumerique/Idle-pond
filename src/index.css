@@ -1958,7 +1958,11 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   width: 420px; max-width: calc(100vw - 48px);
   background: #fff; border-radius: 28px; padding: 28px;
   box-shadow: 0 24px 60px rgba(0,0,0,.32); text-align: center;
-  animation: panel-in .3s cubic-bezier(.3,.8,.2,1);
+  animation: modal-pop .3s cubic-bezier(.3,.8,.2,1);
+}
+@keyframes modal-pop {
+  from { transform: translate(-50%, calc(-50% + 14px)) scale(.96); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 .lg-modal-sigil {
   width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 14px;
@@ -2103,3 +2107,65 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .lg-node.buyable { border-color: var(--branch-c, #16C8C4); background: #fff; }
 .lg-node.done { opacity: .6; }
 .lg-node-cost { font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #3FA570; }
+
+/* ════════════════════════════════════════════════════════════
+   LAGON VIF — Phase 2b: Améliorations & Journal
+   ════════════════════════════════════════════════════════════ */
+
+.cbtn--block { width: 100%; }
+
+/* ─── Sub-tabs inside a panel body (Journal) ───────────────── */
+.lg-subtabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lg-subtab {
+  padding: 9px 0; border-radius: 13px; cursor: pointer;
+  background: #DCF3F4; color: #5A8A92;
+  font-family: "Baloo 2"; font-weight: 800; font-size: 12px; border: 0;
+}
+.lg-subtab.active { background: linear-gradient(180deg,#16C8C4,#0E9CAB); color: #fff; box-shadow: 0 3px 0 #0A7C88; }
+
+/* ─── Note / empty-state card ──────────────────────────────── */
+.lg-note-card { border-radius: 16px; padding: 16px; text-align: center; background: #F4FAFB; border: 1.5px dashed #BBDDE1; }
+.lg-note-card .t { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #7AA1A8; }
+.lg-note-card .s { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9DBAC0; margin-top: 3px; }
+
+/* ─── Lore entry ───────────────────────────────────────────── */
+.lg-entry { background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 6px 16px rgba(11,85,102,.08); }
+.lg-entry-eyebrow { font-family: "Baloo 2"; font-weight: 800; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.lg-entry-title { font-family: "Baloo 2"; font-weight: 800; font-size: 16px; color: #0B5566; margin: 4px 0 6px; }
+.lg-entry-text { font-family: "Nunito"; font-weight: 600; font-style: italic; font-size: 13px; color: #5E8A91; line-height: 1.55; }
+
+/* ─── Guide ────────────────────────────────────────────────── */
+.lg-guide { display: flex; flex-direction: column; gap: 16px; }
+.lg-guide-sec h4 {
+  margin: 0 0 8px; font-family: "Baloo 2"; font-weight: 800; font-size: 14px; color: #0B5566;
+  border-bottom: 1.5px solid #E1F0F2; padding-bottom: 5px;
+}
+.lg-guide-sec p { margin: 0 0 7px; font-family: "Nunito"; font-weight: 600; font-size: 12.5px; color: #5E8A91; line-height: 1.5; }
+.lg-guide-sec strong { color: #0B5566; font-weight: 800; }
+.lg-guide-sec code { font-family: ui-monospace, monospace; font-size: 11px; background: #E9F6F7; color: #0E9CAB; padding: 1px 5px; border-radius: 6px; }
+.lg-tag { display: inline-block; font-family: "Baloo 2"; font-weight: 800; font-size: 10px; padding: 1px 7px; border-radius: 999px; margin: 0 2px; border: 1.5px solid; }
+.lg-tag.blue   { background: #E4F4FF; color: #2A78B5; border-color: #BBDDF2; }
+.lg-tag.green  { background: #E3F8EC; color: #1F8E54; border-color: #B9E8CC; }
+.lg-tag.purple { background: #F1ECFF; color: #6B47F0; border-color: #D7CBFA; }
+.lg-tag.yellow { background: #FFF3D6; color: #A87A12; border-color: #FBE2A8; }
+.lg-tag.teal   { background: #DCF3F4; color: #0E9CAB; border-color: #B3E6E9; }
+
+/* ─── Améliorations: zone & prestige ───────────────────────── */
+.lg-zone-hero { background: linear-gradient(135deg,#E9FBFB,#CDEFF2); border-radius: 18px; padding: 16px; }
+.lg-zone-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.lg-zone-row .lab { font-family: "Nunito"; font-weight: 800; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: #15A0AE; }
+.lg-zone-row .dep { font-family: "Baloo 2"; font-weight: 800; font-size: 16px; color: #0B5566; }
+.lg-inset { background: #fff; border-radius: 14px; padding: 11px 13px; box-shadow: 0 3px 10px rgba(11,85,102,.06); }
+.lg-kv { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.lg-kv .k { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #7AA1A8; }
+.lg-kv .v { font-family: "Baloo 2"; font-weight: 800; font-size: 12px; color: #0B5566; }
+.lg-kv .v.pink { color: #A83A72; }
+.lg-prog.pearl > i { background: linear-gradient(90deg,#8C6BFF,#FF7AB8); }
+
+/* ─── Fixed confirm overlay (Améliorations prestige) ───────── */
+.lg-fixed-scrim {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px;
+  background: rgba(8,60,72,.45); backdrop-filter: blur(3px);
+}
+.lg-confirm { width: 320px; max-width: 100%; background: #fff; border-radius: 24px; padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,.3); text-align: center; }
+.lg-confirm-title { font-family: "Baloo 2"; font-weight: 800; font-size: 18px; color: #0B5566; }
