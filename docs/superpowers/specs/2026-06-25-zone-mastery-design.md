@@ -1,7 +1,7 @@
 # Design: Zone Mastery bonuses + Succès tab
 
 **Date:** 2026-06-25
-**Status:** Approved
+**Status:** Implemented (2026-06-28)
 
 ## Problem
 
