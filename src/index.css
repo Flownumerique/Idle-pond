@@ -17,8 +17,8 @@
   --gemme:        oklch(0.68 0.15 290);
   --perle:        oklch(0.84 0.04 320);
 
-  --font-display: "Newsreader", "Spectral", Georgia, serif;
-  --font-ui:      "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-display: "Baloo 2", "Newsreader", Georgia, serif;
+  --font-ui:      "Nunito", "Inter Tight", system-ui, sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, monospace;
 
   --r-1: 6px;
@@ -1706,3 +1706,562 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .ob-card { padding: 28px 22px 22px; }
   .ob-card h2 { font-size: 24px; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   LAGON VIF — candy desktop shell
+   ════════════════════════════════════════════════════════════ */
+
+/* ─── Candy button primitive ───────────────────────────────── */
+.cbtn {
+  border: 0;
+  cursor: pointer;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 14px;
+  padding: 12px 16px;
+  color: #fff;
+  line-height: 1.05;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.cbtn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.04); }
+.cbtn:active:not(:disabled) { transform: translateY(2px); box-shadow: none !important; }
+.cbtn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.3); }
+
+.cbtn--coral  { background: linear-gradient(180deg,#FF8A63,#FF6B3D); box-shadow: 0 4px 0 #D24E27; }
+.cbtn--gold   { background: linear-gradient(180deg,#FFD56A,#FFB72E); box-shadow: 0 4px 0 #E59412; color: #7A4E00; }
+.cbtn--violet { background: linear-gradient(180deg,#8C6BFF,#6B47F0); box-shadow: 0 4px 0 #4F30C2; }
+.cbtn--ghost  { background: #EDF3F4; box-shadow: 0 4px 0 #D4E4E6; color: #5A8A92; }
+
+/* ─── Shell tokens + root ──────────────────────────────────── */
+.lagon {
+  --lg-teal: #16C8C4; --lg-teal-d: #0E9CAB;
+  --lg-ink: #0B5566;  --lg-ink-soft: #5A8A92;
+  --lg-coral: #FF6B3D; --lg-gold: #FFB72E;
+  --lg-surface: #EFF9FA;
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex;
+  background: var(--lg-surface);
+  font-family: "Nunito", sans-serif;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lagon img { user-select: none; -webkit-user-drag: none; }
+
+@keyframes lg-shimmer { 0%,100% { opacity: .2 } 50% { opacity: .55 } }
+@keyframes lg-bubble  { 0% { transform: translateY(0); opacity: 0 } 15% { opacity: .6 } 100% { transform: translateY(-260px); opacity: 0 } }
+
+/* ─── Left rail ────────────────────────────────────────────── */
+.lg-rail {
+  width: 96px; flex-shrink: 0;
+  background: #fff;
+  box-shadow: 4px 0 24px rgba(11,85,102,.08);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 18px 0; z-index: 5;
+}
+.lg-rail-logo {
+  width: 52px; height: 52px; border-radius: 16px;
+  background: linear-gradient(135deg,#FF8A63,#FFC23C);
+  box-shadow: 0 6px 14px rgba(255,122,89,.4);
+  display: grid; place-items: center; color: #fff; font-size: 26px;
+  font-family: "Baloo 2";
+}
+.lg-rail-sep { width: 36px; height: 1px; background: #E4F1F3; margin: 18px 0; }
+.lg-rail-nav { display: flex; flex-direction: column; gap: 8px; align-items: center; flex: 1; }
+.lg-rail-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 68px; padding: 11px 0; border-radius: 16px;
+  background: transparent; color: #8AAEB4;
+  transition: background .15s, color .15s;
+}
+.lg-rail-btn .ic { font-size: 21px; font-family: "Baloo 2"; }
+.lg-rail-btn .lb { font-family: "Baloo 2"; font-weight: 700; font-size: 9px; }
+.lg-rail-btn:hover { background: #F1FAFB; }
+.lg-rail-btn.active {
+  background: linear-gradient(180deg,#16C8C4,#0E9CAB);
+  box-shadow: 0 6px 14px rgba(14,156,171,.35);
+}
+.lg-rail-btn.active .lb, .lg-rail-btn.active .ic { color: #fff; }
+.lg-rail-renew {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 68px; padding: 12px 0; border-radius: 16px; cursor: pointer;
+  background: #FFF1EC; border: 1.5px solid #FFD3C2; color: #FF6B3D;
+}
+.lg-rail-renew .ic { font-size: 21px; font-family: "Baloo 2"; }
+.lg-rail-renew .lb { font-family: "Baloo 2"; font-weight: 800; font-size: 9px; }
+.lg-rail-renew.ready { animation: boost-pulse 2.5s ease-in-out infinite; }
+
+/* ─── Center pond ──────────────────────────────────────────── */
+.lg-pond {
+  flex: 1; position: relative; overflow: hidden;
+  background: linear-gradient(180deg,#D6F4F8 0%,#9FE6EF 26%,#4FBDD2 62%,#1E8AA8 100%);
+}
+.lg-rays { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.lg-ray {
+  position: absolute; top: 0;
+  background: linear-gradient(180deg,rgba(255,255,255,.46),transparent);
+  filter: blur(13px);
+  animation: lg-shimmer 7s ease-in-out infinite;
+}
+.lg-bubbles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.lg-bubbles span {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,.65);
+  animation: lg-bubble 10s ease-in infinite;
+}
+
+/* ─── Top HUD ──────────────────────────────────────────────── */
+.lg-hud {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 20px 24px;
+}
+.lg-depth-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.8); padding: 9px 15px; border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(11,85,102,.12);
+}
+.lg-depth-chip .num { font-family: "Baloo 2"; font-weight: 800; font-size: 20px; color: #15A0AE; }
+.lg-depth-chip .nm  { font-family: "Nunito"; font-weight: 800; font-size: 11px; color: #0B5566; line-height: 1.1; max-width: 120px; }
+.lg-res-group { display: flex; gap: 10px; }
+.lg-res {
+  display: flex; align-items: center; gap: 9px;
+  background: rgba(255,255,255,.85); padding: 9px 14px; border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(11,85,102,.12);
+}
+.lg-res .coin { width: 24px; height: 24px; flex-shrink: 0; }
+.lg-res .lab { font-family: "Nunito"; font-weight: 800; font-size: 9px; letter-spacing: .04em; }
+.lg-res .val { font-family: "Baloo 2"; font-weight: 800; font-size: 18px; line-height: 1; }
+.lg-res.mana  .coin { border-radius: 50%; background: radial-gradient(circle at 35% 30%,#B9A6FF,#7C5CFF); box-shadow: 0 0 10px rgba(124,92,255,.5); }
+.lg-res.mana  .lab { color: #8C7BC0; } .lg-res.mana .val { color: #3A2E78; }
+.lg-res.gemme .coin { width: 22px; height: 22px; border-radius: 6px; transform: rotate(45deg); background: radial-gradient(circle at 35% 30%,#9CF5C4,#3FC97E); box-shadow: 0 0 10px rgba(63,201,126,.5); }
+.lg-res.gemme .lab { color: #3FA570; } .lg-res.gemme .val { color: #1B6B43; }
+.lg-res.perle .coin { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%,#FFD0E6,#FF7AB8); box-shadow: 0 0 10px rgba(255,122,184,.5); }
+.lg-res.perle .lab { color: #D86AA0; } .lg-res.perle .val { color: #A83A72; }
+
+/* ─── Bottom action bar ────────────────────────────────────── */
+.lg-actionbar {
+  position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 4;
+  background: rgba(255,255,255,.92); border-radius: 24px;
+  padding: 16px 20px; box-shadow: 0 12px 30px rgba(11,85,102,.22);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; gap: 22px;
+}
+.lg-ab-revenue { display: flex; align-items: center; gap: 11px; }
+.lg-ab-coin { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; }
+.lg-ab-coin.mana { background: radial-gradient(circle at 35% 30%,#B9A6FF,#7C5CFF); animation: lg-coinpulse 2.4s ease-in-out infinite; }
+@keyframes lg-coinpulse { 0%,100% { box-shadow: 0 0 7px rgba(124,92,255,.4); } 50% { box-shadow: 0 0 16px rgba(124,92,255,.75); } }
+.lg-ab-revcol { display: flex; flex-direction: column; }
+.lg-ab-revenue .lab { font-family: "Nunito"; font-weight: 800; font-size: 10px; color: #15A0AE; letter-spacing: .06em; display: flex; align-items: center; gap: 6px; }
+.lg-ab-revenue .lab .boostbadge { font-family: "Baloo 2"; font-weight: 800; font-size: 9px; color: #B5740A; background: #FFE9A8; padding: 1px 6px; border-radius: 999px; letter-spacing: 0; }
+.lg-ab-revenue .val { font-family: "Baloo 2"; font-weight: 800; font-size: 30px; color: #0B5566; line-height: 1.05; }
+.lg-ab-revenue .per { font-size: 15px; color: #7AB; margin-left: 2px; }
+.lg-ab-revenue .sub { font-family: "Nunito"; font-weight: 800; font-size: 11px; color: #3FA570; }
+.lg-ab-revenue .sub .u { color: #7AB; font-weight: 700; }
+
+.lg-ab-fish { display: flex; align-items: center; gap: 14px; padding: 0 22px; border-left: 1px solid #DCEFF2; border-right: 1px solid #DCEFF2; }
+.lg-ab-fishcol { display: flex; flex-direction: column; }
+.lg-ab-fish .big { font-family: "Baloo 2"; font-weight: 800; font-size: 24px; color: #0B5566; line-height: 1.05; }
+.lg-ab-fish .big .u { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: #7AB; }
+.lg-ab-fish .sub { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #7AB; }
+.lg-ab-species { display: flex; align-items: center; }
+.lg-ab-species .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#E6FBFB,#C3F0F2); display: grid; place-items: center; margin-left: -9px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(11,85,102,.16); }
+.lg-ab-species .av:first-child { margin-left: 0; }
+.lg-ab-species .av img { width: 24px; height: 24px; object-fit: contain; }
+.lg-ab-species .av span { font-size: 16px; }
+.lg-ab-species .more { margin-left: 7px; font-family: "Baloo 2"; font-weight: 800; font-size: 12px; color: #7AA1A8; }
+.lg-ab-progress { flex: 1; }
+.lg-ab-progress .row { display: flex; justify-content: space-between; font-family: "Nunito"; font-weight: 800; font-size: 10px; color: #7AB; margin-bottom: 6px; }
+.lg-ab-progress .bar { height: 10px; border-radius: 6px; background: #E4F1F3; overflow: hidden; }
+.lg-ab-progress .bar > i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg,#16C8C4,#3FC97E); transition: width .4s ease; }
+.lg-ab-boost { flex-direction: column; gap: 1px; padding: 12px 18px; }
+.lg-ab-boost .ic { font-size: 20px; }
+.lg-ab-boost .tx { font-size: 11px; }
+.lg-ab-dig { flex-direction: column; gap: 1px; padding: 15px 26px; }
+.lg-ab-dig .t1 { font-size: 15px; }
+.lg-ab-dig .t2 { font-family: "Nunito"; font-weight: 800; font-size: 11px; opacity: .92; }
+
+/* ─── Right dock ───────────────────────────────────────────── */
+.lg-dock {
+  width: 392px; flex-shrink: 0;
+  background: var(--lg-surface);
+  box-shadow: -6px 0 28px rgba(11,85,102,.1);
+  display: flex; flex-direction: column; z-index: 5;
+}
+.lg-dock-head { padding: 22px 22px 16px; background: linear-gradient(180deg,#16C8C4,#0E9CAB); }
+.lg-dock-head .ttl { font-family: "Baloo 2"; font-weight: 800; font-size: 26px; color: #fff; }
+.lg-dock-head .sub { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: rgba(255,255,255,.85); }
+.lg-dock-tabs { display: flex; gap: 8px; margin-top: 14px; }
+.lg-dock-tab {
+  padding: 8px 20px; border-radius: 13px; cursor: pointer;
+  background: rgba(255,255,255,.22); color: #fff;
+  font-family: "Baloo 2"; font-weight: 700; font-size: 13px;
+}
+.lg-dock-tab.active { background: #fff; color: #0E9CAB; font-weight: 800; }
+.lg-dock-body { flex: 1; overflow-y: auto; padding: 16px; }
+.lg-dock-body.is-light { background: var(--lg-surface); }
+/* Compatible dark-teal surface for not-yet-rebranded panels (Améliorations, Journal) */
+.lg-dock-body:not(.is-light) { background: #0B3D47; }
+
+/* ─── Candy Shop cards ─────────────────────────────────────── */
+.lg-shop { display: flex; flex-direction: column; gap: 13px; }
+.lg-shop-section { display: flex; flex-direction: column; gap: 13px; }
+.lg-shop-eyebrow { font-family: "Baloo 2"; font-weight: 800; font-size: 9px; letter-spacing: .12em; color: #8AA; }
+
+.lg-fish {
+  background: #fff; border-radius: 20px; padding: 15px;
+  box-shadow: 0 6px 16px rgba(11,85,102,.1);
+  border: 2px solid transparent;
+}
+.lg-fish--legend {
+  background: linear-gradient(180deg,#FFF8E8,#FFF1CF);
+  border-color: #FFC23C; box-shadow: 0 6px 16px rgba(229,148,18,.15);
+}
+.lg-fish--owned { border-color: #16C8C4; }
+.lg-fish--locked { opacity: .55; }
+.lg-fish-legend-eyebrow { font-family: "Baloo 2"; font-weight: 800; font-size: 9px; color: #C98A0F; letter-spacing: .12em; margin-bottom: 9px; }
+
+.lg-fish-head { display: flex; align-items: center; gap: 13px; }
+.lg-fish-sprite {
+  width: 58px; height: 58px; border-radius: 16px; flex-shrink: 0;
+  background: linear-gradient(135deg,#E6FBFB,#C3F0F2);
+  display: grid; place-items: center;
+}
+.lg-fish--legend .lg-fish-sprite { background: #fff; box-shadow: 0 3px 8px rgba(229,148,18,.18); }
+.lg-fish-sprite img { width: 48px; object-fit: contain; }
+.lg-fish-info { flex: 1; min-width: 0; }
+.lg-fish-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.lg-fish-name { font-family: "Baloo 2"; font-weight: 800; font-size: 15px; color: #0B5566; }
+.lg-fish--legend .lg-fish-name { color: #8A5A0A; }
+.lg-fish-badge { font-family: "Baloo 2"; font-weight: 800; font-size: 9px; color: #fff; background: #16C8C4; padding: 3px 9px; border-radius: 8px; flex-shrink: 0; }
+.lg-fish--legend .lg-fish-badge { background: #E5A50F; }
+.lg-fish-income { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #3FC97E; }
+.lg-fish-desc { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9AB; line-height: 1.3; }
+
+.lg-fish-miles { display: flex; gap: 5px; margin: 11px 0 9px; }
+.lg-fish-chip {
+  flex: 1; text-align: center; padding: 4px; border-radius: 8px;
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px;
+  background: #EEF4F5; color: #BCC;
+}
+.lg-fish-chip.hit  { background: #FFE9A8; color: #A87A12; }
+.lg-fish-chip.next { background: #E4F1F3; color: #16C8C4; border: 1.5px dashed #16C8C4; }
+
+/* Milestone chip → descriptive tooltip (hover + click/tap) */
+.lg-fish-chip-wrap { flex: 1; position: relative; display: flex; }
+.lg-fish-chip { width: 100%; border: none; cursor: pointer; }
+.lg-fish-chip.next { border: 1.5px dashed #16C8C4; }
+.lg-fish-tip {
+  position: absolute; bottom: calc(100% + 9px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 40; width: 184px;
+  background: #0B5566; color: #EAF7F8; border-radius: 14px; padding: 10px 12px;
+  box-shadow: 0 12px 28px rgba(11,85,102,.32);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  text-align: left;
+}
+.lg-fish-chip-wrap:hover .lg-fish-tip,
+.lg-fish-chip-wrap.open .lg-fish-tip {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+}
+.lg-fish-tip-arrow {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: #0B5566;
+}
+.lg-fish-tip-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.lg-fish-tip-lvl { font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #BDEBEC; }
+.lg-fish-tip-status {
+  font-family: "Nunito"; font-weight: 800; font-size: 8.5px; letter-spacing: .04em;
+  padding: 2px 6px; border-radius: 999px; background: rgba(255,255,255,.14); color: #CFEFF0;
+  white-space: nowrap;
+}
+.lg-fish-tip-status.hit  { background: #FFE9A8; color: #A87A12; }
+.lg-fish-tip-status.next { background: #16C8C4; color: #06363A; }
+.lg-fish-tip-name { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 4px; }
+.lg-fish-tip-effects { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.lg-fish-tip-effects li {
+  font-family: "Nunito"; font-weight: 700; font-size: 10.5px; color: #E7FBFC; line-height: 1.3;
+  padding-left: 13px; position: relative;
+}
+.lg-fish-tip-effects li::before { content: "✦"; position: absolute; left: 0; color: #FFC23C; font-size: 9px; }
+.lg-fish-tip-note { font-family: "Nunito"; font-weight: 700; font-size: 9.5px; color: #9FCDD2; margin-top: 6px; line-height: 1.3; }
+
+.lg-fish .cbtn { width: 100%; margin-top: 12px; }
+.lg-fish-qty { display: flex; gap: 5px; margin-bottom: 9px; }
+.lg-fish-qty button {
+  flex: 1; padding: 5px 0; border-radius: 8px; cursor: pointer;
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px;
+  background: #EEF4F5; color: #7AA1A8; border: 1.5px solid transparent;
+}
+.lg-fish-qty button.active { background: #6B47F0; color: #fff; }
+.lg-fish-max { text-align: center; font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #C98A0F; padding: 10px; background: #FFF8E8; border-radius: 12px; margin-top: 12px; }
+.lg-fish-locked-note { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9AB; margin-top: 8px; background: #F1FAFB; border-radius: 10px; padding: 8px 10px; }
+
+/* ─── Candy toasts / announcements (top-center stack) ──────── */
+.lg-toast-layer {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+  z-index: 60; width: min(420px, calc(100vw - 32px));
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  pointer-events: none;
+}
+.lg-toast {
+  width: 100%; box-sizing: border-box;
+  background: #fff; border: 2px solid #E4F1F3; border-radius: 18px;
+  padding: 14px 18px; text-align: center;
+  box-shadow: 0 16px 40px rgba(11,85,102,.24);
+}
+@keyframes lg-toast-in {
+  from { opacity: 0; transform: translateY(-18px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes lg-toast-out {
+  to { opacity: 0; transform: translateY(-12px) scale(.97); }
+}
+.lg-toast-icon { font-size: 26px; line-height: 1; margin-bottom: 4px; }
+.lg-toast-eyebrow {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.lg-toast-title { font-family: "Baloo 2"; font-weight: 800; font-size: 17px; color: #0B5566; margin-top: 2px; }
+.lg-toast-sub { font-family: "Nunito"; font-weight: 800; font-size: 12px; margin-top: 3px; }
+.lg-toast-note { font-family: "Nunito"; font-weight: 700; font-size: 10.5px; color: #9DBAC0; font-style: italic; margin-top: 6px; }
+.lg-toast-quote { font-family: "Nunito"; font-weight: 700; font-size: 13px; color: #4A4576; font-style: italic; line-height: 1.4; margin: 4px 0 0; }
+
+.lg-toast--unlock { border-color: #16C8C4; }
+.lg-toast--unlock .lg-toast-eyebrow { color: #0E9CAB; }
+.lg-toast--welcome { border-color: #34D399; }
+.lg-toast--welcome .lg-toast-eyebrow { color: #1FA971; }
+.lg-toast--event {
+  border-color: #C9B8F5;
+  background: linear-gradient(180deg,#FBFAFF,#F2ECFF);
+}
+.lg-toast--event .lg-toast-eyebrow { color: #6B47F0; }
+
+/* ─── Candy Renouveau modal ────────────────────────────────── */
+.lg-modal-scrim {
+  position: absolute; inset: 0; z-index: 30;
+  background: rgba(8,60,72,.45); backdrop-filter: blur(3px);
+  animation: scrim-in .2s ease;
+}
+.lg-modal-card {
+  position: absolute; z-index: 31;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 420px; max-width: calc(100vw - 48px);
+  background: #fff; border-radius: 28px; padding: 28px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.32); text-align: center;
+  animation: modal-pop .3s cubic-bezier(.3,.8,.2,1);
+}
+@keyframes modal-pop {
+  from { transform: translate(-50%, calc(-50% + 14px)) scale(.96); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+.lg-modal-sigil {
+  width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 14px;
+  background: linear-gradient(135deg,#FF8A63,#FFC23C);
+  display: grid; place-items: center; font-size: 34px; color: #fff;
+  font-family: "Baloo 2"; box-shadow: 0 10px 24px rgba(255,122,89,.42);
+}
+.lg-modal-title { font-family: "Baloo 2"; font-weight: 800; font-size: 26px; color: #0B5566; }
+.lg-modal-sub { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: #7AB; margin-top: 2px; }
+.lg-modal-reward {
+  background: linear-gradient(135deg,#FFF3F8,#FDE6F0);
+  border-radius: 20px; padding: 18px; margin: 18px 0; border: 1.5px solid #FFC7E0;
+}
+.lg-modal-reward .lab { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: #C13E81; }
+.lg-modal-reward .big { font-family: "Baloo 2"; font-weight: 800; font-size: 38px; color: #C13E81; line-height: 1.1; }
+.lg-modal-reward .keep { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #D86AA0; margin-top: 4px; }
+.lg-modal-note { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9AB; line-height: 1.45; margin-bottom: 18px; }
+.lg-modal-actions { display: flex; gap: 11px; }
+.lg-modal-actions .cbtn { padding: 14px; border-radius: 16px; font-size: 14px; }
+
+/* ─── Lagon mobile tabs + dock wrap (desktop defaults) ─────── */
+.lg-dock-wrap { display: contents; }
+.lg-dock-scrim { display: none; }
+.lg-mtabs { display: none; }
+
+@media (max-width: 1023px) {
+  .lagon { display: block; }
+  .lg-rail { display: none; }
+  .lg-pond { position: absolute; inset: 0; }
+  .lg-actionbar { left: 12px; right: 12px; bottom: calc(64px + 12px); flex-wrap: wrap; gap: 12px; padding: 12px 14px; }
+  .lg-ab-progress { flex-basis: 100%; order: 5; }
+
+  .lg-dock-wrap {
+    display: block; position: absolute; z-index: 22;
+    top: 0; bottom: 64px; right: 0; width: min(392px, 88vw);
+    transform: translateX(101%); transition: transform .25s cubic-bezier(.3,.8,.2,1);
+  }
+  .lg-dock-wrap.open { transform: translateX(0); }
+  .lg-dock { width: 100%; height: 100%; }
+  .lg-dock-scrim {
+    display: block; position: absolute; inset: 0; z-index: 21;
+    background: rgba(8,60,72,.4); opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .lg-dock-scrim.open { opacity: 1; pointer-events: auto; }
+
+  .lg-mtabs {
+    display: flex; position: absolute; bottom: 0; left: 0; right: 0; height: 64px; z-index: 23;
+    background: #fff; box-shadow: 0 -4px 18px rgba(11,85,102,.12);
+  }
+  .lg-mtabs button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    background: transparent; color: #8AAEB4;
+    font-family: "Baloo 2"; font-weight: 700; font-size: 9px;
+  }
+  .lg-mtabs button .ic { font-size: 19px; font-family: "Baloo 2"; }
+  .lg-mtabs button.active { color: #0E9CAB; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   LAGON VIF — Phase 2: shared candy kit for dock panels
+   ════════════════════════════════════════════════════════════ */
+
+/* ─── Panel scaffolding ────────────────────────────────────── */
+.lg-panel { display: flex; flex-direction: column; gap: 13px; }
+.lg-panel-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.lg-panel-head h3 {
+  margin: 0; font-family: "Baloo 2"; font-weight: 800; font-size: 17px; color: #0B5566;
+}
+.lg-panel-note {
+  font-family: "Nunito"; font-weight: 600; font-size: 12px; color: #6E97A0; line-height: 1.4;
+}
+.lg-section-eyebrow {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: #7AA1A8;
+}
+.lg-chip {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #0E9CAB;
+  background: #DCF3F4; padding: 3px 10px; border-radius: 999px;
+}
+.lg-chip.gold { color: #A87A12; background: #FFE9A8; }
+
+/* ─── Generic candy card ───────────────────────────────────── */
+.lg-card {
+  background: #fff; border-radius: 18px; padding: 14px;
+  box-shadow: 0 6px 16px rgba(11,85,102,.1);
+  border: 2px solid transparent;
+}
+.lg-card--gold {
+  background: linear-gradient(180deg,#FFF8E8,#FFF1CF);
+  border-color: #FFC23C; box-shadow: 0 6px 16px rgba(229,148,18,.15);
+}
+.lg-card--hot { border-color: #FF9E80; background: #FFF4EF; }
+.lg-card--done { background: #F2F8F9; box-shadow: none; opacity: .7; }
+.lg-card--locked { background: #F2F8F9; box-shadow: none; opacity: .55; }
+.lg-card-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.lg-card-title { font-family: "Baloo 2"; font-weight: 800; font-size: 14px; color: #0B5566; line-height: 1.2; }
+.lg-card--done .lg-card-title, .lg-card--locked .lg-card-title { color: #7AA1A8; }
+.lg-card-desc { font-family: "Nunito"; font-weight: 600; font-size: 11.5px; color: #6E97A0; line-height: 1.35; margin-top: 2px; }
+.lg-card-flavour { font-family: "Nunito"; font-weight: 600; font-style: italic; font-size: 10.5px; color: #9DBAC0; margin-top: 3px; }
+.lg-card-prereq { font-family: "Nunito"; font-weight: 700; font-size: 10px; color: #C98A0F; margin-top: 3px; }
+.lg-card-reward { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #C13E81; white-space: nowrap; }
+.lg-card-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+
+/* ─── Extra candy button variants ──────────────────────────── */
+.cbtn--teal    { background: linear-gradient(180deg,#3AD6D2,#0E9CAB); box-shadow: 0 4px 0 #0A7C88; }
+.cbtn--emerald { background: linear-gradient(180deg,#7CEBB0,#34C480); box-shadow: 0 4px 0 #1F9A5E; color: #064A2C; }
+.cbtn--sm { padding: 8px 13px; border-radius: 12px; font-size: 12px; }
+.cbtn--xs { padding: 6px 11px; border-radius: 11px; font-size: 11px; }
+
+/* ─── Stats hero (Profil) ──────────────────────────────────── */
+.lg-stat-hero {
+  background: linear-gradient(135deg,#E9FBFB,#CDEFF2);
+  border-radius: 18px; padding: 16px;
+}
+.lg-stat-hero .lab { font-family: "Nunito"; font-weight: 800; font-size: 11px; letter-spacing: .06em; color: #15A0AE; }
+.lg-stat-hero .big { font-family: "Baloo 2"; font-weight: 800; font-size: 34px; color: #0B5566; line-height: 1; }
+.lg-stat-hero .rate { font-family: "Nunito"; font-weight: 700; font-size: 12px; color: #2FB873; margin-top: 3px; }
+.lg-stat-hero .rate .boost { color: #E59412; font-weight: 800; }
+.lg-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lg-stat-cell { background: #fff; border-radius: 16px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(11,85,102,.08); }
+.lg-stat-cell .lab { font-family: "Nunito"; font-weight: 800; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: #8AAEB4; }
+.lg-stat-cell .val { font-family: "Baloo 2"; font-weight: 800; font-size: 22px; line-height: 1.1; margin-top: 2px; color: #0B5566; }
+.lg-stat-cell.gemme .val { color: #1B6B43; } .lg-stat-cell.gemme .lab { color: #3FA570; }
+.lg-stat-cell.perle .val { color: #A83A72; } .lg-stat-cell.perle .lab { color: #D86AA0; }
+.lg-stat-cell .sub { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #7AA1A8; }
+
+/* ─── Progress bar (Challenges) ────────────────────────────── */
+.lg-prog { height: 7px; border-radius: 999px; background: #E4F1F3; overflow: hidden; margin-top: 9px; }
+.lg-prog > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#16C8C4,#FF8A63); }
+.lg-prog.met > i { background: linear-gradient(90deg,#5BE3A0,#2FB873); }
+
+/* ─── Branch group (Corail) ────────────────────────────────── */
+.lg-branch { border-radius: 18px; padding: 13px; background: #fff; box-shadow: 0 6px 16px rgba(11,85,102,.08); }
+.lg-branch-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.lg-branch-title { font-family: "Baloo 2"; font-weight: 800; font-size: 14px; }
+.lg-branch-desc { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #8AAEB4; margin-bottom: 10px; }
+.lg-branch-nodes { display: flex; flex-direction: column; gap: 8px; }
+.lg-node { border-radius: 14px; padding: 11px 13px; background: #F4FAFB; border: 1.5px solid #E1F0F2; }
+.lg-node.buyable { border-color: var(--branch-c, #16C8C4); background: #fff; }
+.lg-node.done { opacity: .6; }
+.lg-node-cost { font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #3FA570; }
+
+/* ════════════════════════════════════════════════════════════
+   LAGON VIF — Phase 2b: Améliorations & Journal
+   ════════════════════════════════════════════════════════════ */
+
+.cbtn--block { width: 100%; }
+
+/* ─── Sub-tabs inside a panel body (Journal) ───────────────── */
+.lg-subtabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lg-subtab {
+  padding: 9px 0; border-radius: 13px; cursor: pointer;
+  background: #DCF3F4; color: #5A8A92;
+  font-family: "Baloo 2"; font-weight: 800; font-size: 12px; border: 0;
+}
+.lg-subtab.active { background: linear-gradient(180deg,#16C8C4,#0E9CAB); color: #fff; box-shadow: 0 3px 0 #0A7C88; }
+
+/* ─── Note / empty-state card ──────────────────────────────── */
+.lg-note-card { border-radius: 16px; padding: 16px; text-align: center; background: #F4FAFB; border: 1.5px dashed #BBDDE1; }
+.lg-note-card .t { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #7AA1A8; }
+.lg-note-card .s { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9DBAC0; margin-top: 3px; }
+
+/* ─── Lore entry ───────────────────────────────────────────── */
+.lg-entry { background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 6px 16px rgba(11,85,102,.08); }
+.lg-entry-eyebrow { font-family: "Baloo 2"; font-weight: 800; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.lg-entry-title { font-family: "Baloo 2"; font-weight: 800; font-size: 16px; color: #0B5566; margin: 4px 0 6px; }
+.lg-entry-text { font-family: "Nunito"; font-weight: 600; font-style: italic; font-size: 13px; color: #5E8A91; line-height: 1.55; }
+
+/* ─── Guide ────────────────────────────────────────────────── */
+.lg-guide { display: flex; flex-direction: column; gap: 16px; }
+.lg-guide-sec h4 {
+  margin: 0 0 8px; font-family: "Baloo 2"; font-weight: 800; font-size: 14px; color: #0B5566;
+  border-bottom: 1.5px solid #E1F0F2; padding-bottom: 5px;
+}
+.lg-guide-sec p { margin: 0 0 7px; font-family: "Nunito"; font-weight: 600; font-size: 12.5px; color: #5E8A91; line-height: 1.5; }
+.lg-guide-sec strong { color: #0B5566; font-weight: 800; }
+.lg-guide-sec code { font-family: ui-monospace, monospace; font-size: 11px; background: #E9F6F7; color: #0E9CAB; padding: 1px 5px; border-radius: 6px; }
+.lg-tag { display: inline-block; font-family: "Baloo 2"; font-weight: 800; font-size: 10px; padding: 1px 7px; border-radius: 999px; margin: 0 2px; border: 1.5px solid; }
+.lg-tag.blue   { background: #E4F4FF; color: #2A78B5; border-color: #BBDDF2; }
+.lg-tag.green  { background: #E3F8EC; color: #1F8E54; border-color: #B9E8CC; }
+.lg-tag.purple { background: #F1ECFF; color: #6B47F0; border-color: #D7CBFA; }
+.lg-tag.yellow { background: #FFF3D6; color: #A87A12; border-color: #FBE2A8; }
+.lg-tag.teal   { background: #DCF3F4; color: #0E9CAB; border-color: #B3E6E9; }
+
+/* ─── Améliorations: zone & prestige ───────────────────────── */
+.lg-zone-hero { background: linear-gradient(135deg,#E9FBFB,#CDEFF2); border-radius: 18px; padding: 16px; }
+.lg-zone-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.lg-zone-row .lab { font-family: "Nunito"; font-weight: 800; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: #15A0AE; }
+.lg-zone-row .dep { font-family: "Baloo 2"; font-weight: 800; font-size: 16px; color: #0B5566; }
+.lg-inset { background: #fff; border-radius: 14px; padding: 11px 13px; box-shadow: 0 3px 10px rgba(11,85,102,.06); }
+.lg-kv { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.lg-kv .k { font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #7AA1A8; }
+.lg-kv .v { font-family: "Baloo 2"; font-weight: 800; font-size: 12px; color: #0B5566; }
+.lg-kv .v.pink { color: #A83A72; }
+.lg-prog.pearl > i { background: linear-gradient(90deg,#8C6BFF,#FF7AB8); }
+
+/* ─── Fixed confirm overlay (Améliorations prestige) ───────── */
+.lg-fixed-scrim {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px;
+  background: rgba(8,60,72,.45); backdrop-filter: blur(3px);
+}
+.lg-confirm { width: 320px; max-width: 100%; background: #fff; border-radius: 24px; padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,.3); text-align: center; }
+.lg-confirm-title { font-family: "Baloo 2"; font-weight: 800; font-size: 18px; color: #0B5566; }

@@ -26,34 +26,18 @@ export const WelcomeBackNotification = () => {
 
   return (
     <div
-      className="fixed top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-      style={{ animation: 'wbSlideIn 0.4s ease-out, wbFadeOut 0.5s ease-in 5.5s forwards' }}
+      className="lg-toast lg-toast--welcome"
+      style={{ animation: 'lg-toast-in .42s cubic-bezier(.3,.85,.25,1.2), lg-toast-out .45s ease 5.55s forwards' }}
     >
-      <div className="bg-slate-900/90 backdrop-blur-md border border-teal-400/40 rounded-2xl px-8 py-5 shadow-2xl shadow-teal-900/40 text-center min-w-[280px]">
-        <div className="text-teal-300 text-xs uppercase tracking-widest font-bold mb-2">
-          🌊 Bienvenue de retour !
-        </div>
-        <div className="text-white text-base font-bold mb-1">
-          Absent{data.minutes >= 60 ? 'e' : ''} pendant {formatDuration(data.minutes)}
-        </div>
-        <div className="text-emerald-300 font-extrabold text-lg">
-          +{data.mana} Mana
-        </div>
-        <div className="text-xs text-gray-500 mt-2 italic">
-          Les poissons ont travaillé pendant votre absence
-        </div>
+      <div className="lg-toast-icon">🌊</div>
+      <div className="lg-toast-eyebrow">Bienvenue de retour</div>
+      <div className="lg-toast-title">
+        Absent{data.minutes >= 60 ? 'e' : ''} pendant {formatDuration(data.minutes)}
       </div>
-
-      <style>{`
-        @keyframes wbSlideIn {
-          from { opacity: 0; transform: translate(-50%, -20px); }
-          to   { opacity: 1; transform: translate(-50%, 0); }
-        }
-        @keyframes wbFadeOut {
-          from { opacity: 1; }
-          to   { opacity: 0; }
-        }
-      `}</style>
+      <div className="lg-toast-sub" style={{ color: '#1FA971', fontSize: 15 }}>
+        +{data.mana} Mana
+      </div>
+      <div className="lg-toast-note">Les poissons ont travaillé pendant votre absence</div>
     </div>
   );
 };

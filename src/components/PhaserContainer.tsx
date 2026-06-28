@@ -57,7 +57,7 @@ export const PhaserContainer = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden bg-gray-900"
+      className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden"
     />
   );
 };
