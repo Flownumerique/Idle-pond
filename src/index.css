@@ -1951,6 +1951,46 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .lg-fish-chip.hit  { background: #FFE9A8; color: #A87A12; }
 .lg-fish-chip.next { background: #E4F1F3; color: #16C8C4; border: 1.5px dashed #16C8C4; }
 
+/* Milestone chip → descriptive tooltip (hover + click/tap) */
+.lg-fish-chip-wrap { flex: 1; position: relative; display: flex; }
+.lg-fish-chip { width: 100%; border: none; cursor: pointer; }
+.lg-fish-chip.next { border: 1.5px dashed #16C8C4; }
+.lg-fish-tip {
+  position: absolute; bottom: calc(100% + 9px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 40; width: 184px;
+  background: #0B5566; color: #EAF7F8; border-radius: 14px; padding: 10px 12px;
+  box-shadow: 0 12px 28px rgba(11,85,102,.32);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  text-align: left;
+}
+.lg-fish-chip-wrap:hover .lg-fish-tip,
+.lg-fish-chip-wrap.open .lg-fish-tip {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+}
+.lg-fish-tip-arrow {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: #0B5566;
+}
+.lg-fish-tip-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.lg-fish-tip-lvl { font-family: "Baloo 2"; font-weight: 800; font-size: 11px; color: #BDEBEC; }
+.lg-fish-tip-status {
+  font-family: "Nunito"; font-weight: 800; font-size: 8.5px; letter-spacing: .04em;
+  padding: 2px 6px; border-radius: 999px; background: rgba(255,255,255,.14); color: #CFEFF0;
+  white-space: nowrap;
+}
+.lg-fish-tip-status.hit  { background: #FFE9A8; color: #A87A12; }
+.lg-fish-tip-status.next { background: #16C8C4; color: #06363A; }
+.lg-fish-tip-name { font-family: "Baloo 2"; font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 4px; }
+.lg-fish-tip-effects { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.lg-fish-tip-effects li {
+  font-family: "Nunito"; font-weight: 700; font-size: 10.5px; color: #E7FBFC; line-height: 1.3;
+  padding-left: 13px; position: relative;
+}
+.lg-fish-tip-effects li::before { content: "✦"; position: absolute; left: 0; color: #FFC23C; font-size: 9px; }
+.lg-fish-tip-note { font-family: "Nunito"; font-weight: 700; font-size: 9.5px; color: #9FCDD2; margin-top: 6px; line-height: 1.3; }
+
 .lg-fish .cbtn { width: 100%; margin-top: 12px; }
 .lg-fish-qty { display: flex; gap: 5px; margin-bottom: 9px; }
 .lg-fish-qty button {
@@ -1961,6 +2001,46 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .lg-fish-qty button.active { background: #6B47F0; color: #fff; }
 .lg-fish-max { text-align: center; font-family: "Nunito"; font-weight: 700; font-size: 11px; color: #C98A0F; padding: 10px; background: #FFF8E8; border-radius: 12px; margin-top: 12px; }
 .lg-fish-locked-note { font-family: "Nunito"; font-weight: 600; font-size: 11px; color: #9AB; margin-top: 8px; background: #F1FAFB; border-radius: 10px; padding: 8px 10px; }
+
+/* ─── Candy toasts / announcements (top-center stack) ──────── */
+.lg-toast-layer {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+  z-index: 60; width: min(420px, calc(100vw - 32px));
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  pointer-events: none;
+}
+.lg-toast {
+  width: 100%; box-sizing: border-box;
+  background: #fff; border: 2px solid #E4F1F3; border-radius: 18px;
+  padding: 14px 18px; text-align: center;
+  box-shadow: 0 16px 40px rgba(11,85,102,.24);
+}
+@keyframes lg-toast-in {
+  from { opacity: 0; transform: translateY(-18px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes lg-toast-out {
+  to { opacity: 0; transform: translateY(-12px) scale(.97); }
+}
+.lg-toast-icon { font-size: 26px; line-height: 1; margin-bottom: 4px; }
+.lg-toast-eyebrow {
+  font-family: "Baloo 2"; font-weight: 800; font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.lg-toast-title { font-family: "Baloo 2"; font-weight: 800; font-size: 17px; color: #0B5566; margin-top: 2px; }
+.lg-toast-sub { font-family: "Nunito"; font-weight: 800; font-size: 12px; margin-top: 3px; }
+.lg-toast-note { font-family: "Nunito"; font-weight: 700; font-size: 10.5px; color: #9DBAC0; font-style: italic; margin-top: 6px; }
+.lg-toast-quote { font-family: "Nunito"; font-weight: 700; font-size: 13px; color: #4A4576; font-style: italic; line-height: 1.4; margin: 4px 0 0; }
+
+.lg-toast--unlock { border-color: #16C8C4; }
+.lg-toast--unlock .lg-toast-eyebrow { color: #0E9CAB; }
+.lg-toast--welcome { border-color: #34D399; }
+.lg-toast--welcome .lg-toast-eyebrow { color: #1FA971; }
+.lg-toast--event {
+  border-color: #C9B8F5;
+  background: linear-gradient(180deg,#FBFAFF,#F2ECFF);
+}
+.lg-toast--event .lg-toast-eyebrow { color: #6B47F0; }
 
 /* ─── Candy Renouveau modal ────────────────────────────────── */
 .lg-modal-scrim {

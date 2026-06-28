@@ -418,9 +418,11 @@ export default function App() {
 
       {showPrestige && <PrestigeModal onClose={() => setShowPrestige(false)} />}
 
-      <EventNotification />
-      <UnlockNotification />
-      <WelcomeBackNotification />
+      <div className="lg-toast-layer">
+        <UnlockNotification />
+        <WelcomeBackNotification />
+        <EventNotification />
+      </div>
     </div>
   );
 }

@@ -37,33 +37,17 @@ export const UnlockNotification = () => {
 
   return (
     <div
-      className="fixed top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-      style={{ animation: 'unlockSlideIn 0.4s ease-out, unlockFadeOut 0.5s ease-in 3.5s forwards' }}
+      className="lg-toast lg-toast--unlock"
+      style={{ animation: 'lg-toast-in .42s cubic-bezier(.3,.85,.25,1.2), lg-toast-out .45s ease 3.55s forwards' }}
     >
-      <div className="bg-teal-900/90 backdrop-blur-md border border-teal-400/40 rounded-2xl px-8 py-5 shadow-2xl shadow-teal-900/60 text-center">
-        <div className="text-teal-300 text-xs uppercase tracking-widest font-bold mb-1">
-          ⛏️ Profondeur {content.depth} débloquée !
+      <div className="lg-toast-icon">⛏️</div>
+      <div className="lg-toast-eyebrow">Profondeur {content.depth} débloquée</div>
+      <div className="lg-toast-title">{DEPTH_NAMES[content.depth] ?? 'Nouveau niveau'}</div>
+      {content.fish && (
+        <div className="lg-toast-sub" style={{ color: '#C98A0F' }}>
+          {content.fish.emoji} {content.fish.name} maintenant disponible !
         </div>
-        <div className="text-white text-lg font-extrabold mb-1">
-          {DEPTH_NAMES[content.depth] ?? 'Nouveau niveau'}
-        </div>
-        {content.fish && (
-          <div className="text-yellow-300 font-semibold text-sm mt-2">
-            {content.fish.emoji} {content.fish.name} maintenant disponible !
-          </div>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes unlockSlideIn {
-          from { opacity: 0; transform: translate(-50%, -20px); }
-          to   { opacity: 1; transform: translate(-50%, 0); }
-        }
-        @keyframes unlockFadeOut {
-          from { opacity: 1; }
-          to   { opacity: 0; }
-        }
-      `}</style>
+      )}
     </div>
   );
 };

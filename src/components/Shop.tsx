@@ -35,13 +35,6 @@ const calcMaxUpgrades = (baseCost: number, currentLevel: number, mana: Decimal):
   return count;
 };
 
-const milestoneBonus = (selfMult: number, globalBonus: number): string => {
-  const parts: string[] = [];
-  if (selfMult > 1) parts.push(`×${selfMult} revenus`);
-  if (globalBonus > 0) parts.push(`+${globalBonus}% global`);
-  return parts.join(' · ');
-};
-
 export const Shop = () => {
   const mana = useGameStore(s => s.mana);
   const poissons = useGameStore(s => s.poissons);
@@ -167,6 +160,7 @@ function FishCard({
   canAffordBuy, buyCost, variant,
 }: FishCardProps) {
   const [upgradeQty, setUpgradeQty] = useState<UpgradeQty>(1);
+  const [openMilestone, setOpenMilestone] = useState<number | null>(null);
 
   const owned = instance !== null;
   const isMaxLevel = owned && instance.level >= MAX_FISH_LEVEL;
@@ -181,10 +175,14 @@ function FishCard({
     : new Decimal(fish.baseIncome);
 
   const maxN = owned ? calcMaxUpgrades(fish.baseCost, instance.level, mana) : 0;
+  const levelsRemaining = owned ? MAX_FISH_LEVEL - instance.level : 0;
+  // Levels reflected on the button. Computed independently of affordability so the
+  // required cost stays visible even when the player can't pay for it yet.
+  // For "max" with nothing affordable, fall back to showing the cost of 1 level.
   const upgradeCount = owned
     ? (upgradeQty === 'max'
-        ? maxN
-        : Math.min(upgradeQty, MAX_FISH_LEVEL - instance.level, maxN > 0 ? upgradeQty : 0))
+        ? Math.max(maxN, Math.min(1, levelsRemaining))
+        : Math.min(upgradeQty, levelsRemaining))
     : 0;
   const upgradeCostTotal = owned && upgradeCount > 0
     ? calcUpgradeCostN(fish.baseCost, instance.level, upgradeCount)
@@ -231,14 +229,48 @@ function FishCard({
             const effectiveLevel = Math.max(1, lvl - bonuses.milestoneLevelReduction);
             const reached = instance.level >= effectiveLevel;
             const isNext = nextMilestone?.level === lvl;
+            const open = openMilestone === lvl;
+            const effects: string[] = [];
+            if (milestone) {
+              if (milestone.selfMultiplier > 1) effects.push(`Revenus de ce poisson ×${milestone.selfMultiplier}`);
+              if (milestone.globalBonus > 0) effects.push(`+${milestone.globalBonus}% aux revenus de tous les poissons`);
+            }
             return (
               <div
                 key={lvl}
-                className={`lg-fish-chip${reached ? ' hit' : isNext ? ' next' : ''}`}
-                title={milestone
-                  ? `Niv. ${effectiveLevel} — ${milestone.label} (${milestoneBonus(milestone.selfMultiplier, milestone.globalBonus)})`
-                  : `Niv. ${effectiveLevel}`}
-              >{effectiveLevel}</div>
+                className={`lg-fish-chip-wrap${open ? ' open' : ''}`}
+                onMouseLeave={() => setOpenMilestone(prev => (prev === lvl ? null : prev))}
+              >
+                <button
+                  type="button"
+                  className={`lg-fish-chip${reached ? ' hit' : isNext ? ' next' : ''}`}
+                  onClick={() => setOpenMilestone(prev => (prev === lvl ? null : lvl))}
+                  aria-expanded={open}
+                  aria-label={`Détails du palier niveau ${effectiveLevel}`}
+                >{effectiveLevel}</button>
+                <div className="lg-fish-tip" role="tooltip">
+                  <div className="lg-fish-tip-head">
+                    <span className="lg-fish-tip-lvl">Niveau {effectiveLevel}</span>
+                    <span className={`lg-fish-tip-status${reached ? ' hit' : isNext ? ' next' : ''}`}>
+                      {reached ? '✓ Atteint' : isNext ? 'Prochain' : 'À venir'}
+                    </span>
+                  </div>
+                  {milestone ? (
+                    <>
+                      <div className="lg-fish-tip-name">{milestone.label}</div>
+                      <ul className="lg-fish-tip-effects">
+                        {effects.map((e, i) => <li key={i}>{e}</li>)}
+                      </ul>
+                      {!reached && (
+                        <div className="lg-fish-tip-note">Atteignez le niveau {effectiveLevel} pour débloquer ce bonus.</div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="lg-fish-tip-note">Palier au niveau {effectiveLevel}.</div>
+                  )}
+                  <span className="lg-fish-tip-arrow" />
+                </div>
+              </div>
             );
           })}
         </div>
@@ -266,9 +298,7 @@ function FishCard({
             onClick={() => onUpgrade(upgradeQty)}
             disabled={!canAffordUpgrade}
           >
-            {canAffordUpgrade
-              ? <>Améliorer {upgradeQty === 'max' ? `×${maxN}` : upgradeCount > 0 ? `×${upgradeCount}` : ''} — {formatNumber(upgradeCostTotal)} Mana</>
-              : maxN === 0 ? 'Mana insuffisante' : `Améliorer — ${formatNumber(upgradeCostTotal)} Mana`}
+            Améliorer ×{upgradeCount} — {formatNumber(upgradeCostTotal)} Mana
           </button>
         </>
       )}
