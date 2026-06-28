@@ -1,12 +1,15 @@
 import Decimal from 'break_infinity.js';
 import { useGameStore } from '../store/useGameStore';
 import { getSelfMilestoneMultiplier, getGlobalMultiplier, FISH_TYPES } from '../data/fishTypes';
+import { ZONE_MASTERY_BONUS_PERCENT } from '../data/zones';
 import { computeBonuses } from '../utils/bonuses';
 import { formatNumber } from '../utils/formatNumber';
 
 const DEEP_FISH_TYPES = new Set(
   FISH_TYPES.filter(f => f.requiredDepth >= 4).map(f => f.type)
 );
+
+const FISH_DEPTH = new Map(FISH_TYPES.map(f => [f.type, f.requiredDepth]));
 
 export class OfflineManager {
   private static instance: OfflineManager;
@@ -23,7 +26,7 @@ export class OfflineManager {
 
   public calculateOfflineGain() {
     const state = useGameStore.getState();
-    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned } = state;
+    const { poissons, lastSaveTime, researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned, masteredZones } = state;
 
     if (poissons.length === 0 || !lastSaveTime) return;
 
@@ -38,8 +41,11 @@ export class OfflineManager {
       const levelMult = new Decimal(1.5).pow(fish.level - 1);
       const milestoneMult = getSelfMilestoneMultiplier(fish, bonuses.milestoneLevelReduction);
       const deepMult = DEEP_FISH_TYPES.has(fish.type) ? bonuses.deepFishIncomeMult : 1;
+      const masteryMult = (masteredZones ?? []).includes(FISH_DEPTH.get(fish.type) ?? -1)
+        ? 1 + ZONE_MASTERY_BONUS_PERCENT / 100
+        : 1;
       baseIncomePerSec = baseIncomePerSec.add(
-        new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult)
+        new Decimal(fish.baseIncome).mul(levelMult).mul(milestoneMult).mul(deepMult).mul(masteryMult)
       );
     }
 
