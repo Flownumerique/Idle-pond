@@ -8,6 +8,7 @@ import { PEARL_UPGRADES } from '../data/pearlUpgrades';
 import { PRESTIGE_UPGRADES } from '../data/prestigeUpgrades';
 import { FISH_TYPES } from '../data/fishTypes';
 import { GLOBAL_UPGRADES, ZONE_UPGRADES } from '../data/runUpgrades';
+import { computeNewlyMasteredZones } from '../data/zones';
 import { computeBonuses } from '../utils/bonuses';
 import { getSessionManaEarned } from '../utils/session';
 
@@ -78,6 +79,8 @@ export interface GameState {
   dailyChallengesCompleted: string[];
   lastChallengeDate: string;
 
+  masteredZones: number[];
+
   pendingUnlock: string | null;
   pendingNarrativeEvent: string | null;
   pendingWelcomeBack: { minutes: number; mana: string } | null;
@@ -100,6 +103,7 @@ export interface GameState {
   claimChallenge: (id: string) => void;
   checkAchievements: () => void;
   checkDailyReset: () => void;
+  evaluateZoneMastery: () => void;
   clearPendingUnlock: () => void;
   setPendingNarrativeEvent: (event: string | null) => void;
   setPendingWelcomeBack: (data: { minutes: number; mana: string } | null) => void;
@@ -200,6 +204,7 @@ export const useGameStore = create<GameState>()(
       runUpgradesOwned: [],
       dailyChallengesCompleted: [],
       lastChallengeDate: '',
+      masteredZones: [],
       pendingUnlock: null,
       pendingNarrativeEvent: null,
       pendingWelcomeBack: null,
@@ -288,7 +293,11 @@ export const useGameStore = create<GameState>()(
         if (newLevel <= currentLevel) return s;
         const updated = [...s.poissons];
         updated[idx] = { ...updated[idx], level: newLevel };
-        return { mana: s.mana.minus(totalCost), poissons: updated };
+        return {
+          mana: s.mana.minus(totalCost),
+          poissons: updated,
+          masteredZones: computeNewlyMasteredZones(updated, s.masteredZones ?? []),
+        };
       }),
 
       upgradePond: () => set((s) => {
@@ -411,6 +420,10 @@ export const useGameStore = create<GameState>()(
         if (s.lastChallengeDate === today) return s;
         return { lastChallengeDate: today, dailyChallengesCompleted: [] };
       }),
+
+      evaluateZoneMastery: () => set((s) => ({
+        masteredZones: computeNewlyMasteredZones(s.poissons, s.masteredZones ?? []),
+      })),
 
       clearPendingUnlock: () => set({ pendingUnlock: null }),
       setPendingNarrativeEvent: (event) => set({ pendingNarrativeEvent: event }),

@@ -19,6 +19,7 @@ import { PrestigeUpgrades } from './components/PrestigeUpgrades';
 import { Achievements } from './components/Achievements';
 import { Challenges } from './components/Challenges';
 import { Stats } from './components/Stats';
+import { ZoneMastery } from './components/ZoneMastery';
 import { Lore } from './components/Lore';
 import { Guide } from './components/Guide';
 import { EventNotification } from './components/EventNotification';
@@ -48,6 +49,7 @@ const PANEL_META: Record<PanelId, { title: string; sub: string }> = {
 const TABS_BY_PANEL: Partial<Record<PanelId, { id: string; label: string }[]>> = {
   shop:    [{ id: 'fish', label: 'Poissons' }, { id: 'upgrades', label: 'Améliorations' }],
   pearls:  [{ id: 'market', label: 'Marché' }, { id: 'prestige', label: 'Prestige' }],
+  profile: [{ id: 'stats', label: 'Stats' }, { id: 'succes', label: 'Succès' }, { id: 'defis', label: 'Défis' }],
   journal: [{ id: 'lore', label: 'Lore' }, { id: 'guide', label: 'Guide' }],
 };
 
@@ -165,6 +167,7 @@ function BottomActionBar() {
   const pearlUpgradesUnlocked    = useGameStore(s => s.pearlUpgradesUnlocked);
   const prestigeUpgradesUnlocked = useGameStore(s => s.prestigeUpgradesUnlocked);
   const runUpgradesOwned         = useGameStore(s => s.runUpgradesOwned);
+  const masteredZones            = useGameStore(s => s.masteredZones);
   const upgradePond              = useGameStore(s => s.upgradePond);
   const activateBoost            = useGameStore(s => s.activateBoost);
 
@@ -173,7 +176,7 @@ function BottomActionBar() {
     [researchUnlocked, pearlUpgradesUnlocked, prestigeUpgradesUnlocked, runUpgradesOwned]
   );
 
-  const incomePerSec = computeIncomePerSec(poissons, bonuses, boostActiveUntil);
+  const incomePerSec = computeIncomePerSec(poissons, bonuses, boostActiveUntil, masteredZones);
 
   const pondCost = getPondUpgradeCost(pondDepth);
   const canDig   = pondDepth < 11 && mana.gte(pondCost);
@@ -259,13 +262,24 @@ function PanelBody({ panel, tab }: { panel: PanelId; tab: string }) {
   if (panel === 'shop')     return tab === 'fish' ? <Shop /> : <Ameliorations />;
   if (panel === 'research') return <Research />;
   if (panel === 'pearls')   return tab === 'market' ? <PearlMarket /> : <PrestigeUpgrades />;
-  if (panel === 'profile')  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
-      <Stats />
-      <Achievements />
-      <Challenges />
-    </div>
-  );
+  if (panel === 'profile') {
+    if (tab === 'succes') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+        <Achievements />
+        <ZoneMastery />
+      </div>
+    );
+    if (tab === 'defis') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+        <Challenges />
+      </div>
+    );
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+        <Stats />
+      </div>
+    );
+  }
   if (panel === 'journal')  return tab === 'lore' ? <Lore /> : <Guide />;
   return null;
 }
@@ -356,7 +370,7 @@ function PrestigeModal({ onClose }: { onClose: () => void }) {
 export default function App() {
   const [activePanel, setActivePanel] = useState<PanelId>('shop');
   const [panelTab, setPanelTab]       = useState<Record<string, string>>({
-    shop: 'fish', pearls: 'market', journal: 'lore',
+    shop: 'fish', pearls: 'market', profile: 'stats', journal: 'lore',
   });
   const [showPrestige, setShowPrestige] = useState(false);
   const [dockOpenMobile, setDockOpenMobile] = useState(false);
@@ -365,6 +379,7 @@ export default function App() {
 
   useEffect(() => {
     useGameStore.getState().checkDailyReset();
+    useGameStore.getState().evaluateZoneMastery();
     OfflineManager.getInstance().calculateOfflineGain();
     GameLoopManager.getInstance().start();
     return () => GameLoopManager.getInstance().stop();

@@ -57,7 +57,7 @@ export class GameLoopManager {
     );
 
     if (poissons.length > 0) {
-      const finalIncomePerSec = computeIncomePerSec(poissons, bonuses, state.boostActiveUntil);
+      const finalIncomePerSec = computeIncomePerSec(poissons, bonuses, state.boostActiveUntil, state.masteredZones);
       const incomeThisTick = finalIncomePerSec.mul(deltaMs / 1000);
       if (incomeThisTick.gt(0)) {
         state.addMana(incomeThisTick);
