@@ -1,65 +1,72 @@
-# 🐟 Étang des Merveilles
+# IdlePond
 
-Un jeu **idle / incremental** où l'on fait grandir un étang vivant : on achète et fait monter en niveau des poissons, on creuse vers des zones de plus en plus profondes, et on prestige pour repartir plus fort. Chaque espèce est illustrée par un sprite animé qui nage dans le bassin.
+Jeu idle/incrémental narratif. Le joueur **descend** dans des assises
+sous-marines de plus en plus profondes, **convainc** des espèces qui deviennent
+ses générateurs, et accumule de la **Foi** émise par ses fidèles. Quand le
+palier suivant coûte plus que ce que sa contenance peut porter, il retourne dans
+l'œuf : c'est l'**éclosion**.
 
-## Aperçu du jeu
+React 19 · TypeScript · Vite · Phaser 3 · Zustand 5 · `break_infinity.js` ·
+Tailwind 4.
 
-- **42 poissons** répartis sur **11 zones de profondeur**, du Lac de Surface jusqu'à la Dimension Quantique.
-- **Creusage** : dépenser du Mana pour atteindre de nouvelles zones et débloquer de nouvelles espèces.
-- **3 monnaies** : Mana (revenu courant), Gemmes 💎 et Perles 🪸.
-- **47 améliorations permanentes** réparties en 3 systèmes :
-  - 🧬 **Corail de Prestige** (21 nœuds, payés en Gemmes)
-  - 💎 **Marché des Perles** (6 améliorations, payées en Gemmes)
-  - 🪸 **Améliorations de Prestige** (12 améliorations, payées en Perles)
-- **Prestige** : réinitialiser sa partie pour gagner des Perles et des bonus définitifs.
-- **Gains hors-ligne**, sauvegarde automatique, succès, défis quotidiens, événements narratifs et un bestiaire avec lore.
+## État : jalon v0.1 — « le noyau tourne »
 
-Le détail du contenu est documenté dans [`AMELIORATIONS.md`](AMELIORATIONS.md), [`BIOMES.md`](BIOMES.md), [`POISSONS.md`](POISSONS.md) et [`DOCUMENTATION.md`](DOCUMENTATION.md).
+Le noyau, ses trois tests et le versionnage de save. Pas d'UI, pas de Phaser,
+pas de contenu — c'est ce que le jalon prescrit.
 
-## Stack technique
+Le compte rendu du jalon, ses mesures et ses décisions ouvertes :
+[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md).
 
-- **React 19** + **TypeScript** + **Vite**
-- **Phaser 3** pour le rendu et l'animation du bassin (spritesheets 8 frames)
-- **Zustand** (avec persistance) comme source unique de l'état du jeu
-- **break_infinity.js** pour les très grands nombres
-- **Tailwind CSS** pour l'interface
+## Commandes
 
-## Architecture
-
-L'état du jeu vit entièrement dans `src/store/useGameStore.ts` (Zustand). `App.tsx` n'est qu'une coquille : initialisation des managers, HUD, navigation et notifications.
-
-```
-main.tsx
-└── App.tsx (shell)
-      ├── GameLoopManager   – tick du jeu toutes les 100 ms
-      ├── OfflineManager    – calcul des gains hors-ligne au lancement
-      ├── PhaserContainer   – bassin animé (PondScene)
-      ├── HUD haut / bas    – monnaies, revenu/s, creusage, boost
-      └── Panneaux          – Boutique, Corail, Perles, Profil, Journal
-```
-
-- `src/data/` : données du jeu (poissons, succès, défis, recherche, améliorations, lore, événements).
-- `src/game/scenes/PondScene.ts` : scène Phaser, chargement et animation des poissons.
-- `src/managers/` : boucle de jeu et gains hors-ligne.
-- `src/utils/` : calcul du revenu, des bonus, formatage des nombres.
-- `public/` : sprites statiques · `public/anim/` : spritesheets d'animation (1024×128, 8 frames).
-
-## Démarrer
-
-```bash
+```sh
 npm install
-npm run dev        # serveur de dev (http://localhost:5173)
-npm run build      # build de production -> dist/
-npm run preview    # prévisualiser le build
-npm run lint       # ESLint
+npm test          # 42 tests : architecture, déterminisme, équivalence de pas,
+                  # persistance, canon, horloge, simulateur
+npm run build     # tsc -b && vite build
+npm run lint
+npm run dev       # banc d'essai : la sortie du simulateur, pas le jeu
 ```
 
-## Docker
+## Le contrat
 
-Build de production multi-stage (Vite → nginx) servant les fichiers statiques :
+Le document de référence est le **prompt de lancement v1.0** (Tier 2). Il n'est
+pas dans le dépôt ; il est à relire avant chaque session de build et il remplace
+toute mémoire de session. Quatre règles s'y vérifient en premier, et un test
+existe pour chacune :
 
-```bash
-docker compose up --build      # http://localhost:8080
+1. `noyau/` est pur — aucun `Date.now`, aucun `Math.random`, aucun import React
+   ou Phaser (`tests/architecture.test.ts`).
+2. Toute mécanique du cœur se calcule en **un seul pas** pour `dt = 8 h`
+   (`tests/equivalence-de-pas.test.ts`).
+3. La technique baisse les **coûts** et automatise ; la bénédiction monte la
+   **production**. Aucun nœud ne franchit cette ligne (`tests/canon.test.ts`).
+4. Aucun paramètre « à mesurer » n'est inventé : il est une constante nommée,
+   commentée `// [P] graine`, dans `src/noyau/constantes.ts` — un seul endroit.
+
+Le lexique s'applique **au code, aux identifiants et à l'UI**, pas seulement à
+la prose : *assise*, *palier*, *banc*, *éclosion*, *densité*, *Foi*,
+*bénédiction*, *technique*, *acclimatation*, *conviction*. Jamais « ponte », ni
+« prestige », ni un nom générique de couche à l'écran. Un test le vérifie sur le
+code de `src/`.
+
+## Découpage
+
+```
+src/
+├── noyau/          PUR. tick(state, dt) -> state. Aucune dépendance à React,
+│                   Phaser, DOM ou horloge.
+├── donnees/        Contenu pur, sans logique.
+├── adaptateurs/    Le monde impur vit ici, et nulle part ailleurs.
+├── etat/           Zustand — v0.2
+├── ui/             React + Tailwind — v0.2
+├── scene/          Phaser — v0.2
+└── simulateur/     Réutilise noyau/ tel quel.
 ```
 
-Pour le développement avec rechargement à chaud, utiliser plutôt `npm run dev`.
+## Note sur les documents à la racine
+
+`DOCUMENTATION.md`, `AMELIORATIONS.md`, `BIOMES.md` et `POISSONS.md` décrivent
+l'ancien projet — gemmes, perles, zones, Corail de Prestige — dont le §9 du
+prompt de lancement a supprimé tous les systèmes. Ils sont conservés en l'état
+mais **ne font plus autorité**. À archiver ou réécrire avant la v0.2.
