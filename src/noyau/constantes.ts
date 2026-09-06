@@ -114,8 +114,15 @@ export const BONUS_GLOBAL_AU_NIVEAU_100 = 0.03
  * ne changent aucune forme et seront réfutées par le calibreur.
  */
 
-/** [P] graine — taux de base d'un palier au palier 0, mana/s par individu. */
-export const TAUX_BASE_AU_PALIER_0 = 1
+/**
+ * [P] graine — taux de base d'un palier au palier 0, mana/s par individu.
+ *
+ * Recalé au jalon v0.2, et pas par goût : à 1 mana/s par individu, tout coûtait
+ * moins que quelques secondes de production et le premier cycle se figeait au
+ * bout de dix minutes, faute d'avoir quoi que ce soit à acheter. Le plancher de
+ * cadence du §8.4 est ce qui l'a fait apparaître. À remesurer en v0.3.
+ */
+export const TAUX_BASE_AU_PALIER_0 = 0.2
 
 /** [P] graine — coût de creusement du palier 1. Croît ensuite en g^index. */
 export const COUT_CREUSER_AU_PALIER_1 = 60
@@ -150,7 +157,7 @@ export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_DEBLOCAGE_AU_PALIER_0
  * [P] — la loi de croissance de la contenance n'est fixée par aucun document.
  * Ces graines la rendent monotone et non explosive ; à trancher en v0.3.
  */
-export const CONTENANCE_INITIALE = 200
+export const CONTENANCE_INITIALE = 1200
 export const CONTENANCE_EN_SECONDES_DE_PRODUCTION_DE_PIC = 600
 
 /* ─── Graines d'éclosion ────────────────────────────────────────────────────*/
@@ -173,11 +180,44 @@ export const FOI_EXPOSANT = 0.5
  */
 export const RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05 = 1
 
+/* ─── Succès ────────────────────────────────────────────────────────────────*/
+
+/**
+ * Fraction de sa cible qu'un effectif doit atteindre pour qu'un palier compte
+ * comme saturé. L'effectif converge par une exponentielle : il n'atteint jamais
+ * exactement sa cible, et un seuil strict ne se déclencherait jamais.
+ */
+export const SATURATION_D_UN_PALIER = 0.99
+
+/**
+ * §8.4 — plancher garanti sur l'assise I. Ce ne sont pas des réglages : ce sont
+ * les garanties que le contenu doit tenir, et que le test de cadence vérifie.
+ */
+export const PREMIER_SUCCES_AVANT_SECONDES = 120
+export const CADENCE_MAX_ENTRE_SUCCES_SECONDES = 5 * 60
+export const FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES = 30 * 60
+
+/**
+ * [P] graine — remise de coût d'un succès de seuil de l'assise I.
+ *
+ * Petite, et volontairement : le §7.2 rappelle qu'une réduction de coût vaut
+ * `log_g(1/c)` paliers d'avance, soit un décalage additif qui ne compose pas.
+ * Douze succès à −2 % font moins d'un tiers de palier. À mesurer en v0.3.
+ */
+export const REMISE_D_UN_SUCCES_DE_SEUIL = 0.98
+
 /* ─── Budget de verbes (§7.5 règle 2) ───────────────────────────────────────*/
 
 /** L'arbre en porte 10 ; il en reste ~5 pour les succès. Plafond partagé. */
 export const BUDGET_DE_VERBES_TOTAL = 15
 export const BUDGET_DE_VERBES_ARBRE = 10
+
+/**
+ * En deçà, l'absence est créditée mais pas annoncée : recharger la page n'est
+ * pas revenir de quelque part, et « la mare a tourné sans toi pendant 0 s »
+ * n'apprend rien à personne.
+ */
+export const SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR = 60
 
 /* ─── Boucle ────────────────────────────────────────────────────────────────*/
 

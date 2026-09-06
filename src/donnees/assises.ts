@@ -51,3 +51,13 @@ export function assiseDuPalier(index: number): Assise {
 }
 
 export const TYPE_MANA_NATAL = ASSISES[0].typeMana
+
+/**
+ * Ce que le jalon v0.2 livre réellement : l'assise I, et elle seule.
+ *
+ * « Règle d'engagement : aucune assise n'est produite avant que la précédente
+ * ait été mesurée. On coupe au milieu, jamais à la fin » (§12). Les 62 paliers
+ * existent dans la donnée parce que c'est l'économie que le simulateur mesure ;
+ * le jeu, lui, s'arrête où le contenu s'arrête.
+ */
+export const PALIERS_LIVRES = ASSISES[0].nombreDePaliers

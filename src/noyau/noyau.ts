@@ -53,11 +53,20 @@ export function tirer(prng: EtatPrng): readonly [number, EtatPrng] {
 
 /* ─── État initial ──────────────────────────────────────────────────────────*/
 
-export function etatInitial(graine: number): EtatJeu {
+/**
+ * `limiteDeContenu` : combien de paliers le monde offre réellement.
+ *
+ * Le jeu passe ce qui est livré — l'assise I au jalon v0.2 — et le simulateur
+ * passe les 62 paliers, parce que c'est l'économie complète qu'il doit mesurer.
+ * Un seul reducer, deux mondes : le §12 veut qu'aucune assise ne soit produite
+ * avant que la précédente ait été mesurée, et c'est ce paramètre qui le tient.
+ */
+export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS): EtatJeu {
   return {
     versionSave: VERSION_SAVE,
     prng: { graine: graine >>> 0 },
     tempsJeuSecondes: 0,
+    limiteDeContenu,
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),

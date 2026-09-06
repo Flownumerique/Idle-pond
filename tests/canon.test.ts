@@ -31,6 +31,25 @@ import { ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
 import { FRACTION_CONSERVEE } from '../src/noyau/eclosion'
 import { sansCommentaires } from './outils'
+import {
+  NOM_DES_ASSISES,
+  NOM_DES_ESPECES,
+  TEXTE_DE_SUCCES_INCONNU,
+  texteDuSucces,
+} from '../src/donnees/textes-provisoires'
+import { profondeur, sourceDuTerme } from '../src/ui/format'
+import type { SourceDeTerme } from '../src/noyau/types'
+
+/** Toutes les formes de source, pour que le test couvre le gabarit entier. */
+const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
+  { quoi: 'population' },
+  { quoi: 'palier', palier: 0 },
+  { quoi: 'palier', palier: 4 },
+  { quoi: 'acclimatation', typeMana: 'type-mana-1' },
+  { quoi: 'niveau', niveau: 12 },
+  { quoi: 'benedictions_globales' },
+  { quoi: 'benedictions_ciblees' },
+]
 
 const RACINE = resolve(__dirname, '..')
 
@@ -152,5 +171,44 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
       }
     }
     expect(fautes).toEqual([])
+  })
+})
+
+describe('§3 — la règle d’UI absolue', () => {
+  /**
+   * « L'interface n'affiche JAMAIS un nom générique de couche. Pas de
+   * "Zone 3", pas de "Assise II". Chaque lieu porte un nom propre. `assise` et
+   * `palier` sont des termes de code et de GDD, PAS D'ÉCRAN. »
+   *
+   * Le test porte sur les chaînes réellement produites, pas sur le source :
+   * c'est une capture d'écran qui a montré « palier 0 » dans le détail de la
+   * captation, écrit non pas dans les textes mais dans le noyau, qui n'avait
+   * rien à faire là.
+   */
+  const INTERDITS_A_L_ECRAN = /\b(paliers?|assises?|[ée]tages?|strates?|couches?|zones?|biomes?)\b/i
+
+  it('aucun terme de couche ne sort dans un texte affiché', () => {
+    const fautes: string[] = []
+    const verifier = (ou: string, texte: string) => {
+      if (INTERDITS_A_L_ECRAN.test(texte)) fautes.push(`${ou} : « ${texte} »`)
+    }
+
+    for (const nom of Object.values(NOM_DES_ASSISES)) verifier('nom de lieu', nom)
+    for (const nom of Object.values(NOM_DES_ESPECES)) verifier('nom d’espèce', nom)
+    for (const succes of SUCCES) {
+      const texte = texteDuSucces(succes.id)
+      verifier(`${succes.id}.nom`, texte.nom)
+      verifier(`${succes.id}.condition`, texte.condition)
+      verifier(`${succes.id}.rapport`, texte.rapport)
+    }
+    for (const source of SOURCES_A_VERIFIER) verifier('source de terme', sourceDuTerme(source))
+    for (let palier = 0; palier < 12; palier += 1) verifier('profondeur', profondeur(palier))
+
+    expect(fautes).toEqual([])
+  })
+
+  it('chaque succès livré porte un texte, jamais le repli', () => {
+    const sansTexte = SUCCES.filter((s) => texteDuSucces(s.id) === TEXTE_DE_SUCCES_INCONNU)
+    expect(sansTexte.map((s) => s.id)).toEqual([])
   })
 })

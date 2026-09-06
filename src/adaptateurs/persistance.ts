@@ -42,6 +42,7 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
     contenu: {
       prng: etat.prng,
       tempsJeuSecondes: etat.tempsJeuSecondes,
+      limiteDeContenu: etat.limiteDeContenu,
       cycle: {
         ...etat.cycle,
         manaCourant: serialiserDecimal(etat.cycle.manaCourant),
@@ -95,6 +96,9 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
     versionSave: VERSION_SAVE,
     prng: (brut.prng ?? repli.prng) as unknown as EtatJeu['prng'],
     tempsJeuSecondes: (brut.tempsJeuSecondes ?? repli.tempsJeuSecondes) as unknown as number,
+    // Une save d'un jalon antérieur reprend la limite du jalon courant : une
+    // assise livrée depuis ne doit pas rester fermée à qui jouait déjà.
+    limiteDeContenu: (brut.limiteDeContenu ?? repli.limiteDeContenu) as unknown as number,
     cycle: {
       ...repli.cycle,
       ...cycle,

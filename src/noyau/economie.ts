@@ -11,7 +11,14 @@
  * auditable (§7.5 règle 3, §8.2).
  */
 import Decimal from 'break_infinity.js'
-import type { Banc, EtatJeu, IndexPalier, LigneDeCaptation } from './types'
+import type {
+  Banc,
+  EtatJeu,
+  IndexPalier,
+  LigneDeCaptation,
+  TermeDeConfort,
+  TermeDeCout,
+} from './types'
 import {
   COUT_CREUSER_AU_PALIER_1,
   COUT_DEBLOCAGE_AU_PALIER_0,
@@ -27,6 +34,7 @@ import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/
 import { PALIERS, bancsDuPalier } from '../donnees/paliers'
 import { apportGlobalAdditif, multiplicateurCible } from './benedictions'
 import { facteurDeTechnique } from './technique'
+import { SUCCES } from '../donnees/succes/index'
 
 /* ─── Seuils de jalon ───────────────────────────────────────────────────────*/
 
@@ -96,29 +104,65 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
   const bancEtat = etat.cycle.bancs[banc.id]
   const niveau = bancEtat?.niveau ?? 0
   return [
-    { terme: 'effectif', valeur: bancEtat?.effectif ?? 0, source: 'population' },
-    { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: `palier ${banc.palier}` },
-    { terme: 'benediction_globale', valeur: apportGlobalAdditif(etat).toNumber(), source: 'bénédictions globales' },
-    { terme: 'rendement_acclimatation', valeur: rendementAcclimatation(etat, banc.palier), source: 'acclimatation' },
-    { terme: 'multiplicateur_jalon', valeur: multiplicateurJalon(niveau), source: `niveau ${niveau}` },
-    { terme: 'benediction_ciblee', valeur: multiplicateurCible(etat, banc.espece), source: 'bénédictions ciblées' },
+    { terme: 'effectif', valeur: bancEtat?.effectif ?? 0, source: { quoi: 'population' } },
+    { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
+    {
+      terme: 'benediction_globale',
+      valeur: apportGlobalAdditif(etat).toNumber(),
+      source: { quoi: 'benedictions_globales' },
+    },
+    {
+      terme: 'rendement_acclimatation',
+      valeur: rendementAcclimatation(etat, banc.palier),
+      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(banc.palier).typeMana },
+    },
+    { terme: 'multiplicateur_jalon', valeur: multiplicateurJalon(niveau), source: { quoi: 'niveau', niveau } },
+    {
+      terme: 'benediction_ciblee',
+      valeur: multiplicateurCible(etat, banc.espece),
+      source: { quoi: 'benedictions_ciblees' },
+    },
   ]
 }
 
 /* ─── Coûts ─────────────────────────────────────────────────────────────────*/
 
+/**
+ * Facteur appliqué à un terme de coût par les succès acquis.
+ *
+ * Il vit ici plutôt que dans succes.ts pour que les dépendances restent à sens
+ * unique : succes.ts lit la production, l'économie lit les effets. Un cycle
+ * d'imports entre les deux tiendrait à l'exécution et tomberait au premier
+ * changement d'ordre d'initialisation.
+ */
+export function facteurDeSucces(etat: EtatJeu, terme: TermeDeCout | TermeDeConfort): number {
+  let facteur = 1
+  for (const succes of SUCCES) {
+    if (succes.effet === null || succes.effet.nature !== 'chiffre') continue
+    if (succes.effet.terme !== terme) continue
+    if (!etat.permanent.succesDebloques.includes(succes.id)) continue
+    facteur *= succes.effet.facteur
+  }
+  return facteur
+}
+
+/** Technique et succès se composent sur un même terme, chacun nommé et attribuable. */
+function facteurDeCout(etat: EtatJeu, terme: TermeDeCout): number {
+  return facteurDeTechnique(etat, terme) * facteurDeSucces(etat, terme)
+}
+
 /** Coût du creusement du palier `cible`. Le palier 0 est ouvert au départ. */
 export function coutCreuser(etat: EtatJeu, cible: IndexPalier): Decimal {
   return puissanceDeG(Math.max(0, cible - 1))
     .mul(COUT_CREUSER_AU_PALIER_1)
-    .mul(facteurDeTechnique(etat, 'cout_creuser'))
+    .mul(facteurDeCout(etat, 'cout_creuser'))
 }
 
 /** Coût de conviction d'un banc : le recruter pour la première fois de la vie. */
 export function coutDeblocage(etat: EtatJeu, banc: Banc): Decimal {
   return puissanceDeG(banc.palier)
     .mul(COUT_DEBLOCAGE_AU_PALIER_0)
-    .mul(facteurDeTechnique(etat, 'cout_deblocage'))
+    .mul(facteurDeCout(etat, 'cout_deblocage'))
 }
 
 /** Coût du passage de `niveau` à `niveau + 1`. Achat répétable, ×1.15. */
@@ -126,7 +170,7 @@ export function coutNiveau(etat: EtatJeu, banc: Banc, niveau: number): Decimal {
   return puissanceDeG(banc.palier)
     .mul(COUT_NIVEAU_AU_PALIER_0)
     .mul(puissanceDuCoutDeNiveau(Math.max(0, niveau - 1)))
-    .mul(facteurDeTechnique(etat, 'cout_niveau'))
+    .mul(facteurDeCout(etat, 'cout_niveau'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
@@ -136,8 +180,9 @@ export function contenance(etat: EtatJeu): Decimal {
   return etat.permanent.contenanceMana
 }
 
+/** Plus rien à creuser : soit la roche est finie, soit le contenu l'est. */
 export function toutEstCreuse(etat: EtatJeu): boolean {
-  return etat.cycle.paliersOuverts >= NOMBRE_DE_PALIERS
+  return etat.cycle.paliersOuverts >= Math.min(etat.limiteDeContenu, NOMBRE_DE_PALIERS)
 }
 
 /**

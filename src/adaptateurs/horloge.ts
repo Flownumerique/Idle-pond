@@ -51,3 +51,14 @@ export function secondesHorsLigneCreditees(
   if (!(ecoule > 0)) return 0
   return Math.min(ecoule / 1000, capHorsLigneSecondes(capHeures))
 }
+
+/**
+ * Graine d'une nouvelle partie.
+ *
+ * Le noyau exige un PRNG à graine et interdit `Math.random` ; il faut bien que
+ * la graine vienne de quelque part, et ce quelque part est ce module — le seul
+ * qui ait le droit d'être impur.
+ */
+export function grainePourNouvellePartie(horloge: Horloge = horlogeSysteme): number {
+  return horloge.maintenantMs() >>> 0
+}

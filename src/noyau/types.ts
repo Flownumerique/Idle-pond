@@ -158,8 +158,50 @@ export interface Benediction {
 export type FamilleDeSucces = 'franchissement' | 'seuil' | 'acte'
 export type VisibiliteDeSucces = 'ouvert' | 'ferme' | 'secret'
 
+/**
+ * Le déclencheur d'un succès est toujours un SEUIL relu sur l'état de fin de
+ * tick, jamais un événement consommé au vol.
+ *
+ * Ce n'est pas un choix de commodité : un déclencheur qui aurait besoin
+ * d'observer l'intérieur d'un intervalle ferait diverger 480 pas de 60 s d'un
+ * pas de 8 h, et emporterait le hors ligne avec lui (§5.2). Toute condition qui
+ * ne s'exprime pas comme une lecture de seuil sur l'état est du décor narratif,
+ * pas un déclencheur.
+ */
+export type DeclencheurDeSucces =
+  | { readonly quoi: 'eclosions'; readonly seuil: number }
+  | { readonly quoi: 'paliers_ouverts'; readonly seuil: number }
+  | { readonly quoi: 'profondeur_max'; readonly seuil: number }
+  | { readonly quoi: 'bancs_convaincus'; readonly seuil: number }
+  | { readonly quoi: 'effectif_de_banc'; readonly banc: BancId; readonly seuil: number }
+  | { readonly quoi: 'effectif_d_espece'; readonly espece: EspeceId; readonly seuil: number }
+  | { readonly quoi: 'niveau_de_banc'; readonly banc: BancId; readonly seuil: number }
+  | { readonly quoi: 'effectif_total'; readonly seuil: number }
+  | { readonly quoi: 'production_par_seconde'; readonly seuil: number }
+  | { readonly quoi: 'foi'; readonly seuil: number }
+  | { readonly quoi: 'densite_de_palier'; readonly palier: IndexPalier; readonly seuil: number }
+  | { readonly quoi: 'palier_sature'; readonly palier: IndexPalier }
+
+/**
+ * [P] — lecture retenue du §4.3 pour les succès.
+ *
+ * « La technique baisse les coûts et automatise. La bénédiction monte la
+ * production. Aucun nœud, AUCUN SUCCÈS, aucun système ne franchit cette ligne. »
+ *
+ * La phrase nomme les succès sans dire de quel côté ils tombent. Deux lectures :
+ * un succès peut faire l'un ou l'autre pourvu qu'il ne fasse pas les deux, ou
+ * bien la montée de production reste l'exclusivité de la bénédiction, achetée
+ * en Foi. Le typage ci-dessous porte la seconde, la plus restrictive : un succès
+ * ne cible que des termes de coût ou de confort, ou ouvre un verbe.
+ *
+ * Elle est retenue parce qu'elle est la seule des deux qui ne puisse pas être
+ * fausse par excès — et parce que le §7.2 rappelle qu'une réduction de coût est
+ * un décalage additif constant, qui ne compose pas : se tromper de ce côté-là
+ * coûte moins d'un palier, se tromper de l'autre déplace toute la courbe.
+ * À confirmer par l'auteur avant d'attacher des effets au-delà de l'assise I.
+ */
 export type EffetDeSucces =
-  | { readonly nature: 'chiffre'; readonly terme: TermeDeFormule; readonly facteur: number }
+  | { readonly nature: 'chiffre'; readonly terme: TermeDeCout | TermeDeConfort; readonly facteur: number }
   | { readonly nature: 'verbe'; readonly capacite: CapaciteId }
 
 export interface Succes {
@@ -168,6 +210,7 @@ export interface Succes {
   readonly visibilite: VisibiliteDeSucces
   /** Verrouillage par assise : jamais listé avant que son assise soit atteinte. */
   readonly assise: AssiseId
+  readonly declencheur: DeclencheurDeSucces
   readonly effet: EffetDeSucces | null
 }
 
@@ -266,14 +309,42 @@ export interface EtatJeu {
   readonly versionSave: number
   readonly prng: EtatPrng
   readonly tempsJeuSecondes: number
+  /**
+   * Nombre de paliers effectivement livrés — la porte de jalon, pas une valeur
+   * de canon. Le monde est dessiné sur 62 paliers dès la v0.1 parce que c'est
+   * l'économie que le simulateur doit mesurer ; le JEU n'en offre que ce qui a
+   * du contenu, l'assise I au jalon v0.2. « Aucune assise n'est produite avant
+   * que la précédente ait été mesurée » (§12).
+   *
+   * Elle vit dans l'état plutôt qu'en constante pour que le jeu et le
+   * simulateur puissent différer sans jamais forker le reducer : un seul code,
+   * deux mondes.
+   */
+  readonly limiteDeContenu: number
   readonly cycle: EtatCycle
   readonly permanent: EtatPermanent
   readonly telemetrie: EtatTelemetrie
 }
 
+/**
+ * D'où vient un terme, dans le détail de captation (§8.2).
+ *
+ * Une structure, jamais une phrase : le noyau ne fabrique aucun texte d'écran.
+ * S'il en fabriquait, il finirait par écrire « palier 0 » quelque part — or
+ * `palier` est un terme de code et de GDD, pas d'écran (§3), et la faute
+ * n'apparaîtrait qu'à la capture d'écran.
+ */
+export type SourceDeTerme =
+  | { readonly quoi: 'population' }
+  | { readonly quoi: 'palier'; readonly palier: IndexPalier }
+  | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
+  | { readonly quoi: 'niveau'; readonly niveau: number }
+  | { readonly quoi: 'benedictions_globales' }
+  | { readonly quoi: 'benedictions_ciblees' }
+
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {
   readonly terme: TermeDeFormule
   readonly valeur: number
-  readonly source: string
+  readonly source: SourceDeTerme
 }

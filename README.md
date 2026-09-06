@@ -9,23 +9,30 @@ l'œuf : c'est l'**éclosion**.
 React 19 · TypeScript · Vite · Phaser 3 · Zustand 5 · `break_infinity.js` ·
 Tailwind 4.
 
-## État : jalon v0.1 — « le noyau tourne »
+## État : jalon v0.2 — « l'assise I est jouable »
 
-Le noyau, ses trois tests et le versionnage de save. Pas d'UI, pas de Phaser,
-pas de contenu — c'est ce que le jalon prescrit.
+La mare, ses trois espèces, la boucle complète débloquer → améliorer → éclore,
+et le système de succès avec le plancher de cadence du §8.4 — mesuré, pas
+promis. Sans technique ni bénédictions : c'est le jalon v0.4.
 
-Le compte rendu du jalon, ses mesures et ses décisions ouvertes :
-[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md).
+Comptes rendus, mesures et décisions ouvertes :
+[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) · [`docs/jalon-v0.2.md`](docs/jalon-v0.2.md).
+
+> Les noms affichés — la mare, les trois espèces, les textes de succès — sont
+> **provisoires** et vivent tous dans `src/donnees/textes-provisoires.ts`. Le
+> `[P] P3` du §14 (conventions phonétiques) reste ouvert ; rien de ce fichier
+> n'entre dans un identifiant ni dans une sauvegarde.
 
 ## Commandes
 
 ```sh
 npm install
-npm test          # 42 tests : architecture, déterminisme, équivalence de pas,
-                  # persistance, canon, horloge, simulateur
+npm test          # 53 tests : architecture, déterminisme, équivalence de pas,
+                  # persistance, canon, horloge, hors ligne, plancher de
+                  # cadence, simulateur
 npm run build     # tsc -b && vite build
 npm run lint
-npm run dev       # banc d'essai : la sortie du simulateur, pas le jeu
+npm run dev       # le jeu
 ```
 
 ## Le contrat
@@ -58,9 +65,9 @@ src/
 │                   Phaser, DOM ou horloge.
 ├── donnees/        Contenu pur, sans logique.
 ├── adaptateurs/    Le monde impur vit ici, et nulle part ailleurs.
-├── etat/           Zustand — v0.2
-├── ui/             React + Tailwind — v0.2
-├── scene/          Phaser — v0.2
+├── etat/           Zustand : miroir de l'état, aucune logique métier.
+├── ui/             React + Tailwind.
+├── scene/          Phaser — pas avant que l'assise I soit mesurée.
 └── simulateur/     Réutilise noyau/ tel quel.
 ```
 
