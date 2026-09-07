@@ -26,11 +26,11 @@ import {
   eclore,
   estBloque,
   etatInitial,
-  monterNiveau,
+  acheterPlace,
   productionTotaleParSeconde,
   tick,
 } from '../noyau/noyau'
-import { coutCreuser, coutDeblocage, coutNiveau, toutEstCreuse } from '../noyau/economie'
+import { coutCreuser, coutDeblocage, coutDePlace, toutEstCreuse } from '../noyau/economie'
 import { PALIERS } from '../donnees/paliers'
 import { relever, type Releve } from '../adaptateurs/telemetrie'
 
@@ -92,13 +92,13 @@ function optionsOuvertes(etat: EtatJeu): readonly Option[] {
 
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
     for (const banc of PALIERS[palier].bancs) {
-      const niveau = etat.cycle.bancs[banc.id]?.niveau ?? 0
+      const place = etat.cycle.bancs[banc.id]?.place ?? 0
       const id: BancId = banc.id
-      const cout = niveau === 0 ? coutDeblocage(etat, banc) : coutNiveau(etat, banc, niveau)
+      const cout = place === 0 ? coutDeblocage(etat, banc) : coutDePlace(etat, banc, place)
       if (cout.gt(plafond)) continue
       options.push({
         cout,
-        appliquer: niveau === 0 ? (e) => convaincre(e, id) : (e) => monterNiveau(e, id),
+        appliquer: place === 0 ? (e) => convaincre(e, id) : (e) => acheterPlace(e, id),
       })
     }
   }
@@ -179,8 +179,9 @@ export function simuler(
   politique: Politique = POLITIQUE_PAR_DEFAUT,
   graine = 1,
   observer?: Observateur,
+  limiteDeContenu?: number,
 ): ResultatDeSimulation {
-  let etat = etatInitial(graine)
+  let etat = etatInitial(graine, limiteDeContenu)
   let cycleNonConvergent: number | null = null
   let acheves = 0
 

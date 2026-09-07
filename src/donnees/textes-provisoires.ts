@@ -2,21 +2,22 @@
  * IdlePond — TOUS les textes affichés, et ils sont PROVISOIRES.
  *
  * ╔════════════════════════════════════════════════════════════════════════╗
- * ║  [P] P3 — CE FICHIER N'EST PAS DU CANON.                               ║
+ * ║  Les NOMS de la Noue sont désormais du canon (amendement v1.1 §2.E).   ║
+ * ║  Le lieu, les trois espèces et l'espèce réservée sont arrêtés.         ║
  * ║                                                                        ║
- * ║  Le §14 déclare les conventions phonétiques bloquantes pour « tout nom ║
- * ║  d'assise, d'espèce et de bâtiment », et le jalon v0.2 demande en même ║
- * ║  temps « la mare nommée » et « aucun texte définitif ». Les deux se    ║
- * ║  tiennent si, et seulement si, tout le texte affiché vit à un seul     ║
- * ║  endroit : celui-ci.                                                   ║
+ * ║  Les PHRASES, elles, restent provisoires : le jalon v0.2 demande       ║
+ * ║  « aucun texte définitif ». Elles vivent ici, à un seul endroit, et    ║
+ * ║  aucune n'est reprise dans un identifiant, une clef de save ou une     ║
+ * ║  donnée — les réécrire ne touche aucune autre ligne du dépôt et        ║
+ * ║  n'invalide aucune sauvegarde.                                         ║
  * ║                                                                        ║
- * ║  Rien de ce fichier n'est repris dans un identifiant, une clef de save ║
- * ║  ou une donnée. Remplacer ces chaînes par les noms canoniques ne       ║
- * ║  touche aucune autre ligne du dépôt et n'invalide aucune sauvegarde.   ║
- * ║                                                                        ║
- * ║  Seule « la mare » vient du contrat lui-même (§3 et §12). Le reste     ║
- * ║  attend l'auteur.                                                      ║
+ * ║  [P] P3 reste ouvert pour les assises II à VI.                         ║
  * ╚════════════════════════════════════════════════════════════════════════╝
+ *
+ * La charte phonétique du §2.E est une jauge de profondeur : le joueur entend
+ * qu'il descend avant de le lire. L'assise I n'invente rien — voyelles claires,
+ * lexique réel du français d'eau douce. Le monde n'est pas exotique, il est
+ * VIEUX.
  *
  * Règle d'écriture, elle non provisoire (§8.3) : le narrateur rapporte ce qui
  * est arrivé et ce que ça a changé. Il n'explique JAMAIS pourquoi le monde
@@ -28,13 +29,13 @@ import type { AssiseId, EspeceId, SuccesId } from '../noyau/types'
 
 /** Le nom propre du lieu. L'UI n'affiche jamais « Assise I » (§3). */
 export const NOM_DES_ASSISES: Readonly<Record<AssiseId, string>> = {
-  'assise-1': 'la mare',
+  noue: 'la Noue',
 }
 
 export const NOM_DES_ESPECES: Readonly<Record<EspeceId, string>> = {
-  'espece-1-1': 'les tourneurs',
-  'espece-1-2': 'les brouteurs',
-  'espece-1-3': 'les fileurs',
+  vairon: 'le vairon',
+  loche: 'la loche',
+  epinoche: 'l’épinoche',
 }
 
 export interface TexteDeSucces {
@@ -55,12 +56,12 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
   },
   'acte-deuxieme-niveau': {
     nom: 'Ils reviennent',
-    condition: 'Mener un banc au deuxième niveau',
+    condition: 'Faire une deuxième place dans un banc',
     rapport: 'Un de plus s’est joint sans qu’on insiste.',
   },
   'acte-cinquieme-niveau': {
     nom: 'Le geste prend',
-    condition: 'Mener un banc au cinquième niveau',
+    condition: 'Faire cinq places dans un banc',
     rapport: 'Ça va plus vite qu’au début.',
   },
   'acte-premier-banc-de-cinq': {
@@ -79,7 +80,7 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
     rapport: 'Le second n’a pas fui en voyant le premier.',
   },
   'acte-trois-bancs': {
-    nom: 'La mare répond',
+    nom: 'La Noue répond',
     condition: 'Convaincre trois bancs à la fois',
     rapport: 'On ne peut plus les compter d’un seul regard.',
   },
@@ -90,23 +91,23 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
   },
   'acte-dixieme-niveau': {
     nom: 'La main est faite',
-    condition: 'Mener un banc au dixième niveau',
+    condition: 'Faire dix places dans un banc',
     rapport: 'Le geste se répète tout seul, maintenant.',
   },
 
   /* — Seuils, engendrés par gabarit ——————————————————————————————————————— */
-  'seuil-espece-1-1-10': { nom: 'Dix tourneurs', condition: 'Dix individus', rapport: 'Ils tournent ensemble.' },
-  'seuil-espece-1-1-25': { nom: 'Vingt-cinq tourneurs', condition: 'Vingt-cinq individus', rapport: 'Le cercle s’élargit.' },
-  'seuil-espece-1-1-50': { nom: 'Cinquante tourneurs', condition: 'Cinquante individus', rapport: 'On entend le courant qu’ils font.' },
-  'seuil-espece-1-1-100': { nom: 'Cent tourneurs', condition: 'Cent individus', rapport: 'Le fond bouge quand ils passent.' },
-  'seuil-espece-1-2-10': { nom: 'Dix brouteurs', condition: 'Dix individus', rapport: 'La vase est plus claire.' },
-  'seuil-espece-1-2-25': { nom: 'Vingt-cinq brouteurs', condition: 'Vingt-cinq individus', rapport: 'Ils ont nettoyé jusqu’aux bords.' },
-  'seuil-espece-1-2-50': { nom: 'Cinquante brouteurs', condition: 'Cinquante individus', rapport: 'Rien ne se dépose plus.' },
-  'seuil-espece-1-2-100': { nom: 'Cent brouteurs', condition: 'Cent individus', rapport: 'L’eau est nette jusqu’au fond.' },
-  'seuil-espece-1-3-10': { nom: 'Dix fileurs', condition: 'Dix individus', rapport: 'Les fils tiennent d’une paroi à l’autre.' },
-  'seuil-espece-1-3-25': { nom: 'Vingt-cinq fileurs', condition: 'Vingt-cinq individus', rapport: 'On ne voit plus la roche derrière.' },
-  'seuil-espece-1-3-50': { nom: 'Cinquante fileurs', condition: 'Cinquante individus', rapport: 'Ça retient ce qui tombe.' },
-  'seuil-espece-1-3-100': { nom: 'Cent fileurs', condition: 'Cent individus', rapport: 'Tout le creux est tendu.' },
+  'seuil-vairon-10': { nom: 'Dix vairons', condition: 'Dix individus', rapport: 'Ils tiennent le banc ensemble.' },
+  'seuil-vairon-25': { nom: 'Vingt-cinq vairons', condition: 'Vingt-cinq individus', rapport: 'Le banc vire d’un seul tenant.' },
+  'seuil-vairon-50': { nom: 'Cinquante vairons', condition: 'Cinquante individus', rapport: 'On entend le courant qu’ils font.' },
+  'seuil-vairon-100': { nom: 'Cent vairons', condition: 'Cent individus', rapport: 'Ils ne repartiront plus. Jamais.' },
+  'seuil-loche-10': { nom: 'Dix loches', condition: 'Dix individus', rapport: 'Le fond est remué par en dessous.' },
+  'seuil-loche-25': { nom: 'Vingt-cinq loches', condition: 'Vingt-cinq individus', rapport: 'Elles ouvrent des passages qu’on n’a pas creusés.' },
+  'seuil-loche-50': { nom: 'Cinquante loches', condition: 'Cinquante individus', rapport: 'La vase ne tient plus en place.' },
+  'seuil-loche-100': { nom: 'Cent loches', condition: 'Cent individus', rapport: 'Elles ne repartiront plus. Jamais.' },
+  'seuil-epinoche-10': { nom: 'Dix épinoches', condition: 'Dix individus', rapport: 'Elles tiennent là où l’eau se charge.' },
+  'seuil-epinoche-25': { nom: 'Vingt-cinq épinoches', condition: 'Vingt-cinq individus', rapport: 'Rien ne les déloge du bord.' },
+  'seuil-epinoche-50': { nom: 'Cinquante épinoches', condition: 'Cinquante individus', rapport: 'L’eau lourde ne leur fait plus rien.' },
+  'seuil-epinoche-100': { nom: 'Cent épinoches', condition: 'Cent individus', rapport: 'Elles ne repartiront plus. Jamais.' },
 
   /* — Franchissements ————————————————————————————————————————————————————— */
   'franchissement-premiere-eclosion': {
@@ -125,13 +126,13 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
     rapport: 'Les mêmes fonds, et plus vite.',
   },
   'franchissement-densite': {
-    nom: 'La mare est chargée',
+    nom: 'La Noue est chargée',
     condition: 'Charger le premier creux',
     rapport: 'Ce qui a été porté là y est resté.',
   },
   'franchissement-fond-de-la-mare': {
-    nom: 'Le fond de la mare',
-    condition: 'Ouvrir la mare jusqu’au fond',
+    nom: 'Le fond de la Noue',
+    condition: 'Ouvrir la Noue jusqu’au fond',
     rapport: 'Il n’y a plus de roche à ouvrir ici.',
   },
 }
@@ -167,7 +168,7 @@ const GABARITS: readonly { readonly motif: RegExp; readonly texte: (n: number) =
   {
     motif: /^seuil-mare-(\d+)$/,
     texte: (n) => ({
-      nom: `${n} dans la mare`,
+      nom: `${n} dans la Noue`,
       condition: `${n} individus, tous bancs confondus`,
       rapport: tour(RAPPORTS_DE_MARE, Math.floor(n / 20)),
     }),

@@ -8,8 +8,9 @@
  */
 import type { EtatJeu, SuccesId } from '../src/noyau/types'
 import { FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES } from '../src/noyau/constantes'
-import { convaincre, creuser, etatInitial, monterNiveau, tickDetaille } from '../src/noyau/noyau'
-import { contenance, coutCreuser, coutDeblocage, coutNiveau, toutEstCreuse } from '../src/noyau/economie'
+import { convaincre, creuser, etatInitial, acheterPlace, tickDetaille } from '../src/noyau/noyau'
+import { enregistrerIntervalleDeSucces } from '../src/noyau/succes'
+import { contenance, coutCreuser, coutDeblocage, coutDePlace, toutEstCreuse } from '../src/noyau/economie'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { PALIERS } from '../src/donnees/paliers'
 
@@ -30,11 +31,11 @@ function depenser(etat: EtatJeu): EtatJeu {
     if (!toutEstCreuse(courant)) retenir(coutCreuser(courant, courant.cycle.paliersOuverts), creuser)
     for (let palier = 0; palier < courant.cycle.paliersOuverts; palier += 1) {
       for (const banc of PALIERS[palier].bancs) {
-        const niveau = courant.cycle.bancs[banc.id]?.niveau ?? 0
+        const place = courant.cycle.bancs[banc.id]?.place ?? 0
         const id = banc.id
         retenir(
-          niveau === 0 ? coutDeblocage(courant, banc) : coutNiveau(courant, banc, niveau),
-          niveau === 0 ? (e) => convaincre(e, id) : (e) => monterNiveau(e, id),
+          place === 0 ? coutDeblocage(courant, banc) : coutDePlace(courant, banc, place),
+          place === 0 ? (e) => convaincre(e, id) : (e) => acheterPlace(e, id),
         )
       }
     }
@@ -59,4 +60,15 @@ export function joueUneDemiHeure(graine = 1): readonly Declenchement[] {
     for (const id of resultat.declenches) releve.push({ id, instantSecondes: instant })
   }
   return releve
+}
+
+/** Rejoue `secondes` de partie, à la cadence du jeu, sur le monde livré. */
+export function rejoue(secondes: number, limite = PALIERS_LIVRES): EtatJeu {
+  let etat = etatInitial(3, limite)
+  etat = depenser(etat)
+  for (let t = 0; t < secondes; t += 1) {
+    const r = tickDetaille(etat, 1)
+    etat = depenser(enregistrerIntervalleDeSucces(r.etat, r.declenches))
+  }
+  return etat
 }

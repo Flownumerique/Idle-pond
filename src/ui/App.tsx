@@ -63,7 +63,7 @@ export function App() {
           <Mare
             etat={etat}
             surConviction={(banc) => useMagasin.getState().convaincre(banc)}
-            surNiveau={(banc) => useMagasin.getState().monterNiveau(banc)}
+            surPlace={(banc) => useMagasin.getState().acheterPlace(banc)}
             surCreusement={() => useMagasin.getState().creuser()}
             surCaptation={setCaptation}
           />

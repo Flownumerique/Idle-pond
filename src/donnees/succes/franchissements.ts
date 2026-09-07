@@ -21,10 +21,10 @@
  * du §7.6, au jalon v0.4. L'assise I livre des chiffres.
  */
 import type { Succes } from '../../noyau/types'
-import { REMISE_D_UN_SUCCES_DE_SEUIL } from '../../noyau/constantes'
+import { PART_REMISE_D_UN_SUCCES } from '../../noyau/constantes'
 import { ASSISES } from '../assises'
 
-const ASSISE = 'assise-1'
+const ASSISE = 'noue'
 
 export const FRANCHISSEMENTS: readonly Succes[] = [
   {
@@ -33,7 +33,7 @@ export const FRANCHISSEMENTS: readonly Succes[] = [
     visibilite: 'ouvert',
     assise: ASSISE,
     declencheur: { quoi: 'eclosions', seuil: 1 },
-    effet: { nature: 'chiffre', terme: 'cout_creuser', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'franchissement-deuxieme-eclosion',
@@ -41,7 +41,7 @@ export const FRANCHISSEMENTS: readonly Succes[] = [
     visibilite: 'ferme',
     assise: ASSISE,
     declencheur: { quoi: 'eclosions', seuil: 2 },
-    effet: { nature: 'chiffre', terme: 'cout_creuser', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'franchissement-troisieme-eclosion',
@@ -49,7 +49,7 @@ export const FRANCHISSEMENTS: readonly Succes[] = [
     visibilite: 'ferme',
     assise: ASSISE,
     declencheur: { quoi: 'eclosions', seuil: 3 },
-    effet: { nature: 'chiffre', terme: 'cout_deblocage', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_deblocage', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'franchissement-densite',
@@ -66,6 +66,6 @@ export const FRANCHISSEMENTS: readonly Succes[] = [
     assise: ASSISE,
     // Fin d'assise : tous les paliers de la mare ouverts dans la même vie.
     declencheur: { quoi: 'paliers_ouverts', seuil: ASSISES[0].nombreDePaliers },
-    effet: { nature: 'chiffre', terme: 'cout_creuser', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
 ]

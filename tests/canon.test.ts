@@ -10,6 +10,10 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
+  ALPHA_GAIN_DE_DENSITE,
+  SEUILS_DE_JALON,
+  THETA_PART_COMPENSEE,
+  densiteExposant,
   BUDGET_DE_VERBES_ARBRE,
   BUDGET_DE_VERBES_TOTAL,
   CROISSANCE_PAR_CYCLE_VISEE,
@@ -27,7 +31,7 @@ import { NOEUDS_TECHNIQUE } from '../src/donnees/noeuds-technique'
 import { BENEDICTIONS } from '../src/donnees/benedictions'
 import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
-import { ESPECES } from '../src/donnees/especes'
+import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
 import { FRACTION_CONSERVEE } from '../src/noyau/eclosion'
 import { sansCommentaires } from './outils'
@@ -46,7 +50,9 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'palier', palier: 0 },
   { quoi: 'palier', palier: 4 },
   { quoi: 'acclimatation', typeMana: 'type-mana-1' },
-  { quoi: 'niveau', niveau: 12 },
+  { quoi: 'place', place: 12 },
+  { quoi: 'drapeaux_permanents', especes: 0 },
+  { quoi: 'drapeaux_permanents', especes: 3 },
   { quoi: 'benedictions_globales' },
   { quoi: 'benedictions_ciblees' },
 ]
@@ -78,6 +84,23 @@ describe('§4.3 — la frontière technique / bénédiction', () => {
     }
   })
 
+  it('aucun succès ne monte une production (amendement v1.1 §2.D)', () => {
+    // « Un succès ne peut porter qu'un effet qui existe déjà comme terme de
+    // technique : réduction de coût, relèvement de plafond, ou verbe. »
+    // Le typage l'interdit déjà ; ce test le vérifie sur la donnée, parce
+    // qu'un registre peut un jour venir d'ailleurs que du compilateur.
+    const genresAdmis = ['reduction_cout', 'plafond', 'verbe']
+    for (const succes of SUCCES) {
+      if (succes.effet === null) continue
+      expect(genresAdmis, `le succès ${succes.id}`).toContain(succes.effet.genre)
+      if (succes.effet.genre === 'verbe') continue
+      expect(
+        TERMES_DE_PRODUCTION as string[],
+        `le succès ${succes.id} cible le terme de production ${succes.effet.terme}`,
+      ).not.toContain(succes.effet.terme)
+    }
+  })
+
   it('aucun effet chiffré ne flotte sans terme nommé', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
       if (noeud.effet.nature !== 'chiffre') continue
@@ -93,7 +116,7 @@ describe('§7.5 — les trois règles dures de l’arbre', () => {
       if (noeud.effet.nature === 'verbe') parLArbre.add(noeud.effet.capacite)
     }
     for (const succes of SUCCES) {
-      if (succes.effet?.nature !== 'verbe') continue
+      if (succes.effet?.genre !== 'verbe') continue
       expect(
         parLArbre.has(succes.effet.capacite),
         `${succes.effet.capacite} est atteignable par l’arbre ET par le succès ${succes.id}`,
@@ -103,7 +126,7 @@ describe('§7.5 — les trois règles dures de l’arbre', () => {
 
   it('le budget de verbes est commun et tenu', () => {
     const verbesDeLArbre = NOEUDS_TECHNIQUE.filter((n) => n.effet.nature === 'verbe').length
-    const verbesDesSucces = SUCCES.filter((s) => s.effet?.nature === 'verbe').length
+    const verbesDesSucces = SUCCES.filter((s) => s.effet?.genre === 'verbe').length
     expect(verbesDeLArbre).toBeLessThanOrEqual(BUDGET_DE_VERBES_ARBRE)
     expect(verbesDeLArbre + verbesDesSucces).toBeLessThanOrEqual(BUDGET_DE_VERBES_TOTAL)
   })
@@ -130,6 +153,20 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
   it('f = 1 : reset complet, aucune fraction conservée', () => {
     expect(F_TARIF_REDESCENTE).toBe(1)
     expect(FRACTION_CONSERVEE).toBe(0)
+  })
+
+  it('les seuils sont CUMULÉS : cent individus valent ×16, pas ×1024', () => {
+    // Le §2.C ordonne cette vérification avant toute ligne de code : `D = 2.31`
+    // a été ajusté contre cette lecture, et une table multiplicative rendrait
+    // tout le calibrage faux.
+    expect(SEUILS_DE_JALON.map((s) => s.multiplicateurCumule)).toEqual([2, 4, 8, 16])
+    expect(SEUILS_DE_JALON.map((s) => s.seuil)).toEqual([10, 25, 50, 100])
+  })
+
+  it('θ borné à [0, 1], et l’exposant de densité dérivé de θ/α', () => {
+    expect(THETA_PART_COMPENSEE).toBeGreaterThanOrEqual(0)
+    expect(THETA_PART_COMPENSEE).toBeLessThanOrEqual(1)
+    expect(densiteExposant()).toBeCloseTo(THETA_PART_COMPENSEE / ALPHA_GAIN_DE_DENSITE, 12)
   })
 
   it('62 paliers, 6 assises, 21 espèces de base', () => {
@@ -205,6 +242,12 @@ describe('§3 — la règle d’UI absolue', () => {
     for (let palier = 0; palier < 12; palier += 1) verifier('profondeur', profondeur(palier))
 
     expect(fautes).toEqual([])
+  })
+
+  it('`tanche` n’est assignée à aucun générateur', () => {
+    // Longévité, faible débit, très forte contenance : c'est le portrait du
+    // héros, pas d'un banc (§2.E).
+    expect(ESPECES.map((e) => e.id)).not.toContain(ESPECE_RESERVEE)
   })
 
   it('chaque succès livré porte un texte, jamais le repli', () => {

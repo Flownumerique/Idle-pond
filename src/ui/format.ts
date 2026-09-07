@@ -73,6 +73,12 @@ export function nomDeLAssise(assise: AssiseId): string {
   return NOM_DES_ASSISES[assise] ?? 'plus bas'
 }
 
+/** Le même nom, en tête de phrase. */
+export function nomDeLAssiseCapitale(assise: AssiseId): string {
+  const nom = nomDeLAssise(assise)
+  return nom.charAt(0).toUpperCase() + nom.slice(1)
+}
+
 export function nomDeLEspece(espece: EspeceId): string {
   return NOM_DES_ESPECES[espece] ?? 'un banc sans nom'
 }
@@ -86,8 +92,12 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return profondeur(source.palier)
     case 'acclimatation':
       return 'ce que tu supportes'
-    case 'niveau':
-      return `${source.niveau} appelés`
+    case 'place':
+      return `${source.place} places faites`
+    case 'drapeaux_permanents':
+      return source.especes === 0
+        ? 'aucune espèce au complet'
+        : `${source.especes} espèce${source.especes > 1 ? 's' : ''} déjà au complet`
     case 'benedictions_globales':
       return 'bénédictions, toutes espèces'
     case 'benedictions_ciblees':

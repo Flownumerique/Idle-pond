@@ -14,7 +14,7 @@ import {
   contenance,
   coutCreuser,
   coutDeblocage,
-  coutNiveau,
+  coutDePlace,
   productionDuBanc,
   toutEstCreuse,
 } from '../noyau/economie'
@@ -24,12 +24,12 @@ import { cout, nomDeLAssise, nomDeLEspece, montant, profondeur } from './format'
 interface Props {
   readonly etat: EtatJeu
   readonly surConviction: (banc: string) => void
-  readonly surNiveau: (banc: string) => void
+  readonly surPlace: (banc: string) => void
   readonly surCreusement: () => void
   readonly surCaptation: (banc: string) => void
 }
 
-export function Mare({ etat, surConviction, surNiveau, surCreusement, surCaptation }: Props) {
+export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptation }: Props) {
   const mana = etat.cycle.manaCourant
   const coutDuCreusement = coutCreuser(etat, etat.cycle.paliersOuverts)
   const creusementPossible = !toutEstCreuse(etat) && coutDuCreusement.lte(contenance(etat))
@@ -42,10 +42,10 @@ export function Mare({ etat, surConviction, surNiveau, surCreusement, surCaptati
         {PALIERS.slice(0, etat.cycle.paliersOuverts).map((palier) =>
           palier.bancs.map((banc) => {
             const vivant = etat.cycle.bancs[banc.id]
-            const niveau = vivant?.niveau ?? 0
-            const coutDuBanc = niveau === 0 ? coutDeblocage(etat, banc) : coutNiveau(etat, banc, niveau)
+            const place = vivant?.place ?? 0
+            const coutDuBanc = place === 0 ? coutDeblocage(etat, banc) : coutDePlace(etat, banc, place)
             const payable = mana.gte(coutDuBanc) && coutDuBanc.lte(contenance(etat))
-            const cible = effectifCible(niveau)
+            const cible = effectifCible(place)
 
             return (
               <li
@@ -54,12 +54,12 @@ export function Mare({ etat, surConviction, surNiveau, surCreusement, surCaptati
               >
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="font-texte text-base">
-                    {niveau === 0 ? <span className="text-jour-tu">un banc s’attarde</span> : nomDeLEspece(banc.espece)}
+                    {place === 0 ? <span className="text-jour-tu">un banc s’attarde</span> : nomDeLEspece(banc.espece)}
                   </span>
                   <span className="font-chiffre text-xs text-jour-tu">{profondeur(banc.palier)}</span>
                 </div>
 
-                {niveau > 0 ? (
+                {place > 0 ? (
                   <div className="mt-1 flex items-baseline gap-4 text-sm text-jour-doux">
                     <span className="font-chiffre tabular-nums">
                       {(vivant?.effectif ?? 0).toFixed(1)} / {cible}
@@ -77,10 +77,10 @@ export function Mare({ etat, surConviction, surNiveau, surCreusement, surCaptati
                 <button
                   type="button"
                   disabled={!payable}
-                  onClick={() => (niveau === 0 ? surConviction(banc.id) : surNiveau(banc.id))}
+                  onClick={() => (place === 0 ? surConviction(banc.id) : surPlace(banc.id))}
                   className="mt-2 w-full rounded-md border border-eau-clair px-3 py-1.5 text-sm transition-colors enabled:hover:bg-eau-bord disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {niveau === 0 ? 'Convaincre' : 'En faire venir'}
+                  {place === 0 ? 'Convaincre' : 'Faire de la place'}
                   <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDuBanc)}</span>
                 </button>
               </li>

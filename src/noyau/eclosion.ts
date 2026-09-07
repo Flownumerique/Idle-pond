@@ -15,7 +15,6 @@
 import Decimal from 'break_infinity.js'
 import type { EtatCycle, EtatJeu } from './types'
 import {
-  CONTENANCE_EN_SECONDES_DE_PRODUCTION_DE_PIC,
   F_TARIF_REDESCENTE,
   FOI_BASE,
   FOI_EXPOSANT,
@@ -52,6 +51,7 @@ export function cycleInitial(): EtatCycle {
     bancs: {},
     productionPicParSeconde: new Decimal(0),
     dureeSecondes: 0,
+    acquisDeSejour: 0,
   }
 }
 
@@ -60,10 +60,11 @@ export function eclore(etat: EtatJeu): EtatJeu {
   const foiGagnee = gainDeFoiPrevu(etat)
   const densites = appliquerGainDeDensite(etat, etat.cycle.paliersOuverts, pic)
 
-  // La contenance est conservée et progresse d'un cycle à l'autre : c'est elle
-  // qui déplace le blocage doux vers le bas. [P] loi de croissance à trancher.
-  const contenanceVisee = pic.mul(CONTENANCE_EN_SECONDES_DE_PRODUCTION_DE_PIC)
-  const contenanceMana = Decimal.max(etat.permanent.contenanceMana, contenanceVisee)
+  // Le plafond ne monte QUE par séjour prolongé en mana dense (Tier 0 §8) :
+  // l'acquis accumulé pendant le cycle se dépense ici, et nulle part ailleurs.
+  // Aucun facteur n'est écrit en dur — le ×47,1 visé est un RÉSULTAT de
+  // `A∞` et `τ₀`, pas une ligne de code (§2.B).
+  const contenanceMana = etat.permanent.contenanceMana.mul(1 + etat.cycle.acquisDeSejour)
 
   return {
     ...etat,

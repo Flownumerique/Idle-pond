@@ -15,11 +15,11 @@
  * dans `EffetDeSucces`.
  */
 import type { EspeceId, Succes } from '../../noyau/types'
-import { REMISE_D_UN_SUCCES_DE_SEUIL } from '../../noyau/constantes'
+import { PART_REMISE_D_UN_SUCCES } from '../../noyau/constantes'
 import { ASSISES } from '../assises'
 import { especesDeLAssise } from '../especes'
 
-const ASSISE = 'assise-1'
+const ASSISE = 'noue'
 
 /** Les seuils du §8.1, à la lettre. */
 const SEUILS_D_INDIVIDUS: readonly number[] = [10, 25, 50, 100]
@@ -37,9 +37,9 @@ function gabarit(espece: EspeceId): readonly Succes[] {
     assise: ASSISE,
     declencheur: { quoi: 'effectif_d_espece' as const, espece, seuil },
     effet: {
-      nature: 'chiffre' as const,
-      terme: 'cout_niveau' as const,
-      facteur: REMISE_D_UN_SUCCES_DE_SEUIL,
+      genre: 'reduction_cout' as const,
+      terme: 'cout_place' as const,
+      part: PART_REMISE_D_UN_SUCCES,
     },
   }))
 }
@@ -51,7 +51,7 @@ function gabarit(espece: EspeceId): readonly Succes[] {
 const SEUILS_DE_LA_MARE: readonly number[] = [25, 45, 70, 95, 130, 200, 320, 500]
 
 /** Profondeur atteinte dans la vie courante. L'axe de la descente. */
-const SEUILS_DE_PROFONDEUR: readonly number[] = [3, 5, 7]
+const SEUILS_DE_PROFONDEUR: readonly number[] = [3, 5]
 
 const PALIERS_DE_L_ASSISE = ASSISES[0].nombreDePaliers
 
@@ -65,9 +65,9 @@ export const SEUILS: readonly Succes[] = [
     assise: ASSISE,
     declencheur: { quoi: 'effectif_total' as const, seuil },
     effet: {
-      nature: 'chiffre' as const,
-      terme: 'cout_niveau' as const,
-      facteur: REMISE_D_UN_SUCCES_DE_SEUIL,
+      genre: 'reduction_cout' as const,
+      terme: 'cout_place' as const,
+      part: PART_REMISE_D_UN_SUCCES,
     },
   })),
 
@@ -78,9 +78,9 @@ export const SEUILS: readonly Succes[] = [
     assise: ASSISE,
     declencheur: { quoi: 'paliers_ouverts' as const, seuil },
     effet: {
-      nature: 'chiffre' as const,
+      genre: 'reduction_cout' as const,
       terme: 'cout_creuser' as const,
-      facteur: REMISE_D_UN_SUCCES_DE_SEUIL,
+      part: PART_REMISE_D_UN_SUCCES,
     },
   })),
 
@@ -97,9 +97,9 @@ export const SEUILS: readonly Succes[] = [
       assise: ASSISE,
       declencheur: { quoi: 'palier_sature' as const, palier },
       effet: {
-        nature: 'chiffre' as const,
-        terme: 'cout_niveau' as const,
-        facteur: REMISE_D_UN_SUCCES_DE_SEUIL,
+        genre: 'reduction_cout' as const,
+        terme: 'cout_place' as const,
+        part: PART_REMISE_D_UN_SUCCES,
       },
     }
   }),

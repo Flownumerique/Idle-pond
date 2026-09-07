@@ -53,7 +53,31 @@ describe('persistance', () => {
   })
 
   it('une save d’une version inconnue refuse de se charger en silence', () => {
-    const save = { versionSave: VERSION_SAVE - 1, contenu: {} }
+    // Une version SANS migration déclarée. Un trou dans la chaîne doit crier,
+    // pas charger à moitié : rétrofiter un versionnage coûte un wipe, mais
+    // charger une save qu'on ne sait pas lire en coûte un aussi.
+    const save = { versionSave: -1, contenu: {} }
     expect(() => migrer(save)).toThrow(/Migration de save manquante/)
+  })
+
+  it('une save du jalon précédent se réveille au sortir de l’œuf', () => {
+    // 1 → 2 : la géométrie de la Noue a changé sous ses pieds. Le cycle est
+    // rendu, le permanent conservé — exactement ce que l'éclosion fait quinze
+    // fois par partie.
+    const ancienne = {
+      versionSave: 1,
+      contenu: {
+        permanent: {
+          succesDebloques: ['seuil-espece-1-1-10', 'acte-premiere-conviction'],
+          couches: ['assise-1'],
+        },
+      },
+    }
+    const repli = etatInitial(0)
+    const reprise = deserialiser(ancienne, repli)
+    expect(reprise.versionSave).toBe(VERSION_SAVE)
+    expect(reprise.permanent.succesDebloques).toContain('seuil-vairon-10')
+    expect(reprise.permanent.couches).toEqual(['noue'])
+    expect(reprise.cycle.paliersOuverts).toBe(repli.cycle.paliersOuverts)
   })
 })

@@ -10,11 +10,22 @@
  */
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
-import { NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
+import { CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { simuler } from '../src/simulateur/simulateur'
-import { TYPE_MANA_NATAL } from '../src/donnees/assises'
+import { PALIERS_LIVRES, TYPE_MANA_NATAL } from '../src/donnees/assises'
 
 describe('simulateur', () => {
+  it('une partie sans UI atteint l’éclosion 2 en headless', () => {
+    // Critère d'acceptation du §6 de l'amendement v1.1. Il porte sur le monde
+    // LIVRÉ — la Noue et ses six paliers —, pas sur les 62 que le simulateur
+    // mesure : c'est le jeu qu'un joueur touche qui doit boucler.
+    const partie = simuler(2, undefined, 1, undefined, PALIERS_LIVRES)
+    expect(partie.cycleNonConvergent).toBeNull()
+    expect(partie.etat.permanent.nombreEclosions).toBe(2)
+    expect(partie.etat.permanent.contenanceMana.gt(CONTENANCE_INITIALE)).toBe(true)
+    expect(partie.etat.permanent.densites[0]).toBeGreaterThan(0)
+  })
+
   it(`enchaîne ${NOMBRE_D_ECLOSIONS_VISE} cycles sans jouer`, () => {
     const resultat = simuler(NOMBRE_D_ECLOSIONS_VISE)
     expect(resultat.cycleNonConvergent, 'un cycle n’a pas convergé').toBeNull()

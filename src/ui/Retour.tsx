@@ -6,7 +6,8 @@
  * branche Entretien (§7.3), donc v0.4 — pas ici.
  */
 import type { RetourAffiche } from '../etat/magasin'
-import { duree } from './format'
+import { ASSISES } from '../donnees/assises'
+import { duree, nomDeLAssiseCapitale } from './format'
 
 interface Props {
   readonly retour: RetourAffiche | null
@@ -21,7 +22,7 @@ export function Retour({ retour, surFermeture }: Props) {
       onClick={surFermeture}
       className="w-full rounded-lg border border-eau-bord bg-eau-fond/50 px-3 py-2 text-left text-sm text-jour-doux transition-colors hover:border-eau-clair"
     >
-      La mare a tourné sans toi pendant {duree(retour.secondesCreditees)}.
+      {nomDeLAssiseCapitale(ASSISES[0].id)} a tourné sans toi pendant {duree(retour.secondesCreditees)}.
     </button>
   )
 }

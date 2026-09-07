@@ -9,7 +9,7 @@
 import { create } from 'zustand'
 import { persist, type PersistStorage } from 'zustand/middleware'
 import type { BancId, EtatJeu, SuccesId } from '../noyau/types'
-import { convaincre, creuser, eclore, etatInitial, monterNiveau } from '../noyau/noyau'
+import { convaincre, creuser, eclore, etatInitial, acheterPlace } from '../noyau/noyau'
 import { PALIERS_LIVRES } from '../donnees/assises'
 import { SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR } from '../noyau/constantes'
 import { deserialiser, serialiser, type SaveSerialisee } from '../adaptateurs/persistance'
@@ -33,7 +33,7 @@ interface Magasin {
   remplacer(etat: EtatJeu): void
   creuser(): void
   convaincre(banc: BancId): void
-  monterNiveau(banc: BancId): void
+  acheterPlace(banc: BancId): void
   eclore(): void
   reprendre(): void
   annoncer(declenches: readonly SuccesId[]): void
@@ -88,7 +88,7 @@ export const useMagasin = create<Magasin>()(
       remplacer: (etat) => set({ etat, dernierInstantMs: horlogeSysteme.maintenantMs() }),
       creuser: () => set({ etat: creuser(get().etat) }),
       convaincre: (banc) => set({ etat: convaincre(get().etat, banc) }),
-      monterNiveau: (banc) => set({ etat: monterNiveau(get().etat, banc) }),
+      acheterPlace: (banc) => set({ etat: acheterPlace(get().etat, banc) }),
       eclore: () => set({ etat: eclore(get().etat) }),
 
       /** Un seul appel à tick pour toute l'absence. Rien ne s'est dégradé. */

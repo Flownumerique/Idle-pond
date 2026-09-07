@@ -3,20 +3,25 @@
  *
  * Contenu pur, sans logique.
  *
- * [P] P3 — aucun nom propre ici. Les conventions phonétiques ne sont pas
- * tranchées, et le §14 les déclare bloquantes pour tout nom d'assise, d'espèce
- * et de bâtiment. Les identifiants ci-dessous sont des identifiants de code ;
- * l'UI n'affichera jamais ni eux ni un nom générique de couche (§3), elle
- * affichera le nom propre du lieu quand il existera.
+ * L'assise I est nommée par l'amendement v1.1 §2.E : `la Noue`, /nu/,
+ * hydronyme réel désignant une dépression humide, monosyllabe. Identifiant
+ * `noue`. Les cinq autres attendent encore la charte phonétique — leur
+ * identifiant reste neutre, et rien de générique ne s'affiche à l'écran (§3).
  *
- * [P] — la répartition des paliers entre assises n'est pas fixée par le
- * contrat au-delà de « 62, distribution plate ». Celle-ci est plate à un
- * palier près et sera relue au premier jalon de contenu.
+ * [P] — répartition des paliers. Le §5.1 fixe 62 paliers en « distribution
+ * plate (~4,4 par cycle) » et le §6 donne six paliers à la Noue. Les deux ne
+ * se tiennent que si « plate » qualifie la distribution PAR CYCLE et non par
+ * assise — sinon il en faudrait ~10,3 chacune. C'est la lecture retenue : la
+ * Noue est courte parce qu'elle enseigne, les 56 paliers restants se
+ * répartissent sur cinq assises. À confirmer.
  */
 import type { Assise } from '../noyau/types'
 import { NOMBRE_DE_PALIERS } from '../noyau/constantes'
 
-const PALIERS_PAR_ASSISE: readonly number[] = [10, 10, 10, 11, 11, 10]
+/** Nommées au fur et à mesure que la charte phonétique descend (§2.E). */
+const IDENTIFIANTS_D_ASSISE: readonly (string | undefined)[] = ['noue']
+
+const PALIERS_PAR_ASSISE: readonly number[] = [6, 11, 11, 11, 11, 12]
 
 function construireAssises(): readonly Assise[] {
   const assises: Assise[] = []
@@ -24,7 +29,7 @@ function construireAssises(): readonly Assise[] {
   for (let rang = 0; rang < PALIERS_PAR_ASSISE.length; rang += 1) {
     const nombreDePaliers = PALIERS_PAR_ASSISE[rang]
     assises.push({
-      id: `assise-${rang + 1}`,
+      id: IDENTIFIANTS_D_ASSISE[rang] ?? `assise-${rang + 1}`,
       rang: rang + 1,
       // Chaque assise a son type de mana propre. [P] mana-typologie.md (Tier 1)
       // n'est pas disponible dans le dépôt : les identifiants sont provisoires.

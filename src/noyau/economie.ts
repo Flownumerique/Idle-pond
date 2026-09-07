@@ -22,8 +22,8 @@ import type {
 import {
   COUT_CREUSER_AU_PALIER_1,
   COUT_DEBLOCAGE_AU_PALIER_0,
-  COUT_NIVEAU_AU_PALIER_0,
-  LECTURE_DES_SEUILS_DE_JALON,
+  COUT_DE_PLACE_AU_PALIER_0,
+  BONUS_GLOBAL_A_CENT_INDIVIDUS,
   NOMBRE_DE_PALIERS,
   RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05,
   SEUILS_DE_JALON,
@@ -38,15 +38,32 @@ import { SUCCES } from '../donnees/succes/index'
 
 /* ─── Seuils de jalon ───────────────────────────────────────────────────────*/
 
-/** Multiplicateur de jalon d'un banc, d'après son niveau (§6.2). */
-export function multiplicateurJalon(niveau: number): number {
+/**
+ * Multiplicateur de seuil d'un banc, d'après son EFFECTIF (§2.C).
+ *
+ * La table donne le multiplicateur CUMULÉ lu au seuil : on retient celui du
+ * seuil le plus haut franchi, on ne multiplie pas les colonnes entre elles.
+ * Cent individus valent ×16, jamais ×1024 — et `D = 2.31` a été calibré
+ * contre cette lecture-là.
+ *
+ * Il se lit sur l'effectif courant à chaque tick, donc il se reperd à
+ * l'éclosion avec la population. Le seul acquis qui survit est le drapeau
+ * permanent, plus bas.
+ */
+export function multiplicateurDeSeuil(effectif: number): number {
   let multiplicateur = 1
   for (const seuil of SEUILS_DE_JALON) {
-    if (niveau < seuil.seuil) continue
-    multiplicateur =
-      LECTURE_DES_SEUILS_DE_JALON === 'cumule' ? multiplicateur * seuil.multiplicateur : seuil.multiplicateur
+    if (effectif >= seuil.seuil) multiplicateur = seuil.multiplicateurCumule
   }
   return multiplicateur
+}
+
+/**
+ * Bonus global des espèces ayant DÉJÀ atteint cent individus (§2.C).
+ * Définitif, conservé à l'éclosion, additif entre espèces.
+ */
+export function multiplicateurDesDrapeaux(etat: EtatJeu): number {
+  return 1 + BONUS_GLOBAL_A_CENT_INDIVIDUS * etat.permanent.especesAyantAtteintCent.length
 }
 
 /* ─── Taux de base ──────────────────────────────────────────────────────────*/
@@ -71,19 +88,31 @@ export function rendementAcclimatation(etat: EtatJeu, palier: IndexPalier): numb
   return etat.permanent.acclimatations[typeMana] ?? RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05
 }
 
-/** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
-export function tauxEffectifDuBanc(etat: EtatJeu, banc: Banc, niveau: number): Decimal {
+/**
+ * Taux par individu SANS le multiplicateur de seuil.
+ *
+ * Tous les termes qui restent constants pendant un tick sont ici ; le seul qui
+ * varie en cours d'intervalle — le multiplicateur de seuil, qui se lit sur
+ * l'effectif (§2.C) — en est sorti, pour que le noyau puisse l'intégrer
+ * analytiquement plutôt que de le figer au début du pas.
+ */
+export function tauxParIndividuHorsSeuil(etat: EtatJeu, banc: Banc): Decimal {
   return tauxBaseDuBanc(banc)
     .add(apportGlobalAdditif(etat))
     .mul(rendementAcclimatation(etat, banc.palier))
-    .mul(multiplicateurJalon(niveau))
+    .mul(multiplicateurDesDrapeaux(etat))
     .mul(multiplicateurCible(etat, banc.espece))
+}
+
+/** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
+export function tauxParIndividu(etat: EtatJeu, banc: Banc, effectif: number): Decimal {
+  return tauxParIndividuHorsSeuil(etat, banc).mul(multiplicateurDeSeuil(effectif))
 }
 
 export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
   const bancEtat = etat.cycle.bancs[banc.id]
-  if (bancEtat === undefined || bancEtat.niveau <= 0) return new Decimal(0)
-  return tauxEffectifDuBanc(etat, banc, bancEtat.niveau).mul(bancEtat.effectif)
+  if (bancEtat === undefined || bancEtat.place <= 0) return new Decimal(0)
+  return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
 }
 
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
@@ -102,9 +131,9 @@ export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
  */
 export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCaptation[] {
   const bancEtat = etat.cycle.bancs[banc.id]
-  const niveau = bancEtat?.niveau ?? 0
+  const effectif = bancEtat?.effectif ?? 0
   return [
-    { terme: 'effectif', valeur: bancEtat?.effectif ?? 0, source: { quoi: 'population' } },
+    { terme: 'effectif', valeur: effectif, source: { quoi: 'population' } },
     { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
     {
       terme: 'benediction_globale',
@@ -116,7 +145,16 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
       valeur: rendementAcclimatation(etat, banc.palier),
       source: { quoi: 'acclimatation', typeMana: assiseDuPalier(banc.palier).typeMana },
     },
-    { terme: 'multiplicateur_jalon', valeur: multiplicateurJalon(niveau), source: { quoi: 'niveau', niveau } },
+    {
+      terme: 'multiplicateur_jalon',
+      valeur: multiplicateurDeSeuil(effectif),
+      source: { quoi: 'place', place: bancEtat?.place ?? 0 },
+    },
+    {
+      terme: 'multiplicateur_drapeau',
+      valeur: multiplicateurDesDrapeaux(etat),
+      source: { quoi: 'drapeaux_permanents', especes: etat.permanent.especesAyantAtteintCent.length },
+    },
     {
       terme: 'benediction_ciblee',
       valeur: multiplicateurCible(etat, banc.espece),
@@ -138,10 +176,12 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
 export function facteurDeSucces(etat: EtatJeu, terme: TermeDeCout | TermeDeConfort): number {
   let facteur = 1
   for (const succes of SUCCES) {
-    if (succes.effet === null || succes.effet.nature !== 'chiffre') continue
-    if (succes.effet.terme !== terme) continue
+    const effet = succes.effet
+    if (effet === null || effet.genre === 'verbe') continue
+    if (effet.terme !== terme) continue
     if (!etat.permanent.succesDebloques.includes(succes.id)) continue
-    facteur *= succes.effet.facteur
+    // `part` est la fraction retirée d'un coût, ou ajoutée à un plafond.
+    facteur *= effet.genre === 'reduction_cout' ? 1 - effet.part : 1 + effet.part
   }
   return facteur
 }
@@ -156,6 +196,7 @@ export function coutCreuser(etat: EtatJeu, cible: IndexPalier): Decimal {
   return puissanceDeG(Math.max(0, cible - 1))
     .mul(COUT_CREUSER_AU_PALIER_1)
     .mul(facteurDeCout(etat, 'cout_creuser'))
+    .mul(facteurDeCout(etat, 'reduction_technique'))
 }
 
 /** Coût de conviction d'un banc : le recruter pour la première fois de la vie. */
@@ -165,12 +206,15 @@ export function coutDeblocage(etat: EtatJeu, banc: Banc): Decimal {
     .mul(facteurDeCout(etat, 'cout_deblocage'))
 }
 
-/** Coût du passage de `niveau` à `niveau + 1`. Achat répétable, ×1.15. */
-export function coutNiveau(etat: EtatJeu, banc: Banc, niveau: number): Decimal {
+/**
+ * Coût d'une place de plus. Achat répétable, ×1.15.
+ * Le joueur achète de la place, jamais des individus (§2.C).
+ */
+export function coutDePlace(etat: EtatJeu, banc: Banc, place: number): Decimal {
   return puissanceDeG(banc.palier)
-    .mul(COUT_NIVEAU_AU_PALIER_0)
-    .mul(puissanceDuCoutDeNiveau(Math.max(0, niveau - 1)))
-    .mul(facteurDeCout(etat, 'cout_niveau'))
+    .mul(COUT_DE_PLACE_AU_PALIER_0)
+    .mul(puissanceDuCoutDeNiveau(Math.max(0, place - 1)))
+    .mul(facteurDeCout(etat, 'cout_place'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/

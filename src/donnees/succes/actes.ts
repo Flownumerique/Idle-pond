@@ -10,10 +10,10 @@
  * là où un seuil d'effectif attend que la population monte.
  */
 import type { Succes } from '../../noyau/types'
-import { REMISE_D_UN_SUCCES_DE_SEUIL } from '../../noyau/constantes'
+import { PART_REMISE_D_UN_SUCCES } from '../../noyau/constantes'
 import { idDeBanc } from '../paliers'
 
-const ASSISE = 'assise-1'
+const ASSISE = 'noue'
 
 export const ACTES: readonly Succes[] = [
   {
@@ -32,7 +32,7 @@ export const ACTES: readonly Succes[] = [
     famille: 'acte',
     visibilite: 'ouvert',
     assise: ASSISE,
-    declencheur: { quoi: 'niveau_de_banc', banc: idDeBanc('espece-1-1', 0), seuil: 2 },
+    declencheur: { quoi: 'place_de_banc', banc: idDeBanc('vairon', 0), seuil: 2 },
     effet: null,
   },
   {
@@ -40,15 +40,15 @@ export const ACTES: readonly Succes[] = [
     famille: 'acte',
     visibilite: 'ouvert',
     assise: ASSISE,
-    declencheur: { quoi: 'niveau_de_banc', banc: idDeBanc('espece-1-1', 0), seuil: 5 },
-    effet: { nature: 'chiffre', terme: 'cout_niveau', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    declencheur: { quoi: 'place_de_banc', banc: idDeBanc('vairon', 0), seuil: 5 },
+    effet: { genre: 'reduction_cout', terme: 'cout_place', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-premier-banc-de-cinq',
     famille: 'acte',
     visibilite: 'ferme',
     assise: ASSISE,
-    declencheur: { quoi: 'effectif_de_banc', banc: idDeBanc('espece-1-1', 0), seuil: 5 },
+    declencheur: { quoi: 'effectif_de_banc', banc: idDeBanc('vairon', 0), seuil: 5 },
     effet: null,
   },
   {
@@ -57,7 +57,7 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'ouvert',
     assise: ASSISE,
     declencheur: { quoi: 'paliers_ouverts', seuil: 2 },
-    effet: { nature: 'chiffre', terme: 'cout_creuser', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-deux-bancs',
@@ -65,15 +65,15 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'ouvert',
     assise: ASSISE,
     declencheur: { quoi: 'bancs_convaincus', seuil: 2 },
-    effet: { nature: 'chiffre', terme: 'cout_deblocage', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_deblocage', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-dixieme-niveau',
     famille: 'acte',
     visibilite: 'ferme',
     assise: ASSISE,
-    declencheur: { quoi: 'niveau_de_banc', banc: idDeBanc('espece-1-1', 0), seuil: 10 },
-    effet: { nature: 'chiffre', terme: 'cout_niveau', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    declencheur: { quoi: 'place_de_banc', banc: idDeBanc('vairon', 0), seuil: 10 },
+    effet: { genre: 'reduction_cout', terme: 'cout_place', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-trois-bancs',
@@ -81,7 +81,7 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'ferme',
     assise: ASSISE,
     declencheur: { quoi: 'bancs_convaincus', seuil: 3 },
-    effet: { nature: 'chiffre', terme: 'cout_deblocage', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_deblocage', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-premier-palier-sature',
@@ -91,6 +91,6 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'secret',
     assise: ASSISE,
     declencheur: { quoi: 'palier_sature', palier: 0 },
-    effet: { nature: 'chiffre', terme: 'cout_niveau', facteur: REMISE_D_UN_SUCCES_DE_SEUIL },
+    effet: { genre: 'reduction_cout', terme: 'cout_place', part: PART_REMISE_D_UN_SUCCES },
   },
 ]

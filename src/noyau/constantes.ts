@@ -25,24 +25,34 @@ export const F_TARIF_REDESCENTE = 1
 export const RATIO_COUT_NIVEAU = 1.15
 
 /**
- * Seuils de jalon : 10 / 25 / 50 / 100 → ×2 / ×4 / ×8 / ×16.
+ * Seuils, et leur MULTIPLICATEUR CUMULÉ — amendement v1.1 §2.C.
  *
- * [P] — le §6.2 apparie des seuils à des ratios sans dire s'ils se cumulent.
- * Deux lectures : le multiplicateur TOTAL atteint le ×16 au niveau 100, ou
- * chaque seuil applique son ratio et le produit atteint ×1024. La table
- * ci-dessous porte la première lecture, la plus littérale ; le mode est nommé
- * pour qu'un basculement soit un changement d'une ligne et non d'un modèle.
- * À trancher avec l'auteur avant le calibrage v0.3.
+ * La colonne est le multiplicateur cumulé LU AU SEUIL : chaque seuil double, et
+ * le total à 100 individus vaut ×16, jamais ×1024. Toute lecture « ×4
+ * supplémentaire » est fausse, et `D = 2.31` a été calibré contre celle-ci.
+ *
+ * Les seuils portent sur l'EFFECTIF, pas sur la place achetée : le joueur
+ * achète de la place, la population croît seule vers son plafond, et les
+ * seuils tombent avec le temps. Le multiplicateur se recalcule depuis
+ * l'effectif courant à chaque tick, et se reperd à l'éclosion comme la
+ * population.
  */
-export const SEUILS_DE_JALON: readonly { readonly seuil: number; readonly multiplicateur: number }[] = [
-  { seuil: 10, multiplicateur: 2 },
-  { seuil: 25, multiplicateur: 4 },
-  { seuil: 50, multiplicateur: 8 },
-  { seuil: 100, multiplicateur: 16 },
+export const SEUILS_DE_JALON: readonly { readonly seuil: number; readonly multiplicateurCumule: number }[] = [
+  { seuil: 10, multiplicateurCumule: 2 },
+  { seuil: 25, multiplicateurCumule: 4 },
+  { seuil: 50, multiplicateurCumule: 8 },
+  { seuil: 100, multiplicateurCumule: 16 },
 ]
 
-/** 'total' : la colonne donne le multiplicateur atteint. 'cumule' : il se multiplie. */
-export const LECTURE_DES_SEUILS_DE_JALON: 'total' | 'cumule' = 'total'
+/**
+ * Seuil au-delà duquel une espèce pose un drapeau PERMANENT (§2.C).
+ *
+ * L'unique exception à « le multiplicateur de seuil se reperd à l'éclosion » :
+ * avoir déjà atteint cent individus d'une espèce accorde un bonus définitif,
+ * conservé à l'éclosion. C'est un drapeau par espèce, distinct du
+ * multiplicateur de seuil, et il ne se repose jamais.
+ */
+export const SEUIL_DU_DRAPEAU_PERMANENT = 100
 
 /** 62 paliers, distribution plate. */
 export const NOMBRE_DE_PALIERS = 62
@@ -86,27 +96,68 @@ export const RAPPORT_G_SUR_D = Math.pow(CROISSANCE_PAR_CYCLE_VISEE, 1 / PALIERS_
  */
 export const D_PRODUCTION_PAR_PALIER = G_COUT_PALIER / RAPPORT_G_SUR_D
 
+/**
+ * Contenance par éclosion : `g ^ paliers_par_cycle` = ×47,1.
+ *
+ * Dérivé, et atteint VIA l'acquis de séjour — jamais écrit dans le code de
+ * l'éclosion. C'est la cible que le test de contenance vérifie à 2 % près.
+ */
+export const CONTENANCE_PAR_ECLOSION = Math.pow(G_COUT_PALIER, PALIERS_PAR_CYCLE_VISE)
+
 /* ═══ §13.3 — GRAINES, À MESURER. NE JAMAIS TRAITER COMME FIXÉES ════════════ */
 
-/** [P] graine — `α`, gain de densité. Mesuré en v0.3. */
+/** [P] graine — `α`, gain de densité. Mesuré en v0.3, conjointement avec `θ`. */
 export const ALPHA_GAIN_DE_DENSITE = 0.6
 
-/** [P] graine — exposant du multiplicateur de densité. Mesuré en v0.3. */
-export const EXPOSANT_DU_MULTIPLICATEUR_DE_DENSITE = 0.5
+/**
+ * `θ` — part du besoin que la densité compense. Borne dure [0, 1].
+ * Amendement v1.1 §2.A. C'est le seul bouton qui agisse sur la FORME de la
+ * courbe ; `D` agit sur son niveau.
+ *
+ * [P] graine — mesuré en v0.3, conjointement avec `α`.
+ */
+export const THETA_PART_COMPENSEE = 0.8
 
 /**
- * [P] — le §13.2 dérive l'exposant de densité de `θ / α`, mais `θ` n'est défini
- * nulle part dans le prompt de lancement ni dans les documents disponibles. La
- * dérivation est donc impossible à ce jalon : le noyau applique la graine du
- * §13.3 telle quelle et la question est portée à l'auteur avant v0.3.
+ * Exposant du multiplicateur de densité — DÉRIVÉ, jamais saisi.
+ *
+ * La chaîne, à ne pas perdre de vue en le lisant :
+ *   1. à chaque éclosion, la production de pointe est multipliée par
+ *      `g^paliers_gagnés` ;
+ *   2. le gain de densité vaut `pointe^α`, donc la densité est multipliée par
+ *      `g^(paliers × α)` ;
+ *   3. pour que le multiplicateur de densité suive EXACTEMENT le besoin
+ *      (`g^paliers`), l'exposant doit valoir `1/α` ;
+ *   4. `θ` est la fraction de ce besoin qu'on choisit de compenser.
+ *
+ * θ = 1 → compensation exacte, cycles plats.
+ * θ = 0 → aucune compensation, les cycles s'allongent sans fin.
  */
-export const EXPOSANT_DE_DENSITE = EXPOSANT_DU_MULTIPLICATEUR_DE_DENSITE
+export function densiteExposant(): number {
+  return THETA_PART_COMPENSEE / ALPHA_GAIN_DE_DENSITE
+}
 
 /** [P] graine — `k`, taux de repeuplement, par seconde. Mesuré en v0.3. */
 export const K_TAUX_DE_REPEUPLEMENT = 1 / 300
 
-/** [P] graine — bonus global au niveau 100. Mesuré en v0.3. */
-export const BONUS_GLOBAL_AU_NIVEAU_100 = 0.03
+/**
+ * [P] graine — couplage de la densité à la vitesse de repeuplement.
+ *
+ * Distinct de `θ/α`, et il doit le rester : la densité agit déjà pleinement sur
+ * l'acquis de séjour (§2.B), et lui donner le même exposant ici compterait deux
+ * fois la même compensation. Voir la note de `vitesseDeRepeuplement`.
+ */
+export const EXPOSANT_REPEUPLEMENT_DENSITE = 0.5
+
+/**
+ * [P] graine — bonus global accordé par espèce ayant déjà atteint cent
+ * individus. Définitif, conservé à l'éclosion. Mesuré en v0.3.
+ *
+ * [P] — le §2.C dit « +3 % de production globale » par espèce sans dire si
+ * plusieurs espèces s'additionnent ou se composent. L'addition est retenue :
+ * elle ne compose pas, donc elle ne peut pas surprendre à vingt et une espèces.
+ */
+export const BONUS_GLOBAL_A_CENT_INDIVIDUS = 0.03
 
 /* ─── Graines d'échelle économique ──────────────────────────────────────────
  * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle
@@ -130,8 +181,14 @@ export const COUT_CREUSER_AU_PALIER_1 = 60
 /** [P] graine — coût de conviction d'un banc du palier 0. Croît en g^index. */
 export const COUT_DEBLOCAGE_AU_PALIER_0 = 10
 
-/** [P] graine — coût du premier niveau d'un banc du palier 0. Croît en g^index. */
-export const COUT_NIVEAU_AU_PALIER_0 = 8
+/**
+ * [P] graine — coût de la première PLACE d'un banc du palier 0. Croît en g^index.
+ *
+ * Le joueur achète de la place — un plafond de population — jamais des
+ * individus. « Niveau » est un reste d'Étang des Merveilles, banni des
+ * identifiants (§2.C, §3).
+ */
+export const COUT_DE_PLACE_AU_PALIER_0 = 8
 
 /** Nombre de paliers ouverts au début d'un cycle. Le héros démarre dans la mare. */
 export const PALIERS_OUVERTS_AU_DEPART = 1
@@ -147,18 +204,43 @@ export const PALIERS_OUVERTS_AU_DEPART = 1
  */
 export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_DEBLOCAGE_AU_PALIER_0
 
-/* ─── Graines de contenance ─────────────────────────────────────────────────
- * §6.4 : « la contenance limite le stock, pas la production ». Elle est donc un
- * état permanent et non une quantité dérivée de la production courante — sinon
- * elle grandirait avec chaque niveau acheté et le blocage doux n'arriverait
- * jamais. Elle est conservée à l'éclosion (§6.5) et progresse d'un cycle à
- * l'autre, indexée sur la production de pic du cycle, comme la densité.
+/* ─── Contenance et acquis de séjour — amendement v1.1 §2.B ─────────────────
  *
- * [P] — la loi de croissance de la contenance n'est fixée par aucun document.
- * Ces graines la rendent monotone et non explosive ; à trancher en v0.3.
+ * La loi de croissance n'était pas fixée parce que son RÉSULTAT l'était :
+ * 62 paliers, ~4,4 par cycle. Elle est donc dérivée, jamais saisie.
+ *
+ * Le blocage doux tombe quand `coût_base × g^P > contenance`. Pour que `P`
+ * avance de 4,4 par cycle, la contenance doit être multipliée par `g^4.4`,
+ * soit ×47,1 par éclosion.
+ *
+ * ÉCRIRE CE FACTEUR DIRECTEMENT EST INTERDIT. Tier 0 §8 : le plafond ne monte
+ * QUE par séjour prolongé en mana dense. Une contenance indexée sur le
+ * compteur d'éclosions violerait l'invariant. Elle monte donc par une
+ * accumulation saturante de l'acquis de séjour, dont le temps caractéristique
+ * décroît quand la densité monte — « séjour en mana DENSE ».
+ *
+ * Effet secondaire recherché, à ne pas casser : passé la saturation, rester ne
+ * rapporte plus de profondeur, seulement de la Foi. C'est ce qui rend réelle
+ * la seule vraie décision du joueur.
  */
 export const CONTENANCE_INITIALE = 1200
-export const CONTENANCE_EN_SECONDES_DE_PRODUCTION_DE_PIC = 600
+
+/**
+ * `A∞` — plafond de l'acquis de séjour.
+ *
+ * [P] graine — RÉSOLU À L'ENVERS par le calibreur pour que le cycle nominal
+ * rende `g^4.4` = ×47,1. Avec `τ₀` ci-dessous, trois heures de séjour portent
+ * l'acquis à 46,1, donc la contenance à ×47,1 : c'est là que les deux graines
+ * se tiennent l'une l'autre, et changer l'une sans l'autre casse la cible.
+ */
+export const ACQUIS_MAX = 47.6
+
+/**
+ * `τ₀` — temps caractéristique du séjour, en heures, à densité neutre.
+ *
+ * [P] graine — réglé pour un `t₉₀` ≈ 2 h sur un cycle de 3 h.
+ */
+export const TAU_SEJOUR_HEURES = 0.87
 
 /* ─── Graines d'éclosion ────────────────────────────────────────────────────*/
 
@@ -198,13 +280,13 @@ export const CADENCE_MAX_ENTRE_SUCCES_SECONDES = 5 * 60
 export const FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES = 30 * 60
 
 /**
- * [P] graine — remise de coût d'un succès de seuil de l'assise I.
+ * [P] graine — PART retirée d'un coût par un succès de la Noue.
  *
  * Petite, et volontairement : le §7.2 rappelle qu'une réduction de coût vaut
  * `log_g(1/c)` paliers d'avance, soit un décalage additif qui ne compose pas.
- * Douze succès à −2 % font moins d'un tiers de palier. À mesurer en v0.3.
+ * Le registre entier de la Noue pèse moins d'un palier. À mesurer en v0.3.
  */
-export const REMISE_D_UN_SUCCES_DE_SEUIL = 0.98
+export const PART_REMISE_D_UN_SUCCES = 0.02
 
 /* ─── Budget de verbes (§7.5 règle 2) ───────────────────────────────────────*/
 
@@ -225,4 +307,4 @@ export const SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR = 60
 export const PERIODE_DE_TICK_MS = 100
 
 /** Version de save courante. Toute évolution passe par une migration. */
-export const VERSION_SAVE = 1
+export const VERSION_SAVE = 2

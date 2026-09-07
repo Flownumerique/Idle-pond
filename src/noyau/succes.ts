@@ -70,8 +70,8 @@ function palierSature(etat: EtatJeu, palier: number): boolean {
   if (palier >= etat.cycle.paliersOuverts) return false
   for (const banc of PALIERS[palier].bancs) {
     const etatDuBanc = etat.cycle.bancs[banc.id]
-    if (etatDuBanc === undefined || etatDuBanc.niveau <= 0) return false
-    if (etatDuBanc.effectif < effectifCible(etatDuBanc.niveau) * SATURATION_D_UN_PALIER) return false
+    if (etatDuBanc === undefined || etatDuBanc.place <= 0) return false
+    if (etatDuBanc.effectif < effectifCible(etatDuBanc.place) * SATURATION_D_UN_PALIER) return false
   }
   return true
 }
@@ -86,13 +86,13 @@ export function estAtteint(etat: EtatJeu, declencheur: DeclencheurDeSucces): boo
     case 'profondeur_max':
       return etat.permanent.profondeurMaxAtteinte >= declencheur.seuil
     case 'bancs_convaincus':
-      return Object.values(etat.cycle.bancs).filter((b) => b.niveau > 0).length >= declencheur.seuil
+      return Object.values(etat.cycle.bancs).filter((b) => b.place > 0).length >= declencheur.seuil
     case 'effectif_de_banc':
       return (etat.cycle.bancs[declencheur.banc]?.effectif ?? 0) >= declencheur.seuil
     case 'effectif_d_espece':
       return effectifDEspece(etat, declencheur.espece) >= declencheur.seuil
-    case 'niveau_de_banc':
-      return (etat.cycle.bancs[declencheur.banc]?.niveau ?? 0) >= declencheur.seuil
+    case 'place_de_banc':
+      return (etat.cycle.bancs[declencheur.banc]?.place ?? 0) >= declencheur.seuil
     case 'effectif_total':
       return effectifTotal(etat) >= declencheur.seuil
     case 'production_par_seconde':
@@ -184,7 +184,7 @@ export function enregistrerIntervalleDeSucces(etat: EtatJeu, declenches: readonl
 export function capacitesDesSucces(etat: EtatJeu): ReadonlySet<CapaciteId> {
   const ouvertes = new Set<CapaciteId>()
   for (const succes of SUCCES) {
-    if (succes.effet?.nature !== 'verbe') continue
+    if (succes.effet?.genre !== 'verbe') continue
     if (!etat.permanent.succesDebloques.includes(succes.id)) continue
     ouvertes.add(succes.effet.capacite)
   }
@@ -250,13 +250,13 @@ function valeurCourante(etat: EtatJeu, declencheur: DeclencheurDeSucces): number
     case 'profondeur_max':
       return etat.permanent.profondeurMaxAtteinte
     case 'bancs_convaincus':
-      return Object.values(etat.cycle.bancs).filter((b) => b.niveau > 0).length
+      return Object.values(etat.cycle.bancs).filter((b) => b.place > 0).length
     case 'effectif_de_banc':
       return etat.cycle.bancs[declencheur.banc]?.effectif ?? 0
     case 'effectif_d_espece':
       return effectifDEspece(etat, declencheur.espece)
-    case 'niveau_de_banc':
-      return etat.cycle.bancs[declencheur.banc]?.niveau ?? 0
+    case 'place_de_banc':
+      return etat.cycle.bancs[declencheur.banc]?.place ?? 0
     case 'effectif_total':
       return effectifTotal(etat)
     case 'production_par_seconde':

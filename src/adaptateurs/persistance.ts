@@ -71,7 +71,45 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
  * transforme un contenu de version `n` en contenu de version `n + 1`.
  * Vide aujourd'hui, et c'est le but : le mécanisme existe avant le besoin.
  */
-export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>> = {}
+export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>> = {
+  /**
+   * 1 → 2 — amendement v1.1.
+   *
+   * Trois choses changent sous les pieds d'une save v1 : « niveau » devient
+   * « place », les espèces de la Noue prennent leur nom canonique, et l'assise
+   * I passe de dix paliers à six. La dernière est une réécriture de la
+   * géométrie : les index de palier d'une save v1 ne désignent plus les mêmes
+   * lieux, et aucun remaniement honnête ne les y ramènerait.
+   *
+   * Le cycle est donc rendu, et le permanent conservé. Ce n'est pas une perte
+   * arbitraire : l'éclosion fait exactement cela quinze fois par partie, `f`
+   * valant 1. Une save v1 se réveille au sortir de l'œuf, avec tous ses acquis.
+   */
+  1: (contenu) => {
+    const brut = (contenu ?? {}) as Record<string, unknown>
+    const permanent = (brut.permanent ?? {}) as Record<string, unknown>
+    const couches = Array.isArray(permanent.couches) ? (permanent.couches as string[]) : []
+    return {
+      ...brut,
+      cycle: undefined,
+      permanent: {
+        ...permanent,
+        couches: couches.map((c) => (c === 'assise-1' ? 'noue' : c)),
+        especesAyantAtteintCent: [],
+        // Les identifiants de succès de la Noue ont suivi ceux des espèces.
+        succesDebloques: (Array.isArray(permanent.succesDebloques)
+          ? (permanent.succesDebloques as string[])
+          : []
+        ).map((id) =>
+          id
+            .replace('seuil-espece-1-1-', 'seuil-vairon-')
+            .replace('seuil-espece-1-2-', 'seuil-loche-')
+            .replace('seuil-espece-1-3-', 'seuil-epinoche-'),
+        ),
+      },
+    }
+  },
+}
 
 export function migrer(save: SaveSerialisee): unknown {
   let contenu = save.contenu

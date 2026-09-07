@@ -41,12 +41,15 @@ export type TermeDeProduction =
   | 'effectif'
   | 'rendement_acclimatation'
   | 'multiplicateur_jalon'
+  | 'multiplicateur_drapeau'
   | 'benediction_ciblee'
   | 'benediction_globale'
 
 export type TermeDeCout =
   | 'cout_creuser'
-  | 'cout_niveau'
+  /** Débouché naturel des effets chiffrés de succès (amendement v1.1 §2.D). */
+  | 'reduction_technique'
+  | 'cout_place'
   | 'cout_deblocage'
   | 'cout_reconviction'
   | 'cout_temple'
@@ -58,7 +61,7 @@ export type TermeDeConfort =
   | 'cap_hors_ligne'
   | 'densite_conservee'
   | 'contenance_de_depart'
-  | 'niveau_de_depart'
+  | 'place_de_depart'
   | 'charge_alliee_par_reponse'
 
 export type TermeDeFormule = TermeDeProduction | TermeDeCout | TermeDeConfort
@@ -68,13 +71,15 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'effectif',
   'rendement_acclimatation',
   'multiplicateur_jalon',
+  'multiplicateur_drapeau',
   'benediction_ciblee',
   'benediction_globale',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
-  'cout_niveau',
+  'reduction_technique',
+  'cout_place',
   'cout_deblocage',
   'cout_reconviction',
   'cout_temple',
@@ -86,7 +91,7 @@ export const TERMES_DE_CONFORT: readonly TermeDeConfort[] = [
   'cap_hors_ligne',
   'densite_conservee',
   'contenance_de_depart',
-  'niveau_de_depart',
+  'place_de_depart',
   'charge_alliee_par_reponse',
 ]
 
@@ -175,7 +180,7 @@ export type DeclencheurDeSucces =
   | { readonly quoi: 'bancs_convaincus'; readonly seuil: number }
   | { readonly quoi: 'effectif_de_banc'; readonly banc: BancId; readonly seuil: number }
   | { readonly quoi: 'effectif_d_espece'; readonly espece: EspeceId; readonly seuil: number }
-  | { readonly quoi: 'niveau_de_banc'; readonly banc: BancId; readonly seuil: number }
+  | { readonly quoi: 'place_de_banc'; readonly banc: BancId; readonly seuil: number }
   | { readonly quoi: 'effectif_total'; readonly seuil: number }
   | { readonly quoi: 'production_par_seconde'; readonly seuil: number }
   | { readonly quoi: 'foi'; readonly seuil: number }
@@ -183,26 +188,31 @@ export type DeclencheurDeSucces =
   | { readonly quoi: 'palier_sature'; readonly palier: IndexPalier }
 
 /**
- * [P] — lecture retenue du §4.3 pour les succès.
+ * Effet d'un succès — amendement v1.1 §2.D.
  *
- * « La technique baisse les coûts et automatise. La bénédiction monte la
- * production. Aucun nœud, AUCUN SUCCÈS, aucun système ne franchit cette ligne. »
+ * « Un succès ne peut porter qu'un effet qui existe déjà comme terme de
+ * technique : réduction de coût, relèvement de plafond, ou verbe. JAMAIS de
+ * production. »
  *
- * La phrase nomme les succès sans dire de quel côté ils tombent. Deux lectures :
- * un succès peut faire l'un ou l'autre pourvu qu'il ne fasse pas les deux, ou
- * bien la montée de production reste l'exclusivité de la bénédiction, achetée
- * en Foi. Le typage ci-dessous porte la seconde, la plus restrictive : un succès
- * ne cible que des termes de coût ou de confort, ou ouvre un verbe.
+ * Il n'y a donc aucun variant `production`, et il ne faut pas en ajouter.
+ * Trois raisons, dans l'ordre de force :
  *
- * Elle est retenue parce qu'elle est la seule des deux qui ne puisse pas être
- * fausse par excès — et parce que le §7.2 rappelle qu'une réduction de coût est
- * un décalage additif constant, qui ne compose pas : se tromper de ce côté-là
- * coûte moins d'un palier, se tromper de l'autre déplace toute la courbe.
- * À confirmer par l'auteur avant d'attacher des effets au-delà de l'assise I.
+ *   1. un succès est SUBI. Un multiplicateur de production que personne n'a
+ *      choisi est exactement le « multiplicateur flottant » qu'interdit le
+ *      §7.5.3 ;
+ *   2. la production est le seul débouché de la Foi. Une source gratuite de
+ *      production concurrence l'unique monnaie de prestige et vide la décision
+ *      de l'œuf ;
+ *   3. les verbes sont déjà budgétés — ~15 au total, dont 10 à l'arbre et ~5
+ *      aux succès, une source unique par CapaciteId.
+ *
+ * Écarté explicitement : faire payer les succès en Foi. La Foi est ADRESSÉE,
+ * elle ne se gagne pas par exploit.
  */
 export type EffetDeSucces =
-  | { readonly nature: 'chiffre'; readonly terme: TermeDeCout | TermeDeConfort; readonly facteur: number }
-  | { readonly nature: 'verbe'; readonly capacite: CapaciteId }
+  | { readonly genre: 'reduction_cout'; readonly terme: TermeDeCout; readonly part: number }
+  | { readonly genre: 'plafond'; readonly terme: TermeDeConfort; readonly part: number }
+  | { readonly genre: 'verbe'; readonly capacite: CapaciteId }
 
 export interface Succes {
   readonly id: SuccesId
@@ -250,9 +260,17 @@ export interface EtatPrng {
 }
 
 export interface EtatBanc {
-  /** Niveau du banc. 0 = pas encore convaincu. Fixe l'effectif cible. */
-  readonly niveau: number
-  /** Effectif réel, qui converge vers la cible à la vitesse de repeuplement. */
+  /**
+   * La PLACE achetée : le plafond de population du banc. 0 = pas encore
+   * convaincu.
+   *
+   * Le joueur achète de la place, jamais des individus (§2.C). C'est ce qui
+   * fait que les seuils 10 / 25 / 50 / 100 tombent avec le temps plutôt qu'à
+   * l'achat, et que le multiplicateur de seuil se reperd à l'éclosion en même
+   * temps que la population.
+   */
+  readonly place: number
+  /** Effectif réel, qui croît seul vers la place à la vitesse de repeuplement. */
   readonly effectif: number
 }
 
@@ -264,6 +282,14 @@ export interface EtatCycle {
   /** Indexe le gain de densité et le gain de Foi (§6.5, §6.6). */
   readonly productionPicParSeconde: Decimal
   readonly dureeSecondes: number
+  /**
+   * Acquis de séjour, accumulation saturante vers `A∞` (§2.B).
+   *
+   * C'est par lui, et par lui seul, que la contenance monte : le plafond ne
+   * monte QUE par séjour prolongé en mana dense (Tier 0 §8). Il se dépense
+   * entièrement à l'éclosion.
+   */
+  readonly acquisDeSejour: number
 }
 
 /** Ce que l'éclosion ne touche pas. Un être surévolué conserve ses acquis. */
@@ -283,6 +309,11 @@ export interface EtatPermanent {
   readonly benedictions: Readonly<Record<BenedictionId, number>>
   readonly succesDebloques: readonly SuccesId[]
   readonly nombreEclosions: number
+  /**
+   * Espèces ayant DÉJÀ atteint cent individus. Drapeau permanent, conservé à
+   * l'éclosion — l'unique exception à la reperte du multiplicateur de seuil.
+   */
+  readonly especesAyantAtteintCent: readonly EspeceId[]
   /** Le mana expire vers l'ambiant. Il n'est pas détruit (Tier 0 §5). */
   readonly manaAmbiant: Decimal
   /** Compteur Entretien : heures effectivement créditées, jamais écoulées. */
@@ -338,7 +369,8 @@ export type SourceDeTerme =
   | { readonly quoi: 'population' }
   | { readonly quoi: 'palier'; readonly palier: IndexPalier }
   | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
-  | { readonly quoi: 'niveau'; readonly niveau: number }
+  | { readonly quoi: 'place'; readonly place: number }
+  | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
   | { readonly quoi: 'benedictions_globales' }
   | { readonly quoi: 'benedictions_ciblees' }
 

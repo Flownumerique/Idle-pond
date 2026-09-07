@@ -9,27 +9,29 @@ l'œuf : c'est l'**éclosion**.
 React 19 · TypeScript · Vite · Phaser 3 · Zustand 5 · `break_infinity.js` ·
 Tailwind 4.
 
-## État : jalon v0.2 — « l'assise I est jouable »
+## État : jalon v0.2 amendé v1.1 — « la Noue est jouable »
 
-La mare, ses trois espèces, la boucle complète débloquer → améliorer → éclore,
-et le système de succès avec le plancher de cadence du §8.4 — mesuré, pas
-promis. Sans technique ni bénédictions : c'est le jalon v0.4.
+La Noue, ses six paliers, le vairon, la loche et l'épinoche ; la boucle complète
+débloquer → améliorer → éclore ; les succès avec le plancher de cadence du §8.4,
+mesuré et non promis. Sans technique ni bénédictions : c'est le jalon v0.4.
 
 Comptes rendus, mesures et décisions ouvertes :
-[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) · [`docs/jalon-v0.2.md`](docs/jalon-v0.2.md).
+[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) ·
+[`docs/jalon-v0.2.md`](docs/jalon-v0.2.md) ·
+[`docs/amendement-v1.1.md`](docs/amendement-v1.1.md).
 
-> Les noms affichés — la mare, les trois espèces, les textes de succès — sont
-> **provisoires** et vivent tous dans `src/donnees/textes-provisoires.ts`. Le
-> `[P] P3` du §14 (conventions phonétiques) reste ouvert ; rien de ce fichier
-> n'entre dans un identifiant ni dans une sauvegarde.
+> Les **noms** de la Noue sont du canon (amendement v1.1 §2.E). Les **phrases**
+> restent provisoires et vivent toutes dans
+> `src/donnees/textes-provisoires.ts` ; aucune n'entre dans un identifiant ni
+> dans une sauvegarde. `[P] P3` reste ouvert pour les assises II à VI.
 
 ## Commandes
 
 ```sh
 npm install
-npm test          # 53 tests : architecture, déterminisme, équivalence de pas,
-                  # persistance, canon, horloge, hors ligne, plancher de
-                  # cadence, simulateur
+npm test          # 75 tests : architecture, déterminisme, équivalence de pas,
+                  # seuils, contenance, persistance, canon, horloge, hors
+                  # ligne, plancher de cadence, simulateur
 npm run build     # tsc -b && vite build
 npm run lint
 npm run dev       # le jeu
@@ -47,15 +49,22 @@ existe pour chacune :
 2. Toute mécanique du cœur se calcule en **un seul pas** pour `dt = 8 h`
    (`tests/equivalence-de-pas.test.ts`).
 3. La technique baisse les **coûts** et automatise ; la bénédiction monte la
-   **production**. Aucun nœud ne franchit cette ligne (`tests/canon.test.ts`).
-4. Aucun paramètre « à mesurer » n'est inventé : il est une constante nommée,
+   **production**. Aucun nœud, **aucun succès** ne franchit cette ligne
+   (`tests/canon.test.ts`).
+4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est
+   calibré contre cette lecture (`tests/seuils.test.ts`).
+5. Le plafond ne monte **que** par séjour prolongé en mana dense : le ×47,1 par
+   éclosion émerge de `A∞` et `τ₀`, il n'est écrit nulle part
+   (`tests/contenance.test.ts`).
+6. Aucun paramètre « à mesurer » n'est inventé : il est une constante nommée,
    commentée `// [P] graine`, dans `src/noyau/constantes.ts` — un seul endroit.
 
 Le lexique s'applique **au code, aux identifiants et à l'UI**, pas seulement à
-la prose : *assise*, *palier*, *banc*, *éclosion*, *densité*, *Foi*,
-*bénédiction*, *technique*, *acclimatation*, *conviction*. Jamais « ponte », ni
-« prestige », ni un nom générique de couche à l'écran. Un test le vérifie sur le
-code de `src/`.
+la prose : *assise*, *palier*, *banc*, *place*, *éclosion*, *densité*, *Foi*,
+*bénédiction*, *technique*, *acclimatation*, *conviction*, *franchissement*.
+Jamais « ponte », ni « prestige », ni « niveau », ni un nom générique de couche à
+l'écran. Deux tests le vérifient — l'un sur le code de `src/`, l'autre sur les
+chaînes réellement affichées.
 
 ## Découpage
 

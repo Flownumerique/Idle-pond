@@ -11,9 +11,12 @@
  * chaque tick une contrainte qui change une fois par heure ferait tomber ce
  * test — c'est précisément à ça qu'il sert.
  */
+import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
-import { tick } from '../src/noyau/noyau'
-import { productionTotaleParSeconde } from '../src/noyau/economie'
+import type { EtatJeu } from '../src/noyau/types'
+import { etatInitial, tick } from '../src/noyau/noyau'
+import { multiplicateurDeSeuil, productionTotaleParSeconde } from '../src/noyau/economie'
+import { PALIERS } from '../src/donnees/paliers'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
 
@@ -62,5 +65,55 @@ describe('équivalence de pas', () => {
 
   it("l'état de départ produit bien quelque chose, sinon le test ne prouve rien", () => {
     expect(productionTotaleParSeconde(etatDeTravail()).gt(0)).toBe(true)
+  })
+
+  it('un intervalle qui FRANCHIT des seuils compose encore', () => {
+    // Le cas qui a cassé à l'amendement v1.1 §2.C, et le seul qui prouve la
+    // partition analytique : sans elle, les petits pas franchissent 10, 25 et
+    // 50 tôt et produisent nettement plus que le grand pas.
+    const depart = etatInitial(1)
+    const banc = PALIERS[0].bancs[0]
+    const vide: EtatJeu = {
+      ...depart,
+      cycle: {
+        ...depart.cycle,
+        manaCourant: new Decimal(0),
+        bancs: { [banc.id]: { place: 120, effectif: 0 } },
+      },
+      permanent: { ...depart.permanent, contenanceMana: new Decimal('1e30') },
+    }
+
+    let parPetitsPas = vide
+    for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
+    const enUnPas = tick(vide, HUIT_HEURES)
+
+    // Les seuils ont bien été traversés : sinon le test ne prouve rien.
+    expect(parPetitsPas.cycle.bancs[banc.id].effectif).toBeGreaterThan(100)
+    expect(multiplicateurDeSeuil(vide.cycle.bancs[banc.id].effectif)).toBe(1)
+    comparerAToleranceFlottante(parPetitsPas, enUnPas)
+  })
+
+  it('un drapeau permanent franchi en cours d’intervalle compose aussi', () => {
+    // Le drapeau des cent individus est GLOBAL : il ne s'intègre pas banc par
+    // banc, il coupe le pas. Sans la coupure, les petits pas gagnent +3 % sur
+    // presque tout l'intervalle et le grand pas sur rien.
+    const depart = etatInitial(1)
+    const banc = PALIERS[0].bancs[0]
+    const proche: EtatJeu = {
+      ...depart,
+      cycle: {
+        ...depart.cycle,
+        manaCourant: new Decimal(0),
+        bancs: { [banc.id]: { place: 300, effectif: 90 } },
+      },
+      permanent: { ...depart.permanent, contenanceMana: new Decimal('1e30') },
+    }
+
+    let parPetitsPas = proche
+    for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
+    const enUnPas = tick(proche, HUIT_HEURES)
+
+    expect(enUnPas.permanent.especesAyantAtteintCent).toContain(banc.espece)
+    comparerAToleranceFlottante(parPetitsPas, enUnPas)
   })
 })
