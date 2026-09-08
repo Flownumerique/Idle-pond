@@ -87,7 +87,7 @@ export function eclore(etat: EtatJeu): EtatJeu {
         ...etat.telemetrie.cycles,
         {
           index: etat.permanent.nombreEclosions,
-          dureeActiveSecondes: etat.cycle.dureeSecondes,
+          dureeEcouleeSecondes: etat.cycle.dureeSecondes,
           secondesEnRedescente: etat.telemetrie.secondesEnRedescente,
           paliersOuverts: etat.cycle.paliersOuverts,
           productionPicParSeconde: pic,

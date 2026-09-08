@@ -18,7 +18,14 @@ mesuré et non promis. Sans technique ni bénédictions : c'est le jalon v0.4.
 Comptes rendus, mesures et décisions ouvertes :
 [`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) ·
 [`docs/jalon-v0.2.md`](docs/jalon-v0.2.md) ·
-[`docs/amendement-v1.1.md`](docs/amendement-v1.1.md).
+[`docs/amendement-v1.1.md`](docs/amendement-v1.1.md) ·
+[`docs/politique-du-simulateur.md`](docs/politique-du-simulateur.md).
+
+> **Temps actif ≠ temps écoulé.** Le noyau ne mesure que l'écoulé — le
+> calendaire du §5.4, cible ~600 h. L'actif est le sous-ensemble où le joueur
+> est là, cible ~38 h, et seul le simulateur peut le connaître : il sait quand
+> son joueur revient. Les jalons v0.1 et v0.2 les ont confondus ; c'est corrigé,
+> et un test l'interdit.
 
 > Les **noms** de la Noue sont du canon (amendement v1.1 §2.E). Les **phrases**
 > restent provisoires et vivent toutes dans
@@ -29,7 +36,7 @@ Comptes rendus, mesures et décisions ouvertes :
 
 ```sh
 npm install
-npm test          # 75 tests : architecture, déterminisme, équivalence de pas,
+npm test          # 78 tests : architecture, déterminisme, équivalence de pas,
                   # seuils, contenance, persistance, canon, horloge, hors
                   # ligne, plancher de cadence, simulateur
 npm run build     # tsc -b && vite build

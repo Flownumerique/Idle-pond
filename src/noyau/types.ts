@@ -322,7 +322,16 @@ export interface EtatPermanent {
 
 export interface MesureDeCycle {
   readonly index: number
-  readonly dureeActiveSecondes: number
+  /**
+   * Durée ÉCOULÉE du cycle, en temps de jeu.
+   *
+   * Ce n'est pas la durée « active » du §11 : le noyau ne sait pas quand le
+   * joueur est devant l'écran. Le temps actif est une quantité de POLITIQUE —
+   * la somme des sessions — et il est mesuré par le simulateur, qui est le seul
+   * à savoir quand son joueur revient. Confondre les deux fait lire ~600 h
+   * calendaires comme si c'étaient les ~38 h actives visées.
+   */
+  readonly dureeEcouleeSecondes: number
   readonly secondesEnRedescente: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: Decimal
