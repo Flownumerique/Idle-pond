@@ -12,7 +12,10 @@
  */
 import Decimal from 'break_infinity.js'
 import type { EtatJeu } from '../noyau/types'
-import { VERSION_SAVE } from '../noyau/constantes'
+import { NOMBRE_DE_PALIERS, VERSION_SAVE } from '../noyau/constantes'
+import { PART_MURE_D_UNE_EAU_INTOUCHEE } from '../noyau/maturation'
+import { palierDeVoixApres } from '../noyau/voix'
+import { SUCCES } from '../donnees/succes/index'
 
 /** Un Decimal persiste en chaîne : `toString()` fait l'aller-retour à l'exact. */
 export type DecimalSerialise = string
@@ -106,6 +109,73 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
             .replace('seuil-espece-1-2-', 'seuil-loche-')
             .replace('seuil-espece-1-3-', 'seuil-epinoche-'),
         ),
+      },
+    }
+  },
+
+  /**
+   * 2 → 3 — le GDD devient directif.
+   *
+   * Deux changements sous les pieds d'une save v2 :
+   *
+   * `benedictions` disparaît. La Foi n'achète que des miracles (GDD §4.2) et
+   * « tout arbre d'achats en Foi est une erreur de conception ». Le registre
+   * n'a jamais eu de contenu : aucun joueur ne perd un rang acheté.
+   *
+   * `succesDebloques: string[]` devient `succes: Record<id, {obtenuAuCycle,
+   * registre}>`, où `registre` fige la langue de l'entrée (§14.5).
+   *
+   * C'EST ICI QUE SE PAIE LE RETARD. Le §14.9 range le registre figé parmi les
+   * propriétés qui « ne se rétrofitent pas », et il a raison : ni le cycle
+   * d'obtention ni le palier de voix d'alors ne sont reconstituables depuis une
+   * save v2, qui ne les a jamais portés. Toutes les entrées reçoivent donc le
+   * palier que le nombre de franchissements de la save implique aujourd'hui —
+   * faux pour les plus anciennes, et sciemment. Aucune autre valeur ne serait
+   * plus vraie, et en inventer une plus flatteuse serait inventer une histoire.
+   * Les saves postérieures à cette version portent la vraie.
+   */
+  2: (contenu) => {
+    const brut = (contenu ?? {}) as Record<string, unknown>
+    const permanent = (brut.permanent ?? {}) as Record<string, unknown>
+    const franchissements = typeof permanent.nombreEclosions === 'number' ? permanent.nombreEclosions : 0
+    const registre = palierDeVoixApres(franchissements)
+    const acquis = Array.isArray(permanent.succesDebloques) ? (permanent.succesDebloques as string[]) : []
+
+    const succes: Record<string, { obtenuAuCycle: number; registre: string }> = {}
+    // Dans l'ordre du registre, comme le noyau : une save migrée et une save
+    // native de même contenu doivent se sérialiser à l'identique.
+    for (const s of SUCCES) {
+      if (acquis.includes(s.id)) succes[s.id] = { obtenuAuCycle: franchissements, registre }
+    }
+
+    // Les deux clefs disparues sont RETIRÉES, pas mises à `undefined` : une
+    // clef morte qui survit à une migration se retrouve dans la save suivante.
+    const reste: Record<string, unknown> = { ...permanent, succes }
+    delete reste.benedictions
+    delete reste.succesDebloques
+    return { ...brut, permanent: reste }
+  },
+
+  /**
+   * 3 → 4 — les deux canaux de captation (GDD §3 et §3.0).
+   *
+   * `partsMures` entre dans l'état permanent. Une save v3 ne le porte pas, et
+   * la valeur d'accueil n'est pas 0 mais 1 : une eau que rien n'a habitée est
+   * mûre (§6.5). Le peuplement de la save la rediluera en quelques heures de
+   * jeu, à la vitesse que `TAU_MATURATION_HEURES` fixe.
+   *
+   * Une migration explicite plutôt qu'un repli silencieux du désérialiseur : le
+   * champ change l'économie, et un défaut qui n'apparaît nulle part est un
+   * défaut que personne ne relira le jour où il faudra le remettre en cause.
+   */
+  3: (contenu) => {
+    const brut = (contenu ?? {}) as Record<string, unknown>
+    const permanent = (brut.permanent ?? {}) as Record<string, unknown>
+    return {
+      ...brut,
+      permanent: {
+        ...permanent,
+        partsMures: new Array<number>(NOMBRE_DE_PALIERS).fill(PART_MURE_D_UNE_EAU_INTOUCHEE),
       },
     }
   },

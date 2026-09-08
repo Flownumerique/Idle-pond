@@ -19,6 +19,8 @@ import type { BancId, EspeceId, EtatJeu, EtatPrng, SuccesId } from './types'
 import {
   ACQUIS_MAX,
   CONTENANCE_INITIALE,
+  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
+  INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
   SEUILS_DE_JALON,
   NOMBRE_DE_PALIERS,
   SEUIL_DU_DRAPEAU_PERMANENT,
@@ -30,20 +32,40 @@ import { PALIERS, bancParId } from '../donnees/paliers'
 import { TYPE_MANA_NATAL } from '../donnees/assises'
 import {
   contenance,
-  coutCreuser,
-  coutDeblocage,
+  coutDeDescente,
+  coutDeConviction,
   coutDePlace,
+  divergenceNonChoisieEstDue,
+  partMureDuPalier,
+  placeDuPalier,
+  rendementAcclimatation,
+  tauxBaseDuPalier,
   tauxParIndividuHorsSeuil,
   toutEstCreuse,
 } from './economie'
 import { avancerBanc, effectifCible } from './population'
 import { densiteDuPalier, multiplicateurDensite, vitesseDeRepeuplement } from './densite'
-import { cycleInitial } from './eclosion'
+import { cycleInitial, eclore } from './eclosion'
+import {
+  PART_MURE_D_UNE_EAU_INTOUCHEE,
+  avancerMaturation,
+  cibleDeMaturation,
+} from './maturation'
 import { creditCompteur } from './technique'
 import { verifierSucces } from './succes'
 
 export { eclore, gainDeFoiPrevu } from './eclosion'
-export { estBloque, productionTotaleParSeconde, detailDeCaptation, contenance } from './economie'
+export {
+  contenance,
+  detailDeCaptation,
+  divergenceNonChoisieEstDue,
+  eauTroublee,
+  estBloque,
+  estSature,
+  partDeContenance,
+  productionTotaleParSeconde,
+} from './economie'
+export { palierDeVoix } from './voix'
 
 /* ─── PRNG ──────────────────────────────────────────────────────────────────*/
 
@@ -75,6 +97,10 @@ export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS)
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),
+      // Une eau que rien n'habite et que rien ne réensemence a vieilli sans
+      // interruption : elle est mûre (GDD §6.5). Le héros descend dans du mûr
+      // et le rend jeune en le peuplant.
+      partsMures: new Array<number>(NOMBRE_DE_PALIERS).fill(PART_MURE_D_UNE_EAU_INTOUCHEE),
       // Le type natal est acquis d'emblée et ne se repaie jamais (Tier 0).
       acclimatations: { [TYPE_MANA_NATAL]: 1 },
       foi: new Decimal(0),
@@ -90,8 +116,7 @@ export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS)
         eclosion: 0,
       },
       noeudsTechnique: [],
-      benedictions: {},
-      succesDebloques: [],
+      succes: {},
       nombreEclosions: 0,
       especesAyantAtteintCent: [],
       manaAmbiant: new Decimal(0),
@@ -126,45 +151,178 @@ export interface ResultatDeTick {
 export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   if (!(dt > 0)) return { etat, declenches: [] }
 
-  // Le drapeau permanent des cent individus est GLOBAL : il change le taux de
-  // tous les bancs, y compris ceux d'autres espèces. Contrairement au
-  // multiplicateur de seuil, il ne s'intègre donc pas banc par banc. On coupe
-  // le pas à l'instant exact où il tombe, et on reprend derrière : c'est une
-  // partition analytique, bornée par le nombre d'espèces, pas une boucle
-  // d'événements. Sans cette coupure, un pas de 8 h et 480 pas de 60 s ne
-  // rendraient pas le même mana.
-  const coupure = instantDuProchainDrapeau(etat, dt)
+  const coupure = prochaineCoupure(etat, dt)
   if (coupure !== null) {
-    const avant = pasEntier(etat, coupure)
+    const avant = apresLePas(pasEntier(etat, coupure))
     const apres = tickDetaille(avant.etat, dt - coupure)
     return { etat: apres.etat, declenches: [...avant.declenches, ...apres.declenches] }
   }
-  return pasEntier(etat, dt)
+  return apresLePas(pasEntier(etat, dt))
 }
 
-function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
+/**
+ * La divergence non choisie, appliquée à la fin du pas où son délai échoit.
+ *
+ * Elle est dans le tick et non dans un adaptateur, et il le faut : c'est une
+ * règle du monde, pas une décision de joueur. Si elle vivait au-dessus du
+ * noyau, un pas de 8 h et 480 pas de 60 s ne la déclencheraient pas au même
+ * moment, et l'équivalence de pas tomberait avec le hors ligne.
+ */
+function apresLePas(resultat: ResultatDeTick): ResultatDeTick {
+  if (!divergenceNonChoisieEstDue(resultat.etat)) return resultat
+  return { ...resultat, etat: eclore(resultat.etat, false) }
+}
 
-  const bancsAvances: Record<BancId, { place: number; effectif: number }> = {}
+/**
+ * Le premier instant de `]0, dt[` où le pas cesse d'être homogène, s'il existe.
+ *
+ * Trois choses peuvent tomber à l'intérieur d'un intervalle, et aucune ne
+ * s'intègre : le drapeau des cent individus change le taux de TOUS les bancs,
+ * la saturation de la jauge fait commencer le décompte du §2.4, et le délai de
+ * ce décompte déclenche une éclosion. On coupe donc au plus tôt des trois et on
+ * reprend derrière — une partition analytique bornée, jamais une file
+ * d'événements.
+ *
+ * Prendre le MINIMUM est ce qui rend l'ensemble correct : chaque instant est
+ * calculé sous les taux courants, donc juste tant qu'aucun autre ne l'a
+ * précédé. Le premier l'est toujours ; les suivants sont recalculés après la
+ * coupure.
+ */
+function prochaineCoupure(etat: EtatJeu, dt: number): number | null {
+  let coupure: number | null = null
+  const retenir = (instant: number | null) => {
+    if (instant === null || !(instant > 0) || !(instant < dt)) return
+    if (coupure === null || instant < coupure) coupure = instant
+  }
+  retenir(instantDuProchainDrapeau(etat, dt))
+  retenir(instantDeSaturation(etat, dt))
+  retenir(instantDeLaDivergence(etat))
+  return coupure
+}
+
+/**
+ * Instant où la jauge se remplit, si elle le fait pendant ce pas.
+ *
+ * Le mana accumulé est une somme d'intégrales d'exponentielles, découpée aux
+ * seuils de jalon : elle ne s'inverse pas. Dichotomie, donc, comme pour le
+ * drapeau — et elle converge par le HAUT, de sorte que l'instant rendu porte
+ * toujours un stock déjà plein. Sans quoi le pas suivant repartirait à un
+ * cheveu sous le plafond et ne compterait jamais une seconde de saturation.
+ */
+function instantDeSaturation(etat: EtatJeu, dt: number): number | null {
+  const plafond = contenance(etat)
+  if (etat.cycle.manaCourant.gte(plafond)) return null
+  if (etat.cycle.manaCourant.add(manaProduitSur(etat, dt)).lt(plafond)) return null
+
+  let bas = 0
+  let haut = dt
+  for (let i = 0; i < 60; i += 1) {
+    const milieu = (bas + haut) / 2
+    if (etat.cycle.manaCourant.add(manaProduitSur(etat, milieu)).gte(plafond)) haut = milieu
+    else bas = milieu
+  }
+  return haut
+}
+
+/** Temps restant avant que le délai du §2.4 n'échoie. `null` hors saturation. */
+function instantDeLaDivergence(etat: EtatJeu): number | null {
+  if (etat.cycle.manaCourant.lt(contenance(etat))) return null
+  return DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES * 3600 - etat.cycle.secondesEnSaturation
+}
+
+interface AvanceeDesBancs {
+  readonly bancs: Record<BancId, { place: number; effectif: number }>
+  /** Part mûre de chaque palier à la fin de l'intervalle (GDD §3.0). */
+  readonly partsMures: readonly number[]
+  /** Mana capté sur l'intervalle, LES DEUX CANAUX. C'est ce qui entre en poche. */
+  readonly manaProduit: Decimal
+  /**
+   * Débit du seul canal NATIF à la fin de l'intervalle — ce qui indexe la
+   * pointe du cycle.
+   *
+   * [P] Décision du 2026-09-08, et elle mérite d'être relue. La pointe est un
+   * MAXIMUM le long de la trajectoire, donc elle n'est composable que si la
+   * quantité qu'elle suit est monotone sur un pas. Le natif l'est : l'effectif
+   * converge vers sa place en montant, et les seuils ne font que monter. Le
+   * canal acclimaté ne l'est pas — peupler un palier fait DÉCROÎTRE sa part
+   * mûre (§3.0), donc la somme des deux peut culminer à l'intérieur d'un
+   * intervalle. Un pas de 8 h manquait ce sommet que 480 pas de 60 s
+   * attrapaient, et l'équivalence de pas tombait sur ce seul champ.
+   *
+   * Le résoudre analytiquement demanderait le maximum d'une somme de deux
+   * exponentielles de sens contraires, par-dessus la partition des seuils. La
+   * lecture retenue est plus simple et défendable : ce que la pointe indexe est
+   * la densité laissée derrière (§6.5), et le canal acclimaté ne PRODUIT rien —
+   * il prélève une charge déjà là. Seul le vivant produit (Tier 0 §5).
+   *
+   * À reposer si le canal acclimaté cesse d'être « très bas » (§3).
+   */
+  readonly productionNativeFinale: Decimal
+}
+
+/**
+ * Avance les deux canaux de captation sur `dt` secondes. Pure, sans état.
+ *
+ * Deux quantités varient à l'intérieur de l'intervalle, et aucune ne sort du
+ * signe somme :
+ *
+ *   - le multiplicateur de seuil, qui se lit sur l'effectif (§2.C) ;
+ *   - la part mûre d'un palier, qui dérive vers sa cible (GDD §3.0).
+ *
+ * Les deux ont une primitive fermée, et c'est la condition d'existence du hors
+ * ligne : un pas de 8 h doit rendre exactement ce que rendent 480 pas de 60 s.
+ */
+function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
+  const bancs: Record<BancId, { place: number; effectif: number }> = {}
+  const partsMures = [...etat.permanent.partsMures]
   let manaProduit = new Decimal(0)
-  let productionFinale = new Decimal(0)
+  let productionNativeFinale = new Decimal(0)
+
+  // Uniforme depuis V11 : le repeuplement ne dépend plus du palier. Il en
+  // dépendra de nouveau le jour où la régénération locale du GDD §7.2 sera
+  // écrite — elle est fonction de la biomasse, donc locale par nature.
+  const k = vitesseDeRepeuplement()
 
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    const k = vitesseDeRepeuplement(etat, palier)
+    // ── Canal natif : ce que la population vivante capte ────────────────────
     for (const banc of PALIERS[palier].bancs) {
       const avant = etat.cycle.bancs[banc.id]
       if (avant === undefined || avant.place <= 0) continue
       const avancee = avancerBanc(avant.effectif, effectifCible(avant.place), k, dt, SEUILS_DE_JALON)
-      bancsAvances[banc.id] = { place: avant.place, effectif: avancee.effectif }
-      // Le multiplicateur de seuil est DANS l'intégrale, pas devant : il change
-      // avec l'effectif, donc en cours d'intervalle (§2.C). Tout le reste est
-      // constant sur le pas et sort du signe somme.
+      bancs[banc.id] = { place: avant.place, effectif: avancee.effectif }
       const taux = tauxParIndividuHorsSeuil(etat, banc)
       manaProduit = manaProduit.add(taux.mul(avancee.integralePonderee))
-      productionFinale = productionFinale.add(
+      productionNativeFinale = productionNativeFinale.add(
         taux.mul(avancee.multiplicateurFinal).mul(avancee.effectif),
       )
     }
+
+    // ── Canal acclimaté : ce que l'eau capte toute seule ────────────────────
+    // La cible de maturation est fonction de la PLACE, qui ne change qu'entre
+    // deux ticks : elle est donc constante sur l'intervalle, et l'intégrale de
+    // la part mûre reste fermée.
+    const partAvant = partMureDuPalier(etat, palier)
+    const cible = cibleDeMaturation(placeDuPalier(etat, palier))
+    const maturation = avancerMaturation(partAvant, cible, dt)
+    partsMures[palier] = maturation.part
+
+    const debitParPart = tauxBaseDuPalier(palier)
+      .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
+      .mul(rendementAcclimatation(etat, palier))
+    // Le mana acclimaté entre en poche ; il n'entre PAS dans la pointe. Voir la
+    // note de `productionNativeFinale`.
+    manaProduit = manaProduit.add(debitParPart.mul(maturation.integrale))
   }
+  return { bancs, partsMures, manaProduit, productionNativeFinale }
+}
+
+/** Ce que la mare produirait sur `dt`, sans rien avancer. Pour la dichotomie. */
+function manaProduitSur(etat: EtatJeu, dt: number): Decimal {
+  return avancerLesBancs(etat, dt).manaProduit
+}
+
+function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
+  const { bancs: bancsAvances, partsMures, manaProduit, productionNativeFinale } = avancerLesBancs(etat, dt)
 
   // La contenance limite le stock, pas la production. Le surplus n'est pas
   // détruit : il expire vers l'ambiant (Tier 0 §5).
@@ -172,6 +330,13 @@ function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
   const plafond = contenance(etat)
   const manaCourant = Decimal.min(brut, plafond)
   const expire = brut.sub(manaCourant)
+
+  // §2.4 — le décompte de la jauge pleine. Par construction de la coupure, le
+  // pas est homogène : soit il est saturé de bout en bout, soit il ne l'est pas
+  // du tout. Toute dépense fait redescendre le niveau, donc remet à zéro.
+  const secondesEnSaturation = etat.cycle.manaCourant.gte(plafond)
+    ? etat.cycle.secondesEnSaturation + dt
+    : 0
 
   const enRedescente = etat.cycle.paliersOuverts < etat.permanent.profondeurMaxAtteinte
 
@@ -191,12 +356,14 @@ function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
       ...etat.cycle,
       manaCourant,
       bancs: { ...etat.cycle.bancs, ...bancsAvances },
-      productionPicParSeconde: Decimal.max(etat.cycle.productionPicParSeconde, productionFinale),
+      productionPicParSeconde: Decimal.max(etat.cycle.productionPicParSeconde, productionNativeFinale),
       dureeSecondes: etat.cycle.dureeSecondes + dt,
       acquisDeSejour,
+      secondesEnSaturation,
     },
     permanent: {
       ...etat.permanent,
+      partsMures,
       manaAmbiant: expire.gt(0) ? etat.permanent.manaAmbiant.add(expire) : etat.permanent.manaAmbiant,
     },
     telemetrie: {
@@ -296,8 +463,8 @@ function instantDuProchainDrapeau(etat: EtatJeu, dt: number): number | null {
 /** Effectif d'une espèce à `t` secondes, tous ses bancs sommés. */
 function effectifDEspeceA(etat: EtatJeu, espece: EspeceId, t: number): number {
   let total = 0
+  const k = vitesseDeRepeuplement()
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    const k = vitesseDeRepeuplement(etat, palier)
     for (const banc of PALIERS[palier].bancs) {
       if (banc.espece !== espece) continue
       const avant = etat.cycle.bancs[banc.id]
@@ -323,7 +490,7 @@ export function tick(etat: EtatJeu, dt: number): EtatJeu {
 export function creuser(etat: EtatJeu): EtatJeu {
   if (toutEstCreuse(etat)) return etat
   const cible = etat.cycle.paliersOuverts
-  const cout = coutCreuser(etat, cible)
+  const cout = coutDeDescente(etat, cible)
   if (cout.gt(contenance(etat))) return etat
   if (etat.cycle.manaCourant.lt(cout)) return etat
   return {
@@ -347,7 +514,7 @@ export function convaincre(etat: EtatJeu, bancId: BancId): EtatJeu {
   if (banc === undefined) return etat
   if (banc.palier >= etat.cycle.paliersOuverts) return etat
   if ((etat.cycle.bancs[bancId]?.place ?? 0) > 0) return etat
-  const cout = coutDeblocage(etat, banc)
+  const cout = coutDeConviction(etat, banc)
   if (etat.cycle.manaCourant.lt(cout)) return etat
   return {
     ...etat,

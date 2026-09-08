@@ -1,10 +1,20 @@
 /**
  * IdlePond — production, coûts, seuils.
  *
- * Canal unique (§6.1) :
- *   production(banc) = effectif × taux_base × rendement_acclimatation
- * Le modèle à deux canaux natif/acclimaté est supprimé, le système de
- * maturation est supprimé : ni `vive`, ni `mûre`, ni `part_mûre` ici.
+ * DEUX CANAUX ADDITIFS — GDD §3, « Fixé (canon) » au §16.1 :
+ *
+ *   captation/s =   débit_natif(population vivante présente)
+ *                 + débit_acclimaté(part_mûre(palier) × rendement_acclimatation)
+ *
+ * Additifs, jamais multiplicatifs — c'est ce qui rend l'arbitrage réel plutôt
+ * que cosmétique. Le natif est le débit des bancs, à 100 % d'emblée, et il tombe
+ * avec la population. L'acclimaté ne dépend d'aucun vivant : il vient de l'eau
+ * elle-même, et il est borné par la part mûre du palier (§3.0), que peupler
+ * dilue.
+ *
+ * Les deux se rejoignent dans `productionTotaleParSeconde`, et nulle part
+ * ailleurs : un module qui n'additionnerait qu'un canal serait faux sans qu'un
+ * type ne s'en aperçoive.
  *
  * Les multiplicateurs qui s'ajoutent au canal sont des TermeDeFormule nommés,
  * jamais des facteurs anonymes : c'est ce qui rend le détail de captation
@@ -20,19 +30,26 @@ import type {
   TermeDeCout,
 } from './types'
 import {
+  AFFINITE_PLEINE_JUSQU_EN_V05,
   COUT_CREUSER_AU_PALIER_1,
   COUT_DEBLOCAGE_AU_PALIER_0,
   COUT_DE_PLACE_AU_PALIER_0,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
+  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
+  EXPOSANT_RECONVICTION_DENSITE,
+  F_FRACTION_D_AMENAGEMENT,
+  INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
   NOMBRE_DE_PALIERS,
+  SEUIL_D_ALERTE_DE_CONTENANCE,
   RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05,
   SEUILS_DE_JALON,
   TAUX_BASE_AU_PALIER_0,
 } from './constantes'
 import { assiseDuPalier } from '../donnees/assises'
+import { densiteDuPalier } from './densite'
+import { PART_MURE_D_UNE_EAU_INTOUCHEE } from './maturation'
 import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
 import { PALIERS, bancsDuPalier } from '../donnees/paliers'
-import { apportGlobalAdditif, multiplicateurCible } from './benedictions'
 import { facteurDeTechnique } from './technique'
 import { SUCCES } from '../donnees/succes/index'
 
@@ -98,10 +115,8 @@ export function rendementAcclimatation(etat: EtatJeu, palier: IndexPalier): numb
  */
 export function tauxParIndividuHorsSeuil(etat: EtatJeu, banc: Banc): Decimal {
   return tauxBaseDuBanc(banc)
-    .add(apportGlobalAdditif(etat))
     .mul(rendementAcclimatation(etat, banc.palier))
     .mul(multiplicateurDesDrapeaux(etat))
-    .mul(multiplicateurCible(etat, banc.espece))
 }
 
 /** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
@@ -115,12 +130,42 @@ export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
   return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
 }
 
+/* ─── Le canal acclimaté — GDD §3 et §3.0 ───────────────────────────────────*/
+
+export function partMureDuPalier(etat: EtatJeu, palier: IndexPalier): number {
+  return etat.permanent.partsMures[palier] ?? PART_MURE_D_UNE_EAU_INTOUCHEE
+}
+
+/** Place totale installée sur un palier — ce qui dilue son type (§3.0). */
+export function placeDuPalier(etat: EtatJeu, palier: IndexPalier): number {
+  let place = 0
+  for (const banc of PALIERS[palier].bancs) place += etat.cycle.bancs[banc.id]?.place ?? 0
+  return place
+}
+
+/**
+ * Débit acclimaté d'un palier, par seconde. Ne dépend d'AUCUN vivant.
+ *
+ * Il vient de l'eau : `part_mûre × rendement_acclimatation`, à la force que la
+ * graine exprime en individus équivalents. C'est ce qui donne au héros un revenu
+ * dès l'instant où il rouvre une galerie, avant d'y avoir ramené qui que ce
+ * soit — et c'est pour ça que le §3 tient à ce que les canaux soient ADDITIFS.
+ */
+export function productionAcclimateeDuPalier(etat: EtatJeu, palier: IndexPalier): Decimal {
+  return tauxBaseDuPalier(palier)
+    .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
+    .mul(partMureDuPalier(etat, palier))
+    .mul(rendementAcclimatation(etat, palier))
+}
+
+/** La somme des deux canaux, sur tous les paliers ouverts. */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
   let total = new Decimal(0)
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
     for (const banc of PALIERS[palier].bancs) {
       total = total.add(productionDuBanc(etat, banc))
     }
+    total = total.add(productionAcclimateeDuPalier(etat, palier))
   }
   return total
 }
@@ -136,11 +181,6 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
     { terme: 'effectif', valeur: effectif, source: { quoi: 'population' } },
     { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
     {
-      terme: 'benediction_globale',
-      valeur: apportGlobalAdditif(etat).toNumber(),
-      source: { quoi: 'benedictions_globales' },
-    },
-    {
       terme: 'rendement_acclimatation',
       valeur: rendementAcclimatation(etat, banc.palier),
       source: { quoi: 'acclimatation', typeMana: assiseDuPalier(banc.palier).typeMana },
@@ -155,10 +195,34 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
       valeur: multiplicateurDesDrapeaux(etat),
       source: { quoi: 'drapeaux_permanents', especes: etat.permanent.especesAyantAtteintCent.length },
     },
+  ]
+}
+
+/**
+ * Détail du canal acclimaté d'un palier.
+ *
+ * Séparé du précédent, et il doit l'être : le natif se lit par banc, l'acclimaté
+ * par palier. Les mêler dans une seule liste laisserait croire qu'un banc porte
+ * une part du revenu de l'eau, alors que celui-ci tombe même quand il n'y a
+ * personne — ce qui est précisément ce que le joueur doit comprendre du §3.
+ */
+export function detailDuCanalAcclimate(etat: EtatJeu, palier: IndexPalier): readonly LigneDeCaptation[] {
+  const part = partMureDuPalier(etat, palier)
+  return [
     {
-      terme: 'benediction_ciblee',
-      valeur: multiplicateurCible(etat, banc.espece),
-      source: { quoi: 'benedictions_ciblees' },
+      terme: 'part_mure',
+      valeur: part,
+      source: { quoi: 'eau_murie', part },
+    },
+    {
+      terme: 'rendement_acclimatation',
+      valeur: rendementAcclimatation(etat, palier),
+      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(palier).typeMana },
+    },
+    {
+      terme: 'debit_acclimate',
+      valeur: productionAcclimateeDuPalier(etat, palier).toNumber(),
+      source: { quoi: 'canal_acclimate' },
     },
   ]
 }
@@ -179,7 +243,10 @@ export function facteurDeSucces(etat: EtatJeu, terme: TermeDeCout | TermeDeConfo
     const effet = succes.effet
     if (effet === null || effet.genre === 'verbe') continue
     if (effet.terme !== terme) continue
-    if (!etat.permanent.succesDebloques.includes(succes.id)) continue
+    // Lu directement, jamais via `succes.ts` : ce module y est importé, et un
+    // cycle d'imports tiendrait à l'exécution pour tomber au premier
+    // changement d'ordre d'initialisation.
+    if (etat.permanent.succes[succes.id] === undefined) continue
     // `part` est la fraction retirée d'un coût, ou ajoutée à un plafond.
     facteur *= effet.genre === 'reduction_cout' ? 1 - effet.part : 1 + effet.part
   }
@@ -191,19 +258,67 @@ function facteurDeCout(etat: EtatJeu, terme: TermeDeCout): number {
   return facteurDeTechnique(etat, terme) * facteurDeSucces(etat, terme)
 }
 
-/** Coût du creusement du palier `cible`. Le palier 0 est ouvert au départ. */
-export function coutCreuser(etat: EtatJeu, cible: IndexPalier): Decimal {
-  return puissanceDeG(Math.max(0, cible - 1))
-    .mul(COUT_CREUSER_AU_PALIER_1)
-    .mul(facteurDeCout(etat, 'cout_creuser'))
-    .mul(facteurDeCout(etat, 'reduction_technique'))
+/** Coût d'origine d'un palier, avant tout levier. Le palier 0 est ouvert au départ. */
+export function coutBaseDuPalier(cible: IndexPalier): Decimal {
+  return puissanceDeG(Math.max(0, cible - 1)).mul(COUT_CREUSER_AU_PALIER_1)
 }
 
-/** Coût de conviction d'un banc : le recruter pour la première fois de la vie. */
-export function coutDeblocage(etat: EtatJeu, banc: Banc): Decimal {
+/**
+ * Vrai si ce palier a déjà été atteint dans une vie précédente — GDD §6.4.
+ *
+ * C'est toute la distinction entre les deux puits du §4.1 : CREUSER ouvre le
+ * palier suivant, AMÉNAGER rend habitable un palier que les galeries
+ * effondrées ont refermé. « La roche ne se souvient pas des galeries »
+ * (§10.1) ; le héros, lui, se souvient de la profondeur.
+ */
+export function estUnAmenagement(etat: EtatJeu, cible: IndexPalier): boolean {
+  return cible < etat.permanent.profondeurMaxAtteinte
+}
+
+/**
+ * Ce que coûte de descendre d'un palier — les deux puits du GDD §4.1.
+ *
+ *   creuser   : coût_base(palier)
+ *   aménager  : coût_base(palier) × f × réduction_technique      (§6.4)
+ *
+ * `reduction_technique` ne touche QUE l'aménagement, et c'est voulu : « un
+ * puits, un levier ». Jusqu'au 2026-09-08 elle s'appliquait aussi au
+ * creusement, ce qui donnait deux leviers au même coût et rendait l'ensemble
+ * inéquilibrable.
+ */
+export function coutDeDescente(etat: EtatJeu, cible: IndexPalier): Decimal {
+  const base = coutBaseDuPalier(cible)
+  if (!estUnAmenagement(etat, cible)) return base.mul(facteurDeCout(etat, 'cout_creuser'))
+  return base.mul(F_FRACTION_D_AMENAGEMENT).mul(facteurDeCout(etat, 'reduction_technique'))
+}
+
+/**
+ * Coût de conviction d'un banc — GDD §7.1.
+ *
+ *   coût_base(espèce) ÷ affinité(type, espèce) ÷ densité_locale_du_type
+ *
+ * « Le second dénominateur est la réponse au problème du prestige : une espèce
+ * se laisse reconvaincre d'autant plus facilement que l'eau est déjà chargée du
+ * type qu'elle supporte. Ce n'est pas un bonus, c'est une conséquence — la
+ * densité conservée est la mémoire du monde, et c'est elle qui paie le retour. »
+ *
+ * Aucun facteur de technique ni de succès n'entre ici : la conviction est payée
+ * par la densité, et par elle seule (§6.4, « un puits, un levier »).
+ *
+ * [P] La densité est portée par palier, là où le §7.1 l'indexe sur le TYPE de
+ * mana. Les deux coïncident tant qu'une assise entière porte un type unique ;
+ * elles cesseront de coïncider avec les temples, qui chargent un palier d'un
+ * type qui n'est pas celui de son assise (§9).
+ */
+export function coutDeConviction(etat: EtatJeu, banc: Banc): Decimal {
+  const memoireDuMonde = Math.pow(
+    1 + densiteDuPalier(etat, banc.palier),
+    EXPOSANT_RECONVICTION_DENSITE,
+  )
   return puissanceDeG(banc.palier)
     .mul(COUT_DEBLOCAGE_AU_PALIER_0)
-    .mul(facteurDeCout(etat, 'cout_deblocage'))
+    .div(AFFINITE_PLEINE_JUSQU_EN_V05)
+    .div(memoireDuMonde)
 }
 
 /**
@@ -224,6 +339,45 @@ export function contenance(etat: EtatJeu): Decimal {
   return etat.permanent.contenanceMana
 }
 
+/* ─── La jauge et sa saturation — GDD §2.4 ──────────────────────────────────
+ *
+ * « Un joueur qui ignore sa jauge n'est jamais bloqué et ne perd jamais sa
+ * partie. C'est la seule pénalité du jeu, et elle est douce. »
+ */
+
+/** Part du plafond effectivement portée, de 0 à 1. */
+export function partDeContenance(etat: EtatJeu): number {
+  const plafond = contenance(etat)
+  if (plafond.lte(0)) return 0
+  return Math.min(1, etat.cycle.manaCourant.div(plafond).toNumber())
+}
+
+/**
+ * L'alerte : « l'eau se trouble, la faune s'écarte. Un effet, pas un texte. »
+ *
+ * Le noyau rend l'état, jamais l'effet : c'est à l'écran de le montrer sans
+ * l'écrire.
+ */
+export function eauTroublee(etat: EtatJeu): boolean {
+  return partDeContenance(etat) >= SEUIL_D_ALERTE_DE_CONTENANCE
+}
+
+/** Saturation : « la captation s'arrête. Il dépense encore, il ne gagne plus. » */
+export function estSature(etat: EtatJeu): boolean {
+  return etat.cycle.manaCourant.gte(contenance(etat))
+}
+
+/**
+ * La divergence non choisie est due : la jauge est restée pleine trop longtemps.
+ *
+ * Jamais « forcée » — le mot est pris au Tier 0 §2 par le cas inverse, celui
+ * de la tentative délibérée qui tue. Ici le joueur n'a rien tenté, il a laissé
+ * monter.
+ */
+export function divergenceNonChoisieEstDue(etat: EtatJeu): boolean {
+  return etat.cycle.secondesEnSaturation >= DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES * 3600
+}
+
 /** Plus rien à creuser : soit la roche est finie, soit le contenu l'est. */
 export function toutEstCreuse(etat: EtatJeu): boolean {
   return etat.cycle.paliersOuverts >= Math.min(etat.limiteDeContenu, NOMBRE_DE_PALIERS)
@@ -238,5 +392,5 @@ export function toutEstCreuse(etat: EtatJeu): boolean {
  */
 export function estBloque(etat: EtatJeu): boolean {
   if (toutEstCreuse(etat)) return true
-  return coutCreuser(etat, etat.cycle.paliersOuverts).gt(contenance(etat))
+  return coutDeDescente(etat, etat.cycle.paliersOuverts).gt(contenance(etat))
 }

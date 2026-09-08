@@ -31,8 +31,8 @@ import {
   tick,
 } from '../noyau/noyau'
 import {
-  coutCreuser,
-  coutDeblocage,
+  coutDeDescente,
+  coutDeConviction,
   coutDePlace,
   tauxParIndividu,
   toutEstCreuse,
@@ -105,7 +105,7 @@ function optionsOuvertes(etat: EtatJeu): readonly Option[] {
   const options: Option[] = []
 
   if (!toutEstCreuse(etat)) {
-    const cout = coutCreuser(etat, etat.cycle.paliersOuverts)
+    const cout = coutDeDescente(etat, etat.cycle.paliersOuverts)
     if (cout.lte(plafond)) {
       options.push({ cout, gain: new Decimal(0), estUnCreusement: true, appliquer: creuser })
     }
@@ -115,7 +115,7 @@ function optionsOuvertes(etat: EtatJeu): readonly Option[] {
     for (const banc of PALIERS[palier].bancs) {
       const place = etat.cycle.bancs[banc.id]?.place ?? 0
       const id: BancId = banc.id
-      const cout = place === 0 ? coutDeblocage(etat, banc) : coutDePlace(etat, banc, place)
+      const cout = place === 0 ? coutDeConviction(etat, banc) : coutDePlace(etat, banc, place)
       if (cout.gt(plafond)) continue
       const avant = tauxParIndividu(etat, banc, place).mul(place)
       const apres = tauxParIndividu(etat, banc, place + 1).mul(place + 1)
@@ -261,6 +261,13 @@ export function simuler(
   for (let cycle = 0; cycle < cycles; cycle += 1) {
     let dureeDuCycle = 0
 
+    // Le tick peut clore le cycle tout seul : la divergence non choisie du
+    // §2.4 est une règle du monde, pas une décision de joueur, et elle vit donc
+    // dans le noyau. Le simulateur doit s'en apercevoir — sinon il éclôt une
+    // seconde fois derrière elle et compte deux cycles pour une vie.
+    const eclosionsAuDebut = etat.permanent.nombreEclosions
+    const aDivergeSeul = () => etat.permanent.nombreEclosions > eclosionsAuDebut
+
     for (;;) {
       // ── Le joueur est là ──────────────────────────────────────────────────
       let secondesDeSession = 0
@@ -281,6 +288,7 @@ export function simuler(
       tempsActif += secondesDeSession
       sessions.push({ cycle, secondesActives: secondesDeSession })
 
+      if (aDivergeSeul()) break
       if (doitEclore(etat, politique, optionsOuvertes(etat))) break
       if (dureeDuCycle >= politique.dureeMaxParCycleSecondes) {
         cycleNonConvergent = cycle
@@ -294,10 +302,11 @@ export function simuler(
       etat = tick(etat, absence)
       dureeDuCycle += absence
       observer?.(etat)
+      if (aDivergeSeul()) break
     }
 
     if (cycleNonConvergent !== null) break
-    etat = eclore(etat)
+    if (!aDivergeSeul()) etat = eclore(etat)
     acheves += 1
     observer?.(etat)
   }

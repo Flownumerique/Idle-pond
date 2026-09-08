@@ -12,8 +12,9 @@ import { PALIERS } from '../donnees/paliers'
 import { ASSISES } from '../donnees/assises'
 import {
   contenance,
-  coutCreuser,
-  coutDeblocage,
+  coutDeDescente,
+  coutDeConviction,
+  estUnAmenagement,
   coutDePlace,
   productionDuBanc,
   toutEstCreuse,
@@ -31,8 +32,11 @@ interface Props {
 
 export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptation }: Props) {
   const mana = etat.cycle.manaCourant
-  const coutDuCreusement = coutCreuser(etat, etat.cycle.paliersOuverts)
+  const coutDuCreusement = coutDeDescente(etat, etat.cycle.paliersOuverts)
   const creusementPossible = !toutEstCreuse(etat) && coutDuCreusement.lte(contenance(etat))
+  // Deux puits, deux verbes (GDD §4.1). Rouvrir une galerie effondrée n'est pas
+  // creuser : la roche est déjà percée, c'est l'eau qu'il faut rendre vivable.
+  const aAmenager = estUnAmenagement(etat, etat.cycle.paliersOuverts)
 
   return (
     <section className="space-y-2">
@@ -43,7 +47,7 @@ export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptatio
           palier.bancs.map((banc) => {
             const vivant = etat.cycle.bancs[banc.id]
             const place = vivant?.place ?? 0
-            const coutDuBanc = place === 0 ? coutDeblocage(etat, banc) : coutDePlace(etat, banc, place)
+            const coutDuBanc = place === 0 ? coutDeConviction(etat, banc) : coutDePlace(etat, banc, place)
             const payable = mana.gte(coutDuBanc) && coutDuBanc.lte(contenance(etat))
             const cible = effectifCible(place)
 
@@ -99,7 +103,7 @@ export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptatio
           'Il n’y a plus de roche à ouvrir ici'
         ) : (
           <>
-            Creuser plus bas
+            {aAmenager ? 'Rendre le fond habitable' : 'Creuser plus bas'}
             <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDuCreusement)}</span>
           </>
         )}

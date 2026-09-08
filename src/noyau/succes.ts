@@ -19,12 +19,14 @@ import type {
   AssiseId,
   CapaciteId,
   DeclencheurDeSucces,
+  EntreeDeSucces,
   EtatJeu,
   Succes,
   SuccesId,
   VisibiliteDeSucces,
 } from './types'
 import { SATURATION_D_UN_PALIER } from './constantes'
+import { palierDeVoix } from './voix'
 import { SUCCES } from '../donnees/succes/index'
 import { ASSISES, assiseDuPalier } from '../donnees/assises'
 import { PALIERS, bancParId } from '../donnees/paliers'
@@ -119,35 +121,60 @@ export function estAtteint(etat: EtatJeu, declencheur: DeclencheurDeSucces): boo
 export function verifierSucces(etat: EtatJeu): ResultatDeSucces {
   let declenches: SuccesId[] | null = null
   for (const succes of SUCCES) {
-    if (etat.permanent.succesDebloques.includes(succes.id)) continue
+    if (estAcquis(etat, succes.id)) continue
     if (!estAtteint(etat, succes.declencheur)) continue
     ;(declenches ??= []).push(succes.id)
   }
   if (declenches === null) return { etat, declenches: [] }
+
+  // Le registre de l'entrée est figé ICI, au déclenchement, et ne sera jamais
+  // réécrit (§14.5). C'est le seul endroit du code où la voix courante est lue
+  // pour être conservée : partout ailleurs elle se dérive.
+  const entree: EntreeDeSucces = {
+    obtenuAuCycle: etat.permanent.nombreEclosions,
+    registre: palierDeVoix(etat),
+  }
 
   return {
     etat: {
       ...etat,
       permanent: {
         ...etat.permanent,
-        // Reconstruit dans l'ordre du registre, jamais dans l'ordre d'arrivée.
-        //
-        // Deux succès franchis pendant le même intervalle arrivent dans un
-        // ordre qui dépend de la taille du pas : un pas de 8 h les voit
-        // ensemble, 480 pas de 60 s les voient l'un après l'autre. Concaténer
-        // l'ordre d'arrivée ferait donc diverger deux états par ailleurs
-        // identiques, et l'équivalence de pas tomberait sur une différence qui
-        // ne veut rien dire. L'ordre du registre, lui, ne dépend de rien.
-        succesDebloques: ordreDuRegistre(etat.permanent.succesDebloques, declenches),
+        succes: enOrdreDuRegistre(etat.permanent.succes, new Set(declenches), entree),
       },
     },
     declenches,
   }
 }
 
-function ordreDuRegistre(acquis: readonly SuccesId[], nouveaux: readonly SuccesId[]): readonly SuccesId[] {
-  const ensemble = new Set([...acquis, ...nouveaux])
-  return SUCCES.filter((s) => ensemble.has(s.id)).map((s) => s.id)
+export function estAcquis(etat: EtatJeu, id: SuccesId): boolean {
+  return etat.permanent.succes[id] !== undefined
+}
+
+/**
+ * Reconstruit la table entière dans l'ordre du registre, jamais dans l'ordre
+ * d'arrivée.
+ *
+ * Deux succès franchis pendant le même intervalle arrivent dans un ordre qui
+ * dépend de la taille du pas : un pas de 8 h les voit ensemble, 480 pas de 60 s
+ * les voient l'un après l'autre. L'ordre des clefs d'un objet JavaScript étant
+ * celui de leur insertion, insérer à l'arrivée ferait diverger la chaîne de
+ * sauvegarde de deux parties par ailleurs identiques — et le test de
+ * déterminisme compare précisément cette chaîne. L'ordre du registre, lui, ne
+ * dépend de rien.
+ */
+function enOrdreDuRegistre(
+  acquis: Readonly<Record<SuccesId, EntreeDeSucces>>,
+  nouveaux: ReadonlySet<SuccesId>,
+  entree: EntreeDeSucces,
+): Record<SuccesId, EntreeDeSucces> {
+  const table: Record<SuccesId, EntreeDeSucces> = {}
+  for (const succes of SUCCES) {
+    const deja = acquis[succes.id]
+    if (deja !== undefined) table[succes.id] = deja
+    else if (nouveaux.has(succes.id)) table[succes.id] = entree
+  }
+  return table
 }
 
 /**
@@ -185,7 +212,7 @@ export function capacitesDesSucces(etat: EtatJeu): ReadonlySet<CapaciteId> {
   const ouvertes = new Set<CapaciteId>()
   for (const succes of SUCCES) {
     if (succes.effet?.genre !== 'verbe') continue
-    if (!etat.permanent.succesDebloques.includes(succes.id)) continue
+    if (!estAcquis(etat, succes.id)) continue
     ouvertes.add(succes.effet.capacite)
   }
   return ouvertes
@@ -198,6 +225,8 @@ export interface SuccesAffichable {
   readonly acquis: boolean
   /** Ce que le joueur a le droit de voir, une fois l'assise atteinte. */
   readonly visibilite: VisibiliteDeSucces
+  /** Ce qu'on en a retenu, s'il est acquis. Porte le registre figé (§14.5). */
+  readonly entree: EntreeDeSucces | null
 }
 
 /** Une assise est atteinte dès qu'un de ses paliers a été ouvert, une fois. */
@@ -225,8 +254,9 @@ export function assisesAtteintes(etat: EtatJeu): ReadonlySet<AssiseId> {
 export function succesListables(etat: EtatJeu, assise: AssiseId): readonly SuccesAffichable[] {
   if (!assisesAtteintes(etat).has(assise)) return []
   return SUCCES.filter((s) => s.assise === assise).map((succes) => {
-    const acquis = etat.permanent.succesDebloques.includes(succes.id)
-    return { succes, acquis, visibilite: acquis ? 'ouvert' : succes.visibilite }
+    const entree = etat.permanent.succes[succes.id] ?? null
+    const acquis = entree !== null
+    return { succes, acquis, visibilite: acquis ? 'ouvert' : succes.visibilite, entree }
   })
 }
 

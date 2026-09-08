@@ -7,13 +7,13 @@
  * s'en assurer.
  *
  * §6.5 : le gain de densité est indexé sur la production de pic du cycle, pas
- * sur la profondeur, et il retourne dans la vitesse de repeuplement.
+ * sur la profondeur. Elle a UN SEUL débouché depuis V11 — l'acquis de séjour,
+ * via `multiplicateurDensite` : « séjour en mana dense » (Tier 0 §8).
  */
 import type Decimal from 'break_infinity.js'
 import type { EtatJeu, IndexPalier } from './types'
 import {
   ALPHA_GAIN_DE_DENSITE,
-  EXPOSANT_REPEUPLEMENT_DENSITE,
   K_TAUX_DE_REPEUPLEMENT,
   PRODUCTION_DE_REFERENCE,
   densiteExposant,
@@ -40,16 +40,30 @@ export function multiplicateurDensite(densite: number): number {
 /**
  * Vitesse de repeuplement d'un banc, par seconde.
  *
- * [P] — le §6.5 de la v1.0 dit que le gain de densité « retourne dans la
- * vitesse de repeuplement » ; l'amendement v1.1 §2.B la fait retourner dans
- * l'acquis de séjour. Les deux canaux coexistent dans les documents et aucun
- * n'annule l'autre. Celui-ci porte donc un exposant NOMMÉ et volontairement
- * doux, distinct de `θ/α` : appliquer le multiplicateur plein des deux côtés
- * compterait deux fois la même compensation. À trancher en v0.3.
+ * **V11 tranché le 2026-09-08 : la densité est DÉCOUPLÉE du repeuplement.**
+ *
+ * Deux canaux coexistaient dans les documents. Le §6.5 de la v1.0 faisait
+ * retourner le gain de densité dans la vitesse de repeuplement ; l'amendement
+ * v1.1 §2.B le fait retourner dans l'acquis de séjour. Les cumuler comptait
+ * deux fois la même compensation, et le canal de trop était celui-ci :
+ *
+ *   la densité vaut `pointe^α` (§2.A), donc elle croît avec la production SANS
+ *   BORNE. Le §2.B la fait passer par un rapport que la saturation borne — lui
+ *   tient. À exposant nu, `k` s'effondrait de 300 s à 10⁻⁴ s en quinze cycles :
+ *   la population devenait instantanée dès le deuxième, et avec elle
+ *   disparaissait le délai entre l'achat d'une place et son effet, c'est-à-dire
+ *   ce qui fait le jeu.
+ *
+ * La densité travaille donc par l'acquis de séjour, et par rien d'autre.
+ *
+ * [P] Ce qui reviendra ici un jour n'est pas la densité mais la RÉGÉNÉRATION
+ * LOCALE du GDD §7.2 — `croissance/s = k × régénération_locale × (1 − pop/pop_max)`
+ * —, et le §5.1 précise qu'elle est « fonction de la biomasse ». Une quantité
+ * bornée par la capacité des paliers ouverts, donc, pas une quantité qui monte
+ * sans fin. Elle n'est pas inventée ici : aucun document ne lui donne de forme.
  */
-export function vitesseDeRepeuplement(etat: EtatJeu, palier: IndexPalier): number {
-  const densite = densiteDuPalier(etat, palier)
-  return K_TAUX_DE_REPEUPLEMENT * Math.pow(1 + densite, EXPOSANT_REPEUPLEMENT_DENSITE)
+export function vitesseDeRepeuplement(): number {
+  return K_TAUX_DE_REPEUPLEMENT
 }
 
 /**
