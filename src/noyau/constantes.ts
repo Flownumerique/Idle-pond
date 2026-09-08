@@ -185,39 +185,24 @@ export const F_FRACTION_D_AMENAGEMENT = 0.25
  */
 export const EXPOSANT_RECONVICTION_DENSITE = 0.5
 
-/* ─── Les deux canaux de captation — GDD §3 et §3.0 ─────────────────────────
+/* ─── Les deux canaux de captation — GDD §3 ─────────────────────────────────
  *
  *   captation/s =   débit_natif(population_vivante_présente)
- *                 + débit_acclimaté(part_mûre(palier) × rendement_acclimatation)
+ *                 + débit_acclimaté(rendement_acclimatation)
  *
- * Additifs, jamais multiplicatifs. « Fixé (canon) » au §16.1, comme la borne du
- * canal acclimaté par la part mûre.
- */
-
-/**
- * [P29] graine — temps caractéristique de maturation d'un palier, en heures.
+ * Additifs, jamais multiplicatifs.
  *
- * Le GDD la laisse explicitement ouverte et dit ce qu'elle décide : « le premier
- * réglage décide si l'arbitrage se joue à l'échelle d'une session ou d'un
- * cycle ». Calée sur la durée d'un cycle du §16.2, donc sur le cycle : peupler
- * ou laisser mûrir est une décision qui engage une vie, pas une session.
+ * La maturation — qui bornait le canal acclimaté par la part mûre d'un palier,
+ * §3.0 de l'ancien canon — a été retirée le 2026-09-08 (noyau v1.0) : elle
+ * gouverne ce qu'un lieu peut DEVENIR dans la fiction, jamais ce que le héros
+ * GAGNE. Le canal acclimaté lui-même n'est pas encore retiré.
  */
-export const TAU_MATURATION_HEURES = 6
-
-/**
- * [P29] graine — place à laquelle l'eau d'un palier est moitié vive, moitié
- * mûre à l'équilibre.
- *
- * C'est le bouton de sensibilité de l'arbitrage : plus il est bas, plus vite un
- * peu de peuplement écrase le rendement acclimaté.
- */
-export const PLACE_QUI_DILUE_A_MOITIE = 10
 
 /**
  * [P] graine — force du canal acclimaté, exprimée en INDIVIDUS ÉQUIVALENTS.
  *
- * Un palier entièrement mûr rapporte autant que `n` individus y vivraient. Le
- * dire ainsi plutôt qu'en valeur absolue est ce qui garde le canal sur l'échelle
+ * Un palier rapporte autant que `n` individus y vivraient. Le dire ainsi
+ * plutôt qu'en valeur absolue est ce qui garde le canal sur l'échelle
  * économique de l'autre : il suit `D^palier` comme le reste, donc il ne devient
  * ni négligeable ni dominant en descendant.
  *

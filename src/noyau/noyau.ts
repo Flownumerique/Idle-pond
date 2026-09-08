@@ -34,8 +34,6 @@ import {
   coutDeDescente,
   coutDeConviction,
   coutDePlace,
-  partMureDuPalier,
-  placeDuPalier,
   rendementAcclimatation,
   tauxBaseDuPalier,
   tauxParIndividuHorsSeuil,
@@ -44,11 +42,6 @@ import {
 import { avancerBanc, effectifCible } from './population'
 import { densiteDuPalier, multiplicateurDensite, vitesseDeRepeuplement } from './densite'
 import { cycleInitial } from './eclosion'
-import {
-  PART_MURE_D_UNE_EAU_INTOUCHEE,
-  avancerMaturation,
-  cibleDeMaturation,
-} from './maturation'
 import { creditCompteur } from './technique'
 import { verifierSucces } from './succes'
 
@@ -94,10 +87,6 @@ export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS)
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),
-      // Une eau que rien n'habite et que rien ne réensemence a vieilli sans
-      // interruption : elle est mûre (GDD §6.5). Le héros descend dans du mûr
-      // et le rend jeune en le peuplant.
-      partsMures: new Array<number>(NOMBRE_DE_PALIERS).fill(PART_MURE_D_UNE_EAU_INTOUCHEE),
       // Le type natal est acquis d'emblée et ne se repaie jamais (Tier 0).
       acclimatations: { [TYPE_MANA_NATAL]: 1 },
       foi: new Decimal(0),
@@ -207,28 +196,15 @@ function instantDeSaturation(etat: EtatJeu, dt: number): number | null {
 
 interface AvanceeDesBancs {
   readonly bancs: Record<BancId, { place: number; effectif: number }>
-  /** Part mûre de chaque palier à la fin de l'intervalle (GDD §3.0). */
-  readonly partsMures: readonly number[]
   /** Mana capté sur l'intervalle, LES DEUX CANAUX. C'est ce qui entre en poche. */
   readonly manaProduit: Decimal
   /**
    * Débit du seul canal NATIF à la fin de l'intervalle — ce qui indexe la
    * pointe du cycle.
    *
-   * [P] Décision du 2026-09-08, et elle mérite d'être relue. La pointe est un
-   * MAXIMUM le long de la trajectoire, donc elle n'est composable que si la
-   * quantité qu'elle suit est monotone sur un pas. Le natif l'est : l'effectif
-   * converge vers sa place en montant, et les seuils ne font que monter. Le
-   * canal acclimaté ne l'est pas — peupler un palier fait DÉCROÎTRE sa part
-   * mûre (§3.0), donc la somme des deux peut culminer à l'intérieur d'un
-   * intervalle. Un pas de 8 h manquait ce sommet que 480 pas de 60 s
-   * attrapaient, et l'équivalence de pas tombait sur ce seul champ.
-   *
-   * Le résoudre analytiquement demanderait le maximum d'une somme de deux
-   * exponentielles de sens contraires, par-dessus la partition des seuils. La
-   * lecture retenue est plus simple et défendable : ce que la pointe indexe est
-   * la densité laissée derrière (§6.5), et le canal acclimaté ne PRODUIT rien —
-   * il prélève une charge déjà là. Seul le vivant produit (Tier 0 §5).
+   * Le canal acclimaté en est exclu : ce que la pointe indexe est la densité
+   * laissée derrière (§6.5), et le canal acclimaté ne PRODUIT rien — il
+   * prélève une charge déjà là. Seul le vivant produit (Tier 0 §5).
    *
    * À reposer si le canal acclimaté cesse d'être « très bas » (§3).
    */
@@ -238,18 +214,16 @@ interface AvanceeDesBancs {
 /**
  * Avance les deux canaux de captation sur `dt` secondes. Pure, sans état.
  *
- * Deux quantités varient à l'intérieur de l'intervalle, et aucune ne sort du
- * signe somme :
- *
- *   - le multiplicateur de seuil, qui se lit sur l'effectif (§2.C) ;
- *   - la part mûre d'un palier, qui dérive vers sa cible (GDD §3.0).
- *
- * Les deux ont une primitive fermée, et c'est la condition d'existence du hors
+ * Une seule quantité varie à l'intérieur de l'intervalle, et elle ne sort pas
+ * du signe somme : le multiplicateur de seuil, qui se lit sur l'effectif
+ * (§2.C). Il a une primitive fermée, et c'est la condition d'existence du hors
  * ligne : un pas de 8 h doit rendre exactement ce que rendent 480 pas de 60 s.
+ * Le canal acclimaté est constant sur l'intervalle — noyau v1.0 a retiré la
+ * maturation qui le faisait varier — donc son intégrale est un simple produit
+ * par `dt`.
  */
 function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
   const bancs: Record<BancId, { place: number; effectif: number }> = {}
-  const partsMures = [...etat.permanent.partsMures]
   let manaProduit = new Decimal(0)
   let productionNativeFinale = new Decimal(0)
 
@@ -273,22 +247,15 @@ function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
     }
 
     // ── Canal acclimaté : ce que l'eau capte toute seule ────────────────────
-    // La cible de maturation est fonction de la PLACE, qui ne change qu'entre
-    // deux ticks : elle est donc constante sur l'intervalle, et l'intégrale de
-    // la part mûre reste fermée.
-    const partAvant = partMureDuPalier(etat, palier)
-    const cible = cibleDeMaturation(placeDuPalier(etat, palier))
-    const maturation = avancerMaturation(partAvant, cible, dt)
-    partsMures[palier] = maturation.part
-
-    const debitParPart = tauxBaseDuPalier(palier)
+    // Constant sur l'intervalle : rien ne le fait plus varier dans le temps.
+    const debitAcclimate = tauxBaseDuPalier(palier)
       .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
       .mul(rendementAcclimatation(etat, palier))
     // Le mana acclimaté entre en poche ; il n'entre PAS dans la pointe. Voir la
     // note de `productionNativeFinale`.
-    manaProduit = manaProduit.add(debitParPart.mul(maturation.integrale))
+    manaProduit = manaProduit.add(debitAcclimate.mul(dt))
   }
-  return { bancs, partsMures, manaProduit, productionNativeFinale }
+  return { bancs, manaProduit, productionNativeFinale }
 }
 
 /** Ce que la mare produirait sur `dt`, sans rien avancer. Pour la dichotomie. */
@@ -297,7 +264,7 @@ function manaProduitSur(etat: EtatJeu, dt: number): Decimal {
 }
 
 function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
-  const { bancs: bancsAvances, partsMures, manaProduit, productionNativeFinale } = avancerLesBancs(etat, dt)
+  const { bancs: bancsAvances, manaProduit, productionNativeFinale } = avancerLesBancs(etat, dt)
 
   // La contenance limite le stock, pas la production. Le surplus n'est pas
   // détruit : il expire vers l'ambiant (Tier 0 §5).
@@ -330,7 +297,6 @@ function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
     },
     permanent: {
       ...etat.permanent,
-      partsMures,
       manaAmbiant: expire.gt(0) ? etat.permanent.manaAmbiant.add(expire) : etat.permanent.manaAmbiant,
     },
     telemetrie: {

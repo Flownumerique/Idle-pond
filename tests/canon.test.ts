@@ -260,6 +260,18 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
     }
     expect(fautes).toEqual([])
   })
+
+  it('la maturation ne survit nulle part dans le noyau', () => {
+    // Noyau v1.0 : la maturation gouverne ce qu'un lieu peut DEVENIR dans la
+    // fiction, jamais ce que le héros GAGNE. Elle n'a donc plus sa place dans
+    // le calcul de revenu du noyau.
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of ['partMure', 'partsMures', 'maturation', 'cibleDeMaturation']) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
 })
 
 describe('§3 — la règle d’UI absolue', () => {

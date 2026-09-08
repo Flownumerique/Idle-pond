@@ -12,8 +12,7 @@
  */
 import Decimal from 'break_infinity.js'
 import type { EtatJeu } from '../noyau/types'
-import { NOMBRE_DE_PALIERS, VERSION_SAVE } from '../noyau/constantes'
-import { PART_MURE_D_UNE_EAU_INTOUCHEE } from '../noyau/maturation'
+import { VERSION_SAVE } from '../noyau/constantes'
 import { palierDeVoixApres } from '../noyau/voix'
 import { SUCCES } from '../donnees/succes/index'
 
@@ -157,28 +156,20 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
   },
 
   /**
-   * 3 → 4 — les deux canaux de captation (GDD §3 et §3.0).
+   * 3 → 4 — les deux canaux de captation (GDD §3), à l'origine.
    *
-   * `partsMures` entre dans l'état permanent. Une save v3 ne le porte pas, et
-   * la valeur d'accueil n'est pas 0 mais 1 : une eau que rien n'a habitée est
-   * mûre (§6.5). Le peuplement de la save la rediluera en quelques heures de
-   * jeu, à la vitesse que `TAU_MATURATION_HEURES` fixe.
+   * Cette version introduisait `partsMures` dans l'état permanent. La
+   * maturation qu'il portait est retirée depuis le noyau v1.0 (2026-09-08) :
+   * elle gouverne ce qu'un lieu peut DEVENIR, jamais ce que le héros GAGNE, et
+   * le champ a disparu du type en mémoire avec elle.
    *
-   * Une migration explicite plutôt qu'un repli silencieux du désérialiseur : le
-   * champ change l'économie, et un défaut qui n'apparaît nulle part est un
-   * défaut que personne ne relira le jour où il faudra le remettre en cause.
+   * Le contenu n'est donc plus modifié ici. Une save v3 qui traverse cette
+   * étape n'a jamais porté `partsMures` ; une save v4 antérieure à ce retrait
+   * peut encore le porter, et le garde comme propriété surnuméraire jamais lue
+   * — la migration ne supprime pas une clef morte, elle cesse seulement d'en
+   * écrire une neuve.
    */
-  3: (contenu) => {
-    const brut = (contenu ?? {}) as Record<string, unknown>
-    const permanent = (brut.permanent ?? {}) as Record<string, unknown>
-    return {
-      ...brut,
-      permanent: {
-        ...permanent,
-        partsMures: new Array<number>(NOMBRE_DE_PALIERS).fill(PART_MURE_D_UNE_EAU_INTOUCHEE),
-      },
-    }
-  },
+  3: (contenu) => contenu,
 }
 
 export function migrer(save: SaveSerialisee): unknown {

@@ -49,8 +49,6 @@ export type TermeDeProduction =
   | 'rendement_acclimatation'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
-  /** Seule entrée du canal acclimaté (GDD §3.0). Peupler la dilue. */
-  | 'part_mure'
   | 'debit_acclimate'
 
 export type TermeDeCout =
@@ -92,7 +90,6 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'rendement_acclimatation',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
-  'part_mure',
   'debit_acclimate',
 ]
 
@@ -345,17 +342,6 @@ export interface EtatCycle {
 export interface EtatPermanent {
   /** Charge de mana par palier. Persistante, monotone croissante. */
   readonly densites: readonly number[]
-  /**
-   * Part mûre de la charge de chaque palier — GDD §3.0. Seule entrée du canal
-   * acclimaté.
-   *
-   * Persistante : c'est une propriété de l'eau, pas du peuplement, et l'éclosion
-   * ne la remet pas à zéro. Elle n'est pas monotone, et c'est voulu — « la
-   * densité absolue continue de monter et ne redescend jamais : seule la
-   * proportion bouge ». Peupler la fait descendre, laisser maigre la fait
-   * remonter, et à l'éclosion la population disparaît donc elle remonte partout.
-   */
-  readonly partsMures: readonly number[]
   /** Rendement du héros par type de mana. Jamais repayé, jamais remis à zéro. */
   readonly acclimatations: Readonly<Record<TypeManaId, number>>
   readonly foi: Decimal
@@ -448,7 +434,6 @@ export type SourceDeTerme =
   | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
   | { readonly quoi: 'place'; readonly place: number }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
-  | { readonly quoi: 'eau_murie'; readonly part: number }
   | { readonly quoi: 'canal_acclimate' }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */

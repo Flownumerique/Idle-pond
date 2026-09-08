@@ -1,16 +1,19 @@
 /**
  * IdlePond — production, coûts, seuils.
  *
- * DEUX CANAUX ADDITIFS — GDD §3, « Fixé (canon) » au §16.1 :
+ * DEUX CANAUX ADDITIFS — GDD §3 :
  *
  *   captation/s =   débit_natif(population vivante présente)
- *                 + débit_acclimaté(part_mûre(palier) × rendement_acclimatation)
+ *                 + débit_acclimaté(rendement_acclimatation)
  *
- * Additifs, jamais multiplicatifs — c'est ce qui rend l'arbitrage réel plutôt
- * que cosmétique. Le natif est le débit des bancs, à 100 % d'emblée, et il tombe
- * avec la population. L'acclimaté ne dépend d'aucun vivant : il vient de l'eau
- * elle-même, et il est borné par la part mûre du palier (§3.0), que peupler
- * dilue.
+ * Additifs, jamais multiplicatifs. Le natif est le débit des bancs, à 100 %
+ * d'emblée, et il tombe avec la population. L'acclimaté ne dépend d'aucun
+ * vivant : il vient de l'eau elle-même.
+ *
+ * La maturation — la part mûre d'un palier, qui bornait ce second canal — a
+ * été retirée le 2026-09-08 (noyau v1.0) : elle gouverne ce qu'un lieu peut
+ * DEVENIR dans la fiction, jamais ce que le héros GAGNE. Ce module garde le
+ * canal acclimaté lui-même, qui n'est pas encore retiré.
  *
  * Les deux se rejoignent dans `productionTotaleParSeconde`, et nulle part
  * ailleurs : un module qui n'additionnerait qu'un canal serait faux sans qu'un
@@ -46,7 +49,6 @@ import {
 } from './constantes'
 import { assiseDuPalier } from '../donnees/assises'
 import { densiteDuPalier } from './densite'
-import { PART_MURE_D_UNE_EAU_INTOUCHEE } from './maturation'
 import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
 import { PALIERS, bancsDuPalier } from '../donnees/paliers'
 import { facteurDeTechnique } from './technique'
@@ -129,31 +131,25 @@ export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
   return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
 }
 
-/* ─── Le canal acclimaté — GDD §3 et §3.0 ───────────────────────────────────*/
-
-export function partMureDuPalier(etat: EtatJeu, palier: IndexPalier): number {
-  return etat.permanent.partsMures[palier] ?? PART_MURE_D_UNE_EAU_INTOUCHEE
-}
-
-/** Place totale installée sur un palier — ce qui dilue son type (§3.0). */
-export function placeDuPalier(etat: EtatJeu, palier: IndexPalier): number {
-  let place = 0
-  for (const banc of PALIERS[palier].bancs) place += etat.cycle.bancs[banc.id]?.place ?? 0
-  return place
-}
+/* ─── Le canal acclimaté — GDD §3 ────────────────────────────────────────────
+ *
+ * La maturation, qui bornait ce canal par la part mûre d'un palier, a été
+ * retirée le 2026-09-08 (noyau v1.0) : elle gouverne ce qu'un lieu peut
+ * DEVENIR, jamais ce que le héros GAGNE. Ce qui reste ici — un débit constant
+ * par palier — est le canal acclimaté lui-même, pas la maturation.
+ */
 
 /**
  * Débit acclimaté d'un palier, par seconde. Ne dépend d'AUCUN vivant.
  *
- * Il vient de l'eau : `part_mûre × rendement_acclimatation`, à la force que la
- * graine exprime en individus équivalents. C'est ce qui donne au héros un revenu
- * dès l'instant où il rouvre une galerie, avant d'y avoir ramené qui que ce
- * soit — et c'est pour ça que le §3 tient à ce que les canaux soient ADDITIFS.
+ * Il vient de l'eau, à la force que la graine exprime en individus
+ * équivalents. C'est ce qui donne au héros un revenu dès l'instant où il
+ * rouvre une galerie, avant d'y avoir ramené qui que ce soit — et c'est pour
+ * ça que le §3 tient à ce que les canaux soient ADDITIFS.
  */
 export function productionAcclimateeDuPalier(etat: EtatJeu, palier: IndexPalier): Decimal {
   return tauxBaseDuPalier(palier)
     .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
-    .mul(partMureDuPalier(etat, palier))
     .mul(rendementAcclimatation(etat, palier))
 }
 
@@ -206,13 +202,7 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
  * personne — ce qui est précisément ce que le joueur doit comprendre du §3.
  */
 export function detailDuCanalAcclimate(etat: EtatJeu, palier: IndexPalier): readonly LigneDeCaptation[] {
-  const part = partMureDuPalier(etat, palier)
   return [
-    {
-      terme: 'part_mure',
-      valeur: part,
-      source: { quoi: 'eau_murie', part },
-    },
     {
       terme: 'rendement_acclimatation',
       valeur: rendementAcclimatation(etat, palier),
