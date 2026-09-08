@@ -193,7 +193,17 @@ un fichier de canon. Deux relevés, aucun arbitré ici.
 1. **Les fichiers de canon ne sont pas dans le dépôt.** Ni `tier-0-immuable.md`,
    ni `especes-cadre.md`, ni `mana-typologie.md`, ni `idlepond-gdd-v2_4.md`. Le
    travail s'est appuyé sur le seul prompt de lancement, qui prime sur le GDD
-   partout où ils divergent. Deux conséquences directes : les types de mana
+   partout où ils divergent.
+
+   > **Correction du 2026-09-08 — la préséance est inversée.** Le GDD v2.4 est
+   > entré au dépôt (`docs/GDD.md`) et devient le document directif : c'est lui
+   > qui prime, partout. La phrase ci-dessus reste vraie de son époque — elle
+   > décrit la seule règle tenable quand le canon était absent — mais elle ne
+   > décrit plus la règle en vigueur, et une session qui la lirait sans cette
+   > note rétablirait exactement l'ordre qu'on vient de défaire. Les `§x.y` des
+   > commentaires de `src/` renvoient toujours au prompt de lancement, dont la
+   > numérotation ne correspond pas à celle du GDD ; les renvois au GDD sont
+   > désormais écrits « GDD §x.y ». Deux conséquences directes : les types de mana
    portent des identifiants provisoires (`type-mana-1`…), et rien de ce qui
    relève de `especes-cadre.md` n'a été supposé.
 
