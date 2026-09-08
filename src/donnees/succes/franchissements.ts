@@ -49,7 +49,7 @@ export const FRANCHISSEMENTS: readonly Succes[] = [
     visibilite: 'ferme',
     assise: ASSISE,
     declencheur: { quoi: 'eclosions', seuil: 3 },
-    effet: { genre: 'reduction_cout', terme: 'cout_deblocage', part: PART_REMISE_D_UN_SUCCES },
+    effet: { genre: 'reduction_cout', terme: 'reduction_technique', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'franchissement-densite',

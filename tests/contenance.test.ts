@@ -13,6 +13,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   ACQUIS_MAX,
+  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
   CONTENANCE_PAR_ECLOSION,
   DUREE_DU_CYCLE_1_HEURES,
   TAU_SEJOUR_HEURES,
@@ -48,11 +49,21 @@ describe('contenance', () => {
     // L'effet secondaire recherché du §2.B, et il ne doit pas se casser : passé
     // la saturation, rester ne rapporte plus que de la Foi. C'est ce qui rend
     // réelle la seule vraie décision du joueur.
+    //
+    // La comparaison est bornée par le délai du GDD §2.4 : depuis que le canal
+    // acclimaté donne un revenu sans population, une partie neuve remplit sa
+    // jauge toute seule, et rester assez longtemps déclenche une divergence non
+    // choisie. Ce qu'on mesure ici est le gain d'une MÊME vie ; au-delà du
+    // délai il y en aurait deux, et le rapport ne voudrait plus rien dire.
+    const longSejour = (DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES - 8) * H
+    expect(longSejour / H).toBeGreaterThan(10 * DUREE_DU_CYCLE_1_HEURES)
+
     const depart = etatInitial(1)
-    const troisHeures = eclore(tick(depart, 3 * H)).permanent.contenanceMana
-    const centHeures = eclore(tick(depart, 100 * H)).permanent.contenanceMana
-    const gainDuSurplus = centHeures.div(troisHeures).toNumber()
-    expect(gainDuSurplus).toBeLessThan(1.04)
+    const nominal = eclore(tick(depart, DUREE_DU_CYCLE_1_HEURES * H)).permanent.contenanceMana
+    const bienPlusLong = eclore(tick(depart, longSejour)).permanent.contenanceMana
+
+    expect(tick(depart, longSejour).permanent.nombreEclosions, 'aucune divergence subie').toBe(0)
+    expect(bienPlusLong.div(nominal).toNumber()).toBeLessThan(1.04)
   })
 
   it('l’acquis se dépense entièrement à l’éclosion', () => {

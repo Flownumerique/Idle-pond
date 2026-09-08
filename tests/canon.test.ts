@@ -28,7 +28,6 @@ import {
 import { TERMES_DE_CONFORT, TERMES_DE_COUT, TERMES_DE_PRODUCTION } from '../src/noyau/types'
 import type { CapaciteId } from '../src/noyau/types'
 import { NOEUDS_TECHNIQUE } from '../src/donnees/noeuds-technique'
-import { BENEDICTIONS } from '../src/donnees/benedictions'
 import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
 import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
@@ -53,8 +52,6 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'place', place: 12 },
   { quoi: 'drapeaux_permanents', especes: 0 },
   { quoi: 'drapeaux_permanents', especes: 3 },
-  { quoi: 'benedictions_globales' },
-  { quoi: 'benedictions_ciblees' },
 ]
 
 const RACINE = resolve(__dirname, '..')
@@ -67,7 +64,19 @@ function fichiersTs(racine: string): string[] {
   })
 }
 
-describe('§4.3 — la frontière technique / bénédiction', () => {
+describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
+  /**
+   * Ce bloc a été RETOURNÉ le 2026-09-08, et c'est le fait marquant du jalon.
+   *
+   * Il exigeait auparavant, sous le titre « la frontière technique /
+   * bénédiction », qu'une bénédiction cible un terme de PRODUCTION — c'est-à-
+   * dire exactement ce que le GDD §4.2 interdit : « elle n'achète ni rendement,
+   * ni multiplicateur », « tout arbre d'achats en Foi est une erreur de
+   * conception ». Le garde-fou protégeait la faute.
+   *
+   * Les bénédictions sont supprimées, pas converties. Ce qui reste à vérifier
+   * est qu'aucune source ne les réintroduise par un autre chemin.
+   */
   it('aucun nœud de technique ne monte une production', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
       if (noeud.effet.nature !== 'chiffre') continue
@@ -76,12 +85,24 @@ describe('§4.3 — la frontière technique / bénédiction', () => {
     }
   })
 
-  it('aucune bénédiction ne réduit un coût ni n’automatise', () => {
-    for (const benediction of BENEDICTIONS) {
-      expect(TERMES_DE_PRODUCTION as string[], `la bénédiction ${benediction.id}`).toContain(
-        benediction.effet.terme,
-      )
-    }
+  it('plus aucun terme de production n’est atteignable par un achat', () => {
+    // La Foi n'a plus de débouché chiffré : le registre de production ne
+    // subsiste que pour NOMMER les termes du détail de captation (§14.3).
+    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_ciblee')
+    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_globale')
+  })
+
+  it('aucune source de bénédiction ne subsiste dans le code', () => {
+    // La migration de save est la seule exception, et elle est structurelle :
+    // pour RETIRER une clef morte d'une save v2, il faut la nommer. Une
+    // migration est le dernier endroit où un mot supprimé survit légitimement,
+    // et le seul où l'interdire empêcherait de finir le travail.
+    const migrations = join('src', 'adaptateurs', 'persistance.ts')
+    const fautes = fichiersTs(join(RACINE, 'src'))
+      .map((f) => relative(RACINE, f))
+      .filter((f) => f !== migrations)
+      .filter((f) => /b[ée]n[ée]diction/i.test(sansCommentaires(readFileSync(join(RACINE, f), 'utf8'))))
+    expect(fautes).toEqual([])
   })
 
   it('aucun succès ne monte une production (amendement v1.1 §2.D)', () => {
@@ -98,6 +119,24 @@ describe('§4.3 — la frontière technique / bénédiction', () => {
         TERMES_DE_PRODUCTION as string[],
         `le succès ${succes.id} cible le terme de production ${succes.effet.terme}`,
       ).not.toContain(succes.effet.terme)
+    }
+  })
+
+  it('GDD §6.4 — un puits, un levier : rien ne double la densité sur la conviction', () => {
+    // « L'aménagement est payé par la technique ; la reconviction garde sa
+    // formule et reste payée par la densité. Aucun coût n'a deux leviers —
+    // c'est ce qui rend l'ensemble équilibrable. »
+    //
+    // `cout_reconviction` existe pour être NOMMÉ dans le détail de captation,
+    // jamais pour être ciblé. C'est le genre de règle qu'on enfreint sans le
+    // voir, en ajoutant un nœud « Conviction −20 % » qui a l'air inoffensif.
+    for (const noeud of NOEUDS_TECHNIQUE) {
+      if (noeud.effet.nature !== 'chiffre') continue
+      expect(noeud.effet.terme, `le nœud ${noeud.id}`).not.toBe('cout_reconviction')
+    }
+    for (const succes of SUCCES) {
+      if (succes.effet === null || succes.effet.genre === 'verbe') continue
+      expect(succes.effet.terme, `le succès ${succes.id}`).not.toBe('cout_reconviction')
     }
   })
 
@@ -184,14 +223,26 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
 })
 
 describe('§3 — le lexique s’applique au code, pas seulement à la prose', () => {
+  /**
+   * Deux entrées ont été RETIRÉES de cette liste le 2026-09-08, avec la
+   * préséance du GDD. Elles interdisaient son propre vocabulaire :
+   *
+   *   `ponte`     — l'Annexe A du GDD en fait le nom du prestige, et réserve
+   *                 « éclosion » à la naissance du héros (§2.1). Le code porte
+   *                 encore l'inverse ; l'interdire empêchait de le corriger.
+   *   `part_mûre` — seule entrée du canal acclimaté (§3.0), classée « Fixé
+   *                 (canon) » au §16.1. Le prompt de lancement l'avait
+   *                 supprimée ; le test en défendait la suppression.
+   *
+   * Retirer une interdiction ne renomme rien. Les deux chantiers restent à
+   * faire ; ils ne sont simplement plus bloqués par un test rouge.
+   */
   const PERIMES: readonly { readonly motif: RegExp; readonly quoi: string }[] = [
-    { motif: /\bponte\b/i, quoi: 'ponte (périmé — décrit l’acte inverse de l’éclosion)' },
     { motif: /\bprestige\b/i, quoi: 'prestige' },
     { motif: /\brebirth\b/i, quoi: 'rebirth' },
     { motif: /\bgemmes?\b/i, quoi: 'gemme' },
     { motif: /\bperles?\b/i, quoi: 'perle' },
     { motif: /\bcorail\b/i, quoi: 'Corail' },
-    { motif: /\bpart_?m[uû]re\b/i, quoi: 'part mûre (modèle de maturation supprimé)' },
     { motif: /\bbuyFish\b/, quoi: 'buyFish (achat par exemplaire)' },
     { motif: /\bpondDepth\b|\bzoneId?\b|\bbiomes?\b/i, quoi: 'ancien vocabulaire de zones/biomes' },
     { motif: /\blayers?\b/i, quoi: 'layer (dire assise)' },

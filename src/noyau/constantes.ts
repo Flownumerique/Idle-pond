@@ -18,7 +18,17 @@
 /** `g` — coût de palier. Chaque palier coûte ×2.4 le précédent. */
 export const G_COUT_PALIER = 2.4
 
-/** `f` — tarif de redescente. 1 = reset complet, aucune fraction conservée. */
+/**
+ * Ce que l'éclosion emporte du peuplement et de la géométrie. 1 = tout.
+ *
+ * Conforme au GDD §10.1 : « les parois se referment, les galeries s'effondrent,
+ * les paliers profonds redeviennent inaccessibles », et « ils ne se souviennent
+ * pas — il faut reconvaincre ». Rien ne se conserve à moitié.
+ *
+ * À NE PAS CONFONDRE avec le `f` du GDD §6.4, qui est une tout autre quantité :
+ * la fraction du coût d'origine que coûte un palier RETRAVERSÉ. C'est
+ * `F_FRACTION_D_AMENAGEMENT`, plus bas.
+ */
 export const F_TARIF_REDESCENTE = 1
 
 /** Coût de niveau, achat répétable. */
@@ -137,17 +147,107 @@ export function densiteExposant(): number {
   return THETA_PART_COMPENSEE / ALPHA_GAIN_DE_DENSITE
 }
 
+/* ─── La redescente — GDD §6.4 ──────────────────────────────────────────────
+ *
+ * « Le puits de la redescente est aménager : rendre un palier de nouveau
+ * habitable pour du vivant ordinaire. »
+ *
+ *   coût_aménagement(palier) = coût_base(palier) × f × réduction_technique
+ *
+ * Le héros ne repaie JAMAIS son acclimatation (Tier 0 §3) : ce qui se repaie
+ * est l'habitabilité du palier pour son peuple. « Ce n'est pas lui qui se
+ * réacclimate, c'est son peuple qui n'y est jamais allé. »
+ */
+
+/**
+ * [P5] graine — `f`, fraction du coût d'origine que coûte un palier déjà
+ * atteint dans une vie précédente. Paramètre global unique.
+ *
+ * Le GDD le veut « réglé pour viser les 20–25 % » de cycle en redescente, et
+ * prévient au même endroit que le régler seul est tourner le mauvais bouton :
+ * « c'est k, le taux de repeuplement, qui produit réellement les 20–25 % ».
+ * Les deux sont à calibrer ensemble ([P6]), et `k` est aujourd'hui dégénéré —
+ * décision ouverte V11. Cette graine est donc une entrée de mesure, pas un
+ * réglage abouti.
+ */
+export const F_FRACTION_D_AMENAGEMENT = 0.25
+
+/**
+ * [P] graine — exposant de la densité dans le coût de conviction (GDD §7.1).
+ *
+ * Le §7.1 écrit une division par la densité locale, sans exposant ni forme
+ * normalisée. Prise au pied de la lettre, elle rendrait la conviction gratuite
+ * dès la mi-partie — la densité vaut `pointe^α` et croît sans borne — et elle
+ * diviserait par zéro au premier cycle, où rien n'est encore chargé.
+ *
+ * La forme retenue est `(1 + densité)^e` : neutre à densité nulle, donc le
+ * premier cycle n'est pas touché, et croissante ensuite. `e` est la graine.
+ */
+export const EXPOSANT_RECONVICTION_DENSITE = 0.5
+
+/* ─── Les deux canaux de captation — GDD §3 et §3.0 ─────────────────────────
+ *
+ *   captation/s =   débit_natif(population_vivante_présente)
+ *                 + débit_acclimaté(part_mûre(palier) × rendement_acclimatation)
+ *
+ * Additifs, jamais multiplicatifs. « Fixé (canon) » au §16.1, comme la borne du
+ * canal acclimaté par la part mûre.
+ */
+
+/**
+ * [P29] graine — temps caractéristique de maturation d'un palier, en heures.
+ *
+ * Le GDD la laisse explicitement ouverte et dit ce qu'elle décide : « le premier
+ * réglage décide si l'arbitrage se joue à l'échelle d'une session ou d'un
+ * cycle ». Calée sur la durée d'un cycle du §16.2, donc sur le cycle : peupler
+ * ou laisser mûrir est une décision qui engage une vie, pas une session.
+ */
+export const TAU_MATURATION_HEURES = 6
+
+/**
+ * [P29] graine — place à laquelle l'eau d'un palier est moitié vive, moitié
+ * mûre à l'équilibre.
+ *
+ * C'est le bouton de sensibilité de l'arbitrage : plus il est bas, plus vite un
+ * peu de peuplement écrase le rendement acclimaté.
+ */
+export const PLACE_QUI_DILUE_A_MOITIE = 10
+
+/**
+ * [P] graine — force du canal acclimaté, exprimée en INDIVIDUS ÉQUIVALENTS.
+ *
+ * Un palier entièrement mûr rapporte autant que `n` individus y vivraient. Le
+ * dire ainsi plutôt qu'en valeur absolue est ce qui garde le canal sur l'échelle
+ * économique de l'autre : il suit `D^palier` comme le reste, donc il ne devient
+ * ni négligeable ni dominant en descendant.
+ *
+ * Volontairement petit — le §3 le veut « très bas » face à un natif « à 100 %,
+ * d'emblée ». Un banc peuplé passe la centaine d'individus et porte en plus son
+ * multiplicateur de seuil ; peupler reste très largement supérieur en débit brut.
+ *
+ * ATTENTION : le second facteur du canal, `rendement_acclimatation`, vaut 1
+ * partout jusqu'en v0.5. Le canal est donc aujourd'hui à sa force MAXIMALE, et
+ * il faudra remesurer cette graine le jour où l'acclimatation sera réelle.
+ */
+export const INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE = 1
+
+/**
+ * [P] — l'affinité du §7.1 est du contenu v0.5, au même titre que
+ * l'acclimatation : elle demande une table espèce × type de mana, et
+ * `especes-cadre.md` n'est pas au dépôt. D'ici là elle vaut 1 partout, ce qui
+ * laisse la formule juste sans qu'aucune valeur ne soit devinée.
+ */
+export const AFFINITE_PLEINE_JUSQU_EN_V05 = 1
+
 /** [P] graine — `k`, taux de repeuplement, par seconde. Mesuré en v0.3. */
 export const K_TAUX_DE_REPEUPLEMENT = 1 / 300
 
-/**
- * [P] graine — couplage de la densité à la vitesse de repeuplement.
- *
- * Distinct de `θ/α`, et il doit le rester : la densité agit déjà pleinement sur
- * l'acquis de séjour (§2.B), et lui donner le même exposant ici compterait deux
- * fois la même compensation. Voir la note de `vitesseDeRepeuplement`.
+/*
+ * [P6] — depuis V11, `k` est le SEUL réglage du repeuplement : la densité en
+ * est découplée (voir `vitesseDeRepeuplement`). Le GDD §6.4 en fait le pilote
+ * réel des 20–25 % de cycle en redescente — « c'est k qui les produit », là où
+ * `f` ne fait qu'un décalage constant. Il se calibre donc avec `f`, jamais seul.
  */
-export const EXPOSANT_REPEUPLEMENT_DENSITE = 0.5
 
 /**
  * [P] graine — bonus global accordé par espèce ayant déjà atteint cent
@@ -271,6 +371,58 @@ export const RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05 = 1
  */
 export const SATURATION_D_UN_PALIER = 0.99
 
+/* ─── Saturation de la jauge — GDD §2.4 ─────────────────────────────────────
+ *
+ * « Un joueur qui ignore sa jauge n'est jamais bloqué et ne perd jamais sa
+ * partie. C'est la seule pénalité du jeu, et elle est douce. »
+ *
+ * Trois clauses, et elles se tiennent : une alerte, une captation qui cesse,
+ * puis une divergence que le joueur n'a pas choisie.
+ */
+
+/** Alerte : « l'eau se trouble, la faune s'écarte. Un effet, pas un texte. » */
+export const SEUIL_D_ALERTE_DE_CONTENANCE = 0.85
+
+/**
+ * [P] graine — délai de saturation CONTINUE au bout duquel la divergence se
+ * déclenche seule. Le GDD §2.4 pose le délai sans lui donner de valeur.
+ *
+ * Il est dérivé du plafond hors ligne, et il le faut : le pilier n° 2 est « ne
+ * jamais punir l'absence », et une divergence qu'une seule absence suffirait à
+ * déclencher serait exactement cela. Le délai doit donc rester hors d'atteinte
+ * d'un retour au plafond MAXIMAL — pas seulement du plafond initial, sans quoi
+ * la branche Entretien rendrait le jeu plus punitif à mesure qu'elle
+ * l'améliore.
+ *
+ * Deux absences pleines sans le moindre geste entre elles : c'est de
+ * l'inattention, pas une vie. Le compteur se remet à zéro à la première
+ * dépense, donc revenir et faire quoi que ce soit suffit toujours à l'écarter.
+ *
+ * À mesurer en v0.3.
+ */
+export const DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES = 2 * CAP_HORS_LIGNE_HEURES_MAXIMUM
+
+/**
+ * [P] graine — part de l'acquis de séjour que fixe une divergence NON CHOISIE.
+ *
+ * §2.4 : « la ponte se déclenche seule, et fixe moins d'acquis qu'une ponte
+ * choisie. » Moins, pas rien : la pénalité est douce, et le joueur ne perd
+ * jamais sa partie. À mesurer en v0.3.
+ */
+export const PART_D_ACQUIS_FIXEE_PAR_DIVERGENCE_NON_CHOISIE = 0.5
+
+/* ─── Paliers de voix — GDD §13.1 ───────────────────────────────────────────*/
+
+/**
+ * Franchissements survécus ouvrant chaque palier de voix.
+ *
+ * Le GDD §13.1 les donne en pontes : les signes à la première, les directives
+ * à la troisième. `dialogue` n'a pas de seuil chiffré — il est déclenché par le
+ * relais (§12.2), contenu de la v1.0, et reste donc inatteignable.
+ */
+export const FRANCHISSEMENTS_POUR_LES_SIGNES = 1
+export const FRANCHISSEMENTS_POUR_LES_DIRECTIVES = 3
+
 /**
  * §8.4 — plancher garanti sur l'assise I. Ce ne sont pas des réglages : ce sont
  * les garanties que le contenu doit tenir, et que le test de cadence vérifie.
@@ -307,4 +459,4 @@ export const SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR = 60
 export const PERIODE_DE_TICK_MS = 100
 
 /** Version de save courante. Toute évolution passe par une migration. */
-export const VERSION_SAVE = 2
+export const VERSION_SAVE = 4

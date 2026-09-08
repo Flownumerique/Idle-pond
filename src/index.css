@@ -21,6 +21,11 @@
   --color-foi:        oklch(0.83 0.10 80);
   --color-densite:    oklch(0.72 0.09 150);
 
+  /* L'eau qui se trouble — GDD §2.4. Même clarté que le mana, chroma cassé et
+     teinte tirée vers le limon : la jauge s'éteint sans s'alarmer. Une couleur
+     d'alerte franche ferait de la seule pénalité douce du jeu un danger. */
+  --color-trouble:    oklch(0.66 0.055 95);
+
   --font-texte: "Newsreader", Georgia, "Times New Roman", serif;
   --font-lecture: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-chiffre: ui-monospace, "SFMono-Regular", "JetBrains Mono", monospace;

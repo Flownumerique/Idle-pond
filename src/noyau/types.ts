@@ -1,10 +1,13 @@
 /**
  * IdlePond — vocabulaire de l'état de jeu.
  *
- * Tier 2. Le lexique du §3 du prompt de lancement s'applique ici sans
- * exception : assise, palier, banc, éclosion, densité, Foi, bénédiction,
- * technique, acclimatation, conviction. Aucun anglicisme, aucun « prestige »,
- * aucune « ponte ».
+ * Tier 2. Lexique : assise, palier, banc, densité, Foi, technique,
+ * acclimatation, conviction. Aucun anglicisme, aucun « prestige ».
+ *
+ * Le GDD est le document directif depuis le 2026-09-08. Deux conséquences ici :
+ * `bénédiction` a disparu — la Foi n'achète que des miracles (§4.2) — et le mot
+ * « éclosion » désigne encore l'acte que le GDD nomme PONTE, en attendant le
+ * renommage transverse qui touche les identifiants et les sauvegardes.
  *
  * Ce module ne contient que des types et les registres de vocabulaire qui
  * doivent exister à l'exécution pour que les tests de canon (§4.3) puissent
@@ -23,7 +26,6 @@ export type EspeceId = string
 export type BancId = string
 export type TypeManaId = string
 export type NoeudTechniqueId = string
-export type BenedictionId = string
 export type SuccesId = string
 
 /* ─── Termes de formule (§7.5 règle 3) ──────────────────────────────────────
@@ -31,9 +33,14 @@ export type SuccesId = string
  * nommé, donc auditable dans le détail de captation. »
  *
  * La partition production / coût / confort n'est pas cosmétique : c'est elle
- * qui rend la frontière du §4.3 vérifiable par un test plutôt que par une
- * relecture. Une bénédiction ne touche que des termes de production ; un nœud
- * de technique ne touche que des termes de coût ou de confort.
+ * qui rend vérifiable par un test, plutôt que par une relecture, le fait
+ * qu'aucun système gratuit ne monte la production. Un nœud de technique ne
+ * touche que des termes de coût ou de confort.
+ *
+ * Plus aucune source ne cible un terme de production : le GDD §4.2 interdit que
+ * la Foi achète du rendement, et l'amendement v1.1 §2.D interdit qu'un succès
+ * en donne. Le registre est donc entièrement descriptif aujourd'hui — il nomme
+ * ce qui compose la captation, pour le détail auditable du §14.3.
  */
 
 export type TermeDeProduction =
@@ -42,15 +49,28 @@ export type TermeDeProduction =
   | 'rendement_acclimatation'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
-  | 'benediction_ciblee'
-  | 'benediction_globale'
+  /** Seule entrée du canal acclimaté (GDD §3.0). Peupler la dilue. */
+  | 'part_mure'
+  | 'debit_acclimate'
 
 export type TermeDeCout =
+  /** Ouvrir un palier JAMAIS atteint. L'autre moitié est `reduction_technique`. */
   | 'cout_creuser'
-  /** Débouché naturel des effets chiffrés de succès (amendement v1.1 §2.D). */
+  /**
+   * Le levier de l'aménagement — GDD §6.4, seul terme qui allège un palier
+   * retraversé. Débouché des effets chiffrés de succès (amendement v1.1 §2.D).
+   */
   | 'reduction_technique'
   | 'cout_place'
-  | 'cout_deblocage'
+  /**
+   * Convaincre un banc. Payé par la DENSITÉ, et par elle seule (§7.1).
+   *
+   * « Un puits, un levier. L'aménagement est payé par la technique ; la
+   * reconviction garde sa formule et reste payée par la densité. Aucun coût n'a
+   * deux leviers — c'est ce qui rend l'ensemble équilibrable. » Le terme existe
+   * donc pour être NOMMÉ dans le détail de captation, jamais pour être ciblé :
+   * un test de canon vérifie qu'aucun nœud ni succès ne le vise.
+   */
   | 'cout_reconviction'
   | 'cout_temple'
   | 'cout_portail'
@@ -72,15 +92,14 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'rendement_acclimatation',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
-  'benediction_ciblee',
-  'benediction_globale',
+  'part_mure',
+  'debit_acclimate',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
   'reduction_technique',
   'cout_place',
-  'cout_deblocage',
   'cout_reconviction',
   'cout_temple',
   'cout_portail',
@@ -147,16 +166,18 @@ export interface NoeudTechnique {
   readonly effet: EffetDeNoeud
 }
 
-/** Une bénédiction monte la production, jamais autre chose (§4.3). */
-export type EffetDeBenediction =
-  | { readonly forme: 'multiplicative'; readonly terme: TermeDeProduction; readonly espece: EspeceId }
-  | { readonly forme: 'additive'; readonly terme: TermeDeProduction }
-
-export interface Benediction {
-  readonly id: BenedictionId
-  readonly effet: EffetDeBenediction
-  readonly coutParRang: readonly number[]
-}
+/* ─── La voix — GDD §13.1 ───────────────────────────────────────────────────
+ *
+ * Quatre paliers, et c'est l'axe de progression que le GDD dit le plus
+ * important : il porte le tutoriel, l'interface et le récit en même temps.
+ *
+ * Il n'est pas porté dans l'état, contrairement à ce que le §18.5 esquisse : il
+ * se DÉRIVE du nombre de franchissements survécus (voir `voix.ts`). Un champ
+ * stocké serait un cache d'une valeur recalculable, et le contrat du §5.1
+ * n'admet aucun état hors du reducer. Ce qui devra être stocké le jour du
+ * relais (§12.2) est l'événement, pas le palier qui s'en déduit.
+ */
+export type PalierDeVoix = 'pente' | 'signes' | 'directives' | 'dialogue'
 
 /* ─── Succès (§8) ───────────────────────────────────────────────────────────*/
 
@@ -195,16 +216,24 @@ export type DeclencheurDeSucces =
  * production. »
  *
  * Il n'y a donc aucun variant `production`, et il ne faut pas en ajouter.
- * Trois raisons, dans l'ordre de force :
+ * Deux raisons :
  *
  *   1. un succès est SUBI. Un multiplicateur de production que personne n'a
  *      choisi est exactement le « multiplicateur flottant » qu'interdit le
  *      §7.5.3 ;
- *   2. la production est le seul débouché de la Foi. Une source gratuite de
- *      production concurrence l'unique monnaie de prestige et vide la décision
- *      de l'œuf ;
- *   3. les verbes sont déjà budgétés — ~15 au total, dont 10 à l'arbre et ~5
+ *   2. les verbes sont déjà budgétés — ~15 au total, dont 10 à l'arbre et ~5
  *      aux succès, une source unique par CapaciteId.
+ *
+ * Une troisième raison est tombée avec les bénédictions : « la production est
+ * le seul débouché de la Foi » n'a plus d'objet, la Foi n'achetant que des
+ * miracles (GDD §4.2).
+ *
+ * [P] ARBITRAGE OUVERT. Le GDD §14.3 range `rendement` parmi les cibles
+ * légitimes d'un effet chiffré, et son schéma §14.9 type la cible sur
+ * `TermeDeFormule` entier — donc il AUTORISE ce que l'amendement v1.1 §2.D
+ * interdit. Le GDD étant directif, cette restriction ne survit que parce
+ * qu'elle est strictement plus sûre et que le schéma du §14.9 est antérieur à
+ * l'amendement. À trancher explicitement plutôt qu'à subir.
  *
  * Écarté explicitement : faire payer les succès en Foi. La Foi est ADRESSÉE,
  * elle ne se gagne pas par exploit.
@@ -213,6 +242,26 @@ export type EffetDeSucces =
   | { readonly genre: 'reduction_cout'; readonly terme: TermeDeCout; readonly part: number }
   | { readonly genre: 'plafond'; readonly terme: TermeDeConfort; readonly part: number }
   | { readonly genre: 'verbe'; readonly capacite: CapaciteId }
+
+/**
+ * Ce qu'on retient d'un succès obtenu — GDD §14.5 et §18.5.
+ *
+ * `registre` FIGE la langue de l'entrée : « une entrée est rédigée dans la
+ * langue que le héros avait au moment où il l'a obtenue, et n'est jamais
+ * réécrite ». C'est la propriété que le §14.9 range parmi celles qui « ne se
+ * rétrofitent pas », et c'est la raison d'être de cette structure : sans elle,
+ * relire une vieille entrée la montrerait dans la langue d'aujourd'hui, et la
+ * bibliothèque cesserait d'être la preuve du chemin parcouru.
+ *
+ * Ne pas confondre avec le registre des succès de `donnees/succes/index.ts`,
+ * qui est la LISTE des identifiants livrés. Le mot sert aux deux ; le GDD ne
+ * connaît que celui-ci.
+ */
+export interface EntreeDeSucces {
+  /** Rang du cycle pendant lequel il est tombé. 0 = la première vie. */
+  readonly obtenuAuCycle: number
+  readonly registre: PalierDeVoix
+}
 
 export interface Succes {
   readonly id: SuccesId
@@ -290,12 +339,31 @@ export interface EtatCycle {
    * entièrement à l'éclosion.
    */
   readonly acquisDeSejour: number
+  /**
+   * Temps passé jauge pleine, sans interruption — GDD §2.4.
+   *
+   * Remis à zéro dès que le niveau redescend sous le plafond, donc dès la
+   * première dépense. Au-delà du délai, la divergence se déclenche seule et
+   * fixe moins d'acquis qu'une ponte choisie.
+   */
+  readonly secondesEnSaturation: number
 }
 
 /** Ce que l'éclosion ne touche pas. Un être surévolué conserve ses acquis. */
 export interface EtatPermanent {
   /** Charge de mana par palier. Persistante, monotone croissante. */
   readonly densites: readonly number[]
+  /**
+   * Part mûre de la charge de chaque palier — GDD §3.0. Seule entrée du canal
+   * acclimaté.
+   *
+   * Persistante : c'est une propriété de l'eau, pas du peuplement, et l'éclosion
+   * ne la remet pas à zéro. Elle n'est pas monotone, et c'est voulu — « la
+   * densité absolue continue de monter et ne redescend jamais : seule la
+   * proportion bouge ». Peupler la fait descendre, laisser maigre la fait
+   * remonter, et à l'éclosion la population disparaît donc elle remonte partout.
+   */
+  readonly partsMures: readonly number[]
   /** Rendement du héros par type de mana. Jamais repayé, jamais remis à zéro. */
   readonly acclimatations: Readonly<Record<TypeManaId, number>>
   readonly foi: Decimal
@@ -306,8 +374,16 @@ export interface EtatPermanent {
   readonly profondeurMaxAtteinte: number
   readonly compteursTechnique: Readonly<Record<BrancheTechniqueId, number>>
   readonly noeudsTechnique: readonly NoeudTechniqueId[]
-  readonly benedictions: Readonly<Record<BenedictionId, number>>
-  readonly succesDebloques: readonly SuccesId[]
+  /**
+   * Les succès obtenus, avec ce qu'on en retient (§14.5).
+   *
+   * Un Record plutôt qu'une liste, mais TOUJOURS reconstruit dans l'ordre du
+   * registre : deux succès franchis pendant le même intervalle arrivent dans un
+   * ordre qui dépend de la taille du pas, et l'ordre des clefs d'un objet est
+   * celui de leur insertion. Le sérialiser dans l'ordre d'arrivée ferait
+   * diverger un pas de 8 h de 480 pas de 60 s sur la seule chaîne de save.
+   */
+  readonly succes: Readonly<Record<SuccesId, EntreeDeSucces>>
   readonly nombreEclosions: number
   /**
    * Espèces ayant DÉJÀ atteint cent individus. Drapeau permanent, conservé à
@@ -380,8 +456,8 @@ export type SourceDeTerme =
   | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
   | { readonly quoi: 'place'; readonly place: number }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
-  | { readonly quoi: 'benedictions_globales' }
-  | { readonly quoi: 'benedictions_ciblees' }
+  | { readonly quoi: 'eau_murie'; readonly part: number }
+  | { readonly quoi: 'canal_acclimate' }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

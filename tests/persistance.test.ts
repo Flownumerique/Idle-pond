@@ -76,8 +76,55 @@ describe('persistance', () => {
     const repli = etatInitial(0)
     const reprise = deserialiser(ancienne, repli)
     expect(reprise.versionSave).toBe(VERSION_SAVE)
-    expect(reprise.permanent.succesDebloques).toContain('seuil-vairon-10')
+    expect(reprise.permanent.succes['seuil-vairon-10']).toBeDefined()
     expect(reprise.permanent.couches).toEqual(['noue'])
     expect(reprise.cycle.paliersOuverts).toBe(repli.cycle.paliersOuverts)
+  })
+
+  it('2 → 3 : les succès acquis reçoivent un registre, les bénédictions disparaissent', () => {
+    // Le registre d'une entrée fige sa langue (GDD §14.5). Une save v2 ne l'a
+    // jamais porté : la migration inscrit le palier que ses franchissements
+    // impliquent, faute de pouvoir reconstituer celui d'alors.
+    const ancienne = {
+      versionSave: 2,
+      contenu: {
+        permanent: {
+          nombreEclosions: 3,
+          succesDebloques: ['seuil-vairon-10', 'acte-premiere-conviction'],
+          benedictions: { 'quelque-chose': 2 },
+        },
+      },
+    }
+    const reprise = deserialiser(ancienne, etatInitial(0))
+
+    expect(reprise.permanent.succes['seuil-vairon-10']).toEqual({
+      obtenuAuCycle: 3,
+      registre: 'directives',
+    })
+    expect(Object.keys(reprise.permanent.succes)).toHaveLength(2)
+    expect('benedictions' in reprise.permanent).toBe(false)
+    expect('succesDebloques' in reprise.permanent).toBe(false)
+  })
+
+  it('une save migrée se sérialise comme une save native de même contenu', () => {
+    // L'ordre des clefs d'un Record est celui de leur insertion, et le test de
+    // déterminisme compare des chaînes. Une migration qui insérerait dans
+    // l'ordre de la save ferait diverger deux parties identiques.
+    const idsDansLeDesordre = ['acte-premiere-conviction', 'seuil-vairon-10']
+    const migree = deserialiser(
+      {
+        versionSave: 2,
+        contenu: { permanent: { nombreEclosions: 0, succesDebloques: idsDansLeDesordre } },
+      },
+      etatInitial(0),
+    )
+    const inverse = deserialiser(
+      {
+        versionSave: 2,
+        contenu: { permanent: { nombreEclosions: 0, succesDebloques: [...idsDansLeDesordre].reverse() } },
+      },
+      etatInitial(0),
+    )
+    expect(Object.keys(migree.permanent.succes)).toEqual(Object.keys(inverse.permanent.succes))
   })
 })

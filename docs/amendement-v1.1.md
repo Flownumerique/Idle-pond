@@ -185,6 +185,57 @@ Restent ouvertes :
 |---|---|---|
 | V8 | Les ~5 verbes de succès ne sont pas alloués — toutes les capacités nommées appartiennent à l'arbre | v0.4 |
 | V9′ | `[P] P3` pour les assises II à VI | avant v0.5 |
-| V11 | La densité agit-elle sur la vitesse de repeuplement **en plus** de l'acquis de séjour ? Les deux canaux sont écrits, aucun n'annule l'autre, et leur cumul compterait deux fois la même compensation | v0.3 |
+| ~~V11~~ | ~~La densité agit-elle sur la vitesse de repeuplement **en plus** de l'acquis de séjour ?~~ **Tranché le 2026-09-08 : non, découplée.** Voir la note ci-dessous | ~~v0.3~~ |
 | V12 | Le +3 % des drapeaux s'additionne-t-il entre espèces ou se compose-t-il ? L'addition est retenue : elle ne surprend pas à vingt et une espèces | v0.3 |
 | V13 | Six paliers à la Noue contre « 62, distribution plate » : les deux ne se tiennent que si « plate » qualifie la distribution **par cycle**. C'est la lecture retenue, avec 56 paliers sur cinq assises | avant v0.5 |
+
+---
+
+## 6. V11, tranché le 2026-09-08 — et ce que la mesure a réfuté au passage
+
+**Décision : la densité est découplée du repeuplement.** Elle travaille par
+l'acquis de séjour (§2.B), et par rien d'autre. `vitesseDeRepeuplement` rend
+`k` seul ; `EXPOSANT_REPEUPLEMENT_DENSITE` est supprimé.
+
+Le canal retiré était bien celui de trop. La densité vaut `pointe^α`, donc elle
+croît avec la production **sans borne** ; le §2.B la fait passer par un rapport
+que la saturation borne, lui tient. À exposant nu, `τ` tombait de 300 s à
+10⁻⁴ s en quinze cycles : la population devenait instantanée dès le deuxième, et
+avec elle disparaissait le délai entre l'achat d'une place et son effet —
+c'est-à-dire ce que le GDD §7.2 décrit comme la boucle elle-même.
+
+### Ce que le balayage a montré, et qui contredit le GDD §6.4
+
+`k` étant désormais le seul réglage du repeuplement, il devient balayable. Sur
+quinze cycles, `f = 0,25`, politique par défaut :
+
+| τ = 1/k | 30 s | 60 s | 300 s | 1200 s |
+|---|---|---|---|---|
+| fraction en redescente | 76 % | 73 % | **73 %** | 73 % |
+| temps actif | 8,6 h | 9,0 h | 11,7 h | 15,4 h |
+
+**`k` ne déplace pas la fraction.** Quarante fois plus lent la laisse à trois
+points près, tout en multipliant le temps actif par 1,8. Il règle une DURÉE, pas
+un RAPPORT — et c'est prévisible après coup : il ralentit dans la même
+proportion la phase de redescente et la phase de terrain neuf, donc il sort du
+quotient.
+
+Le GDD §6.4 affirme pourtant : « c'est `k`, le taux de repeuplement, qui produit
+réellement les 20–25 % », et « `f` donne un puits au mana d'après-ponte ». La
+première moitié est réfutée par la mesure. La seconde tient, mais `f` est borné :
+c'est un diviseur constant opposé à une exponentielle, il achète
+`log_g(1/f)` paliers d'avance — 1,6 palier à `f = 0,25`, 3,4 à `f = 0,05` — et
+le balayage complet ne descend que de 80 % à 60 %.
+
+**Aucun des deux leviers nommés par le §6.4 ne peut atteindre la cible dure.**
+La cause est celle que le §5 de `politique-du-simulateur.md` avait déjà isolée :
+rejoindre la profondeur `p` coûte `g^p` quand la production n'y vaut que `D^p`,
+et `(g/D)^p` grandit à chaque cycle. Ce qui change un rapport est ce qui rend la
+retraversée catégoriquement plus courte en TEMPS sans toucher au terrain neuf :
+les verbes `creusement_auto` (« galeries connues ») et `file_de_descente` du
+§7.3, qui suppriment des allers-retours de check-in d'un seul côté du quotient.
+
+À porter au GDD : le §6.4 doit cesser de désigner `k` comme le pilote des
+20–25 %, et le §16.1 doit ranger la cible parmi ce que les verbes produisent, non
+parmi ce que le calibrage produit. C'est un constat de mesure, pas une décision
+de conception — la décision reste à l'auteur.

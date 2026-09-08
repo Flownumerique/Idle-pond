@@ -98,9 +98,14 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return source.especes === 0
         ? 'aucune espèce au complet'
         : `${source.especes} espèce${source.especes > 1 ? 's' : ''} déjà au complet`
-    case 'benedictions_globales':
-      return 'bénédictions, toutes espèces'
-    case 'benedictions_ciblees':
-      return 'bénédictions, cette espèce'
+    case 'eau_murie':
+      // Ce que le joueur doit comprendre du §3.0 sans qu'on le lui explique :
+      // c'est le peuplement qui rajeunit l'eau, donc qui écrase ce canal-là.
+      if (source.part >= 0.9) return 'une eau vieille que rien n’a troublée'
+      if (source.part >= 0.5) return 'une eau qui se réveille'
+      if (source.part >= 0.15) return 'trop de monde pour que l’eau vieillisse'
+      return 'une eau rendue jeune par ce qui l’habite'
+    case 'canal_acclimate':
+      return 'ce que tu prends à l’eau elle-même'
   }
 }

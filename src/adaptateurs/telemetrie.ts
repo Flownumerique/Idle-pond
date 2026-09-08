@@ -73,7 +73,7 @@ export function relever(etat: EtatJeu): Releve {
       intervalles.length > 0 ? intervalles.reduce((a, b) => a + b, 0) / intervalles.length : null,
     pointsDeTechniqueRendus,
     tempsEcouleSecondes: etat.tempsJeuSecondes,
-    tauDeRepeuplementSecondes: 1 / vitesseDeRepeuplement(etat, 0),
+    tauDeRepeuplementSecondes: 1 / vitesseDeRepeuplement(),
   }
 }
 
