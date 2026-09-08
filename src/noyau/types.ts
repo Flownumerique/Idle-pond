@@ -339,14 +339,6 @@ export interface EtatCycle {
    * entièrement à l'éclosion.
    */
   readonly acquisDeSejour: number
-  /**
-   * Temps passé jauge pleine, sans interruption — GDD §2.4.
-   *
-   * Remis à zéro dès que le niveau redescend sous le plafond, donc dès la
-   * première dépense. Au-delà du délai, la divergence se déclenche seule et
-   * fixe moins d'acquis qu'une ponte choisie.
-   */
-  readonly secondesEnSaturation: number
 }
 
 /** Ce que l'éclosion ne touche pas. Un être surévolué conserve ses acquis. */

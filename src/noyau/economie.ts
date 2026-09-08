@@ -35,7 +35,6 @@ import {
   COUT_DEBLOCAGE_AU_PALIER_0,
   COUT_DE_PLACE_AU_PALIER_0,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
-  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
   EXPOSANT_RECONVICTION_DENSITE,
   F_FRACTION_D_AMENAGEMENT,
   INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
@@ -365,17 +364,6 @@ export function eauTroublee(etat: EtatJeu): boolean {
 /** Saturation : « la captation s'arrête. Il dépense encore, il ne gagne plus. » */
 export function estSature(etat: EtatJeu): boolean {
   return etat.cycle.manaCourant.gte(contenance(etat))
-}
-
-/**
- * La divergence non choisie est due : la jauge est restée pleine trop longtemps.
- *
- * Jamais « forcée » — le mot est pris au Tier 0 §2 par le cas inverse, celui
- * de la tentative délibérée qui tue. Ici le joueur n'a rien tenté, il a laissé
- * monter.
- */
-export function divergenceNonChoisieEstDue(etat: EtatJeu): boolean {
-  return etat.cycle.secondesEnSaturation >= DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES * 3600
 }
 
 /** Plus rien à creuser : soit la roche est finie, soit le contenu l'est. */

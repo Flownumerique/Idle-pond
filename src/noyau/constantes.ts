@@ -371,45 +371,16 @@ export const RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05 = 1
  */
 export const SATURATION_D_UN_PALIER = 0.99
 
-/* ─── Saturation de la jauge — GDD §2.4 ─────────────────────────────────────
+/* ─── Saturation de la jauge — noyau v1.0 §2.2 ──────────────────────────────
  *
- * « Un joueur qui ignore sa jauge n'est jamais bloqué et ne perd jamais sa
- * partie. C'est la seule pénalité du jeu, et elle est douce. »
- *
- * Trois clauses, et elles se tiennent : une alerte, une captation qui cesse,
- * puis une divergence que le joueur n'a pas choisie.
+ * « Le blocage est doux : il peut continuer à jouer indéfiniment. » Une
+ * alerte, une captation qui cesse — et rien d'autre. La jauge pleine ne
+ * déclenche plus aucune éclosion : rester au plafond n'est plus une décision
+ * qui se prend toute seule à sa place.
  */
 
 /** Alerte : « l'eau se trouble, la faune s'écarte. Un effet, pas un texte. » */
 export const SEUIL_D_ALERTE_DE_CONTENANCE = 0.85
-
-/**
- * [P] graine — délai de saturation CONTINUE au bout duquel la divergence se
- * déclenche seule. Le GDD §2.4 pose le délai sans lui donner de valeur.
- *
- * Il est dérivé du plafond hors ligne, et il le faut : le pilier n° 2 est « ne
- * jamais punir l'absence », et une divergence qu'une seule absence suffirait à
- * déclencher serait exactement cela. Le délai doit donc rester hors d'atteinte
- * d'un retour au plafond MAXIMAL — pas seulement du plafond initial, sans quoi
- * la branche Entretien rendrait le jeu plus punitif à mesure qu'elle
- * l'améliore.
- *
- * Deux absences pleines sans le moindre geste entre elles : c'est de
- * l'inattention, pas une vie. Le compteur se remet à zéro à la première
- * dépense, donc revenir et faire quoi que ce soit suffit toujours à l'écarter.
- *
- * À mesurer en v0.3.
- */
-export const DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES = 2 * CAP_HORS_LIGNE_HEURES_MAXIMUM
-
-/**
- * [P] graine — part de l'acquis de séjour que fixe une divergence NON CHOISIE.
- *
- * §2.4 : « la ponte se déclenche seule, et fixe moins d'acquis qu'une ponte
- * choisie. » Moins, pas rien : la pénalité est douce, et le joueur ne perd
- * jamais sa partie. À mesurer en v0.3.
- */
-export const PART_D_ACQUIS_FIXEE_PAR_DIVERGENCE_NON_CHOISIE = 0.5
 
 /* ─── Paliers de voix — GDD §13.1 ───────────────────────────────────────────*/
 

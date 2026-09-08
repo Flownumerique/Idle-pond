@@ -20,7 +20,6 @@ import {
   FOI_EXPOSANT,
   MANA_A_LA_SORTIE_DE_L_OEUF,
   PALIERS_OUVERTS_AU_DEPART,
-  PART_D_ACQUIS_FIXEE_PAR_DIVERGENCE_NON_CHOISIE,
   PRODUCTION_DE_REFERENCE,
 } from './constantes'
 import { appliquerGainDeDensite } from './densite'
@@ -53,24 +52,18 @@ export function cycleInitial(): EtatCycle {
     productionPicParSeconde: new Decimal(0),
     dureeSecondes: 0,
     acquisDeSejour: 0,
-    secondesEnSaturation: 0,
   }
 }
 
 /**
  * L'éclosion.
  *
- * `choisie` distingue les deux entrées dans l'œuf du GDD §2.4 :
- *   - choisie — le seul geste volontaire du jeu (§10.1). Tout l'acquis est fixé.
- *   - non choisie — la jauge est restée pleine, la divergence s'est déclenchée
- *     seule, et elle « fixe moins d'acquis qu'une ponte choisie ».
- *
- * Moins, jamais rien : la pénalité est douce, et le joueur ne perd jamais sa
- * partie. Densité, Foi, succès et technique sont acquis de la même façon dans
- * les deux cas — seule la contenance gagnée diffère, c'est-à-dire la
- * profondeur du cycle suivant.
+ * Le seul geste volontaire du jeu (§10.1) : toute éclosion est choisie, et
+ * tout l'acquis du cycle est fixé. Le noyau v1.0 §2.2 le pose sans détour :
+ * « le blocage est doux, il peut continuer à jouer indéfiniment ». Rester
+ * jauge pleine ne fait plus pondre à sa place.
  */
-export function eclore(etat: EtatJeu, choisie = true): EtatJeu {
+export function eclore(etat: EtatJeu): EtatJeu {
   const pic = etat.cycle.productionPicParSeconde
   const foiGagnee = gainDeFoiPrevu(etat)
   const densites = appliquerGainDeDensite(etat, etat.cycle.paliersOuverts, pic)
@@ -79,9 +72,7 @@ export function eclore(etat: EtatJeu, choisie = true): EtatJeu {
   // l'acquis accumulé pendant le cycle se dépense ici, et nulle part ailleurs.
   // Aucun facteur n'est écrit en dur — le ×47,1 visé est un RÉSULTAT de
   // `A∞` et `τ₀`, pas une ligne de code (§2.B).
-  const acquisFixe = choisie
-    ? etat.cycle.acquisDeSejour
-    : etat.cycle.acquisDeSejour * PART_D_ACQUIS_FIXEE_PAR_DIVERGENCE_NON_CHOISIE
+  const acquisFixe = etat.cycle.acquisDeSejour
   const contenanceMana = etat.permanent.contenanceMana.mul(1 + acquisFixe)
 
   return {

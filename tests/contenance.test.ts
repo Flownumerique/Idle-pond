@@ -13,13 +13,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   ACQUIS_MAX,
-  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
   CONTENANCE_PAR_ECLOSION,
   DUREE_DU_CYCLE_1_HEURES,
   TAU_SEJOUR_HEURES,
 } from '../src/noyau/constantes'
 import { eclore, etatInitial, tick } from '../src/noyau/noyau'
 import { multiplicateurDensite } from '../src/noyau/densite'
+import { etatDeTravail } from './etat-de-travail'
 
 const H = 3600
 
@@ -50,19 +50,18 @@ describe('contenance', () => {
     // la saturation, rester ne rapporte plus que de la Foi. C'est ce qui rend
     // réelle la seule vraie décision du joueur.
     //
-    // La comparaison est bornée par le délai du GDD §2.4 : depuis que le canal
-    // acclimaté donne un revenu sans population, une partie neuve remplit sa
-    // jauge toute seule, et rester assez longtemps déclenche une divergence non
-    // choisie. Ce qu'on mesure ici est le gain d'une MÊME vie ; au-delà du
-    // délai il y en aurait deux, et le rapport ne voudrait plus rien dire.
-    const longSejour = (DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES - 8) * H
+    // Le blocage est doux (noyau v1.0 §2.2) : rien ne borne plus la comparaison,
+    // le joueur peut rester indéfiniment sans qu'aucune éclosion ne se
+    // déclenche à sa place. `longSejour` n'a donc qu'à être largement plus long
+    // qu'un cycle nominal — sa valeur exacte n'a plus de portée canonique.
+    const longSejour = 200 * H
     expect(longSejour / H).toBeGreaterThan(10 * DUREE_DU_CYCLE_1_HEURES)
 
     const depart = etatInitial(1)
     const nominal = eclore(tick(depart, DUREE_DU_CYCLE_1_HEURES * H)).permanent.contenanceMana
     const bienPlusLong = eclore(tick(depart, longSejour)).permanent.contenanceMana
 
-    expect(tick(depart, longSejour).permanent.nombreEclosions, 'aucune divergence subie').toBe(0)
+    expect(tick(depart, longSejour).permanent.nombreEclosions, 'aucune éclosion ne se déclenche seule').toBe(0)
     expect(bienPlusLong.div(nominal).toNumber()).toBeLessThan(1.04)
   })
 
@@ -87,5 +86,16 @@ describe('contenance', () => {
   it('τ₀ est bien le temps caractéristique à densité neutre', () => {
     const apres = tick(etatInitial(1), TAU_SEJOUR_HEURES * H)
     expect(apres.cycle.acquisDeSejour / ACQUIS_MAX).toBeCloseTo(1 - Math.exp(-1), 6)
+  })
+})
+
+describe('le blocage est doux (noyau v1.0 §2.2)', () => {
+  it('une jauge pleine pendant une semaine ne déclenche aucune éclosion', () => {
+    let etat = etatDeTravail()
+    const eclosionsAvant = etat.permanent.nombreEclosions
+    // 7 jours en un seul pas, jauge saturée du début à la fin
+    etat = tick({ ...etat, cycle: { ...etat.cycle, manaCourant: etat.permanent.contenanceMana } }, 7 * 24 * 3600)
+    expect(etat.permanent.nombreEclosions).toBe(eclosionsAvant)
+    expect(etat.cycle.manaCourant.eq(etat.permanent.contenanceMana)).toBe(true)
   })
 })

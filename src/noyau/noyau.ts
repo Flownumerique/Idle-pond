@@ -19,7 +19,6 @@ import type { BancId, EspeceId, EtatJeu, EtatPrng, SuccesId } from './types'
 import {
   ACQUIS_MAX,
   CONTENANCE_INITIALE,
-  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
   INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
   SEUILS_DE_JALON,
   NOMBRE_DE_PALIERS,
@@ -35,7 +34,6 @@ import {
   coutDeDescente,
   coutDeConviction,
   coutDePlace,
-  divergenceNonChoisieEstDue,
   partMureDuPalier,
   placeDuPalier,
   rendementAcclimatation,
@@ -45,7 +43,7 @@ import {
 } from './economie'
 import { avancerBanc, effectifCible } from './population'
 import { densiteDuPalier, multiplicateurDensite, vitesseDeRepeuplement } from './densite'
-import { cycleInitial, eclore } from './eclosion'
+import { cycleInitial } from './eclosion'
 import {
   PART_MURE_D_UNE_EAU_INTOUCHEE,
   avancerMaturation,
@@ -58,7 +56,6 @@ export { eclore, gainDeFoiPrevu } from './eclosion'
 export {
   contenance,
   detailDeCaptation,
-  divergenceNonChoisieEstDue,
   eauTroublee,
   estBloque,
   estSature,
@@ -153,39 +150,25 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
 
   const coupure = prochaineCoupure(etat, dt)
   if (coupure !== null) {
-    const avant = apresLePas(pasEntier(etat, coupure))
+    const avant = pasEntier(etat, coupure)
     const apres = tickDetaille(avant.etat, dt - coupure)
     return { etat: apres.etat, declenches: [...avant.declenches, ...apres.declenches] }
   }
-  return apresLePas(pasEntier(etat, dt))
-}
-
-/**
- * La divergence non choisie, appliquée à la fin du pas où son délai échoit.
- *
- * Elle est dans le tick et non dans un adaptateur, et il le faut : c'est une
- * règle du monde, pas une décision de joueur. Si elle vivait au-dessus du
- * noyau, un pas de 8 h et 480 pas de 60 s ne la déclencheraient pas au même
- * moment, et l'équivalence de pas tomberait avec le hors ligne.
- */
-function apresLePas(resultat: ResultatDeTick): ResultatDeTick {
-  if (!divergenceNonChoisieEstDue(resultat.etat)) return resultat
-  return { ...resultat, etat: eclore(resultat.etat, false) }
+  return pasEntier(etat, dt)
 }
 
 /**
  * Le premier instant de `]0, dt[` où le pas cesse d'être homogène, s'il existe.
  *
- * Trois choses peuvent tomber à l'intérieur d'un intervalle, et aucune ne
+ * Deux choses peuvent tomber à l'intérieur d'un intervalle, et aucune ne
  * s'intègre : le drapeau des cent individus change le taux de TOUS les bancs,
- * la saturation de la jauge fait commencer le décompte du §2.4, et le délai de
- * ce décompte déclenche une éclosion. On coupe donc au plus tôt des trois et on
- * reprend derrière — une partition analytique bornée, jamais une file
- * d'événements.
+ * et la saturation de la jauge change le débit qui alimente le stock. On
+ * coupe donc au plus tôt des deux et on reprend derrière — une partition
+ * analytique bornée, jamais une file d'événements.
  *
  * Prendre le MINIMUM est ce qui rend l'ensemble correct : chaque instant est
  * calculé sous les taux courants, donc juste tant qu'aucun autre ne l'a
- * précédé. Le premier l'est toujours ; les suivants sont recalculés après la
+ * précédé. Le premier l'est toujours ; le suivant est recalculé après la
  * coupure.
  */
 function prochaineCoupure(etat: EtatJeu, dt: number): number | null {
@@ -196,7 +179,6 @@ function prochaineCoupure(etat: EtatJeu, dt: number): number | null {
   }
   retenir(instantDuProchainDrapeau(etat, dt))
   retenir(instantDeSaturation(etat, dt))
-  retenir(instantDeLaDivergence(etat))
   return coupure
 }
 
@@ -206,8 +188,7 @@ function prochaineCoupure(etat: EtatJeu, dt: number): number | null {
  * Le mana accumulé est une somme d'intégrales d'exponentielles, découpée aux
  * seuils de jalon : elle ne s'inverse pas. Dichotomie, donc, comme pour le
  * drapeau — et elle converge par le HAUT, de sorte que l'instant rendu porte
- * toujours un stock déjà plein. Sans quoi le pas suivant repartirait à un
- * cheveu sous le plafond et ne compterait jamais une seconde de saturation.
+ * toujours un stock déjà plein.
  */
 function instantDeSaturation(etat: EtatJeu, dt: number): number | null {
   const plafond = contenance(etat)
@@ -222,12 +203,6 @@ function instantDeSaturation(etat: EtatJeu, dt: number): number | null {
     else bas = milieu
   }
   return haut
-}
-
-/** Temps restant avant que le délai du §2.4 n'échoie. `null` hors saturation. */
-function instantDeLaDivergence(etat: EtatJeu): number | null {
-  if (etat.cycle.manaCourant.lt(contenance(etat))) return null
-  return DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES * 3600 - etat.cycle.secondesEnSaturation
 }
 
 interface AvanceeDesBancs {
@@ -331,13 +306,6 @@ function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
   const manaCourant = Decimal.min(brut, plafond)
   const expire = brut.sub(manaCourant)
 
-  // §2.4 — le décompte de la jauge pleine. Par construction de la coupure, le
-  // pas est homogène : soit il est saturé de bout en bout, soit il ne l'est pas
-  // du tout. Toute dépense fait redescendre le niveau, donc remet à zéro.
-  const secondesEnSaturation = etat.cycle.manaCourant.gte(plafond)
-    ? etat.cycle.secondesEnSaturation + dt
-    : 0
-
   const enRedescente = etat.cycle.paliersOuverts < etat.permanent.profondeurMaxAtteinte
 
   // Acquis de séjour (§2.B) : accumulation saturante vers `A∞`, dont le temps
@@ -359,7 +327,6 @@ function pasEntier(etat: EtatJeu, dt: number): ResultatDeTick {
       productionPicParSeconde: Decimal.max(etat.cycle.productionPicParSeconde, productionNativeFinale),
       dureeSecondes: etat.cycle.dureeSecondes + dt,
       acquisDeSejour,
-      secondesEnSaturation,
     },
     permanent: {
       ...etat.permanent,
