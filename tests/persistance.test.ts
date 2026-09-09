@@ -12,8 +12,10 @@ import {
   deserialiser,
   deserialiserDecimal,
   migrer,
+  MIGRATIONS,
   serialiser,
   serialiserDecimal,
+  type SaveSerialisee,
 } from '../src/adaptateurs/persistance'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
@@ -126,5 +128,99 @@ describe('persistance', () => {
       etatInitial(0),
     )
     expect(Object.keys(migree.permanent.succes)).toEqual(Object.keys(inverse.permanent.succes))
+  })
+})
+
+describe('migration 4 → 5 : le modèle à population meurt sans emporter la save', () => {
+  it('une save v4 se relit, ses champs morts sont ignorés, aucun n’est supprimé', () => {
+    // Le brief écrivait `version: 4`, mais `SaveSerialisee` porte `versionSave` :
+    // avec le mauvais nom, `migrer` lit `save.versionSave === undefined`, la
+    // boucle `for (version = undefined; version < VERSION_SAVE; …)` ne tourne
+    // jamais, et la migration 4 → 5 ne s'exécute pas — le test passerait quand
+    // même par accident (le repli comble `especes`), sans avoir rien vérifié.
+    // Mesuré en lisant `migrer()` dans src/adaptateurs/persistance.ts.
+    const v4 = {
+      versionSave: 4,
+      contenu: {
+        cycle: { bancs: { 'vairon@0': { place: 9, effectif: 7 } }, manaCourant: '500' },
+        permanent: { partsMures: [1, 1, 1], acclimatations: { douce: 1 }, nombreEclosions: 2 },
+      },
+    } as unknown as SaveSerialisee
+
+    const relu = deserialiser(v4, etatInitial(1))
+    expect(relu.permanent.nombreEclosions).toBe(2)
+    // `etatInitial(1).cycle.especes` vaut `{}` (cycleInitial()) : l'assertion
+    // du brief tient toujours, mesurée directement plutôt que supposée — une
+    // save v4 n'a jamais porté de niveau d'espèce, il n'y a rien à reconstruire
+    // depuis `bancs`.
+    expect(relu.cycle.especes).toEqual({})
+    expect(relu.cycle.manaCourant.eq(500)).toBe(true)
+  })
+
+  it('la migration ne supprime aucun champ : elle les laisse passer', () => {
+    const migre = MIGRATIONS[4]({
+      cycle: { bancs: { x: { place: 1, effectif: 1 } } },
+      permanent: { partsMures: [1] },
+    }) as Record<string, Record<string, unknown>>
+    expect(migre.cycle).toHaveProperty('bancs')
+    expect(migre.permanent).toHaveProperty('partsMures')
+    expect(migre.cycle).toHaveProperty('especes')
+  })
+
+  it('la save porte la version 5 après migration', () => {
+    expect(VERSION_SAVE).toBe(5)
+    const migre = deserialiser({ versionSave: 4, contenu: {} } as unknown as SaveSerialisee, etatInitial(0))
+    expect(migre.versionSave).toBe(5)
+  })
+
+  it('ce que le joueur perd et ce qu’il garde : le cycle n’est qu’une éclosion de plus, la progression permanente survit intacte', () => {
+    // Une save v4 avec de la progression permanente réelle ET un cycle en
+    // cours (dans l'ancien modèle à population, donc avec `bancs`, jamais
+    // `especes`). La migration 4 → 5 ne touche que `cycle.especes` — elle ne
+    // vide pas le reste de `cycle` ni ne touche `permanent`.
+    const v4 = {
+      versionSave: 4,
+      contenu: {
+        cycle: {
+          bancs: { 'vairon@0': { place: 9, effectif: 7 } },
+          manaCourant: '1234',
+          paliersOuverts: 6,
+        },
+        permanent: {
+          partsMures: [1, 1, 1],
+          acclimatations: { douce: 1 },
+          secondesEnSaturation: 42,
+          nombreEclosions: 5,
+          contenanceMana: '99999',
+          densites: [3, 2, 1, 0, 0, 0],
+          foi: '77',
+          compteursTechnique: { creusement: 4, amelioration: 1, recrutement: 0, entretien: 2, construction: 0, eclosion: 5 },
+          noeudsTechnique: ['creusement-1'],
+        },
+      },
+    } as unknown as SaveSerialisee
+
+    const relu = deserialiser(v4, etatInitial(0))
+
+    // Perdu : les niveaux d'espèces du cycle en cours ne sont pas reconstruits
+    // depuis `bancs` — ils n'existaient pas dans ce modèle. C'est une éclosion
+    // de plus, pas une perte de progression, puisque rien de permanent n'y
+    // était rangé.
+    expect(relu.cycle.especes).toEqual({})
+
+    // Gardé : toute la progression permanente traverse la migration intacte.
+    expect(relu.permanent.nombreEclosions).toBe(5)
+    expect(relu.permanent.contenanceMana.eq(99999)).toBe(true)
+    expect(relu.permanent.densites).toEqual([3, 2, 1, 0, 0, 0])
+    expect(relu.permanent.foi.eq(77)).toBe(true)
+    expect(relu.permanent.compteursTechnique).toEqual({
+      creusement: 4,
+      amelioration: 1,
+      recrutement: 0,
+      entretien: 2,
+      construction: 0,
+      eclosion: 5,
+    })
+    expect(relu.permanent.noeudsTechnique).toEqual(['creusement-1'])
   })
 })

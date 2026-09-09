@@ -170,6 +170,31 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
    * écrire une neuve.
    */
   3: (contenu) => contenu,
+
+  /**
+   * 4 → 5 — le noyau v1.0. La population, la maturation et le second canal
+   * meurent (§8.3 : on ne SUPPRIME aucun champ). `bancs`, `partsMures`,
+   * `acclimatations` et `secondesEnSaturation` restent dans la save telle
+   * quelle — cette migration ne les touche pas — mais plus personne ne les
+   * lit : `deserialiser` désérialise par spread générique, ils deviennent des
+   * propriétés surnuméraires jamais lues.
+   *
+   * On ouvre `cycle.especes` à `{}` : une save d'avant le modèle à niveau n'a
+   * aucun niveau d'espèce à reconstruire depuis `bancs`, qui décrivait des
+   * effectifs, pas des niveaux. Le reste de `cycle` (mana courant, paliers
+   * ouverts, durée) n'est pas touché. Ce n'est pas une perte de progression :
+   * les niveaux d'espèces sont scopés au cycle et se remettent à zéro à
+   * chaque éclosion de toute façon (f = 1, reset complet) ; la contenance, la
+   * densité, la Foi et la technique vivent dans `permanent`, que cette
+   * migration ne modifie pas non plus.
+   */
+  4: (contenu) => {
+    const etat = contenu as Record<string, Record<string, unknown>>
+    return {
+      ...etat,
+      cycle: { ...etat.cycle, especes: {} },
+    }
+  },
 }
 
 export function migrer(save: SaveSerialisee): unknown {

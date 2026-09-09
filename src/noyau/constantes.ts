@@ -377,4 +377,4 @@ export const SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR = 60
 export const PERIODE_DE_TICK_MS = 100
 
 /** Version de save courante. Toute évolution passe par une migration. */
-export const VERSION_SAVE = 4
+export const VERSION_SAVE = 5
