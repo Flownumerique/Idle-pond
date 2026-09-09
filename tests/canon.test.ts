@@ -34,7 +34,7 @@ import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
 import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
-import { sansCommentaires } from './outils'
+import { sansChaines, sansCommentaires } from './outils'
 import {
   NOM_DES_ASSISES,
   NOM_DES_ESPECES,
@@ -324,6 +324,44 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
       'vitesseDeRepeuplement',
     ]) {
       expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
+
+  it('le modèle mort ne subsiste nulle part dans src/ (spec §4)', () => {
+    // Portail de fin de phase (noyau v1.0, tâche 8) : les tâches 2 à 7 ont
+    // retiré la population simulée, la maturation, le second canal de revenu,
+    // la capacité de palier et le tarif réduit de redescente. Ce test ne les
+    // reretire pas ; il verrouille qu'ils ne reviennent pas, sur `src` ENTIER
+    // — pas seulement `src/noyau` comme les gardes ci-dessus, parce que la
+    // tâche 4 a déjà montré qu'une suppression peut sembler complète dans un
+    // module et survivre dans un autre.
+    //
+    // `src/adaptateurs/persistance.ts` est exclu : c'est le seul fichier qui a
+    // le droit de connaître les anciens noms de champs, parce qu'il lit les
+    // vieilles sauvegardes (v4 et antérieures) pour les migrer. Lui interdire
+    // ces mots empêcherait la migration d'exister.
+    //
+    // « banc » a un usage fictionnel légitime — un banc de poissons — dans
+    // `src/ui/Mare.tsx`, `src/donnees/succes/actes.ts` et
+    // `src/donnees/textes-provisoires.ts`, jusque dans des identifiants de
+    // succès figés qu'on n'a pas le droit de renommer (`acte-deux-bancs`,
+    // `acte-trois-bancs` : le registre des succès est immuable par canon, §16.1
+    // le classe « Fixé »). Le mot n'est pas interdit ; seul le CHAMP D'ÉTAT
+    // `bancs` est mort. `sansChaines` neutralise la prose portée par des
+    // chaînes (identifiants de succès compris) exactement comme
+    // `sansCommentaires` neutralise celle portée par des commentaires, pour
+    // que le balayage porte sur le code et non sur la fiction.
+    const migrations = join('src', 'adaptateurs', 'persistance.ts')
+    const source = fichiersTs(join(RACINE, 'src'))
+      .filter((f) => relative(RACINE, f) !== migrations)
+      .map((f) => sansChaines(sansCommentaires(readFileSync(f, 'utf8'))))
+      .join('\n')
+    for (const mot of [
+      'population', 'maturation', 'acclimat', 'partMure',
+      'cout_place', 'convaincre', 'acheterPlace', 'BANCS', 'bancParId',
+      'bancs', 'acclimatations', 'secondesEnSaturation',
+    ]) {
+      expect(source, `« ${mot} » subsiste dans src/`).not.toContain(mot)
     }
   })
 })

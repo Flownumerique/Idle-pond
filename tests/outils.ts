@@ -65,3 +65,20 @@ export function comparerAToleranceFlottante(
 export function sansCommentaires(source: string): string {
   return source.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
 }
+
+/**
+ * Retire le contenu des chaînes et des gabarits, sans en changer la forme.
+ *
+ * Un balayage lexical qui porte sur `src` entier traverse aussi la fiction —
+ * les identifiants de succès, les textes affichés — où des mots par ailleurs
+ * morts en code (le champ d'état `bancs`, le verbe `convaincre`) survivent
+ * légitimement comme prose ou comme identifiant figé (`acte-deux-bancs`). Ce
+ * n'est pas la même chose qu'une survivance du modèle : `sansCommentaires`
+ * neutralise la prose en commentaire, celle-ci neutralise la prose en chaîne.
+ */
+export function sansChaines(source: string): string {
+  return source
+    .replace(/`(?:\\.|[^`\\])*`/g, '``')
+    .replace(/"(?:\\.|[^"\\\n])*"/g, '""')
+    .replace(/'(?:\\.|[^'\\\n])*'/g, "''")
+}
