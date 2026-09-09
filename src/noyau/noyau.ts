@@ -19,7 +19,6 @@ import type { BancId, EspeceId, EtatJeu, EtatPrng, SuccesId } from './types'
 import {
   ACQUIS_MAX,
   CONTENANCE_INITIALE,
-  INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
   SEUILS_DE_JALON,
   NOMBRE_DE_PALIERS,
   SEUIL_DU_DRAPEAU_PERMANENT,
@@ -28,14 +27,11 @@ import {
 } from './constantes'
 import { ESPECES } from '../donnees/especes'
 import { PALIERS, bancParId } from '../donnees/paliers'
-import { TYPE_MANA_NATAL } from '../donnees/assises'
 import {
   contenance,
   coutDeDescente,
   coutDeConviction,
   coutDePlace,
-  rendementAcclimatation,
-  tauxBaseDuPalier,
   tauxParIndividuHorsSeuil,
   toutEstCreuse,
 } from './economie'
@@ -87,8 +83,6 @@ export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS)
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),
-      // Le type natal est acquis d'emblée et ne se repaie jamais (Tier 0).
-      acclimatations: { [TYPE_MANA_NATAL]: 1 },
       foi: new Decimal(0),
       contenanceMana: new Decimal(CONTENANCE_INITIALE),
       couches: [],
@@ -196,31 +190,22 @@ function instantDeSaturation(etat: EtatJeu, dt: number): number | null {
 
 interface AvanceeDesBancs {
   readonly bancs: Record<BancId, { place: number; effectif: number }>
-  /** Mana capté sur l'intervalle, LES DEUX CANAUX. C'est ce qui entre en poche. */
+  /** Mana capté sur l'intervalle. C'est ce qui entre en poche. */
   readonly manaProduit: Decimal
   /**
-   * Débit du seul canal NATIF à la fin de l'intervalle — ce qui indexe la
-   * pointe du cycle.
-   *
-   * Le canal acclimaté en est exclu : ce que la pointe indexe est la densité
-   * laissée derrière (§6.5), et le canal acclimaté ne PRODUIT rien — il
-   * prélève une charge déjà là. Seul le vivant produit (Tier 0 §5).
-   *
-   * À reposer si le canal acclimaté cesse d'être « très bas » (§3).
+   * Débit de production à la fin de l'intervalle — ce qui indexe la pointe du
+   * cycle (§6.5). Seul le vivant produit (Tier 0 §5).
    */
   readonly productionNativeFinale: Decimal
 }
 
 /**
- * Avance les deux canaux de captation sur `dt` secondes. Pure, sans état.
+ * Avance les bancs sur `dt` secondes. Pure, sans état.
  *
  * Une seule quantité varie à l'intérieur de l'intervalle, et elle ne sort pas
  * du signe somme : le multiplicateur de seuil, qui se lit sur l'effectif
  * (§2.C). Il a une primitive fermée, et c'est la condition d'existence du hors
  * ligne : un pas de 8 h doit rendre exactement ce que rendent 480 pas de 60 s.
- * Le canal acclimaté est constant sur l'intervalle — noyau v1.0 a retiré la
- * maturation qui le faisait varier — donc son intégrale est un simple produit
- * par `dt`.
  */
 function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
   const bancs: Record<BancId, { place: number; effectif: number }> = {}
@@ -233,7 +218,6 @@ function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
   const k = vitesseDeRepeuplement()
 
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    // ── Canal natif : ce que la population vivante capte ────────────────────
     for (const banc of PALIERS[palier].bancs) {
       const avant = etat.cycle.bancs[banc.id]
       if (avant === undefined || avant.place <= 0) continue
@@ -245,15 +229,6 @@ function avancerLesBancs(etat: EtatJeu, dt: number): AvanceeDesBancs {
         taux.mul(avancee.multiplicateurFinal).mul(avancee.effectif),
       )
     }
-
-    // ── Canal acclimaté : ce que l'eau capte toute seule ────────────────────
-    // Constant sur l'intervalle : rien ne le fait plus varier dans le temps.
-    const debitAcclimate = tauxBaseDuPalier(palier)
-      .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
-      .mul(rendementAcclimatation(etat, palier))
-    // Le mana acclimaté entre en poche ; il n'entre PAS dans la pointe. Voir la
-    // note de `productionNativeFinale`.
-    manaProduit = manaProduit.add(debitAcclimate.mul(dt))
   }
   return { bancs, manaProduit, productionNativeFinale }
 }

@@ -46,10 +46,8 @@ export type SuccesId = string
 export type TermeDeProduction =
   | 'taux_base'
   | 'effectif'
-  | 'rendement_acclimatation'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
-  | 'debit_acclimate'
 
 export type TermeDeCout =
   /** Ouvrir un palier JAMAIS atteint. L'autre moitié est `reduction_technique`. */
@@ -87,10 +85,8 @@ export type TermeDeFormule = TermeDeProduction | TermeDeCout | TermeDeConfort
 export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'taux_base',
   'effectif',
-  'rendement_acclimatation',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
-  'debit_acclimate',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
@@ -342,8 +338,6 @@ export interface EtatCycle {
 export interface EtatPermanent {
   /** Charge de mana par palier. Persistante, monotone croissante. */
   readonly densites: readonly number[]
-  /** Rendement du héros par type de mana. Jamais repayé, jamais remis à zéro. */
-  readonly acclimatations: Readonly<Record<TypeManaId, number>>
   readonly foi: Decimal
   /** Limite le stock de mana, pas la production. Conservée à l'éclosion. */
   readonly contenanceMana: Decimal
@@ -431,10 +425,8 @@ export interface EtatJeu {
 export type SourceDeTerme =
   | { readonly quoi: 'population' }
   | { readonly quoi: 'palier'; readonly palier: IndexPalier }
-  | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
   | { readonly quoi: 'place'; readonly place: number }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
-  | { readonly quoi: 'canal_acclimate' }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

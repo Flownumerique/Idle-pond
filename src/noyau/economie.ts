@@ -1,23 +1,11 @@
 /**
  * IdlePond — production, coûts, seuils.
  *
- * DEUX CANAUX ADDITIFS — GDD §3 :
+ * UN SEUL CANAL DE REVENU — noyau v1.0 §10 : les espèces. Le canal acclimaté,
+ * qui tombait sur l'eau elle-même sans qu'aucun vivant l'habite, a été retiré
+ * le 2026-09-08 avec le reste de l'ancien canon (§3 de l'ancien GDD).
  *
- *   captation/s =   débit_natif(population vivante présente)
- *                 + débit_acclimaté(rendement_acclimatation)
- *
- * Additifs, jamais multiplicatifs. Le natif est le débit des bancs, à 100 %
- * d'emblée, et il tombe avec la population. L'acclimaté ne dépend d'aucun
- * vivant : il vient de l'eau elle-même.
- *
- * La maturation — la part mûre d'un palier, qui bornait ce second canal — a
- * été retirée le 2026-09-08 (noyau v1.0) : elle gouverne ce qu'un lieu peut
- * DEVENIR dans la fiction, jamais ce que le héros GAGNE. Ce module garde le
- * canal acclimaté lui-même, qui n'est pas encore retiré.
- *
- * Les deux se rejoignent dans `productionTotaleParSeconde`, et nulle part
- * ailleurs : un module qui n'additionnerait qu'un canal serait faux sans qu'un
- * type ne s'en aperçoive.
+ * `productionTotaleParSeconde` ne somme donc plus que les bancs.
  *
  * Les multiplicateurs qui s'ajoutent au canal sont des TermeDeFormule nommés,
  * jamais des facteurs anonymes : c'est ce qui rend le détail de captation
@@ -40,14 +28,11 @@ import {
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
   EXPOSANT_RECONVICTION_DENSITE,
   F_FRACTION_D_AMENAGEMENT,
-  INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
   NOMBRE_DE_PALIERS,
   SEUIL_D_ALERTE_DE_CONTENANCE,
-  RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05,
   SEUILS_DE_JALON,
   TAUX_BASE_AU_PALIER_0,
 } from './constantes'
-import { assiseDuPalier } from '../donnees/assises'
 import { densiteDuPalier } from './densite'
 import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
 import { PALIERS, bancsDuPalier } from '../donnees/paliers'
@@ -100,12 +85,6 @@ export function tauxBaseDuBanc(banc: Banc): Decimal {
   return tauxBaseDuPalier(banc.palier).div(bancsDuPalier(banc.palier).length)
 }
 
-/** Rendement du héros sur le type de mana du palier. Jamais repayé (Tier 0). */
-export function rendementAcclimatation(etat: EtatJeu, palier: IndexPalier): number {
-  const typeMana = assiseDuPalier(palier).typeMana
-  return etat.permanent.acclimatations[typeMana] ?? RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05
-}
-
 /**
  * Taux par individu SANS le multiplicateur de seuil.
  *
@@ -115,9 +94,7 @@ export function rendementAcclimatation(etat: EtatJeu, palier: IndexPalier): numb
  * analytiquement plutôt que de le figer au début du pas.
  */
 export function tauxParIndividuHorsSeuil(etat: EtatJeu, banc: Banc): Decimal {
-  return tauxBaseDuBanc(banc)
-    .mul(rendementAcclimatation(etat, banc.palier))
-    .mul(multiplicateurDesDrapeaux(etat))
+  return tauxBaseDuBanc(banc).mul(multiplicateurDesDrapeaux(etat))
 }
 
 /** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
@@ -131,36 +108,13 @@ export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
   return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
 }
 
-/* ─── Le canal acclimaté — GDD §3 ────────────────────────────────────────────
- *
- * La maturation, qui bornait ce canal par la part mûre d'un palier, a été
- * retirée le 2026-09-08 (noyau v1.0) : elle gouverne ce qu'un lieu peut
- * DEVENIR, jamais ce que le héros GAGNE. Ce qui reste ici — un débit constant
- * par palier — est le canal acclimaté lui-même, pas la maturation.
- */
-
-/**
- * Débit acclimaté d'un palier, par seconde. Ne dépend d'AUCUN vivant.
- *
- * Il vient de l'eau, à la force que la graine exprime en individus
- * équivalents. C'est ce qui donne au héros un revenu dès l'instant où il
- * rouvre une galerie, avant d'y avoir ramené qui que ce soit — et c'est pour
- * ça que le §3 tient à ce que les canaux soient ADDITIFS.
- */
-export function productionAcclimateeDuPalier(etat: EtatJeu, palier: IndexPalier): Decimal {
-  return tauxBaseDuPalier(palier)
-    .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
-    .mul(rendementAcclimatation(etat, palier))
-}
-
-/** La somme des deux canaux, sur tous les paliers ouverts. */
+/** La somme des bancs, sur tous les paliers ouverts — noyau v1.0 §10, un seul canal. */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
   let total = new Decimal(0)
   for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
     for (const banc of PALIERS[palier].bancs) {
       total = total.add(productionDuBanc(etat, banc))
     }
-    total = total.add(productionAcclimateeDuPalier(etat, palier))
   }
   return total
 }
@@ -176,11 +130,6 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
     { terme: 'effectif', valeur: effectif, source: { quoi: 'population' } },
     { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
     {
-      terme: 'rendement_acclimatation',
-      valeur: rendementAcclimatation(etat, banc.palier),
-      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(banc.palier).typeMana },
-    },
-    {
       terme: 'multiplicateur_jalon',
       valeur: multiplicateurDeSeuil(effectif),
       source: { quoi: 'place', place: bancEtat?.place ?? 0 },
@@ -189,29 +138,6 @@ export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCa
       terme: 'multiplicateur_drapeau',
       valeur: multiplicateurDesDrapeaux(etat),
       source: { quoi: 'drapeaux_permanents', especes: etat.permanent.especesAyantAtteintCent.length },
-    },
-  ]
-}
-
-/**
- * Détail du canal acclimaté d'un palier.
- *
- * Séparé du précédent, et il doit l'être : le natif se lit par banc, l'acclimaté
- * par palier. Les mêler dans une seule liste laisserait croire qu'un banc porte
- * une part du revenu de l'eau, alors que celui-ci tombe même quand il n'y a
- * personne — ce qui est précisément ce que le joueur doit comprendre du §3.
- */
-export function detailDuCanalAcclimate(etat: EtatJeu, palier: IndexPalier): readonly LigneDeCaptation[] {
-  return [
-    {
-      terme: 'rendement_acclimatation',
-      valeur: rendementAcclimatation(etat, palier),
-      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(palier).typeMana },
-    },
-    {
-      terme: 'debit_acclimate',
-      valeur: productionAcclimateeDuPalier(etat, palier).toNumber(),
-      source: { quoi: 'canal_acclimate' },
     },
   ]
 }

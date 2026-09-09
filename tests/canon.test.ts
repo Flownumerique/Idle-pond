@@ -48,7 +48,6 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'population' },
   { quoi: 'palier', palier: 0 },
   { quoi: 'palier', palier: 4 },
-  { quoi: 'acclimatation', typeMana: 'type-mana-1' },
   { quoi: 'place', place: 12 },
   { quoi: 'drapeaux_permanents', especes: 0 },
   { quoi: 'drapeaux_permanents', especes: 3 },
@@ -269,6 +268,15 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
       .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
       .join('\n')
     for (const mot of ['partMure', 'partsMures', 'maturation', 'cibleDeMaturation']) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
+
+  it('un seul canal de revenu : les espèces (noyau v1.0 §10)', () => {
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of ['acclimat', 'debitAcclimate', 'canalAcclimate']) {
       expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
     }
   })

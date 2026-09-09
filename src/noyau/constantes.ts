@@ -185,42 +185,11 @@ export const F_FRACTION_D_AMENAGEMENT = 0.25
  */
 export const EXPOSANT_RECONVICTION_DENSITE = 0.5
 
-/* ─── Les deux canaux de captation — GDD §3 ─────────────────────────────────
- *
- *   captation/s =   débit_natif(population_vivante_présente)
- *                 + débit_acclimaté(rendement_acclimatation)
- *
- * Additifs, jamais multiplicatifs.
- *
- * La maturation — qui bornait le canal acclimaté par la part mûre d'un palier,
- * §3.0 de l'ancien canon — a été retirée le 2026-09-08 (noyau v1.0) : elle
- * gouverne ce qu'un lieu peut DEVENIR dans la fiction, jamais ce que le héros
- * GAGNE. Le canal acclimaté lui-même n'est pas encore retiré.
- */
-
 /**
- * [P] graine — force du canal acclimaté, exprimée en INDIVIDUS ÉQUIVALENTS.
- *
- * Un palier rapporte autant que `n` individus y vivraient. Le dire ainsi
- * plutôt qu'en valeur absolue est ce qui garde le canal sur l'échelle
- * économique de l'autre : il suit `D^palier` comme le reste, donc il ne devient
- * ni négligeable ni dominant en descendant.
- *
- * Volontairement petit — le §3 le veut « très bas » face à un natif « à 100 %,
- * d'emblée ». Un banc peuplé passe la centaine d'individus et porte en plus son
- * multiplicateur de seuil ; peupler reste très largement supérieur en débit brut.
- *
- * ATTENTION : le second facteur du canal, `rendement_acclimatation`, vaut 1
- * partout jusqu'en v0.5. Le canal est donc aujourd'hui à sa force MAXIMALE, et
- * il faudra remesurer cette graine le jour où l'acclimatation sera réelle.
- */
-export const INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE = 1
-
-/**
- * [P] — l'affinité du §7.1 est du contenu v0.5, au même titre que
- * l'acclimatation : elle demande une table espèce × type de mana, et
- * `especes-cadre.md` n'est pas au dépôt. D'ici là elle vaut 1 partout, ce qui
- * laisse la formule juste sans qu'aucune valeur ne soit devinée.
+ * [P] — l'affinité du §7.1 est du contenu v0.5 : elle demande une table
+ * espèce × type de mana, et `especes-cadre.md` n'est pas au dépôt. D'ici là
+ * elle vaut 1 partout, ce qui laisse la formule juste sans qu'aucune valeur ne
+ * soit devinée.
  */
 export const AFFINITE_PLEINE_JUSQU_EN_V05 = 1
 
@@ -335,17 +304,6 @@ export const PRODUCTION_DE_REFERENCE = 1
 /** [P] graine — barème de Foi. Foi = base × (pic / référence) ^ exposant. */
 export const FOI_BASE = 1
 export const FOI_EXPOSANT = 0.5
-
-/* ─── Acclimatation ─────────────────────────────────────────────────────────*/
-
-/**
- * [P] — Tier 0 : le héros ne repaie jamais son acclimatation, et l'éclosion ne
- * la remet pas à zéro. Le noyau porte donc l'acclimatation en état permanent.
- * Son MÉCANISME D'ACQUISITION est du contenu v0.5 et n'est pas inventé ici :
- * d'ici là le rendement est plein sur tous les types, ce qui permet au
- * simulateur de traverser les six assises sans qu'aucune règle soit devinée.
- */
-export const RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05 = 1
 
 /* ─── Succès ────────────────────────────────────────────────────────────────*/
 

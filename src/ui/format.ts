@@ -90,15 +90,11 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return 'ce qui vit là'
     case 'palier':
       return profondeur(source.palier)
-    case 'acclimatation':
-      return 'ce que tu supportes'
     case 'place':
       return `${source.place} places faites`
     case 'drapeaux_permanents':
       return source.especes === 0
         ? 'aucune espèce au complet'
         : `${source.especes} espèce${source.especes > 1 ? 's' : ''} déjà au complet`
-    case 'canal_acclimate':
-      return 'ce que tu prends à l’eau elle-même'
   }
 }

@@ -7,7 +7,7 @@
  * §6.5, et rien de plus :
  *   f = 1 — reset complet du peuplement et de la géométrie, aucune fraction
  *           conservée.
- *   Conservé : acclimatation, densité, arbre de technique, bénédictions,
+ *   Conservé : densité, arbre de technique, bénédictions,
  *              succès, couches, contenance.
  *   Perdu    : population, paliers ouverts, mana courant.
  *   Le mana expire vers l'ambiant — il n'est pas détruit (Tier 0 §5).

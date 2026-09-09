@@ -13,7 +13,7 @@ import type { EtatJeu } from '../src/noyau/types'
 import { ACQUIS_MAX, CONTENANCE_INITIALE, K_TAUX_DE_REPEUPLEMENT, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { POLITIQUE_PAR_DEFAUT, simuler } from '../src/simulateur/simulateur'
 import { relever } from '../src/adaptateurs/telemetrie'
-import { PALIERS_LIVRES, TYPE_MANA_NATAL } from '../src/donnees/assises'
+import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { etatInitial, tick } from '../src/noyau/noyau'
 import { vitesseDeRepeuplement } from '../src/noyau/densite'
 
@@ -103,9 +103,7 @@ describe('simulateur', () => {
     let foi = 0
     let compteurs = 0
     simuler(NOMBRE_D_ECLOSIONS_VISE, undefined, 1, (etat) => {
-      // Un être surévolué conserve ses acquis à vie : le héros ne repaie
-      // jamais son acclimatation, et l'éclosion ne la remet pas à zéro.
-      expect(etat.permanent.acclimatations[TYPE_MANA_NATAL]).toBe(1)
+      // Un être surévolué conserve ses acquis à vie.
       expect(etat.permanent.nombreEclosions).toBeGreaterThanOrEqual(eclosions)
       expect(etat.permanent.contenanceMana.toNumber()).toBeGreaterThanOrEqual(contenance)
       expect(etat.permanent.foi.toNumber()).toBeGreaterThanOrEqual(foi)
