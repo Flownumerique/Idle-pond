@@ -1,8 +1,12 @@
 /**
  * IdlePond — vocabulaire de l'état de jeu.
  *
- * Tier 2. Lexique : assise, palier, banc, densité, Foi, technique,
- * acclimatation, conviction. Aucun anglicisme, aucun « prestige ».
+ * Tier 2. Lexique : assise, palier, espèce, niveau, densité, Foi, technique.
+ * Aucun anglicisme, aucun « prestige ».
+ *
+ * Le banc a disparu le 2026-09-09 avec le modèle à population : une espèce
+ * n'est plus une population installée sur un palier, c'est un générateur qu'on
+ * débloque une fois et dont on monte le niveau (noyau v1.0 §1.3).
  *
  * Le GDD est le document directif depuis le 2026-09-08. Deux conséquences ici :
  * `bénédiction` a disparu — la Foi n'achète que des miracles (§4.2) — et le mot
@@ -22,8 +26,6 @@ export type AssiseId = string
 /** Subdivision d'une assise. 62 au total. Indexé globalement, 0-based. */
 export type IndexPalier = number
 export type EspeceId = string
-/** Une espèce installée sur un palier. « Le banc suit », « Compter les bancs ». */
-export type BancId = string
 export type TypeManaId = string
 export type NoeudTechniqueId = string
 export type SuccesId = string
@@ -45,7 +47,7 @@ export type SuccesId = string
 
 export type TermeDeProduction =
   | 'taux_base'
-  | 'effectif'
+  | 'niveau'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
 
@@ -57,17 +59,17 @@ export type TermeDeCout =
    * retraversé. Débouché des effets chiffrés de succès (amendement v1.1 §2.D).
    */
   | 'reduction_technique'
-  | 'cout_place'
+  /** Monter une espèce d'un niveau. L'achat répétable de la boucle, ×1.15. */
+  | 'cout_niveau'
   /**
-   * Convaincre un banc. Payé par la DENSITÉ, et par elle seule (§7.1).
+   * Débloquer une espèce. Une fois par espèce et par vie.
    *
-   * « Un puits, un levier. L'aménagement est payé par la technique ; la
-   * reconviction garde sa formule et reste payée par la densité. Aucun coût n'a
-   * deux leviers — c'est ce qui rend l'ensemble équilibrable. » Le terme existe
-   * donc pour être NOMMÉ dans le détail de captation, jamais pour être ciblé :
-   * un test de canon vérifie qu'aucun nœud ni succès ne le vise.
+   * Il n'est plus payé par la densité. Le noyau v1.0 §1.3 en fait une fraction
+   * du coût du palier qui porte l'espèce, et rien d'autre : la densité n'a plus
+   * qu'un seul débouché depuis V11, l'acquis de séjour. Le terme redevient donc
+   * un levier ordinaire, que technique et succès peuvent viser.
    */
-  | 'cout_reconviction'
+  | 'cout_deblocage'
   | 'cout_temple'
   | 'cout_portail'
   | 'cout_reouverture'
@@ -77,14 +79,14 @@ export type TermeDeConfort =
   | 'cap_hors_ligne'
   | 'densite_conservee'
   | 'contenance_de_depart'
-  | 'place_de_depart'
+  | 'niveau_de_depart'
   | 'charge_alliee_par_reponse'
 
 export type TermeDeFormule = TermeDeProduction | TermeDeCout | TermeDeConfort
 
 export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'taux_base',
-  'effectif',
+  'niveau',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
 ]
@@ -92,8 +94,8 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
   'reduction_technique',
-  'cout_place',
-  'cout_reconviction',
+  'cout_niveau',
+  'cout_deblocage',
   'cout_temple',
   'cout_portail',
   'cout_reouverture',
@@ -103,7 +105,7 @@ export const TERMES_DE_CONFORT: readonly TermeDeConfort[] = [
   'cap_hors_ligne',
   'densite_conservee',
   'contenance_de_depart',
-  'place_de_depart',
+  'niveau_de_depart',
   'charge_alliee_par_reponse',
 ]
 
@@ -191,15 +193,22 @@ export type DeclencheurDeSucces =
   | { readonly quoi: 'eclosions'; readonly seuil: number }
   | { readonly quoi: 'paliers_ouverts'; readonly seuil: number }
   | { readonly quoi: 'profondeur_max'; readonly seuil: number }
-  | { readonly quoi: 'bancs_convaincus'; readonly seuil: number }
-  | { readonly quoi: 'effectif_de_banc'; readonly banc: BancId; readonly seuil: number }
-  | { readonly quoi: 'effectif_d_espece'; readonly espece: EspeceId; readonly seuil: number }
-  | { readonly quoi: 'place_de_banc'; readonly banc: BancId; readonly seuil: number }
-  | { readonly quoi: 'effectif_total'; readonly seuil: number }
+  | { readonly quoi: 'especes_debloquees'; readonly seuil: number }
+  | { readonly quoi: 'niveau_d_espece'; readonly espece: EspeceId; readonly seuil: number }
+  | { readonly quoi: 'niveaux_cumules'; readonly seuil: number }
   | { readonly quoi: 'production_par_seconde'; readonly seuil: number }
   | { readonly quoi: 'foi'; readonly seuil: number }
   | { readonly quoi: 'densite_de_palier'; readonly palier: IndexPalier; readonly seuil: number }
-  | { readonly quoi: 'palier_sature'; readonly palier: IndexPalier }
+  /**
+   * Le palier ne peut plus rien recevoir.
+   *
+   * Remplace `palier_sature`, qui lisait un effectif contre sa cible. Sans
+   * population, « plein » se lit sur le NIVEAU : le palier est au complet quand
+   * l'espèce qu'il porte a atteint le seuil du drapeau permanent. Un palier qui
+   * ne porte aucune espèce ne prendra jamais personne — il l'est dès qu'il
+   * s'ouvre.
+   */
+  | { readonly quoi: 'palier_au_complet'; readonly palier: IndexPalier }
 
 /**
  * Effet d'un succès — amendement v1.1 §2.D.
@@ -276,22 +285,26 @@ export interface Assise {
   readonly nombreDePaliers: number
 }
 
+/**
+ * Un générateur, et l'unité d'achat du joueur (noyau v1.0 §1.3).
+ *
+ * `rang` est son rang global, de 0 à 20 : c'est lui qui porte le débit de base,
+ * qui croît d'une espèce à la suivante. `palier` est le palier qui l'ancre :
+ * elle n'est débloquable qu'une fois ce palier ouvert, et une espèce apparaît
+ * tous les trois paliers à partir du premier de son assise.
+ */
 export interface Espece {
   readonly id: EspeceId
   readonly assise: AssiseId
-}
-
-/** Une espèce installée sur un palier : l'unité d'achat du joueur. */
-export interface Banc {
-  readonly id: BancId
-  readonly espece: EspeceId
+  readonly rang: number
   readonly palier: IndexPalier
 }
 
+/** Un palier porte au plus une espèce — une tous les trois (RESULTATS, finding 4). */
 export interface Palier {
   readonly index: IndexPalier
   readonly assise: AssiseId
-  readonly bancs: readonly Banc[]
+  readonly espece: EspeceId | null
 }
 
 /* ─── État ──────────────────────────────────────────────────────────────────*/
@@ -301,26 +314,25 @@ export interface EtatPrng {
   readonly graine: number
 }
 
-export interface EtatBanc {
-  /**
-   * La PLACE achetée : le plafond de population du banc. 0 = pas encore
-   * convaincu.
-   *
-   * Le joueur achète de la place, jamais des individus (§2.C). C'est ce qui
-   * fait que les seuils 10 / 25 / 50 / 100 tombent avec le temps plutôt qu'à
-   * l'achat, et que le multiplicateur de seuil se reperd à l'éclosion en même
-   * temps que la population.
-   */
-  readonly place: number
-  /** Effectif réel, qui croît seul vers la place à la vitesse de repeuplement. */
-  readonly effectif: number
+/**
+ * Ce qu'une espèce est, dans l'état : un interrupteur et un niveau.
+ *
+ * Aucune population, aucun effectif, aucune convergence — noyau v1.0 §1.3. Le
+ * niveau agit à l'instant où il est payé, et les seuils 10 / 25 / 50 / 100 le
+ * lisent directement : ils tombent à l'achat, plus jamais avec le temps. C'est
+ * ce qui rend l'équivalence de pas triviale, là où une population qui converge
+ * la rendait délicate.
+ */
+export interface EtatEspece {
+  readonly debloquee: boolean
+  readonly niveau: number
 }
 
 /** Ce que l'éclosion emporte. f = 1 : reset complet, aucune fraction conservée. */
 export interface EtatCycle {
   readonly manaCourant: Decimal
   readonly paliersOuverts: number
-  readonly bancs: Readonly<Record<BancId, EtatBanc>>
+  readonly especes: Readonly<Record<EspeceId, EtatEspece>>
   /** Indexe le gain de densité et le gain de Foi (§6.5, §6.6). */
   readonly productionPicParSeconde: Decimal
   readonly dureeSecondes: number
@@ -358,8 +370,9 @@ export interface EtatPermanent {
   readonly succes: Readonly<Record<SuccesId, EntreeDeSucces>>
   readonly nombreEclosions: number
   /**
-   * Espèces ayant DÉJÀ atteint cent individus. Drapeau permanent, conservé à
+   * Espèces ayant DÉJÀ atteint le niveau cent. Drapeau permanent, conservé à
    * l'éclosion — l'unique exception à la reperte du multiplicateur de seuil.
+   * Il tombe désormais à l'ACHAT du centième niveau, jamais pendant un pas.
    */
   readonly especesAyantAtteintCent: readonly EspeceId[]
   /** Le mana expire vers l'ambiant. Il n'est pas détruit (Tier 0 §5). */
@@ -423,9 +436,8 @@ export interface EtatJeu {
  * n'apparaîtrait qu'à la capture d'écran.
  */
 export type SourceDeTerme =
-  | { readonly quoi: 'population' }
+  | { readonly quoi: 'niveau'; readonly niveau: number }
   | { readonly quoi: 'palier'; readonly palier: IndexPalier }
-  | { readonly quoi: 'place'; readonly place: number }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */

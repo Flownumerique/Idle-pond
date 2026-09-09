@@ -10,12 +10,9 @@
  */
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
-import { ACQUIS_MAX, CONTENANCE_INITIALE, K_TAUX_DE_REPEUPLEMENT, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
+import { ACQUIS_MAX, CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { POLITIQUE_PAR_DEFAUT, simuler } from '../src/simulateur/simulateur'
-import { relever } from '../src/adaptateurs/telemetrie'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
-import { etatInitial, tick } from '../src/noyau/noyau'
-import { vitesseDeRepeuplement } from '../src/noyau/densite'
 
 describe('simulateur', () => {
   it('une partie sans UI atteint l’éclosion 2 en headless', () => {
@@ -120,7 +117,7 @@ describe('simulateur', () => {
   it('l’éclosion emporte le peuplement et la géométrie, et rien d’autre', () => {
     const resultat = simuler(2)
     expect(resultat.etat.cycle.paliersOuverts).toBe(1)
-    expect(Object.keys(resultat.etat.cycle.bancs)).toEqual([])
+    expect(Object.keys(resultat.etat.cycle.especes)).toEqual([])
     expect(resultat.etat.permanent.profondeurMaxAtteinte).toBeGreaterThan(1)
     // Le mana courant expire vers l'ambiant. Il n'est pas détruit : aucun
     // système d'IdlePond ne se comporte comme un puits.
@@ -143,41 +140,5 @@ describe('simulateur', () => {
       expect(cycle.fractionEnRedescente).toBeLessThanOrEqual(1)
     }
     expect(resultat.releve.cycles.slice(1).some((c) => c.fractionEnRedescente > 0)).toBe(true)
-  })
-})
-
-describe('V11 — la densité est découplée du repeuplement', () => {
-  /**
-   * Ce test RELEVAIT une dégénérescence ; depuis la décision du 2026-09-08 il
-   * la GARANTIT éteinte, et c'est le renversement qu'annonçait son ancien
-   * commentaire.
-   *
-   * Ce qu'il protège : le délai entre l'achat d'une place et son effet. C'est
-   * lui qui fait le jeu — « le joueur achète de la place et de la qualité de
-   * place, la population suit » (GDD §7.2) — et il avait disparu, la densité
-   * valant `pointe^α` et croissant donc sans borne. τ tombait de 300 s à
-   * 10⁻⁴ s en quinze cycles.
-   */
-  it('τ ne s’effondre plus : il vaut sa graine, du premier cycle au dernier', () => {
-    const tauNominal = 1 / K_TAUX_DE_REPEUPLEMENT
-    for (const cycles of [1, 6, NOMBRE_D_ECLOSIONS_VISE]) {
-      const tau = relever(simuler(cycles).etat).tauDeRepeuplementSecondes
-      expect(tau, `τ après ${cycles} cycles`).toBeCloseTo(tauNominal, 6)
-    }
-  })
-
-  it('la densité n’a plus qu’un débouché : l’acquis de séjour', () => {
-    // Une eau dense doit encore accélérer le SÉJOUR — c'est le canal du §2.B,
-    // celui qu'on garde — et ne plus rien changer au repeuplement. Vérifier les
-    // deux ensemble est ce qui distingue un découplage d'une suppression.
-    const depart = etatInitial(1)
-    const dense: EtatJeu = {
-      ...depart,
-      permanent: { ...depart.permanent, densites: depart.permanent.densites.map(() => 1e6) },
-    }
-    expect(tick(dense, 3600).cycle.acquisDeSejour).toBeGreaterThan(
-      tick(depart, 3600).cycle.acquisDeSejour,
-    )
-    expect(vitesseDeRepeuplement()).toBe(K_TAUX_DE_REPEUPLEMENT)
   })
 })

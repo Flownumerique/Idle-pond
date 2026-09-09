@@ -7,9 +7,10 @@
  * §6.5, et rien de plus :
  *   f = 1 — reset complet du peuplement et de la géométrie, aucune fraction
  *           conservée.
- *   Conservé : densité, arbre de technique, bénédictions,
- *              succès, couches, contenance.
- *   Perdu    : population, paliers ouverts, mana courant.
+ *   Conservé : densité, arbre de technique, succès, couches, contenance, et le
+ *              drapeau des cent — l'unique exception.
+ *   Perdu    : espèces débloquées et leurs niveaux, paliers ouverts, mana
+ *              courant.
  *   Le mana expire vers l'ambiant — il n'est pas détruit (Tier 0 §5).
  */
 import Decimal from 'break_infinity.js'
@@ -48,7 +49,7 @@ export function cycleInitial(): EtatCycle {
   return {
     manaCourant: new Decimal(MANA_A_LA_SORTIE_DE_L_OEUF),
     paliersOuverts: PALIERS_OUVERTS_AU_DEPART,
-    bancs: {},
+    especes: {},
     productionPicParSeconde: new Decimal(0),
     dureeSecondes: 0,
     acquisDeSejour: 0,

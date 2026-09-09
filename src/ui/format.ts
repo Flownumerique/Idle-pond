@@ -62,7 +62,7 @@ export function duree(secondes: number): string {
 }
 
 /**
- * La profondeur d'un banc, en brasses. Une mesure, pas un nom de couche : le
+ * La profondeur d'un creux, en brasses. Une mesure, pas un nom de couche : le
  * premier creux est à zéro brasse, on descend d'une brasse par creusement.
  */
 export function profondeur(palier: number): string {
@@ -86,12 +86,10 @@ export function nomDeLEspece(espece: EspeceId): string {
 /** La source d'un terme, mise en mots ici et pas dans le noyau. */
 export function sourceDuTerme(source: SourceDeTerme): string {
   switch (source.quoi) {
-    case 'population':
-      return 'ce qui vit là'
+    case 'niveau':
+      return source.niveau === 0 ? 'personne encore' : `${source.niveau} crans tenus`
     case 'palier':
       return profondeur(source.palier)
-    case 'place':
-      return `${source.place} places faites`
     case 'drapeaux_permanents':
       return source.especes === 0
         ? 'aucune espèce au complet'

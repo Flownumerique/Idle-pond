@@ -88,8 +88,8 @@ export function resoudreCoupleAB(
         // Un rang qui ne s'ouvre jamais est pénalisé au-delà de l'horizon
         // simulé : un arbre jamais fini est aussi faux qu'un arbre fini au
         // cycle 8 (§7.6).
-        const effectif = obtenu ?? trajectoire.length + cible.cyclesVises.length
-        erreur += (effectif - cible.cyclesVises[rang]) ** 2
+        const cycleObtenu = obtenu ?? trajectoire.length + cible.cyclesVises.length
+        erreur += (cycleObtenu - cible.cyclesVises[rang]) ** 2
       }
       if (meilleur === null || erreur < meilleur.erreur) meilleur = { a, b, erreur }
       if (erreur === 0) return { a, b, erreur }

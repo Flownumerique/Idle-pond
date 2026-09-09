@@ -58,12 +58,12 @@ export function App() {
         <main className="space-y-4">
           <Contenance etat={etat} />
           {captation !== null ? (
-            <Captation etat={etat} banc={captation} surFermeture={() => setCaptation(null)} />
+            <Captation etat={etat} espece={captation} surFermeture={() => setCaptation(null)} />
           ) : null}
           <Mare
             etat={etat}
-            surConviction={(banc) => useMagasin.getState().convaincre(banc)}
-            surPlace={(banc) => useMagasin.getState().acheterPlace(banc)}
+            surDeblocage={(espece) => useMagasin.getState().debloquer(espece)}
+            surNiveau={(espece) => useMagasin.getState().ameliorer(espece)}
             surCreusement={() => useMagasin.getState().creuser()}
             surCaptation={setCaptation}
           />

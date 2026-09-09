@@ -8,11 +8,11 @@
  */
 import type { EtatJeu, SuccesId } from '../src/noyau/types'
 import { FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES } from '../src/noyau/constantes'
-import { convaincre, creuser, etatInitial, acheterPlace, tickDetaille } from '../src/noyau/noyau'
+import { ameliorer, creuser, debloquer, etatInitial, tickDetaille } from '../src/noyau/noyau'
 import { enregistrerIntervalleDeSucces } from '../src/noyau/succes'
-import { contenance, coutDeDescente, coutDeConviction, coutDePlace, toutEstCreuse } from '../src/noyau/economie'
+import { contenance, coutDeDescente, coutDeDeblocage, coutDeNiveau, toutEstCreuse } from '../src/noyau/economie'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
-import { PALIERS } from '../src/donnees/paliers'
+import { ESPECES } from '../src/donnees/especes'
 
 export interface Declenchement {
   readonly id: SuccesId
@@ -29,15 +29,15 @@ function depenser(etat: EtatJeu): EtatJeu {
       if (meilleure === null || cout.lt(meilleure.cout)) meilleure = { cout, appliquer }
     }
     if (!toutEstCreuse(courant)) retenir(coutDeDescente(courant, courant.cycle.paliersOuverts), creuser)
-    for (let palier = 0; palier < courant.cycle.paliersOuverts; palier += 1) {
-      for (const banc of PALIERS[palier].bancs) {
-        const place = courant.cycle.bancs[banc.id]?.place ?? 0
-        const id = banc.id
-        retenir(
-          place === 0 ? coutDeConviction(courant, banc) : coutDePlace(courant, banc, place),
-          place === 0 ? (e) => convaincre(e, id) : (e) => acheterPlace(e, id),
-        )
-      }
+    for (const espece of ESPECES) {
+      if (espece.palier >= courant.cycle.paliersOuverts) continue
+      const vivante = courant.cycle.especes[espece.id]
+      const niveau = vivante?.debloquee === true ? vivante.niveau : 0
+      const id = espece.id
+      retenir(
+        niveau === 0 ? coutDeDeblocage(courant, espece) : coutDeNiveau(courant, espece, niveau),
+        niveau === 0 ? (e) => debloquer(e, id) : (e) => ameliorer(e, id),
+      )
     }
     if (meilleure === null) return courant
     const choix: { cout: import('break_infinity.js').default; appliquer: (e: EtatJeu) => EtatJeu } = meilleure

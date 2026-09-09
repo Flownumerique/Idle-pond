@@ -41,11 +41,9 @@ export const RATIO_COUT_NIVEAU = 1.15
  * le total à 100 individus vaut ×16, jamais ×1024. Toute lecture « ×4
  * supplémentaire » est fausse, et `D = 2.31` a été calibré contre celle-ci.
  *
- * Les seuils portent sur l'EFFECTIF, pas sur la place achetée : le joueur
- * achète de la place, la population croît seule vers son plafond, et les
- * seuils tombent avec le temps. Le multiplicateur se recalcule depuis
- * l'effectif courant à chaque tick, et se reperd à l'éclosion comme la
- * population.
+ * Les seuils portent sur le NIVEAU depuis le noyau v1.0 §1.3. Il n'y a plus de
+ * population qui converge : le seuil tombe à l'instant où le niveau est payé,
+ * et le multiplicateur se reperd à l'éclosion avec le niveau lui-même.
  */
 export const SEUILS_DE_JALON: readonly { readonly seuil: number; readonly multiplicateurCumule: number }[] = [
   { seuil: 10, multiplicateurCumule: 2 },
@@ -55,14 +53,27 @@ export const SEUILS_DE_JALON: readonly { readonly seuil: number; readonly multip
 ]
 
 /**
- * Seuil au-delà duquel une espèce pose un drapeau PERMANENT (§2.C).
+ * Niveau au-delà duquel une espèce pose un drapeau PERMANENT (§2.C).
  *
  * L'unique exception à « le multiplicateur de seuil se reperd à l'éclosion » :
- * avoir déjà atteint cent individus d'une espèce accorde un bonus définitif,
+ * avoir déjà porté une espèce au niveau cent accorde un bonus définitif,
  * conservé à l'éclosion. C'est un drapeau par espèce, distinct du
  * multiplicateur de seuil, et il ne se repose jamais.
  */
 export const SEUIL_DU_DRAPEAU_PERMANENT = 100
+
+/** Une espèce apparaît tous les N paliers, à partir du premier de son assise. */
+export const ESPECE_TOUS_LES_N_PALIERS = 3
+
+/**
+ * Débit de base d'une espèce, rapporté à celui de la précédente.
+ *
+ * « Chaque espèce nouvelle a un débit de base égal à la somme de toutes les
+ * précédentes : elle double donc l'assiette additive à niveaux égaux. » C'est
+ * la valeur du harnais qui a produit `RESULTATS.md` ; à elle seule elle ne
+ * porte PAS `D`, et c'est voulu — le reste vient de `multiplicateurDePalier`.
+ */
+export const DEBIT_RATIO_ESPECE = 2
 
 /** 62 paliers, distribution plate. */
 export const NOMBRE_DE_PALIERS = 62
@@ -105,6 +116,27 @@ export const RAPPORT_G_SUR_D = Math.pow(CROISSANCE_PAR_CYCLE_VISEE, 1 / PALIERS_
  * d'espèces par palier fait dériver le ratio sans que personne ne le voie.
  */
 export const D_PRODUCTION_PAR_PALIER = G_COUT_PALIER / RAPPORT_G_SUR_D
+
+/**
+ * `m_p` — multiplicateur global accordé par chaque palier ouvert.
+ *
+ * Sur les trois paliers qui séparent deux espèces, la production totale doit
+ * être multipliée par `D³`, faute de quoi le rapport `g/D` — donc toute la
+ * forme de la courbe — cesse de tenir. L'espèce nouvelle apporte
+ * `DEBIT_RATIO_ESPECE` ; les paliers apportent le reste. Donc
+ * `m_p³ × ratio = D³`.
+ *
+ * Sans ce terme, la production croîtrait en `D_RATIO^(1/3)` par palier — 1.26
+ * — pendant que le coût croît en `g` — 2.4. L'écart se compose : le cycle 8
+ * demanderait déjà des milliers d'heures. C'est la seule façon de garder les
+ * deux tiers de paliers qui ne portent aucune espèce du bon côté du calibrage.
+ */
+export function multiplicateurDePalier(): number {
+  return Math.pow(
+    Math.pow(D_PRODUCTION_PAR_PALIER, ESPECE_TOUS_LES_N_PALIERS) / DEBIT_RATIO_ESPECE,
+    1 / ESPECE_TOUS_LES_N_PALIERS,
+  )
+}
 
 /**
  * Contenance par éclosion : `g ^ paliers_par_cycle` = ×47,1.
@@ -164,48 +196,19 @@ export function densiteExposant(): number {
  * atteint dans une vie précédente. Paramètre global unique.
  *
  * Le GDD le veut « réglé pour viser les 20–25 % » de cycle en redescente, et
- * prévient au même endroit que le régler seul est tourner le mauvais bouton :
- * « c'est k, le taux de repeuplement, qui produit réellement les 20–25 % ».
- * Les deux sont à calibrer ensemble ([P6]), et `k` est aujourd'hui dégénéré —
- * décision ouverte V11. Cette graine est donc une entrée de mesure, pas un
- * réglage abouti.
+ * prévenait au même endroit que le régler seul était tourner le mauvais
+ * bouton : le vrai pilote était `k`, le taux de repeuplement. `k` n'existe
+ * plus — il n'y a plus de population à repeupler —, donc `f` est redevenu le
+ * seul réglage de la redescente. Il reste une entrée de mesure.
+ *
+ * [P] La tâche 6 le retire entièrement : le noyau v1.0 §3.1 ferme [P5] et ne
+ * connaît plus de tarif réduit à la redescente.
  */
 export const F_FRACTION_D_AMENAGEMENT = 0.25
 
 /**
- * [P] graine — exposant de la densité dans le coût de conviction (GDD §7.1).
- *
- * Le §7.1 écrit une division par la densité locale, sans exposant ni forme
- * normalisée. Prise au pied de la lettre, elle rendrait la conviction gratuite
- * dès la mi-partie — la densité vaut `pointe^α` et croît sans borne — et elle
- * diviserait par zéro au premier cycle, où rien n'est encore chargé.
- *
- * La forme retenue est `(1 + densité)^e` : neutre à densité nulle, donc le
- * premier cycle n'est pas touché, et croissante ensuite. `e` est la graine.
- */
-export const EXPOSANT_RECONVICTION_DENSITE = 0.5
-
-/**
- * [P] — l'affinité du §7.1 est du contenu v0.5 : elle demande une table
- * espèce × type de mana, et `especes-cadre.md` n'est pas au dépôt. D'ici là
- * elle vaut 1 partout, ce qui laisse la formule juste sans qu'aucune valeur ne
- * soit devinée.
- */
-export const AFFINITE_PLEINE_JUSQU_EN_V05 = 1
-
-/** [P] graine — `k`, taux de repeuplement, par seconde. Mesuré en v0.3. */
-export const K_TAUX_DE_REPEUPLEMENT = 1 / 300
-
-/*
- * [P6] — depuis V11, `k` est le SEUL réglage du repeuplement : la densité en
- * est découplée (voir `vitesseDeRepeuplement`). Le GDD §6.4 en fait le pilote
- * réel des 20–25 % de cycle en redescente — « c'est k qui les produit », là où
- * `f` ne fait qu'un décalage constant. Il se calibre donc avec `f`, jamais seul.
- */
-
-/**
- * [P] graine — bonus global accordé par espèce ayant déjà atteint cent
- * individus. Définitif, conservé à l'éclosion. Mesuré en v0.3.
+ * [P] graine — bonus global accordé par espèce ayant déjà atteint le niveau
+ * cent. Définitif, conservé à l'éclosion. Mesuré en v0.3.
  *
  * [P] — le §2.C dit « +3 % de production globale » par espèce sans dire si
  * plusieurs espèces s'additionnent ou se composent. L'addition est retenue :
@@ -220,29 +223,62 @@ export const BONUS_GLOBAL_A_CENT_INDIVIDUS = 0.03
  */
 
 /**
- * [P] graine — taux de base d'un palier au palier 0, mana/s par individu.
+ * [P] graine — débit de base de la PREMIÈRE espèce, mana/s par niveau.
  *
- * Recalé au jalon v0.2, et pas par goût : à 1 mana/s par individu, tout coûtait
- * moins que quelques secondes de production et le premier cycle se figeait au
- * bout de dix minutes, faute d'avoir quoi que ce soit à acheter. Le plancher de
- * cadence du §8.4 est ce qui l'a fait apparaître. À remesurer en v0.3.
+ * Recalé au jalon v0.2, et pas par goût : à 1 mana/s, tout coûtait moins que
+ * quelques secondes de production et le premier cycle se figeait au bout de dix
+ * minutes, faute d'avoir quoi que ce soit à acheter. Le plancher de cadence du
+ * §8.4 est ce qui l'a fait apparaître. À remesurer en v0.3.
  */
 export const TAUX_BASE_AU_PALIER_0 = 0.2
 
 /** [P] graine — coût de creusement du palier 1. Croît ensuite en g^index. */
 export const COUT_CREUSER_AU_PALIER_1 = 60
 
-/** [P] graine — coût de conviction d'un banc du palier 0. Croît en g^index. */
-export const COUT_DEBLOCAGE_AU_PALIER_0 = 10
+/**
+ * [P] graine — ancre d'échelle du coût de niveau, au rang d'espèce 0.
+ *
+ * Remplace `COUT_DEBLOCAGE_AU_PALIER_0` et `COUT_DE_PLACE_AU_PALIER_0`, qui
+ * chiffraient la conviction d'un banc et sa première place. Le déblocage n'a
+ * plus d'ancre à lui — il est une fraction du coût de son palier, voir
+ * `COUT_DEBLOCAGE_RATIO` — et c'est le NIVEAU qui porte l'échelle.
+ *
+ * Recalé au 2026-09-09 contre le plancher de cadence du §8.4, comme
+ * `TAUX_BASE_AU_PALIER_0` l'avait été au jalon v0.2, et il est encadré des deux
+ * côtés :
+ *
+ *   trop bas  — la Noue s'épuise en sept minutes et la première demi-heure
+ *               finit sur vingt minutes de silence ;
+ *   trop haut — le deuxième achat de la partie tombe au-delà de la cinquième
+ *               minute, et la cadence du §8.4 est trouée dès le début.
+ *
+ * La fenêtre mesurée est étroite : au-delà de ≈95, l'intervalle entre le
+ * premier creusement et le deuxième cran dépasse les 300 s. Le harnais de
+ * `RESULTATS.md` porte l'équivalent de 500 s de débit là où on en met 450 ;
+ * l'écart est celui d'une échelle absolue, pas d'une forme. À remesurer en v0.3.
+ */
+export const COUT_DU_PREMIER_NIVEAU = 90
 
 /**
- * [P] graine — coût de la première PLACE d'un banc du palier 0. Croît en g^index.
+ * Ce que coûte de débloquer une espèce, en fraction du coût de son palier.
  *
- * Le joueur achète de la place — un plafond de population — jamais des
- * individus. « Niveau » est un reste d'Étang des Merveilles, banni des
- * identifiants (§2.C, §3).
+ * Le déblocage suit le palier plutôt qu'une échelle à lui : c'est le palier qui
+ * dit à quelle profondeur l'espèce vit, et donc ce qu'il en coûte de l'y
+ * atteindre.
  */
-export const COUT_DE_PLACE_AU_PALIER_0 = 8
+export const COUT_DEBLOCAGE_RATIO = 0.6
+
+/**
+ * DÉRIVÉ — un niveau coûte autant que 450 s du débit de base de SON espèce.
+ *
+ * Écrit comme un rapport, et pas comme un montant, pour que le coût d'un niveau
+ * suive le débit de l'espèce qu'il monte : le temps de remboursement d'un
+ * niveau est alors le même pour la première espèce et pour la vingt et unième,
+ * et aucune ne devient un piège en profondeur. C'est ce qui remplace l'ancien
+ * `g^palier` du coût de place, dont le rôle est passé au multiplicateur de
+ * profondeur.
+ */
+export const COUT_NIVEAU_PAR_DEBIT = COUT_DU_PREMIER_NIVEAU / TAUX_BASE_AU_PALIER_0
 
 /** Nombre de paliers ouverts au début d'un cycle. Le héros démarre dans la mare. */
 export const PALIERS_OUVERTS_AU_DEPART = 1
@@ -251,12 +287,15 @@ export const PALIERS_OUVERTS_AU_DEPART = 1
  * [P] graine — mana porté à la sortie de l'œuf.
  *
  * Il en faut : le mana courant est perdu à l'éclosion (§6.5) et la production
- * naît du premier banc convaincu. Sans cette charge de départ, la seule façon
- * d'amorcer une vie serait un clic — or aucune présence active n'est requise
- * et il n'y a pas de clic obligatoire (§4.2). Calé sur le coût de la première
- * conviction, ni plus ni moins.
+ * naît de la première espèce débloquée. Sans cette charge de départ, la seule
+ * façon d'amorcer une vie serait un clic — or aucune présence active n'est
+ * requise et il n'y a pas de clic obligatoire (§4.2). Calé sur le coût du
+ * premier déblocage, ni plus ni moins.
+ *
+ * [P] Il tombera avec la tâche 9 : `DEBIT_HEROS` amorcera la partie à la place,
+ * et le héros captera l'ambiant tout seul (RESULTATS.md, finding 3).
  */
-export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_DEBLOCAGE_AU_PALIER_0
+export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_CREUSER_AU_PALIER_1 * COUT_DEBLOCAGE_RATIO
 
 /* ─── Contenance et acquis de séjour — amendement v1.1 §2.B ─────────────────
  *
@@ -277,7 +316,21 @@ export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_DEBLOCAGE_AU_PALIER_0
  * rapporte plus de profondeur, seulement de la Foi. C'est ce qui rend réelle
  * la seule vraie décision du joueur.
  */
-export const CONTENANCE_INITIALE = 1200
+
+/**
+ * DÉRIVÉE, depuis le 2026-09-09 — elle valait 1200, saisis à la main.
+ *
+ * Le blocage doux tombe quand `coût_base × g^P > contenance`. La contenance de
+ * départ est donc exactement ce qui décide du nombre de paliers du premier
+ * cycle, et le canon en fixe la valeur : `PALIERS_PAR_CYCLE_VISE`. L'écrire
+ * plutôt que la choisir est ce que demande le §13.2, et c'est la dérivation du
+ * harnais de `RESULTATS.md` (`COUT_CREUSER_BASE × g^paliers_gagnés`).
+ *
+ * À 1200, le premier cycle s'arrêtait à cinq paliers sur les six de la Noue et
+ * la première demi-heure se terminait sur six minutes de silence, faute d'avoir
+ * encore quelque chose à acheter.
+ */
+export const CONTENANCE_INITIALE = COUT_CREUSER_AU_PALIER_1 * Math.pow(G_COUT_PALIER, PALIERS_PAR_CYCLE_VISE)
 
 /**
  * `A∞` — plafond de l'acquis de séjour.
@@ -304,15 +357,6 @@ export const PRODUCTION_DE_REFERENCE = 1
 /** [P] graine — barème de Foi. Foi = base × (pic / référence) ^ exposant. */
 export const FOI_BASE = 1
 export const FOI_EXPOSANT = 0.5
-
-/* ─── Succès ────────────────────────────────────────────────────────────────*/
-
-/**
- * Fraction de sa cible qu'un effectif doit atteindre pour qu'un palier compte
- * comme saturé. L'effectif converge par une exponentielle : il n'atteint jamais
- * exactement sa cible, et un seuil strict ne se déclencherait jamais.
- */
-export const SATURATION_D_UN_PALIER = 0.99
 
 /* ─── Saturation de la jauge — noyau v1.0 §2.2 ──────────────────────────────
  *

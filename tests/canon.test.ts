@@ -17,13 +17,16 @@ import {
   BUDGET_DE_VERBES_ARBRE,
   BUDGET_DE_VERBES_TOTAL,
   CROISSANCE_PAR_CYCLE_VISEE,
+  DEBIT_RATIO_ESPECE,
   D_PRODUCTION_PAR_PALIER,
+  ESPECE_TOUS_LES_N_PALIERS,
   F_TARIF_REDESCENTE,
   G_COUT_PALIER,
   NOMBRE_DE_PALIERS,
   NOMBRE_D_ESPECES_DE_BASE,
   PALIERS_PAR_CYCLE_VISE,
   RAPPORT_G_SUR_D,
+  multiplicateurDePalier,
 } from '../src/noyau/constantes'
 import { TERMES_DE_CONFORT, TERMES_DE_COUT, TERMES_DE_PRODUCTION } from '../src/noyau/types'
 import type { CapaciteId } from '../src/noyau/types'
@@ -45,10 +48,10 @@ import type { SourceDeTerme } from '../src/noyau/types'
 
 /** Toutes les formes de source, pour que le test couvre le gabarit entier. */
 const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
-  { quoi: 'population' },
+  { quoi: 'niveau', niveau: 0 },
+  { quoi: 'niveau', niveau: 12 },
   { quoi: 'palier', palier: 0 },
   { quoi: 'palier', palier: 4 },
-  { quoi: 'place', place: 12 },
   { quoi: 'drapeaux_permanents', especes: 0 },
   { quoi: 'drapeaux_permanents', especes: 3 },
 ]
@@ -121,23 +124,22 @@ describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
     }
   })
 
-  it('GDD §6.4 — un puits, un levier : rien ne double la densité sur la conviction', () => {
-    // « L'aménagement est payé par la technique ; la reconviction garde sa
-    // formule et reste payée par la densité. Aucun coût n'a deux leviers —
-    // c'est ce qui rend l'ensemble équilibrable. »
-    //
-    // `cout_reconviction` existe pour être NOMMÉ dans le détail de captation,
-    // jamais pour être ciblé. C'est le genre de règle qu'on enfreint sans le
-    // voir, en ajoutant un nœud « Conviction −20 % » qui a l'air inoffensif.
-    for (const noeud of NOEUDS_TECHNIQUE) {
-      if (noeud.effet.nature !== 'chiffre') continue
-      expect(noeud.effet.terme, `le nœud ${noeud.id}`).not.toBe('cout_reconviction')
-    }
-    for (const succes of SUCCES) {
-      if (succes.effet === null || succes.effet.genre === 'verbe') continue
-      expect(succes.effet.terme, `le succès ${succes.id}`).not.toBe('cout_reconviction')
-    }
-  })
+  /*
+   * RETIRÉ le 2026-09-09 : « un puits, un levier — rien ne double la densité
+   * sur la conviction ».
+   *
+   * Il vérifiait qu'aucun nœud ni succès ne visait `cout_reconviction`, parce
+   * que la conviction était payée par la DENSITÉ et par elle seule (GDD §7.1) :
+   * lui donner un second levier rendait l'ensemble inéquilibrable. Le terme est
+   * devenu `cout_deblocage`, et sa formule ne lit plus la densité du tout — le
+   * noyau v1.0 §1.3 en fait une fraction du coût de son palier. Il n'y a donc
+   * plus de premier levier à protéger, et interdire le second reviendrait à
+   * défendre une règle dont l'objet a disparu.
+   *
+   * Ce qui reste vrai et reste vérifié : l'aménagement est le seul débouché de
+   * `reduction_technique` (voir `coutDeDescente`), et aucun effet ne monte une
+   * production.
+   */
 
   it('aucun effet chiffré ne flotte sans terme nommé', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
@@ -193,7 +195,7 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     expect(FRACTION_CONSERVEE).toBe(0)
   })
 
-  it('les seuils sont CUMULÉS : cent individus valent ×16, pas ×1024', () => {
+  it('les seuils sont CUMULÉS : le centième niveau vaut ×16, pas ×1024', () => {
     // Le §2.C ordonne cette vérification avant toute ligne de code : `D = 2.31`
     // a été ajusté contre cette lecture, et une table multiplicative rendrait
     // tout le calibrage faux.
@@ -213,11 +215,30 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     expect(ESPECES.length).toBe(NOMBRE_D_ESPECES_DE_BASE)
   })
 
-  it('chaque palier appartient à une assise et porte au moins un banc', () => {
+  it('chaque palier appartient à une assise, et porte au plus une espèce', () => {
     for (const palier of PALIERS) {
       expect(ASSISES.some((a) => a.id === palier.assise)).toBe(true)
-      expect(palier.bancs.length).toBeGreaterThan(0)
+      if (palier.espece === null) continue
+      expect(ESPECES.map((e) => e.id)).toContain(palier.espece)
     }
+    expect(PALIERS.filter((p) => p.espece !== null)).toHaveLength(NOMBRE_D_ESPECES_DE_BASE)
+  })
+
+  it('une espèce est ancrée à trois fois son rang, sinon son débit décroche de D', () => {
+    // Le débit de base d'une espèce croît de `DEBIT_RATIO_ESPECE` par RANG, et
+    // le multiplicateur de profondeur porte le reste de `D` par PALIER. Les
+    // deux ne se composent en `D^palier` que si l'ancre vaut exactement
+    // `3 × rang` — ce que la répartition 6/12/12/12/12/8 garantit, et qu'une
+    // autre casserait sans qu'aucun autre test ne le dise.
+    for (const espece of ESPECES) {
+      expect(espece.palier, `l’espèce ${espece.id}`).toBe(espece.rang * ESPECE_TOUS_LES_N_PALIERS)
+    }
+  })
+
+  it('le multiplicateur de palier porte la part de D que le bestiaire ne porte pas', () => {
+    const parTroisPaliers =
+      Math.pow(multiplicateurDePalier(), ESPECE_TOUS_LES_N_PALIERS) * DEBIT_RATIO_ESPECE
+    expect(parTroisPaliers).toBeCloseTo(Math.pow(D_PRODUCTION_PAR_PALIER, ESPECE_TOUS_LES_N_PALIERS), 6)
   })
 })
 
@@ -280,6 +301,29 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
       expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
     }
   })
+
+  it('le modèle à population ne subsiste pas dans le noyau (noyau v1.0 §1.3)', () => {
+    // Le banc, la place et l'effectif sont morts ensemble le 2026-09-09 : une
+    // espèce est un générateur avec un niveau. La tâche 4 a montré qu'une
+    // suppression peut paraître complète dans `economie.ts` et survivre dans
+    // `noyau.ts` — le balayage porte donc sur le répertoire entier.
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of [
+      'effectif',
+      'BancId',
+      'EtatBanc',
+      'convaincre',
+      'acheterPlace',
+      'coutDePlace',
+      'cout_place',
+      'cout_reconviction',
+      'vitesseDeRepeuplement',
+    ]) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
 })
 
 describe('§3 — la règle d’UI absolue', () => {
@@ -317,7 +361,7 @@ describe('§3 — la règle d’UI absolue', () => {
 
   it('`tanche` n’est assignée à aucun générateur', () => {
     // Longévité, faible débit, très forte contenance : c'est le portrait du
-    // héros, pas d'un banc (§2.E).
+    // héros, pas d'une espèce ordinaire (§2.E).
     expect(ESPECES.map((e) => e.id)).not.toContain(ESPECE_RESERVEE)
   })
 

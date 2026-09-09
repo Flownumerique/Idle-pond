@@ -10,13 +10,18 @@
  * suivrait un individu, itérerait sur une file d'événements ou vérifierait à
  * chaque tick une contrainte qui change une fois par heure ferait tomber ce
  * test — c'est précisément à ça qu'il sert.
+ *
+ * Il est devenu facile à tenir le 2026-09-09, et c'est le bénéfice principal du
+ * modèle à niveau : la production ne dépend plus que de quantités qui ne
+ * changent qu'à l'achat, donc le pas est homogène par construction. Le noyau
+ * n'a plus de coupure de pas du tout.
  */
 import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
 import { etatInitial, tick } from '../src/noyau/noyau'
 import { multiplicateurDeSeuil, productionTotaleParSeconde } from '../src/noyau/economie'
-import { PALIERS } from '../src/donnees/paliers'
+import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
 
@@ -67,44 +72,20 @@ describe('équivalence de pas', () => {
     expect(productionTotaleParSeconde(etatDeTravail()).gt(0)).toBe(true)
   })
 
-  it('un intervalle qui FRANCHIT des seuils compose encore', () => {
-    // Le cas qui a cassé à l'amendement v1.1 §2.C, et le seul qui prouve la
-    // partition analytique : sans elle, les petits pas franchissent 10, 25 et
-    // 50 tôt et produisent nettement plus que le grand pas.
+  it('plus aucun seuil ne peut tomber À L’INTÉRIEUR d’un pas', () => {
+    // Le cas qui a cassé à l'amendement v1.1 §2.C — les petits pas
+    // franchissaient 10, 25 et 50 tôt et produisaient plus que le grand pas —
+    // n'existe plus : le multiplicateur de seuil lit un NIVEAU, et un niveau ne
+    // change qu'à l'achat. Ce qui se vérifie ici est donc l'inverse de ce qui
+    // se vérifiait avant : le pas est homogène, et il le reste.
     const depart = etatInitial(1)
-    const banc = PALIERS[0].bancs[0]
-    const vide: EtatJeu = {
-      ...depart,
-      cycle: {
-        ...depart.cycle,
-        manaCourant: new Decimal(0),
-        bancs: { [banc.id]: { place: 120, effectif: 0 } },
-      },
-      permanent: { ...depart.permanent, contenanceMana: new Decimal('1e30') },
-    }
-
-    let parPetitsPas = vide
-    for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
-    const enUnPas = tick(vide, HUIT_HEURES)
-
-    // Les seuils ont bien été traversés : sinon le test ne prouve rien.
-    expect(parPetitsPas.cycle.bancs[banc.id].effectif).toBeGreaterThan(100)
-    expect(multiplicateurDeSeuil(vide.cycle.bancs[banc.id].effectif)).toBe(1)
-    comparerAToleranceFlottante(parPetitsPas, enUnPas)
-  })
-
-  it('un drapeau permanent franchi en cours d’intervalle compose aussi', () => {
-    // Le drapeau des cent individus est GLOBAL : il ne s'intègre pas banc par
-    // banc, il coupe le pas. Sans la coupure, les petits pas gagnent +3 % sur
-    // presque tout l'intervalle et le grand pas sur rien.
-    const depart = etatInitial(1)
-    const banc = PALIERS[0].bancs[0]
+    const espece = ESPECES[0]
     const proche: EtatJeu = {
       ...depart,
       cycle: {
         ...depart.cycle,
         manaCourant: new Decimal(0),
-        bancs: { [banc.id]: { place: 300, effectif: 90 } },
+        especes: { [espece.id]: { debloquee: true, niveau: 99 } },
       },
       permanent: { ...depart.permanent, contenanceMana: new Decimal('1e30') },
     }
@@ -113,7 +94,9 @@ describe('équivalence de pas', () => {
     for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
     const enUnPas = tick(proche, HUIT_HEURES)
 
-    expect(enUnPas.permanent.especesAyantAtteintCent).toContain(banc.espece)
+    // Ni le seuil de cent, ni le drapeau qu'il pose, ne sont tombés tout seuls.
+    expect(multiplicateurDeSeuil(enUnPas.cycle.especes[espece.id].niveau)).toBe(8)
+    expect(enUnPas.permanent.especesAyantAtteintCent).toEqual([])
     comparerAToleranceFlottante(parPetitsPas, enUnPas)
   })
 })

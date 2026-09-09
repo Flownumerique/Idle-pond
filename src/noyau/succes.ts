@@ -25,13 +25,12 @@ import type {
   SuccesId,
   VisibiliteDeSucces,
 } from './types'
-import { SATURATION_D_UN_PALIER } from './constantes'
+import { SEUIL_DU_DRAPEAU_PERMANENT } from './constantes'
 import { palierDeVoix } from './voix'
 import { SUCCES } from '../donnees/succes/index'
 import { ASSISES, assiseDuPalier } from '../donnees/assises'
-import { PALIERS, bancParId } from '../donnees/paliers'
+import { especeDuPalier } from '../donnees/paliers'
 import { productionTotaleParSeconde } from './economie'
-import { effectifCible } from './population'
 
 export interface ResultatDeSucces {
   readonly etat: EtatJeu
@@ -40,42 +39,45 @@ export interface ResultatDeSucces {
 
 /* ─── Déclencheurs ──────────────────────────────────────────────────────────*/
 
-function effectifTotal(etat: EtatJeu): number {
-  let total = 0
-  for (const banc of Object.values(etat.cycle.bancs)) total += banc.effectif
-  return total
+/** Espèces débloquées dans la vie courante. */
+function especesDebloquees(etat: EtatJeu): number {
+  return Object.values(etat.cycle.especes).filter((e) => e.debloquee).length
+}
+
+/** Le niveau d'une espèce. Zéro tant qu'elle n'est pas débloquée. */
+function niveauDEspece(etat: EtatJeu, espece: string): number {
+  const vivante = etat.cycle.especes[espece]
+  return vivante?.debloquee === true ? vivante.niveau : 0
 }
 
 /**
- * Effectif d'une espèce, tous paliers confondus.
+ * Somme des niveaux de la mare entière.
  *
- * Les seuils du §8.1 comptent des INDIVIDUS — « 10/25/50/100 individus » — et
- * une espèce peut tenir plusieurs paliers. Compter par banc donnerait quatre
- * succès par palier au lieu de quatre par espèce, soit quarante là où le §8.4
- * en prévoit douze.
+ * Remplace l'effectif total : c'est la même idée — ce qui vit là, tout
+ * confondu — mesurée sur la seule quantité que le noyau v1.0 connaisse encore.
  */
-function effectifDEspece(etat: EtatJeu, espece: string): number {
+function niveauxCumules(etat: EtatJeu): number {
   let total = 0
-  for (const [id, banc] of Object.entries(etat.cycle.bancs)) {
-    if (bancParId(id)?.espece === espece) total += banc.effectif
+  for (const espece of Object.values(etat.cycle.especes)) {
+    if (espece.debloquee) total += espece.niveau
   }
   return total
 }
 
 /**
- * Un palier est saturé quand tous ses bancs sont convaincus et que leur
- * effectif a rejoint sa cible. « Rejoint » à une fraction près : l'effectif
- * converge par une exponentielle et n'atteint jamais exactement sa cible — un
- * test d'égalité stricte ne se déclencherait tout simplement jamais.
+ * Un palier ne peut plus rien recevoir.
+ *
+ * Sans population il n'y a plus de cible d'effectif à rejoindre : « plein » se
+ * lit sur le niveau de l'espèce que le palier ouvre, au seuil du drapeau
+ * permanent — c'est le plus haut que le canon connaisse. Deux paliers sur trois
+ * n'ouvrent aucune espèce ; ceux-là ne prendront jamais personne, et sont donc
+ * au complet dès qu'ils sont ouverts.
  */
-function palierSature(etat: EtatJeu, palier: number): boolean {
+function palierAuComplet(etat: EtatJeu, palier: number): boolean {
   if (palier >= etat.cycle.paliersOuverts) return false
-  for (const banc of PALIERS[palier].bancs) {
-    const etatDuBanc = etat.cycle.bancs[banc.id]
-    if (etatDuBanc === undefined || etatDuBanc.place <= 0) return false
-    if (etatDuBanc.effectif < effectifCible(etatDuBanc.place) * SATURATION_D_UN_PALIER) return false
-  }
-  return true
+  const espece = especeDuPalier(palier)
+  if (espece === undefined) return true
+  return niveauDEspece(etat, espece.id) >= SEUIL_DU_DRAPEAU_PERMANENT
 }
 
 /** Lecture de seuil sur l'état de fin de tick. Aucun événement consommé au vol. */
@@ -87,24 +89,20 @@ export function estAtteint(etat: EtatJeu, declencheur: DeclencheurDeSucces): boo
       return etat.cycle.paliersOuverts >= declencheur.seuil
     case 'profondeur_max':
       return etat.permanent.profondeurMaxAtteinte >= declencheur.seuil
-    case 'bancs_convaincus':
-      return Object.values(etat.cycle.bancs).filter((b) => b.place > 0).length >= declencheur.seuil
-    case 'effectif_de_banc':
-      return (etat.cycle.bancs[declencheur.banc]?.effectif ?? 0) >= declencheur.seuil
-    case 'effectif_d_espece':
-      return effectifDEspece(etat, declencheur.espece) >= declencheur.seuil
-    case 'place_de_banc':
-      return (etat.cycle.bancs[declencheur.banc]?.place ?? 0) >= declencheur.seuil
-    case 'effectif_total':
-      return effectifTotal(etat) >= declencheur.seuil
+    case 'especes_debloquees':
+      return especesDebloquees(etat) >= declencheur.seuil
+    case 'niveau_d_espece':
+      return niveauDEspece(etat, declencheur.espece) >= declencheur.seuil
+    case 'niveaux_cumules':
+      return niveauxCumules(etat) >= declencheur.seuil
     case 'production_par_seconde':
       return productionTotaleParSeconde(etat).gte(declencheur.seuil)
     case 'foi':
       return etat.permanent.foi.gte(declencheur.seuil)
     case 'densite_de_palier':
       return (etat.permanent.densites[declencheur.palier] ?? 0) >= declencheur.seuil
-    case 'palier_sature':
-      return palierSature(etat, declencheur.palier)
+    case 'palier_au_complet':
+      return palierAuComplet(etat, declencheur.palier)
   }
 }
 
@@ -263,7 +261,7 @@ export function succesListables(etat: EtatJeu, assise: AssiseId): readonly Succe
 /** Progression vers un seuil, pour la barre des succès ouverts. 0 à 1. */
 export function progressionVersLeSucces(etat: EtatJeu, succes: Succes): number | null {
   const declencheur = succes.declencheur
-  if (declencheur.quoi === 'palier_sature') return null
+  if (declencheur.quoi === 'palier_au_complet') return null
   const seuil = declencheur.seuil
   if (!(seuil > 0)) return null
   const courant = valeurCourante(etat, declencheur)
@@ -279,23 +277,19 @@ function valeurCourante(etat: EtatJeu, declencheur: DeclencheurDeSucces): number
       return etat.cycle.paliersOuverts
     case 'profondeur_max':
       return etat.permanent.profondeurMaxAtteinte
-    case 'bancs_convaincus':
-      return Object.values(etat.cycle.bancs).filter((b) => b.place > 0).length
-    case 'effectif_de_banc':
-      return etat.cycle.bancs[declencheur.banc]?.effectif ?? 0
-    case 'effectif_d_espece':
-      return effectifDEspece(etat, declencheur.espece)
-    case 'place_de_banc':
-      return etat.cycle.bancs[declencheur.banc]?.place ?? 0
-    case 'effectif_total':
-      return effectifTotal(etat)
+    case 'especes_debloquees':
+      return especesDebloquees(etat)
+    case 'niveau_d_espece':
+      return niveauDEspece(etat, declencheur.espece)
+    case 'niveaux_cumules':
+      return niveauxCumules(etat)
     case 'production_par_seconde':
       return productionTotaleParSeconde(etat).toNumber()
     case 'foi':
       return etat.permanent.foi.toNumber()
     case 'densite_de_palier':
       return etat.permanent.densites[declencheur.palier] ?? 0
-    case 'palier_sature':
+    case 'palier_au_complet':
       return null
   }
 }

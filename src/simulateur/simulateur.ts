@@ -18,27 +18,30 @@
  * exprimée en heures actives par cycle sera rejetée ici.
  */
 import Decimal from 'break_infinity.js'
-import type { BancId, EtatJeu } from '../noyau/types'
+import type { EspeceId, EtatJeu } from '../noyau/types'
 import {
+  ameliorer,
   contenance,
   creuser,
-  convaincre,
+  debloquer,
   eclore,
   estBloque,
   etatInitial,
-  acheterPlace,
   productionTotaleParSeconde,
   tick,
 } from '../noyau/noyau'
 import {
   coutDeDescente,
-  coutDeConviction,
-  coutDePlace,
-  tauxParIndividu,
+  coutDeDeblocage,
+  coutDeNiveau,
+  debitBaseDeLEspece,
+  multiplicateurDeProfondeur,
+  multiplicateurDeSeuil,
+  multiplicateurDesDrapeaux,
   toutEstCreuse,
 } from '../noyau/economie'
 import { ACQUIS_MAX } from '../noyau/constantes'
-import { PALIERS } from '../donnees/paliers'
+import { ESPECES } from '../donnees/especes'
 import { relever, type Releve } from '../adaptateurs/telemetrie'
 
 export interface Politique {
@@ -83,7 +86,7 @@ export const POLITIQUE_PAR_DEFAUT: Politique = {
 
 interface Option {
   readonly cout: Decimal
-  /** Production supplémentaire à pleine charge, une fois la place peuplée. */
+  /** Production supplémentaire immédiate : un niveau agit à l'instant où il est payé. */
   readonly gain: Decimal
   readonly estUnCreusement: boolean
   readonly appliquer: (etat: EtatJeu) => EtatJeu
@@ -96,9 +99,9 @@ interface Option {
  * hors de portée pour toujours, puisque le stock ne peut pas monter jusque-là.
  * C'est la même limite qui produit le blocage doux du §6.4.
  *
- * Le `gain` est évalué à PLEINE CHARGE — la place une fois peuplée —, pas à
- * l'effectif courant : c'est ce que l'achat vaudra, et c'est sur cette valeur
- * qu'un joueur décide.
+ * Le `gain` est celui de l'instant : depuis que l'espèce est un générateur à
+ * niveau, un achat vaut immédiatement ce qu'il vaudra — il n'y a plus de pleine
+ * charge à attendre.
  */
 function optionsOuvertes(etat: EtatJeu): readonly Option[] {
   const plafond = contenance(etat)
@@ -111,21 +114,25 @@ function optionsOuvertes(etat: EtatJeu): readonly Option[] {
     }
   }
 
-  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    for (const banc of PALIERS[palier].bancs) {
-      const place = etat.cycle.bancs[banc.id]?.place ?? 0
-      const id: BancId = banc.id
-      const cout = place === 0 ? coutDeConviction(etat, banc) : coutDePlace(etat, banc, place)
-      if (cout.gt(plafond)) continue
-      const avant = tauxParIndividu(etat, banc, place).mul(place)
-      const apres = tauxParIndividu(etat, banc, place + 1).mul(place + 1)
-      options.push({
-        cout,
-        gain: apres.sub(avant),
-        estUnCreusement: false,
-        appliquer: place === 0 ? (e) => convaincre(e, id) : (e) => acheterPlace(e, id),
-      })
-    }
+  // Les multiplicateurs globaux sont les mêmes pour toutes les espèces : ils
+  // sortent du signe somme, et le gain se calcule sur la seule assiette.
+  const globaux = multiplicateurDeProfondeur(etat).mul(multiplicateurDesDrapeaux(etat))
+
+  for (const espece of ESPECES) {
+    if (espece.palier >= etat.cycle.paliersOuverts) continue
+    const id: EspeceId = espece.id
+    const vivante = etat.cycle.especes[id]
+    const niveau = vivante?.debloquee === true ? vivante.niveau : 0
+    const cout = niveau === 0 ? coutDeDeblocage(etat, espece) : coutDeNiveau(etat, espece, niveau)
+    if (cout.gt(plafond)) continue
+    const avant = niveau * multiplicateurDeSeuil(niveau)
+    const apres = (niveau + 1) * multiplicateurDeSeuil(niveau + 1)
+    options.push({
+      cout,
+      gain: debitBaseDeLEspece(espece).mul(apres - avant).mul(globaux),
+      estUnCreusement: false,
+      appliquer: niveau === 0 ? (e) => debloquer(e, id) : (e) => ameliorer(e, id),
+    })
   }
 
   return options
@@ -215,9 +222,17 @@ function attenteAvantLeProchainAchat(etat: EtatJeu, options: readonly Option[]):
  * dans cette vie, ET l'acquis de séjour a fait son travail. Rester au-delà
  * n'achète plus que de la Foi — c'est exactement l'arbitrage du §6.4, et c'est
  * le §2.B qui le rend réel en faisant saturer l'acquis.
+ *
+ * Une troisième condition a été RETIRÉE le 2026-09-09 : « plus aucune dépense
+ * ouverte ⇒ éclore ». Elle était un terminateur sûr tant qu'une population
+ * mettait des heures à rejoindre sa place ; depuis que le niveau agit à
+ * l'instant où il est payé, elle tombe au bout de quelques minutes, et faisait
+ * partir le joueur avant que la contenance ait rien gagné. Ne plus avoir quoi
+ * acheter n'est pas une raison de partir — c'est exactement le moment où
+ * rester ne rapporte plus que de la Foi et de la contenance, donc le moment
+ * que le §2.B veut voir arriver.
  */
-function doitEclore(etat: EtatJeu, politique: Politique, options: readonly Option[]): boolean {
-  if (options.length === 0) return true
+function doitEclore(etat: EtatJeu, politique: Politique): boolean {
   if (!estBloque(etat)) return false
   return etat.cycle.acquisDeSejour >= politique.fractionDeSaturationPourEclore * ACQUIS_MAX
 }
@@ -274,7 +289,7 @@ export function simuler(
       etat = depenser(etat)
       for (;;) {
         const options = optionsOuvertes(etat)
-        if (doitEclore(etat, politique, options)) break
+        if (doitEclore(etat, politique)) break
         const attente = attenteAvantLeProchainAchat(etat, options)
         if (attente === null || attente > politique.patienceDansLaSessionSecondes) break
         const reste = politique.dureeMaxDeSessionSecondes - secondesDeSession
@@ -289,7 +304,7 @@ export function simuler(
       sessions.push({ cycle, secondesActives: secondesDeSession })
 
       if (aDivergeSeul()) break
-      if (doitEclore(etat, politique, optionsOuvertes(etat))) break
+      if (doitEclore(etat, politique)) break
       if (dureeDuCycle >= politique.dureeMaxParCycleSecondes) {
         cycleNonConvergent = cycle
         break

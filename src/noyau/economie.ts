@@ -1,11 +1,10 @@
 /**
  * IdlePond — production, coûts, seuils.
  *
- * UN SEUL CANAL DE REVENU — noyau v1.0 §10 : les espèces. Le canal acclimaté,
- * qui tombait sur l'eau elle-même sans qu'aucun vivant l'habite, a été retiré
- * le 2026-09-08 avec le reste de l'ancien canon (§3 de l'ancien GDD).
- *
- * `productionTotaleParSeconde` ne somme donc plus que les bancs.
+ * UN SEUL CANAL DE REVENU — noyau v1.0 §10 : les espèces. Et une espèce est un
+ * générateur avec un NIVEAU (§1.3) : on la débloque une fois, on monte son
+ * niveau, l'effet est immédiat. Plus aucune population n'est simulée, donc plus
+ * rien ne varie à l'intérieur d'un pas de tick.
  *
  * Les multiplicateurs qui s'ajoutent au canal sont des TermeDeFormule nommés,
  * jamais des facteurs anonymes : c'est ce qui rend le détail de captation
@@ -13,7 +12,7 @@
  */
 import Decimal from 'break_infinity.js'
 import type {
-  Banc,
+  Espece,
   EtatJeu,
   IndexPalier,
   LigneDeCaptation,
@@ -21,118 +20,122 @@ import type {
   TermeDeCout,
 } from './types'
 import {
-  AFFINITE_PLEINE_JUSQU_EN_V05,
   COUT_CREUSER_AU_PALIER_1,
-  COUT_DEBLOCAGE_AU_PALIER_0,
-  COUT_DE_PLACE_AU_PALIER_0,
+  COUT_DEBLOCAGE_RATIO,
+  COUT_NIVEAU_PAR_DEBIT,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
-  EXPOSANT_RECONVICTION_DENSITE,
+  DEBIT_RATIO_ESPECE,
   F_FRACTION_D_AMENAGEMENT,
   NOMBRE_DE_PALIERS,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
   TAUX_BASE_AU_PALIER_0,
+  multiplicateurDePalier,
 } from './constantes'
-import { densiteDuPalier } from './densite'
-import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
-import { PALIERS, bancsDuPalier } from '../donnees/paliers'
+import { puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
+import { ESPECES } from '../donnees/especes'
 import { facteurDeTechnique } from './technique'
 import { SUCCES } from '../donnees/succes/index'
 
 /* ─── Seuils de jalon ───────────────────────────────────────────────────────*/
 
 /**
- * Multiplicateur de seuil d'un banc, d'après son EFFECTIF (§2.C).
+ * Multiplicateur de seuil d'une espèce, d'après son NIVEAU (§2.C).
  *
  * La table donne le multiplicateur CUMULÉ lu au seuil : on retient celui du
  * seuil le plus haut franchi, on ne multiplie pas les colonnes entre elles.
- * Cent individus valent ×16, jamais ×1024 — et `D = 2.31` a été calibré
- * contre cette lecture-là.
+ * Le niveau cent vaut ×16, jamais ×1024 — et `D = 2.31` a été calibré contre
+ * cette lecture-là.
  *
- * Il se lit sur l'effectif courant à chaque tick, donc il se reperd à
- * l'éclosion avec la population. Le seul acquis qui survit est le drapeau
+ * Il se lit sur le niveau courant, donc il tombe à l'ACHAT et se reperd à
+ * l'éclosion avec le niveau. Le seul acquis qui survit est le drapeau
  * permanent, plus bas.
  */
-export function multiplicateurDeSeuil(effectif: number): number {
+export function multiplicateurDeSeuil(niveau: number): number {
   let multiplicateur = 1
-  for (const seuil of SEUILS_DE_JALON) {
-    if (effectif >= seuil.seuil) multiplicateur = seuil.multiplicateurCumule
+  for (const palier of SEUILS_DE_JALON) {
+    if (niveau >= palier.seuil) multiplicateur = palier.multiplicateurCumule
   }
   return multiplicateur
 }
 
 /**
- * Bonus global des espèces ayant DÉJÀ atteint cent individus (§2.C).
+ * Bonus global des espèces ayant DÉJÀ atteint le niveau cent (§2.C).
  * Définitif, conservé à l'éclosion, additif entre espèces.
  */
 export function multiplicateurDesDrapeaux(etat: EtatJeu): number {
   return 1 + BONUS_GLOBAL_A_CENT_INDIVIDUS * etat.permanent.especesAyantAtteintCent.length
 }
 
-/* ─── Taux de base ──────────────────────────────────────────────────────────*/
+/* ─── Production ────────────────────────────────────────────────────────────*/
 
 /**
- * Production totale d'un palier à pleine puissance, rapportée au précédent :
- * `D`. Mesurée sur le PALIER, jamais par espèce — les bancs d'un même palier se
- * partagent ce taux, de sorte que le nombre d'espèces par palier ne fait pas
- * dériver le ratio (§6.3).
- */
-export function tauxBaseDuPalier(palier: IndexPalier): Decimal {
-  return puissanceDeD(palier).mul(TAUX_BASE_AU_PALIER_0)
-}
-
-export function tauxBaseDuBanc(banc: Banc): Decimal {
-  return tauxBaseDuPalier(banc.palier).div(bancsDuPalier(banc.palier).length)
-}
-
-/**
- * Taux par individu SANS le multiplicateur de seuil.
+ * Débit de base d'une espèce, mana/s par niveau.
  *
- * Tous les termes qui restent constants pendant un tick sont ici ; le seul qui
- * varie en cours d'intervalle — le multiplicateur de seuil, qui se lit sur
- * l'effectif (§2.C) — en est sorti, pour que le noyau puisse l'intégrer
- * analytiquement plutôt que de le figer au début du pas.
+ * « Chaque espèce nouvelle a un débit de base égal à la somme de toutes les
+ * précédentes : elle double donc l'assiette additive à niveaux égaux. » Le
+ * reste de `D` est porté par le multiplicateur de profondeur, plus bas — le
+ * bestiaire seul ne le porte pas, puisque deux paliers sur trois n'apportent
+ * aucune espèce.
  */
-export function tauxParIndividuHorsSeuil(etat: EtatJeu, banc: Banc): Decimal {
-  return tauxBaseDuBanc(banc).mul(multiplicateurDesDrapeaux(etat))
+export function debitBaseDeLEspece(espece: Espece): Decimal {
+  return new Decimal(TAUX_BASE_AU_PALIER_0).mul(Math.pow(DEBIT_RATIO_ESPECE, espece.rang))
 }
 
-/** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
-export function tauxParIndividu(etat: EtatJeu, banc: Banc, effectif: number): Decimal {
-  return tauxParIndividuHorsSeuil(etat, banc).mul(multiplicateurDeSeuil(effectif))
+/**
+ * Multiplicateur global accordé par la profondeur ouverte.
+ *
+ * Il porte la part de `D` que le bestiaire ne porte pas : sans lui, la
+ * production croîtrait de 26 % par palier là où le coût croît de 140 %, et
+ * l'écart se composerait jusqu'à rendre les cycles profonds interminables.
+ */
+export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
+  return Decimal.pow(multiplicateurDePalier(), Math.max(0, etat.cycle.paliersOuverts - 1))
 }
 
-export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
-  const bancEtat = etat.cycle.bancs[banc.id]
-  if (bancEtat === undefined || bancEtat.place <= 0) return new Decimal(0)
-  return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
+/** Ce qu'une espèce apporte à l'assiette additive, avant les multiplicateurs globaux. */
+function debitDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
+  const vivante = etat.cycle.especes[espece.id]
+  if (vivante === undefined || !vivante.debloquee || vivante.niveau === 0) return new Decimal(0)
+  return debitBaseDeLEspece(espece).mul(vivante.niveau).mul(multiplicateurDeSeuil(vivante.niveau))
 }
 
-/** La somme des bancs, sur tous les paliers ouverts — noyau v1.0 §10, un seul canal. */
+/** Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués. */
+export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
+  if (espece.palier >= etat.cycle.paliersOuverts) return new Decimal(0)
+  return debitDeLEspece(etat, espece)
+    .mul(multiplicateurDeProfondeur(etat))
+    .mul(multiplicateurDesDrapeaux(etat))
+}
+
+/** La somme des espèces débloquées — noyau v1.0 §10, un seul canal. */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
-  let total = new Decimal(0)
-  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    for (const banc of PALIERS[palier].bancs) {
-      total = total.add(productionDuBanc(etat, banc))
-    }
+  let assiette = new Decimal(0)
+  for (const espece of ESPECES) {
+    if (espece.palier >= etat.cycle.paliersOuverts) continue
+    assiette = assiette.add(debitDeLEspece(etat, espece))
   }
-  return total
+  if (assiette.lte(0)) return new Decimal(0)
+  return assiette.mul(multiplicateurDeProfondeur(etat)).mul(multiplicateurDesDrapeaux(etat))
 }
 
 /**
  * Détail de la captation (§8.2) : chaque terme actif attribuable à sa source.
  * C'est la contrepartie obligatoire d'un effet appliqué silencieusement.
  */
-export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCaptation[] {
-  const bancEtat = etat.cycle.bancs[banc.id]
-  const effectif = bancEtat?.effectif ?? 0
+export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly LigneDeCaptation[] {
+  const niveau = etat.cycle.especes[espece.id]?.niveau ?? 0
   return [
-    { terme: 'effectif', valeur: effectif, source: { quoi: 'population' } },
-    { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
+    { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
+    {
+      terme: 'taux_base',
+      valeur: debitBaseDeLEspece(espece).toNumber(),
+      source: { quoi: 'palier', palier: espece.palier },
+    },
     {
       terme: 'multiplicateur_jalon',
-      valeur: multiplicateurDeSeuil(effectif),
-      source: { quoi: 'place', place: bancEtat?.place ?? 0 },
+      valeur: multiplicateurDeSeuil(niveau),
+      source: { quoi: 'niveau', niveau },
     },
     {
       terme: 'multiplicateur_drapeau',
@@ -208,43 +211,36 @@ export function coutDeDescente(etat: EtatJeu, cible: IndexPalier): Decimal {
 }
 
 /**
- * Coût de conviction d'un banc — GDD §7.1.
+ * Ce que coûte de débloquer une espèce — noyau v1.0 §1.3.
  *
- *   coût_base(espèce) ÷ affinité(type, espèce) ÷ densité_locale_du_type
+ *   coût_base(palier de l'espèce) × COUT_DEBLOCAGE_RATIO
  *
- * « Le second dénominateur est la réponse au problème du prestige : une espèce
- * se laisse reconvaincre d'autant plus facilement que l'eau est déjà chargée du
- * type qu'elle supporte. Ce n'est pas un bonus, c'est une conséquence — la
- * densité conservée est la mémoire du monde, et c'est elle qui paie le retour. »
+ * Une fois par espèce et par vie. Le déblocage suit le coût de son palier
+ * plutôt qu'une échelle à lui : c'est la profondeur où elle vit qui dit ce
+ * qu'il en coûte de l'atteindre.
  *
- * Aucun facteur de technique ni de succès n'entre ici : la conviction est payée
- * par la densité, et par elle seule (§6.4, « un puits, un levier »).
- *
- * [P] La densité est portée par palier, là où le §7.1 l'indexe sur le TYPE de
- * mana. Les deux coïncident tant qu'une assise entière porte un type unique ;
- * elles cesseront de coïncider avec les temples, qui chargent un palier d'un
- * type qui n'est pas celui de son assise (§9).
+ * La densité n'entre plus ici. Elle payait la reconviction (GDD §7.1) tant
+ * qu'il y avait une population à reconvaincre ; depuis V11 elle n'a qu'un seul
+ * débouché, l'acquis de séjour, et le coût de déblocage est redevenu un levier
+ * ordinaire.
  */
-export function coutDeConviction(etat: EtatJeu, banc: Banc): Decimal {
-  const memoireDuMonde = Math.pow(
-    1 + densiteDuPalier(etat, banc.palier),
-    EXPOSANT_RECONVICTION_DENSITE,
-  )
-  return puissanceDeG(banc.palier)
-    .mul(COUT_DEBLOCAGE_AU_PALIER_0)
-    .div(AFFINITE_PLEINE_JUSQU_EN_V05)
-    .div(memoireDuMonde)
+export function coutDeDeblocage(etat: EtatJeu, espece: Espece): Decimal {
+  return coutBaseDuPalier(espece.palier)
+    .mul(COUT_DEBLOCAGE_RATIO)
+    .mul(facteurDeCout(etat, 'cout_deblocage'))
 }
 
 /**
- * Coût d'une place de plus. Achat répétable, ×1.15.
- * Le joueur achète de la place, jamais des individus (§2.C).
+ * Coût du niveau suivant. Achat répétable de la boucle, ×1.15.
+ *
+ * Il suit le débit de base de SON espèce, donc le temps de remboursement d'un
+ * niveau est le même pour la première espèce et pour la vingt et unième.
  */
-export function coutDePlace(etat: EtatJeu, banc: Banc, place: number): Decimal {
-  return puissanceDeG(banc.palier)
-    .mul(COUT_DE_PLACE_AU_PALIER_0)
-    .mul(puissanceDuCoutDeNiveau(Math.max(0, place - 1)))
-    .mul(facteurDeCout(etat, 'cout_place'))
+export function coutDeNiveau(etat: EtatJeu, espece: Espece, niveau: number): Decimal {
+  return debitBaseDeLEspece(espece)
+    .mul(COUT_NIVEAU_PAR_DEBIT)
+    .mul(puissanceDuCoutDeNiveau(Math.max(0, niveau)))
+    .mul(facteurDeCout(etat, 'cout_niveau'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
