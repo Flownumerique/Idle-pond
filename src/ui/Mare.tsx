@@ -16,7 +16,6 @@ import {
   coutDeDescente,
   coutDeDeblocage,
   coutDeNiveau,
-  estUnAmenagement,
   productionDeLEspece,
   toutEstCreuse,
 } from '../noyau/economie'
@@ -34,9 +33,6 @@ export function Mare({ etat, surDeblocage, surNiveau, surCreusement, surCaptatio
   const mana = etat.cycle.manaCourant
   const coutDuCreusement = coutDeDescente(etat, etat.cycle.paliersOuverts)
   const creusementPossible = !toutEstCreuse(etat) && coutDuCreusement.lte(contenance(etat))
-  // Deux puits, deux verbes (GDD §4.1). Rouvrir une galerie effondrée n'est pas
-  // creuser : la roche est déjà percée, c'est l'eau qu'il faut rendre vivable.
-  const aAmenager = estUnAmenagement(etat, etat.cycle.paliersOuverts)
 
   return (
     <section className="space-y-2">
@@ -103,7 +99,7 @@ export function Mare({ etat, surDeblocage, surNiveau, surCreusement, surCaptatio
           'Il n’y a plus de roche à ouvrir ici'
         ) : (
           <>
-            {aAmenager ? 'Rendre le fond habitable' : 'Creuser plus bas'}
+            Creuser plus bas
             <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDuCreusement)}</span>
           </>
         )}

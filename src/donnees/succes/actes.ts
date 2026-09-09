@@ -68,7 +68,7 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'ouvert',
     assise: ASSISE,
     declencheur: { quoi: 'especes_debloquees', seuil: 2 },
-    effet: { genre: 'reduction_cout', terme: 'reduction_technique', part: PART_REMISE_D_UN_SUCCES },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-dixieme-niveau',
@@ -87,7 +87,7 @@ export const ACTES: readonly Succes[] = [
     visibilite: 'ferme',
     assise: ASSISE,
     declencheur: { quoi: 'niveau_d_espece', espece: 'loche', seuil: 10 },
-    effet: { genre: 'reduction_cout', terme: 'reduction_technique', part: PART_REMISE_D_UN_SUCCES },
+    effet: { genre: 'reduction_cout', terme: 'cout_creuser', part: PART_REMISE_D_UN_SUCCES },
   },
   {
     id: 'acte-premier-palier-sature',

@@ -52,13 +52,12 @@ export type TermeDeProduction =
   | 'multiplicateur_drapeau'
 
 export type TermeDeCout =
-  /** Ouvrir un palier JAMAIS atteint. L'autre moitié est `reduction_technique`. */
-  | 'cout_creuser'
   /**
-   * Le levier de l'aménagement — GDD §6.4, seul terme qui allège un palier
-   * retraversé. Débouché des effets chiffrés de succès (amendement v1.1 §2.D).
+   * Ouvrir un palier — creusement neuf ou retraversée, noyau v1.0 §3.1 : `f` =
+   * 1, un seul puits, un seul levier. Débouché des effets chiffrés de succès
+   * (amendement v1.1 §2.D).
    */
-  | 'reduction_technique'
+  | 'cout_creuser'
   /** Monter une espèce d'un niveau. L'achat répétable de la boucle, ×1.15. */
   | 'cout_niveau'
   /**
@@ -93,7 +92,6 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
-  'reduction_technique',
   'cout_niveau',
   'cout_deblocage',
   'cout_temple',

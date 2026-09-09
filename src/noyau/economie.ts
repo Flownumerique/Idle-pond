@@ -25,7 +25,6 @@ import {
   COUT_NIVEAU_PAR_DEBIT,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
   DEBIT_RATIO_ESPECE,
-  F_FRACTION_D_AMENAGEMENT,
   NOMBRE_DE_PALIERS,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
@@ -182,32 +181,19 @@ export function coutBaseDuPalier(cible: IndexPalier): Decimal {
 }
 
 /**
- * Vrai si ce palier a déjà été atteint dans une vie précédente — GDD §6.4.
+ * Ce que coûte de descendre d'un palier — un seul puits, noyau v1.0 §3.1.
  *
- * C'est toute la distinction entre les deux puits du §4.1 : CREUSER ouvre le
- * palier suivant, AMÉNAGER rend habitable un palier que les galeries
- * effondrées ont refermé. « La roche ne se souvient pas des galeries »
- * (§10.1) ; le héros, lui, se souvient de la profondeur.
- */
-export function estUnAmenagement(etat: EtatJeu, cible: IndexPalier): boolean {
-  return cible < etat.permanent.profondeurMaxAtteinte
-}
-
-/**
- * Ce que coûte de descendre d'un palier — les deux puits du GDD §4.1.
+ *   coût_base(palier) × technique × succès
  *
- *   creuser   : coût_base(palier)
- *   aménager  : coût_base(palier) × f × réduction_technique      (§6.4)
- *
- * `reduction_technique` ne touche QUE l'aménagement, et c'est voulu : « un
- * puits, un levier ». Jusqu'au 2026-09-08 elle s'appliquait aussi au
- * creusement, ce qui donnait deux leviers au même coût et rendait l'ensemble
- * inéquilibrable.
+ * `f` valait 1 depuis toujours : le noyau v1.0 §3.1 ferme [P5] et retire le
+ * tarif réduit qu'un palier déjà atteint dans une vie passée payait avant le
+ * 2026-09-09. Retraverser coûte exactement ce qu'un creusement neuf coûterait
+ * — la profondeur maximale atteinte n'entre plus dans ce calcul.
  */
 export function coutDeDescente(etat: EtatJeu, cible: IndexPalier): Decimal {
-  const base = coutBaseDuPalier(cible)
-  if (!estUnAmenagement(etat, cible)) return base.mul(facteurDeCout(etat, 'cout_creuser'))
-  return base.mul(F_FRACTION_D_AMENAGEMENT).mul(facteurDeCout(etat, 'reduction_technique'))
+  return coutBaseDuPalier(cible)
+    .mul(facteurDeTechnique(etat, 'cout_creuser'))
+    .mul(facteurDeSucces(etat, 'cout_creuser'))
 }
 
 /**

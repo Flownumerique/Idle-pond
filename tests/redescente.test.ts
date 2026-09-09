@@ -1,60 +1,41 @@
 /**
- * Les deux puits de la descente — GDD §4.1 et §6.4.
- *
- * « Un puits, un levier. Aucun coût n'a deux leviers — c'est ce qui rend
- * l'ensemble équilibrable. »
- *
- * Ce que ces tests protègent n'est pas une valeur — `f` est une graine, et le
- * simulateur montre qu'elle ne suffit pas à atteindre les 20–25 % — mais la
- * FORME : deux puits distincts, un levier chacun.
- *
- * Le second bloc, « la conviction est payée par la densité » (§7.1), est parti
- * le 2026-09-09 avec le modèle à population : il n'y a plus de banc à
- * reconvaincre, et le déblocage d'une espèce est une fraction du coût de son
- * palier (noyau v1.0 §1.3). La tâche 6 réécrit ce qui reste ici.
+ * f = 1 — reset complet. Le noyau v1.0 §3.1 ferme [P5] : « Tout se repaie au
+ * prix d'origine. Il n'y a pas de tarif réduit à la redescente, comme dans
+ * n'importe quel idle. »
  */
 import { describe, expect, it } from 'vitest'
-import { F_FRACTION_D_AMENAGEMENT } from '../src/noyau/constantes'
-import { coutBaseDuPalier, coutDeDescente, estUnAmenagement } from '../src/noyau/economie'
-import { etatInitial } from '../src/noyau/noyau'
-import type { EtatJeu } from '../src/noyau/types'
+import Decimal from 'break_infinity.js'
+import { etatInitial, creuser } from '../src/noyau/noyau'
+import { coutDeDescente } from '../src/noyau/economie'
+import { eclore } from '../src/noyau/eclosion'
 
-/** Un état identique au départ, sauf la profondeur déjà atteinte dans une vie passée. */
-function ayantDejaAtteint(profondeur: number): EtatJeu {
-  const etat = etatInitial(1)
-  return { ...etat, permanent: { ...etat.permanent, profondeurMaxAtteinte: profondeur } }
-}
-
-describe('§4.1 — creuser et aménager sont deux puits', () => {
-  it('un palier jamais atteint se paie plein tarif', () => {
-    const etat = ayantDejaAtteint(0)
-    expect(estUnAmenagement(etat, 3)).toBe(false)
-    expect(coutDeDescente(etat, 3).eq(coutBaseDuPalier(3))).toBe(true)
-  })
-
-  it('un palier déjà atteint dans une vie passée se paie f fois moins', () => {
-    const etat = ayantDejaAtteint(10)
-    expect(estUnAmenagement(etat, 3)).toBe(true)
-    const attendu = coutBaseDuPalier(3).mul(F_FRACTION_D_AMENAGEMENT)
-    expect(coutDeDescente(etat, 3).eq(attendu)).toBe(true)
-  })
-
-  it('la frontière est exactement la profondeur maximale atteinte', () => {
-    // Le dernier palier connu s'aménage ; le premier inconnu se creuse. Une
-    // erreur d'un cran ici ferait repayer plein tarif le palier qu'on vient de
-    // quitter, ou brader le premier vrai creusement de la vie.
-    const etat = ayantDejaAtteint(10)
-    expect(estUnAmenagement(etat, 9)).toBe(true)
-    expect(estUnAmenagement(etat, 10)).toBe(false)
-    expect(estUnAmenagement(etat, 11)).toBe(false)
-  })
-
-  it('la première vie ne connaît que le creusement', () => {
-    // Rien n'a encore été atteint : aucun palier n'est un retour, et le cycle 1
-    // se joue donc exactement comme avant l'introduction de `f`.
-    const neuf = etatInitial(1)
-    for (let palier = 0; palier < 8; palier += 1) {
-      expect(estUnAmenagement(neuf, palier)).toBe(false)
+describe('§3.1 — la redescente se paie plein tarif', () => {
+  it('un palier déjà atteint dans une vie passée coûte exactement ce qu’il coûtait', () => {
+    let etat = {
+      ...etatInitial(7),
+      cycle: { ...etatInitial(7).cycle, manaCourant: new Decimal('1e30') },
+      permanent: { ...etatInitial(7).permanent, contenanceMana: new Decimal('1e40') },
     }
+    const coutNeuf = coutDeDescente(etat, 1)
+    for (let i = 0; i < 5; i += 1) etat = creuser(etat)
+    expect(etat.permanent.profondeurMaxAtteinte).toBeGreaterThanOrEqual(6)
+
+    const apres = { ...eclore(etat), cycle: { ...eclore(etat).cycle, manaCourant: new Decimal('1e30') } }
+    expect(coutDeDescente(apres, 1).eq(coutNeuf)).toBe(true)
+  })
+
+  it('creuser un palier neuf et le recreuser après éclosion coûtent le même prix', () => {
+    const neuf = etatInitial(7)
+    const riche = {
+      ...neuf,
+      cycle: { ...neuf.cycle, manaCourant: new Decimal('1e30') },
+      permanent: {
+        ...neuf.permanent,
+        contenanceMana: new Decimal('1e40'),
+        profondeurMaxAtteinte: 40, // une vie passée est allée très bas
+      },
+    }
+    // la profondeur déjà atteinte ne doit rien changer au prix
+    expect(coutDeDescente(riche, 3).eq(coutDeDescente(neuf, 3))).toBe(true)
   })
 })

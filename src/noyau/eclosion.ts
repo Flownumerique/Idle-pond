@@ -16,7 +16,6 @@
 import Decimal from 'break_infinity.js'
 import type { EtatCycle, EtatJeu } from './types'
 import {
-  F_TARIF_REDESCENTE,
   FOI_BASE,
   FOI_EXPOSANT,
   MANA_A_LA_SORTIE_DE_L_OEUF,
@@ -25,9 +24,6 @@ import {
 } from './constantes'
 import { appliquerGainDeDensite } from './densite'
 import { creditCompteur } from './technique'
-
-/** Fraction du peuplement conservée. f = 1 ⇒ zéro : il n'y a pas de demi-vie. */
-export const FRACTION_CONSERVEE = 1 - F_TARIF_REDESCENTE
 
 /**
  * Gain de Foi prévu, indexé sur la production de pic du cycle.

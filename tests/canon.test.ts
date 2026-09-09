@@ -20,7 +20,6 @@ import {
   DEBIT_RATIO_ESPECE,
   D_PRODUCTION_PAR_PALIER,
   ESPECE_TOUS_LES_N_PALIERS,
-  F_TARIF_REDESCENTE,
   G_COUT_PALIER,
   NOMBRE_DE_PALIERS,
   NOMBRE_D_ESPECES_DE_BASE,
@@ -35,7 +34,6 @@ import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
 import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
-import { FRACTION_CONSERVEE } from '../src/noyau/eclosion'
 import { sansCommentaires } from './outils'
 import {
   NOM_DES_ASSISES,
@@ -136,9 +134,10 @@ describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
    * plus de premier levier à protéger, et interdire le second reviendrait à
    * défendre une règle dont l'objet a disparu.
    *
-   * Ce qui reste vrai et reste vérifié : l'aménagement est le seul débouché de
-   * `reduction_technique` (voir `coutDeDescente`), et aucun effet ne monte une
-   * production.
+   * `reduction_technique` et le puits d'aménagement qu'il portait sont partis
+   * à leur tour le 2026-09-09 (tâche 6, noyau v1.0 §3.1) : `f` = 1, il n'y a
+   * plus qu'un seul puits de descente, `cout_creuser`. Ce qui reste vrai et
+   * reste vérifié : aucun effet ne monte une production.
    */
 
   it('aucun effet chiffré ne flotte sans terme nommé', () => {
@@ -190,9 +189,12 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     expect(D_PRODUCTION_PAR_PALIER).not.toBeCloseTo(G_COUT_PALIER, 2)
   })
 
-  it('f = 1 : reset complet, aucune fraction conservée', () => {
-    expect(F_TARIF_REDESCENTE).toBe(1)
-    expect(FRACTION_CONSERVEE).toBe(0)
+  it('f = 1 : reset complet, et la constante elle-même n’existe plus', () => {
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    expect(source).not.toContain('F_TARIF_REDESCENTE')
+    expect(source).not.toContain('estUnAmenagement')
   })
 
   it('les seuils sont CUMULÉS : le centième niveau vaut ×16, pas ×1024', () => {

@@ -18,19 +18,6 @@
 /** `g` — coût de palier. Chaque palier coûte ×2.4 le précédent. */
 export const G_COUT_PALIER = 2.4
 
-/**
- * Ce que l'éclosion emporte du peuplement et de la géométrie. 1 = tout.
- *
- * Conforme au GDD §10.1 : « les parois se referment, les galeries s'effondrent,
- * les paliers profonds redeviennent inaccessibles », et « ils ne se souviennent
- * pas — il faut reconvaincre ». Rien ne se conserve à moitié.
- *
- * À NE PAS CONFONDRE avec le `f` du GDD §6.4, qui est une tout autre quantité :
- * la fraction du coût d'origine que coûte un palier RETRAVERSÉ. C'est
- * `F_FRACTION_D_AMENAGEMENT`, plus bas.
- */
-export const F_TARIF_REDESCENTE = 1
-
 /** Coût de niveau, achat répétable. */
 export const RATIO_COUT_NIVEAU = 1.15
 
@@ -178,33 +165,6 @@ export const THETA_PART_COMPENSEE = 0.8
 export function densiteExposant(): number {
   return THETA_PART_COMPENSEE / ALPHA_GAIN_DE_DENSITE
 }
-
-/* ─── La redescente — GDD §6.4 ──────────────────────────────────────────────
- *
- * « Le puits de la redescente est aménager : rendre un palier de nouveau
- * habitable pour du vivant ordinaire. »
- *
- *   coût_aménagement(palier) = coût_base(palier) × f × réduction_technique
- *
- * Le héros ne repaie JAMAIS son acclimatation (Tier 0 §3) : ce qui se repaie
- * est l'habitabilité du palier pour son peuple. « Ce n'est pas lui qui se
- * réacclimate, c'est son peuple qui n'y est jamais allé. »
- */
-
-/**
- * [P5] graine — `f`, fraction du coût d'origine que coûte un palier déjà
- * atteint dans une vie précédente. Paramètre global unique.
- *
- * Le GDD le veut « réglé pour viser les 20–25 % » de cycle en redescente, et
- * prévenait au même endroit que le régler seul était tourner le mauvais
- * bouton : le vrai pilote était `k`, le taux de repeuplement. `k` n'existe
- * plus — il n'y a plus de population à repeupler —, donc `f` est redevenu le
- * seul réglage de la redescente. Il reste une entrée de mesure.
- *
- * [P] La tâche 6 le retire entièrement : le noyau v1.0 §3.1 ferme [P5] et ne
- * connaît plus de tarif réduit à la redescente.
- */
-export const F_FRACTION_D_AMENAGEMENT = 0.25
 
 /**
  * [P] graine — bonus global accordé par espèce ayant déjà atteint le niveau
