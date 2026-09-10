@@ -82,33 +82,80 @@ export function sansCommentaires(source: string): string {
  * — `` `${etat.bancs}` ``, `` `${acheterPlace(dt)}` `` — doit rester visible
  * au balayage. Seul le texte statique autour est blanchi ; chaque `${…}` est
  * recopié tel quel, accolades comprises.
+ *
+ * Implémentation : UN SEUL parcours de gauche à droite, qui reconnaît `"`,
+ * `'` et `` ` `` comme des ouvreurs de chaîne au fil du texte. Une première
+ * version faisait deux passes — une regex globale sur `"…"`/`'…'` sur TOUTE
+ * la source, suivie d'un parcours conscient des gabarits — et c'était le
+ * défaut : les deux passes n'avaient pas la même notion de « où commence une
+ * chaîne ». Une apostrophe française ordinaire dans le texte statique d'un
+ * gabarit (`` `n'a pas de bancs` ``) n'est pas un ouvreur de chaîne — mais la
+ * regex de la première passe, elle, la voyait comme tel, et s'appariait avec
+ * le premier `'` rencontré plus loin sur la même ligne, où qu'il soit,
+ * avalant en silence tout ce qui séparait les deux, code réel compris. Un
+ * seul parcours, une seule notion de « dans une chaîne », ferme la classe
+ * entière de trou plutôt qu'un correctif de plus sur les regex.
  */
 export function sansChaines(source: string): string {
-  return blanchirGabaritsDeSurface(
-    source.replace(/"(?:\\.|[^"\\\n])*"/g, '""').replace(/'(?:\\.|[^'\\\n])*'/g, "''"),
-  )
-}
-
-/** Parcourt le texte au premier niveau (hors gabarit) et blanchit chaque gabarit rencontré. */
-function blanchirGabaritsDeSurface(source: string): string {
   let resultat = ''
   let i = 0
   while (i < source.length) {
-    if (source[i] === '\\') {
+    const car = source[i]
+    if (car === '\\') {
       resultat += source.slice(i, i + 2)
       i += 2
       continue
     }
-    if (source[i] === '`') {
+    if (car === '"' || car === "'") {
+      const [chaine, fin] = blanchirChaineSimpleDepuis(source, i, car)
+      resultat += chaine
+      i = fin
+      continue
+    }
+    if (car === '`') {
       const [gabarit, fin] = blanchirGabaritDepuis(source, i)
       resultat += gabarit
       i = fin
       continue
     }
-    resultat += source[i]
+    resultat += car
     i += 1
   }
   return resultat
+}
+
+/**
+ * Blanchit le contenu d'une chaîne `'…'` ou `"…"` à partir de son guillemet
+ * ouvrant (indice `depart`, caractère `guillemet`), caractère par caractère,
+ * en préservant la forme. Une échappée (`\'`, `\"`, `\\`, …) est consommée
+ * comme une unité de deux caractères, donc un guillemet échappé ne referme
+ * jamais la chaîne prématurément. Une chaîne simple ou double ne s'étend
+ * jamais sur plusieurs lignes en JS/TS valide : un saut de ligne avant le
+ * guillemet fermant referme la chaîne sur place (comme le faisait l'ancienne
+ * regex, avec sa classe `[^"\\\n]`), sans consommer ce saut de ligne — il
+ * redevient du texte ordinaire pour la suite du parcours. Non refermée avant
+ * la fin du fichier : s'arrête proprement, sans boucler ni lever.
+ */
+function blanchirChaineSimpleDepuis(source: string, depart: number, guillemet: string): readonly [string, number] {
+  let i = depart + 1
+  let sortie = guillemet
+  while (i < source.length) {
+    const car = source[i]
+    if (car === '\\') {
+      sortie += '  '
+      i += 2
+      continue
+    }
+    if (car === guillemet) {
+      return [sortie + guillemet, i + 1]
+    }
+    if (car === '\n') {
+      return [sortie, i]
+    }
+    sortie += ' '
+    i += 1
+  }
+  return [sortie, i]
 }
 
 /**
