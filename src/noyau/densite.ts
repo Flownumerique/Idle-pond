@@ -7,8 +7,10 @@
  * s'en assurer.
  *
  * §6.5 : le gain de densité est indexé sur la production de pic du cycle, pas
- * sur la profondeur. Elle a UN SEUL débouché depuis V11 — l'acquis de séjour,
- * via `multiplicateurDensite` : « séjour en mana dense » (Tier 0 §8).
+ * sur la profondeur. Elle avait UN SEUL débouché depuis V11 — l'acquis de
+ * séjour, via `multiplicateurDensite` : « séjour en mana dense » (Tier 0 §8).
+ * La tâche 9 lui en ouvre un second : `multiplicateurDensite` multiplie aussi
+ * la production (§10), et la fonction reste unique pour les deux usages.
  *
  * `vitesseDeRepeuplement` est partie avec le modèle à population le 2026-09-09.
  * V11 avait déjà découplé la densité du repeuplement ; il ne restait plus qu'un
@@ -18,6 +20,7 @@ import type Decimal from 'break_infinity.js'
 import type { EtatJeu, IndexPalier } from './types'
 import {
   ALPHA_GAIN_DE_DENSITE,
+  DENSITE_DE_REFERENCE,
   PRODUCTION_DE_REFERENCE,
   densiteExposant,
 } from './constantes'
@@ -27,17 +30,26 @@ export function densiteDuPalier(etat: EtatJeu, palier: IndexPalier): number {
   return etat.permanent.densites[palier] ?? 0
 }
 
+/** La densité du bassin : la somme de ce que chaque palier porte. */
+export function densiteTotale(etat: EtatJeu): number {
+  return etat.permanent.densites.reduce((somme, d) => somme + d, 0)
+}
+
 /**
- * Multiplicateur de densité : `densité ^ (θ/α)` (amendement v1.1 §2.A).
+ * Multiplicateur de densité : `(1 + densité / d₀) ^ (θ/α)` (amendement v1.1
+ * §2.A, forme des contraintes globales du plan).
  *
- * Il ne multiplie pas une production. Il raccourcit le temps caractéristique du
- * séjour (§2.B) : c'est la traduction mécanique de « séjour en mana DENSE ».
+ * Il raccourcit le temps caractéristique du séjour (§2.B) — c'est la
+ * traduction mécanique de « séjour en mana DENSE » — et, depuis la tâche 9, il
+ * multiplie aussi la production (§10) au même titre que le multiplicateur de
+ * profondeur : les deux sont des TermeDeFormule nommés dans le détail de
+ * captation, jamais des facteurs flottants (§7.5 règle 3).
  *
- * Planché à 1 : une densité nulle ne doit pas ralentir le séjour au-delà de
- * `τ₀`, qui est déjà le cas neutre.
+ * À densité nulle il vaut exactement 1 : une eau neutre ne raccourcit ni ne
+ * rallonge le séjour au-delà de `τ₀`, qui est déjà le cas neutre.
  */
 export function multiplicateurDensite(densite: number): number {
-  return Math.pow(Math.max(1, densite), densiteExposant())
+  return Math.pow(1 + densite / DENSITE_DE_REFERENCE, densiteExposant())
 }
 
 /**

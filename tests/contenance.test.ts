@@ -71,8 +71,20 @@ describe('contenance', () => {
   })
 
   it('la densité raccourcit le séjour, elle ne le rallonge jamais', () => {
-    expect(multiplicateurDensite(0)).toBe(1)
-    expect(multiplicateurDensite(1)).toBe(1)
+    // Le point `multiplicateurDensite(1) === 1` verrouillait le PLANCHER de
+    // l'ancienne forme (`Math.max(1, densité)^e`), remplacée depuis la tâche 9
+    // par celle des contraintes globales du plan, `(1 + densité/d₀)^e` — les
+    // deux coïncident à densité 0, pas à densité 1. Ce que ce test protège
+    // n'est pas ce point-là : c'est l'invariant que son propre nom porte —
+    // « elle ne le rallonge jamais » — donc `≥ 1` partout, et croissant.
+    let precedent = multiplicateurDensite(0)
+    expect(precedent).toBe(1)
+    for (const densite of [0.5, 1, 2, 5, 10, 50]) {
+      const valeur = multiplicateurDensite(densite)
+      expect(valeur).toBeGreaterThanOrEqual(1)
+      expect(valeur).toBeGreaterThanOrEqual(precedent)
+      precedent = valeur
+    }
     expect(multiplicateurDensite(10)).toBeGreaterThan(1)
     // Une eau dense sature plus vite : c'est la compensation du §2.A.
     const depart = etatInitial(1)

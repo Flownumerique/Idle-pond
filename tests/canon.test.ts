@@ -52,6 +52,10 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'palier', palier: 4 },
   { quoi: 'drapeaux_permanents', especes: 0 },
   { quoi: 'drapeaux_permanents', especes: 3 },
+  { quoi: 'profondeur', paliersOuverts: 1 },
+  { quoi: 'profondeur', paliersOuverts: 7 },
+  { quoi: 'densite', densite: 0 },
+  { quoi: 'densite', densite: 12.5 },
 ]
 
 const RACINE = resolve(__dirname, '..')

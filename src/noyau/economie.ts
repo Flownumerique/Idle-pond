@@ -24,13 +24,16 @@ import {
   COUT_DEBLOCAGE_RATIO,
   COUT_NIVEAU_PAR_DEBIT,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
+  DEBIT_HEROS,
   DEBIT_RATIO_ESPECE,
+  ECHELLE_DE_PRODUCTION,
   NOMBRE_DE_PALIERS,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
   TAUX_BASE_AU_PALIER_0,
   multiplicateurDePalier,
 } from './constantes'
+import { densiteTotale, multiplicateurDensite } from './densite'
 import { puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
 import { ESPECES } from '../donnees/especes'
 import { facteurDeTechnique } from './technique'
@@ -104,18 +107,36 @@ export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
   if (espece.palier >= etat.cycle.paliersOuverts) return new Decimal(0)
   return debitDeLEspece(etat, espece)
     .mul(multiplicateurDeProfondeur(etat))
+    .mul(multiplicateurDensite(densiteTotale(etat)))
     .mul(multiplicateurDesDrapeaux(etat))
 }
 
-/** La somme des espèces débloquées — noyau v1.0 §10, un seul canal. */
+/**
+ * La somme des espèces débloquées, PLUS le débit propre du héros — noyau v1.0
+ * §10 : un seul canal pour le bestiaire, et sa mutation à lui pour empêcher
+ * l'état DÉGÉNÉRÉ où plus rien ne produirait jamais (RESULTATS.md, finding 3,
+ * tâche 9). Le premier achat, lui, est tenu par la charge de départ
+ * (`MANA_A_LA_SORTIE_DE_L_OEUF`, voir son commentaire dans `constantes.ts`) —
+ * les deux mécanismes répondent à des besoins différents et ne se remplacent
+ * pas l'un l'autre.
+ *
+ * L'assiette additive (débit du héros + débit de chaque espèce, AVANT
+ * multiplicateurs) est sommée une seule fois, puis les multiplicateurs
+ * globaux — profondeur, densité, drapeaux, échelle — s'appliquent une seule
+ * fois sur le total : les appliquer par espèce puis resommer les
+ * appliquerait deux fois.
+ */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
-  let assiette = new Decimal(0)
+  let assiette = new Decimal(DEBIT_HEROS)
   for (const espece of ESPECES) {
     if (espece.palier >= etat.cycle.paliersOuverts) continue
     assiette = assiette.add(debitDeLEspece(etat, espece))
   }
-  if (assiette.lte(0)) return new Decimal(0)
-  return assiette.mul(multiplicateurDeProfondeur(etat)).mul(multiplicateurDesDrapeaux(etat))
+  return assiette
+    .mul(multiplicateurDeProfondeur(etat))
+    .mul(multiplicateurDensite(densiteTotale(etat)))
+    .mul(multiplicateurDesDrapeaux(etat))
+    .mul(ECHELLE_DE_PRODUCTION)
 }
 
 /**
@@ -124,6 +145,7 @@ export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
  */
 export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly LigneDeCaptation[] {
   const niveau = etat.cycle.especes[espece.id]?.niveau ?? 0
+  const densite = densiteTotale(etat)
   return [
     { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
     {
@@ -140,6 +162,16 @@ export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly Ligne
       terme: 'multiplicateur_drapeau',
       valeur: multiplicateurDesDrapeaux(etat),
       source: { quoi: 'drapeaux_permanents', especes: etat.permanent.especesAyantAtteintCent.length },
+    },
+    {
+      terme: 'multiplicateur_profondeur',
+      valeur: multiplicateurDeProfondeur(etat).toNumber(),
+      source: { quoi: 'profondeur', paliersOuverts: etat.cycle.paliersOuverts },
+    },
+    {
+      terme: 'multiplicateur_densite',
+      valeur: multiplicateurDensite(densite),
+      source: { quoi: 'densite', densite },
     },
   ]
 }

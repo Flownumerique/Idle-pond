@@ -50,6 +50,14 @@ export type TermeDeProduction =
   | 'niveau'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
+  /**
+   * Multiplicateur global accordé par la profondeur ouverte. Multipliait déjà
+   * la production avant la tâche 9, sans être nommé ici — une violation du
+   * §7.5 règle 3 qu'aucun test ne surveillait. Fermée avec `multiplicateur_densite`.
+   */
+  | 'multiplicateur_profondeur'
+  /** Multiplicateur de densité (`(1 + densité/d₀)^(θ/α)`), appliqué à la production depuis la tâche 9. */
+  | 'multiplicateur_densite'
 
 export type TermeDeCout =
   /**
@@ -88,6 +96,8 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'niveau',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
+  'multiplicateur_profondeur',
+  'multiplicateur_densite',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
@@ -437,6 +447,10 @@ export type SourceDeTerme =
   | { readonly quoi: 'niveau'; readonly niveau: number }
   | { readonly quoi: 'palier'; readonly palier: IndexPalier }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
+  /** Source du multiplicateur de profondeur : combien de paliers sont ouverts. */
+  | { readonly quoi: 'profondeur'; readonly paliersOuverts: number }
+  /** Source du multiplicateur de densité : la densité totale du bassin. */
+  | { readonly quoi: 'densite'; readonly densite: number }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

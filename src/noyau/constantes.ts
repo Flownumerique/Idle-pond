@@ -167,6 +167,14 @@ export function densiteExposant(): number {
 }
 
 /**
+ * `d₀` — densité de référence du multiplicateur de densité, forme
+ * `(1 + densité / d₀) ^ (θ/α)` (contraintes globales du plan).
+ *
+ * [P] graine — seed neutre à 1, à résoudre quand les nombres seront calibrés.
+ */
+export const DENSITE_DE_REFERENCE = 1
+
+/**
  * [P] graine — bonus global accordé par espèce ayant déjà atteint le niveau
  * cent. Définitif, conservé à l'éclosion. Mesuré en v0.3.
  *
@@ -246,16 +254,72 @@ export const PALIERS_OUVERTS_AU_DEPART = 1
 /**
  * [P] graine — mana porté à la sortie de l'œuf.
  *
- * Il en faut : le mana courant est perdu à l'éclosion (§6.5) et la production
- * naît de la première espèce débloquée. Sans cette charge de départ, la seule
- * façon d'amorcer une vie serait un clic — or aucune présence active n'est
- * requise et il n'y a pas de clic obligatoire (§4.2). Calé sur le coût du
- * premier déblocage, ni plus ni moins.
+ * DEUX mécanismes tiennent l'amorçage, et ils ne sont PAS interchangeables —
+ * c'est une mesure de la tâche 9, pas une hypothèse :
  *
- * [P] Il tombera avec la tâche 9 : `DEBIT_HEROS` amorcera la partie à la place,
- * et le héros captera l'ambiant tout seul (RESULTATS.md, finding 3).
+ *   `MANA_A_LA_SORTIE_DE_L_OEUF` (cette constante) tient §8.4 (premier succès
+ *   quasi immédiat) et §4.2 (aucun clic obligatoire). C'est une charge
+ *   UNIQUE, calée sur le coût du premier déblocage — « ni plus ni moins » —
+ *   qui bootstrappe puis cesse de compter : une fois dépensée, elle
+ *   n'influence plus jamais le rythme du jeu.
+ *
+ *   `DEBIT_HEROS`, plus bas, tient `RESULTATS.md` finding 3 — mais le
+ *   contenu réel de finding 3 est l'état DÉGÉNÉRÉ (production exactement
+ *   nulle, donc plus rien n'est jamais affordable après que la charge
+ *   ci-dessus a été dépensée), pas la vitesse du premier achat. Un débit
+ *   minuscule suffit à fermer ce trou-là ; il n'a jamais eu besoin d'être
+ *   grand.
+ *
+ * La tâche 9 a d'abord tenté de remplacer la charge par un débit
+ * suffisamment grand pour, À LUI SEUL, tenir §8.4. Mesuré et réfuté : un
+ * débit PERMANENT (ajouté à l'assiette à chaque tick, pour toujours, pas
+ * seulement au démarrage) assez grand pour financer le premier déblocage en
+ * moins de 120 s accélère aussi, en permanence, toute la suite de la partie
+ * — l'avance initiale se compose sur des dizaines d'achats dans une économie
+ * à paliers géométriques — et épuise le registre fini de succès de la Noue
+ * bien avant la trentième minute (voir le rapport de la tâche 9, mesures à
+ * l'appui : aucune marge testée entre 0.17× et 2× le plancher arithmétique ne
+ * satisfait simultanément « premier succès < 120 s » et « aucun trou > 5 min
+ * sur 30 min »). Une charge UNIQUE n'a pas ce défaut : elle ne pousse
+ * personne en avant après avoir été dépensée. D'où les deux mécanismes,
+ * délibérément, plutôt qu'un seul répondant à deux besoins différents.
+ *
+ * Calé sur le coût du premier déblocage, ni plus ni moins — c'est aussi ce
+ * qui permet à `tests/voix.test.ts:73` d'appeler `debloquer` avant tout
+ * tick : à `manaCourant` égal au coût pile, l'achat réussit sans qu'aucune
+ * seconde de jeu se soit écoulée.
  */
 export const MANA_A_LA_SORTIE_DE_L_OEUF = COUT_CREUSER_AU_PALIER_1 * COUT_DEBLOCAGE_RATIO
+
+/**
+ * [P] graine — débit propre du héros, mana/s. C'est sa mutation : il capte
+ * l'ambiant tout seul, sans attendre aucune espèce.
+ *
+ * Ferme le TROU DÉGÉNÉRÉ de `RESULTATS.md` finding 3 : une fois la charge de
+ * `MANA_A_LA_SORTIE_DE_L_OEUF` dépensée, si plus aucune production
+ * n'existait, le mana resterait à zéro pour toujours et aucune espèce ne
+ * serait plus jamais débloquée. Un débit minuscule suffit à l'empêcher — il
+ * n'a jamais eu besoin d'être assez grand pour, À LUI SEUL, tenir le
+ * plancher de cadence du §8.4 : c'est le rôle de la charge ci-dessus. Voir
+ * son commentaire pour la mesure qui sépare les deux rôles.
+ *
+ * Le terme devient négligeable dès que la première espèce est montée de
+ * quelques niveaux (`tests/amorcage.test.ts`). À remesurer en v0.3, comme
+ * `TAUX_BASE_AU_PALIER_0`.
+ */
+export const DEBIT_HEROS = 0.05
+
+/**
+ * [P] — échelle globale de production, neutre à 1. Elle ne règle que la DURÉE
+ * absolue d'une partie, rien dans sa forme.
+ *
+ * À lire comme du code mort tant qu'elle vaut 1 : c'est voulu. C'est le cadran
+ * qu'un calibrage ultérieur actionnera pour accélérer ou ralentir le jeu dans
+ * son ensemble sans toucher un seul ratio. L'introduire maintenant, même
+ * inerte, évite de retraverser tous les appelants de `productionTotaleParSeconde`
+ * le jour où elle bougera.
+ */
+export const ECHELLE_DE_PRODUCTION = 1
 
 /* ─── Contenance et acquis de séjour — amendement v1.1 §2.B ─────────────────
  *

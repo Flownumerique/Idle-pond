@@ -40,7 +40,14 @@ export function gainDeFoiPrevu(etat: EtatJeu): Decimal {
   return new Decimal(FOI_BASE).mul(Decimal.pow(rapport, FOI_EXPOSANT)).floor()
 }
 
-/** L'état de cycle d'un départ d'œuf. Aucun acquis permanent n'y figure. */
+/**
+ * L'état de cycle d'un départ d'œuf. Aucun acquis permanent n'y figure.
+ *
+ * Le mana courant part chargé — `MANA_A_LA_SORTIE_DE_L_OEUF` — et pas de
+ * zéro : la tâche 9 a mesuré que `DEBIT_HEROS` seul ne peut pas tenir cette
+ * place (voir son commentaire dans `constantes.ts`). Les deux mécanismes
+ * coexistent délibérément.
+ */
 export function cycleInitial(): EtatCycle {
   return {
     manaCourant: new Decimal(MANA_A_LA_SORTIE_DE_L_OEUF),

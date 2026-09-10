@@ -41,10 +41,12 @@ describe('une espèce est un générateur avec un niveau (noyau v1.0 §1.3)', ()
   it('débloquer met le niveau à 1 et produit immédiatement', () => {
     let etat = RICHE()
     const premiere = ESPECES[0]
-    expect(productionTotaleParSeconde(etat).eq(0)).toBe(true)
+    // Depuis la tâche 9, le héros seul produit déjà (RESULTATS.md, finding 3) :
+    // ce n'est plus le départ de 0 qui prouve l'achat, c'est la hausse.
+    const avant = productionTotaleParSeconde(etat)
     etat = debloquer(etat, premiere.id)
     expect(etat.cycle.especes[premiere.id].niveau).toBe(1)
-    expect(productionTotaleParSeconde(etat).gt(0)).toBe(true)
+    expect(productionTotaleParSeconde(etat).gt(avant)).toBe(true)
   })
 
   it('le niveau agit sans délai : aucune population ne converge', () => {

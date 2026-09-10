@@ -94,5 +94,9 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return source.especes === 0
         ? 'aucune espèce au complet'
         : `${source.especes} espèce${source.especes > 1 ? 's' : ''} déjà au complet`
+    case 'profondeur':
+      return profondeur(Math.max(0, source.paliersOuverts - 1))
+    case 'densite':
+      return source.densite <= 0 ? 'eau neutre' : `eau à ${source.densite.toFixed(1)} de densité`
   }
 }
