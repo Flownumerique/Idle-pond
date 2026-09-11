@@ -28,16 +28,19 @@ git-ignoré.
 |---|---|---|---|
 | 8 | Verrouiller la purge par balayage | `23dd32c..ad86e77` | close, 2 rounds |
 | 9 | L'amorçage, et tout terme de production nommé | `ad86e77..dce03ce` | close, 2 rounds de revue |
-| 10 | L'éclosion ; l'acquis de séjour réparé | `d380e8d` | livrée, **en revue** |
-| 11 à 14 | | — | arbitrées d'avance, voir plus bas |
+| 10 | L'éclosion ; l'acquis de séjour réparé | `dce03ce..eddb04a` | close, 1 round de revue |
+| 11 | Une partie sans interface atteint l'éclosion 2 | `58b143c` | livrée, **en revue** |
+| 12 à 14 | | — | arbitrées d'avance, voir plus bas |
 
-**La phase 1 est close.** Suite : 138 tests sur 18 fichiers, `tsc`, `eslint` et
+**La phase 1 est close.** Suite : 139 tests sur 19 fichiers, `tsc`, `eslint` et
 `build` propres ; une assertion parquée en `it.fails` (voir R23).
 
 Vérifié dans le vrai jeu le 2026-09-11 (Playwright, profil vierge) : l'œuf
 démarre à 36 mana, la première espèce est achetable immédiatement, le premier
 succès tombe à l'instant, le panneau de captation montre six termes nommés, et
-le total porte la ligne du héros.
+le total porte la ligne du héros. La partie sans interface de la tâche 11
+atteint sa deuxième éclosion en 5,2 h de jeu, aux profondeurs 6 puis 10, en
+éclosant sous la règle du simulateur.
 
 ### Le vrai sujet du §4, résolu
 
@@ -51,7 +54,14 @@ V11 était fausse : la saturation borne la VALEUR de l'acquis, pas le TEMPS pour
 l'atteindre. Le canon est amendé (`docs/amendement-v1.1.md`, §2.B et V11), avec
 la loi exponentielle mesurée et écartée.
 
-### Les arbitrages R11 à R39
+Précision sur le §4 d'origine, plus bas : ses « 0,09 h » ont été mesurés avant
+le 2026-09-10, sous la forme `max(1, d)^(θ/α)` du multiplicateur de densité, que
+la tâche 9 a remplacée par `(1 + d/d₀)^(θ/α)`. Sous la loi actuelle, la pointe
+du premier cycle (27,8 /s) laisse une densité de 7,3, d'où un `t₉₀` de 0,12 h
+au deuxième cycle et de 0,05 seconde au troisième : la dégénérescence était
+plus rapide encore que ne le disait le §4.
+
+### Les arbitrages R11 à R40
 
 Chacun avec ce qu'il coûte s'il est faux. Trois ont été renversés par la mesure
 en cours de route ; ils restent ici, marqués, plutôt qu'effacés.
@@ -112,7 +122,7 @@ en cours de route ; ils restent ici, marqués, plutôt qu'effacés.
 - **R33** — T11 : ne pas resserrer l'équivalence de pas en égalité exacte.
   *Coût* : nul.
 - **R34** — T12 : retirer `secondesEnRedescente` de la télémétrie exige une
-  migration 5 → 6 si elle est persistée, avec un test qui EXÉCUTE
+  migration 5 → 6 — elle est persistée, c'est vérifié —, avec un test qui EXÉCUTE
   `MIGRATIONS[5]` ; le champ rejoint le balayage de canon. *Coût* : une
   migration triviale.
 - **R35** — T12 : la politique garde `fractionDeSaturationPourEclore`
@@ -130,15 +140,21 @@ en cours de route ; ils restent ici, marqués, plutôt qu'effacés.
   ×41,66 au lieu de ×47,09, et 200 h contre 3 h rapportaient 1,130 au lieu de
   1,032 — deux assertions de canon. *Coût* : un séjour écourté pénalise moins,
   choix que le canon a fait.
+- **R40** — T12 retire bien la mesure de redescente, mais pour la bonne raison :
+  la « Métrique n° 1 » du GDD (§16.4, cible 25 %) appartient au §16, que
+  `PRESEANCE.md` déclare dépassé par le noyau v1.0 — le brief invoquait à tort
+  l'absence de tarif. Avant le retrait, T12 relève une fois la part de temps en
+  redescente sous sa politique, et T14 la cite. *Coût* : l'instrument d'un
+  risque que le GDD plaçait en premier, reconstructible en quelques lignes.
 
 Restent à solder en T12 : R5 (`NOMBRE_D_ECLOSIONS_VISE` de 15 à 45) et le code
 mort `aDivergeSeul`. R4 est confirmé : les coûts de nœud font 167, pas 5.
 
 ### Ce qui reste
 
-- **T10** : revue en cours.
-- **T11** : R31 à R33.
-- **T12** : R34 à R36, R5, `aDivergeSeul`. Attention : les cycles simulés
+- **T11** : revue en cours.
+- **T12** : R34 à R36 et R40, R5, `aDivergeSeul` ; la migration 5 → 6 est
+  due (la télémétrie est persistée, vérifié). Attention : les cycles simulés
   durent exactement l'intervalle de relevé du joueur (4 h) — la durée mesure la
   politique, pas l'économie, tant que T12 ne l'a pas réécrite.
 - **T13** : défauts relevés, à arbitrer SUR MESURE après T12. Son test ne
