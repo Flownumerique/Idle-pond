@@ -92,8 +92,9 @@ describe('contenance', () => {
   // Ces deux tests remplacent l'affirmation « une eau dense sature plus vite ».
   // Elle verrouillait une dégénérescence : la densité vaut `pointe^α` et croît
   // sans borne, donc un temps caractéristique divisé par elle s'effondre — t₉₀
-  // de 2 h à densité nulle, 0,09 h à densité 10, quasi nul à 10⁶. L'acquis
-  // saturait alors en quelques dizaines de secondes dès le deuxième cycle, et
+  // de 2 h à densité nulle, 0,082 h à densité 10, quasi nul à 10⁶. L'acquis
+  // saturait alors en quelques minutes au deuxième cycle, en une fraction de
+  // seconde à partir du troisième, et
   // la contenance ne lisait plus que `A∞` : un forfait plat, sous le nom de
   // séjour. Le temps du séjour est désormais `τ₀`, constant.
   it('le temps du séjour ne dépend plus de la densité', () => {
@@ -107,7 +108,8 @@ describe('contenance', () => {
   })
 
   it('en eau dense, une heure de séjour ne sature toujours pas l’acquis', () => {
-    // Densité 10 : celle qu'un deuxième cycle atteint déjà (pointe ≈ 46 /s).
+    // Densité 10 : du même ordre que celle que laisse le premier cycle (7,3,
+    // mesuré) ; le deuxième en laisse déjà 7 100.
     // Après une heure, l'acquis vaut `1 − e^(−1 h / τ₀)` ≈ 0,683 de `A∞`, et non
     // ≈ 1 : la loi de contenance lit encore la durée du séjour.
     const depart = etatInitial(1)

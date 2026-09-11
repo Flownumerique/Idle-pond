@@ -61,12 +61,20 @@ repeuplement porte donc un exposant **nommé et volontairement doux**, distinct
 de `θ/α` : appliquer le multiplicateur plein des deux côtés compterait deux fois
 la même compensation. À trancher en v0.3.
 
+> **Périmé le 2026-09-11.** La densité ne retourne plus ni dans le
+> repeuplement (V11, §6) ni dans l'acquis de séjour (§3, « 2.B », sous-section
+> « Amendé le 2026-09-11 ») : elle agit sur la production seule. La question
+> du double compte ne se pose plus.
+
 ### 2.B — la contenance monte par l'acquis de séjour
 
 `EtatCycle.acquisDeSejour`, accumulation saturante vers `A∞` dont le temps
 caractéristique décroît quand la densité monte. Le facteur ×47,1 **n'est écrit
 nulle part** dans le code de l'éclosion : il émerge de `A∞ = 47.6` et
 `τ₀ = 0.87 h`, et le test le vérifie à 2 % près.
+
+> **Amendé le 2026-09-11** : le temps caractéristique ne décroît plus avec la
+> densité, il vaut `τ₀`, constant. Voir la sous-section datée ci-dessous.
 
 Les deux graines se tiennent l'une l'autre, et c'est vérifié : trois heures de
 séjour portent l'acquis à 46,1, donc la contenance à ×47,09 contre ×47,10 visé.
@@ -81,17 +89,27 @@ joueur est réelle, et un test l'affirme.
 
 Le temps caractéristique de l'acquis était `τ₀ / mult_densité(densité)`. La
 densité vaut `pointe^α` et croît sans borne ; `τ` s'effondrait donc avec elle.
-Avec `θ/α = 1,333` et `τ₀ = 0,87 h`, `t₉₀ = τ × ln 10` :
+Avec `θ/α = 4/3`, `d₀ = 1` et `τ₀ = 0,87 h`,
+`t₉₀ = τ₀ × ln 10 / (1 + densité)^(4/3)` :
 
-| densité | 0 | 3 | 10 | 100 | 10⁶ |
-|---|---|---|---|---|---|
-| `t₉₀` du séjour | 2,00 h | 0,46 h | 0,093 h | 0,004 h | ~0 |
-| pointe qui la laisse | — | 6 /s | 46 /s | 2 154 /s | 10¹⁰ /s |
+| densité | 0 | 1 | 3 | 10 | 100 | 10⁶ |
+|---|---|---|---|---|---|---|
+| `t₉₀` du séjour | 2,00 h | 0,80 h | 0,32 h | 0,082 h | 0,0043 h | ~0 |
+| pointe qui la laisse | — | 1 /s | 6 /s | 46 /s | 2 154 /s | 10¹⁰ /s |
 
-Une pointe de 46 mana/s est atteinte dès le premier cycle. Mesuré sur quinze
-cycles, politique par défaut du simulateur : les deux premiers cycles durent
-4 h, **tous les suivants de 4 à 14 secondes**, et l'acquis vaut exactement `A∞`
-à chaque éclosion. La loi de contenance ne lisait plus la durée du séjour : elle
+Mesuré sur quinze cycles, politique par défaut du simulateur : le premier
+cycle culmine à 27,8 mana/s et laisse une densité de 7,3, qui met le `t₉₀` du
+deuxième cycle à 0,12 h ; le deuxième culmine à 2,6·10⁶ mana/s et laisse une
+densité de 7 100, soit un `t₉₀` de 0,05 s au troisième. Les deux premiers
+cycles durent 4 h, **tous les suivants de 4 à 14 secondes**, et l'acquis vaut
+exactement `A∞` à chaque éclosion à partir de la deuxième (0,990 à la
+première).
+
+Un premier relevé, pris avant le 2026-09-10 sous la forme
+`max(1, densité)^(θ/α)` que le code avait alors, donnait 0,09 h de `t₉₀` sur
+les cycles 2 à 6. Recalculé sous la loi actuelle, l'effondrement est de même
+nature : 0,082 h à densité 10, 0,12 h à la densité que laisse réellement le
+premier cycle. La loi de contenance ne lisait plus la durée du séjour : elle
 rendait un forfait de ×48,6 par éclosion, sous le nom de séjour. Le pilier
 Tier 0 « le plafond ne monte que par séjour prolongé » était devenu décoratif.
 
@@ -260,7 +278,8 @@ c'est-à-dire ce que le GDD §7.2 décrit comme la boucle elle-même.
 > **Corrigé le 2026-09-11 : le canal gardé ne tenait pas davantage.** La
 > saturation borne la valeur de l'acquis, pas le temps pour l'atteindre ; le
 > `τ` du séjour s'effondrait exactement comme celui du repeuplement — `t₉₀` de
-> 2 h à 0,09 h dès le deuxième cycle —, et l'effondrement était masqué parce
+> 2 h à 0,12 h au deuxième cycle, à 0,05 s au troisième —, et l'effondrement
+> était masqué parce
 > que la contenance ne lit l'acquis qu'à l'éclosion. Par le critère même de
 > V11, la densité sort aussi du temps du séjour : `τ = τ₀`, constant. Mesure et
 > décision au §3, sous « 2.B ». La phrase « elle travaille par l'acquis de

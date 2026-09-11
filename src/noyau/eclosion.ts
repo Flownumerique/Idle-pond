@@ -74,6 +74,8 @@ export function eclore(etat: EtatJeu): EtatJeu {
 
   // Le plafond ne monte QUE par séjour prolongé en mana dense (Tier 0 §8) :
   // l'acquis accumulé pendant le cycle se dépense ici, et nulle part ailleurs.
+  // « Dense » n'agit plus sur l'acquis, dont le temps vaut `τ₀` constant : il
+  // agit sur la production, par le multiplicateur de densité.
   // Aucun facteur n'est écrit en dur — le ×47,1 visé est un RÉSULTAT de
   // `A∞` et `τ₀`, pas une ligne de code (§2.B).
   const acquisFixe = etat.cycle.acquisDeSejour

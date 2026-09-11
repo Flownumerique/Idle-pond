@@ -154,6 +154,12 @@ rapport que la saturation borne, donc il tient. Le canal du §6.5 de la v1.0 —
 densité qui retourne dans la vitesse de repeuplement — la met à un exposant nu,
 et rien ne la retient.
 
+> **Corrigé le 2026-09-11.** Le canal du §2.B ne tenait pas : la saturation
+> borne la valeur de l'acquis, pas le temps pour l'atteindre, et le `τ` du
+> séjour s'effondrait comme celui du repeuplement. La densité en est sortie à
+> son tour. Voir `amendement-v1.1.md`, §3, « 2.B », sous-section « Amendé le
+> 2026-09-11 ».
+
 Je n'ai pas tranché : c'est un canal de canon, et le §7 dit de demander. Le code
 garde le couplage, la télémétrie relève `τ`, et un test empêche la
 dégénérescence de passer inaperçue. **Trois issues possibles**, dans l'ordre où
@@ -162,6 +168,11 @@ je les recommanderais :
 1. **Découpler.** La densité travaille par l'acquis de séjour (§2.B) et rien
    d'autre. C'est cohérent avec l'amendement, qui définit une chaîne complète
    sans jamais mentionner le repeuplement.
+
+   > **Corrigé le 2026-09-11.** Le découplage du repeuplement a été retenu,
+   > mais « par l'acquis de séjour et rien d'autre » n'a pas tenu : la densité
+   > est sortie aussi du temps du séjour, et elle travaille désormais par la
+   > production, et par rien d'autre. Même renvoi.
 2. **Borner le couplage** par un plafond nommé, pour garder un `k` qui monte
    mais ne s'évanouit pas.
 3. **Coupler à autre chose** que la densité brute — sa profondeur, son rang,

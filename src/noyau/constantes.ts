@@ -338,8 +338,9 @@ export const ECHELLE_DE_PRODUCTION = 1
  *
  * La densité n'entre pas dans ce temps (amendement v1.1, §2.B, 2026-09-11).
  * Elle vaut `pointe^α` et croît sans borne : un `τ` divisé par elle mettait le
- * `t₉₀` à 0,09 h dès le deuxième cycle, l'acquis saturait toujours avant
- * l'éclosion, et la contenance ne lisait plus qu'un forfait. « Séjour en mana
+ * `t₉₀` à 0,12 h au deuxième cycle et à 0,05 s au troisième, l'acquis
+ * saturait toujours avant l'éclosion, et la contenance ne lisait plus qu'un
+ * forfait. « Séjour en mana
  * DENSE » passe désormais par la production, via `multiplicateurDensite`.
  *
  * Effet secondaire recherché, à ne pas casser : passé la saturation, rester ne

@@ -18,8 +18,9 @@
  *   - le repeuplement (V11, 2026-09-08) : `τ` tombait de 300 s à 10⁻⁴ s en
  *     quinze cycles. `vitesseDeRepeuplement` est ensuite partie avec le modèle
  *     à population, le 2026-09-09 ;
- *   - l'acquis de séjour (2026-09-11) : `t₉₀` tombait de 2 h à 0,09 h dès le
- *     deuxième cycle, et l'acquis saturait toujours avant l'éclosion — la loi
+ *   - l'acquis de séjour (2026-09-11) : `t₉₀` tombait de 2 h à 0,12 h au
+ *     deuxième cycle et à 0,05 s au troisième, et l'acquis saturait toujours
+ *     avant l'éclosion — la loi
  *     de contenance lisait un forfait. Son temps est désormais `τ₀`, constant
  *     (amendement v1.1, §2.B).
  */
@@ -49,7 +50,8 @@ export function densiteDuPalier(etat: EtatJeu, palier: IndexPalier): number {
  * revisitée à chaque vie.
  *
  * C'EST LA SEULE GRANDEUR NOMMÉE « densité » qui doit nourrir
- * `multiplicateurDensite`, pour le séjour COMME pour la production : la
+ * `multiplicateurDensite` — dans la production, son seul usage, comme dans le
+ * détail de captation qui l'affiche : la
  * dérivation de `densiteExposant` (`constantes.ts`) suppose que son argument
  * EST la densité, la grandeur qui vaut `pointe^α` — un scalaire, jamais une
  * somme. Une SOMME sur les paliers ouverts croît aussi avec leur NOMBRE, et
@@ -68,14 +70,15 @@ export function densiteDuSejour(etat: EtatJeu): number {
  * Multiplicateur de densité : `(1 + densité / d₀) ^ (θ/α)` (amendement v1.1
  * §2.A, forme des contraintes globales du plan).
  *
- * Il raccourcit le temps caractéristique du séjour (§2.B) — c'est la
- * traduction mécanique de « séjour en mana DENSE » — et, depuis la tâche 9, il
- * multiplie aussi la production (§10) au même titre que le multiplicateur de
+ * Il multiplie la production (§10), au même titre que le multiplicateur de
  * profondeur : les deux sont des TermeDeFormule nommés dans le détail de
- * captation, jamais des facteurs flottants (§7.5 règle 3).
+ * captation, jamais des facteurs flottants (§7.5 règle 3). C'est son SEUL
+ * usage, et c'est par là que passe « séjour en mana DENSE ». Il ne touche plus
+ * au temps du séjour, qui vaut `τ₀`, constant (amendement v1.1, §2.B, amendé
+ * le 2026-09-11).
  *
- * À densité nulle il vaut exactement 1 : une eau neutre ne raccourcit ni ne
- * rallonge le séjour au-delà de `τ₀`, qui est déjà le cas neutre.
+ * À densité nulle il vaut exactement 1 : une eau neutre ne multiplie ni ne
+ * divise la production.
  */
 export function multiplicateurDensite(densite: number): number {
   return Math.pow(1 + densite / DENSITE_DE_REFERENCE, densiteExposant())

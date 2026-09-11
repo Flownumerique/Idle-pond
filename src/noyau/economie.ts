@@ -152,8 +152,9 @@ export function productionDuHeros(etat: EtatJeu): Decimal {
  *
  * Construite à partir de `productionDeLEspece` et `productionDuHeros`, pas
  * d'un second calcul de l'assiette : deux formules tenues manuellement en
- * synchronisation sont exactement ce qui a fait diverger la densité entre la
- * production et le séjour (revue de qualité de la tâche 9, finding 3). Un seul
+ * synchronisation sont exactement ce qui avait fait nourrir le multiplicateur
+ * de densité de deux grandeurs différentes — une somme sur les paliers d'un
+ * côté, un maximum de l'autre. Un seul
  * calcul, appelé une fois par espèce plus une fois pour le héros, ne peut plus
  * diverger de lui-même.
  */
@@ -277,9 +278,9 @@ export function coutDeDescente(etat: EtatJeu, cible: IndexPalier): Decimal {
  * qu'il en coûte de l'atteindre.
  *
  * La densité n'entre plus ici. Elle payait la reconviction (GDD §7.1) tant
- * qu'il y avait une population à reconvaincre ; depuis V11 elle n'a qu'un seul
- * débouché, l'acquis de séjour, et le coût de déblocage est redevenu un levier
- * ordinaire.
+ * qu'il y avait une population à reconvaincre ; elle n'a plus qu'un seul
+ * débouché, la production, par le multiplicateur de densité, et le coût de
+ * déblocage est redevenu un levier ordinaire.
  */
 export function coutDeDeblocage(etat: EtatJeu, espece: Espece): Decimal {
   return coutBaseDuPalier(espece.palier)

@@ -148,8 +148,8 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   // correctement au retour d'une absence de 8 h.
   //
   // La densité n'entre PAS ici. Elle vaut `pointe^α` et croît sans borne : un
-  // `τ` divisé par elle tombait à 0,09 h de t₉₀ dès le deuxième cycle, et à
-  // quelques secondes de cycle ensuite. L'acquis saturait toujours avant
+  // `τ` divisé par elle tombait à 0,12 h de t₉₀ au deuxième cycle, à 0,05 s au
+  // troisième, et les cycles suivants à quelques secondes. L'acquis saturait toujours avant
   // l'éclosion, et la contenance dégénérait en forfait. La saturation borne la
   // VALEUR de l'acquis, pas le TEMPS pour l'atteindre. `τ₀` jauge une durée de
   // cycle constante par construction : il doit l'être aussi.

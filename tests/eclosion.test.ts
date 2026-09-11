@@ -123,7 +123,11 @@ describe('§6.5 — la densité se pose par max, et son gain vaut pointe^α', ()
         expect(densite, `palier fermé ${palier}`).toBe(densites[palier])
       }
     })
-    // Le gain n'est pas une addition : sur un palier vierge, il vaut pointe^α.
+    // Sur un palier vierge (densité 0), la valeur posée est `pointe^α`
+    // exactement : la loi du gain, et une conservation neutre. Ce point ne
+    // distingue PAS `max` d'une addition (0 + x = max(0, x)) — c'est le
+    // palier 1, déjà plus dense que la pointe, qui le fait, dans la boucle
+    // ci-dessus.
     expect(apres[0]).toBeCloseTo(laissee, 6)
   })
 

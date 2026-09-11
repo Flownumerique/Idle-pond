@@ -81,7 +81,8 @@ export type TermeDeCout =
    *
    * Il n'est plus payé par la densité. Le noyau v1.0 §1.3 en fait une fraction
    * du coût du palier qui porte l'espèce, et rien d'autre : la densité n'a plus
-   * qu'un seul débouché depuis V11, l'acquis de séjour. Le terme redevient donc
+   * qu'un seul débouché, la production, par le multiplicateur de densité (elle
+   * est sortie du repeuplement puis du temps du séjour). Le terme redevient donc
    * un levier ordinaire, que technique et succès peuvent viser.
    */
   | 'cout_deblocage'
@@ -357,8 +358,10 @@ export interface EtatCycle {
    * Acquis de séjour, accumulation saturante vers `A∞` (§2.B).
    *
    * C'est par lui, et par lui seul, que la contenance monte : le plafond ne
-   * monte QUE par séjour prolongé en mana dense (Tier 0 §8). Il se dépense
-   * entièrement à l'éclosion.
+   * monte QUE par séjour prolongé en mana dense (Tier 0 §8). « Dense » n'agit
+   * plus sur l'acquis, dont le temps vaut `τ₀` constant : il agit sur la
+   * production, par le multiplicateur de densité. Il se dépense entièrement à
+   * l'éclosion.
    */
   readonly acquisDeSejour: number
 }
