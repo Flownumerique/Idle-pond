@@ -58,6 +58,14 @@ export type TermeDeProduction =
   | 'multiplicateur_profondeur'
   /** Multiplicateur de densité (`(1 + densité/d₀)^(θ/α)`), appliqué à la production depuis la tâche 9. */
   | 'multiplicateur_densite'
+  /**
+   * Débit propre du héros, mana/s — une constante, pas un multiplicateur.
+   * N'est attribuable à AUCUNE espèce, ce qui l'avait laissé hors du registre
+   * jusqu'à la revue de qualité de la tâche 9 : un effet chiffré flottant,
+   * exactement ce que §7.5 règle 3 interdit, juste parce qu'il n'avait pas
+   * d'espèce à qui s'attribuer.
+   */
+  | 'debit_heros'
 
 export type TermeDeCout =
   /**
@@ -98,6 +106,7 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'multiplicateur_drapeau',
   'multiplicateur_profondeur',
   'multiplicateur_densite',
+  'debit_heros',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
@@ -449,8 +458,10 @@ export type SourceDeTerme =
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
   /** Source du multiplicateur de profondeur : combien de paliers sont ouverts. */
   | { readonly quoi: 'profondeur'; readonly paliersOuverts: number }
-  /** Source du multiplicateur de densité : la densité totale du bassin. */
+  /** Source du multiplicateur de densité : la densité du séjour (le maximum sur les paliers ouverts). */
   | { readonly quoi: 'densite'; readonly densite: number }
+  /** Source de `debit_heros` : aucune donnée propre, il capte seul, toujours. */
+  | { readonly quoi: 'heros' }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

@@ -33,7 +33,7 @@ import {
   TAUX_BASE_AU_PALIER_0,
   multiplicateurDePalier,
 } from './constantes'
-import { densiteTotale, multiplicateurDensite } from './densite'
+import { densiteDuSejour, multiplicateurDensite } from './densite'
 import { puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
 import { ESPECES } from '../donnees/especes'
 import { facteurDeTechnique } from './technique'
@@ -95,6 +95,26 @@ export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
   return Decimal.pow(multiplicateurDePalier(), Math.max(0, etat.cycle.paliersOuverts - 1))
 }
 
+/**
+ * Tous les multiplicateurs globaux de la production, un seul produit — la
+ * source commune à chaque espèce, au total, ET à la politique du simulateur
+ * (`simulateur.ts`). Un multiplicateur ajouté ici vaut pour les trois sans
+ * resaisie : une liste recopiée à la main, plutôt que prise ici, est
+ * exactement ce qui avait laissé la densité hors du calcul du gain simulé
+ * (revue de qualité de la tâche 9, finding 2).
+ *
+ * `ECHELLE_DE_PRODUCTION` y entre aussi, malgré son statut de simple cadran :
+ * elle doit multiplier TOUT ce qui produit, pas seulement le total, sous
+ * peine de refaire diverger la somme par espèce du total dès qu'elle
+ * bougera (revue de qualité de la tâche 9, minor A).
+ */
+export function multiplicateursGlobaux(etat: EtatJeu): Decimal {
+  return multiplicateurDeProfondeur(etat)
+    .mul(multiplicateurDensite(densiteDuSejour(etat)))
+    .mul(multiplicateurDesDrapeaux(etat))
+    .mul(ECHELLE_DE_PRODUCTION)
+}
+
 /** Ce qu'une espèce apporte à l'assiette additive, avant les multiplicateurs globaux. */
 function debitDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
   const vivante = etat.cycle.especes[espece.id]
@@ -105,10 +125,7 @@ function debitDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
 /** Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués. */
 export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
   if (espece.palier >= etat.cycle.paliersOuverts) return new Decimal(0)
-  return debitDeLEspece(etat, espece)
-    .mul(multiplicateurDeProfondeur(etat))
-    .mul(multiplicateurDensite(densiteTotale(etat)))
-    .mul(multiplicateurDesDrapeaux(etat))
+  return debitDeLEspece(etat, espece).mul(multiplicateursGlobaux(etat))
 }
 
 /**
@@ -120,23 +137,31 @@ export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
  * les deux mécanismes répondent à des besoins différents et ne se remplacent
  * pas l'un l'autre.
  *
- * L'assiette additive (débit du héros + débit de chaque espèce, AVANT
- * multiplicateurs) est sommée une seule fois, puis les multiplicateurs
- * globaux — profondeur, densité, drapeaux, échelle — s'appliquent une seule
- * fois sur le total : les appliquer par espèce puis resommer les
- * appliquerait deux fois.
+ * Construite à partir de `productionDeLEspece`, pas d'un second calcul de
+ * l'assiette : deux formules tenues manuellement en synchronisation sont
+ * exactement ce qui a fait diverger la densité entre la production et le
+ * séjour (revue de qualité de la tâche 9, finding 3). Un seul calcul, appelé
+ * une fois par espèce plus une fois pour le héros, ne peut plus diverger de
+ * lui-même.
  */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
-  let assiette = new Decimal(DEBIT_HEROS)
-  for (const espece of ESPECES) {
-    if (espece.palier >= etat.cycle.paliersOuverts) continue
-    assiette = assiette.add(debitDeLEspece(etat, espece))
-  }
-  return assiette
-    .mul(multiplicateurDeProfondeur(etat))
-    .mul(multiplicateurDensite(densiteTotale(etat)))
-    .mul(multiplicateurDesDrapeaux(etat))
-    .mul(ECHELLE_DE_PRODUCTION)
+  const especes = ESPECES.reduce(
+    (somme, espece) => somme.add(productionDeLEspece(etat, espece)),
+    new Decimal(0),
+  )
+  return especes.add(new Decimal(DEBIT_HEROS).mul(multiplicateursGlobaux(etat)))
+}
+
+/**
+ * Ce que le débit du héros apporte, nommé — §7.5 règle 3 : même un débit qui
+ * n'appartient à aucune espèce doit cibler un `TermeDeFormule`, jamais flotter
+ * hors du registre. Vit ICI, à côté du total qu'il explique
+ * (`productionTotaleParSeconde`, juste au-dessus), plutôt que dans
+ * `detailDeCaptation` plus bas : ce dernier est attributable à UNE espèce, et
+ * le héros n'en porte aucune.
+ */
+export function detailDuHeros(): readonly LigneDeCaptation[] {
+  return [{ terme: 'debit_heros', valeur: DEBIT_HEROS, source: { quoi: 'heros' } }]
 }
 
 /**
@@ -145,7 +170,7 @@ export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
  */
 export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly LigneDeCaptation[] {
   const niveau = etat.cycle.especes[espece.id]?.niveau ?? 0
-  const densite = densiteTotale(etat)
+  const densite = densiteDuSejour(etat)
   return [
     { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
     {

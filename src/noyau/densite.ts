@@ -7,10 +7,11 @@
  * s'en assurer.
  *
  * §6.5 : le gain de densité est indexé sur la production de pic du cycle, pas
- * sur la profondeur. Elle avait UN SEUL débouché depuis V11 — l'acquis de
- * séjour, via `multiplicateurDensite` : « séjour en mana dense » (Tier 0 §8).
- * La tâche 9 lui en ouvre un second : `multiplicateurDensite` multiplie aussi
- * la production (§10), et la fonction reste unique pour les deux usages.
+ * sur la profondeur. Elle a deux débouchés, tous deux via `multiplicateurDensite` :
+ * l'acquis de séjour — « séjour en mana dense » (Tier 0 §8) — et, depuis la
+ * tâche 9, la production elle-même (§10). Les deux usages appellent la MÊME
+ * fonction avec la MÊME grandeur, `densiteDuSejour` ci-dessous : voir son
+ * commentaire pour ce qui interdit qu'une autre grandeur porte ce nom.
  *
  * `vitesseDeRepeuplement` est partie avec le modèle à population le 2026-09-09.
  * V11 avait déjà découplé la densité du repeuplement ; il ne restait plus qu'un
@@ -30,9 +31,31 @@ export function densiteDuPalier(etat: EtatJeu, palier: IndexPalier): number {
   return etat.permanent.densites[palier] ?? 0
 }
 
-/** La densité du bassin : la somme de ce que chaque palier porte. */
-export function densiteTotale(etat: EtatJeu): number {
-  return etat.permanent.densites.reduce((somme, d) => somme + d, 0)
+/**
+ * Densité du séjour : la plus dense des eaux où le héros se tient — le
+ * maximum sur les paliers OUVERTS, pas une somme.
+ *
+ * [P] — le §2.A écrit `multiplicateurDensite(s)` pour l'état entier, alors que
+ * la densité est portée par palier. Le maximum sur les paliers ouverts est
+ * retenu : c'est celle qu'il peut effectivement habiter. En pratique la
+ * question est peu sensible — l'éclosion porte tous les paliers occupés à la
+ * même valeur —, mais elle le deviendrait si une assise cessait d'être
+ * revisitée à chaque vie.
+ *
+ * C'EST LA SEULE GRANDEUR NOMMÉE « densité » qui doit nourrir
+ * `multiplicateurDensite`, pour le séjour COMME pour la production : la
+ * dérivation de `densiteExposant` (`constantes.ts`) suppose que son argument
+ * EST la densité, la grandeur qui vaut `pointe^α` — un scalaire, jamais une
+ * somme. Une SOMME sur les paliers ouverts croît aussi avec leur NOMBRE, et
+ * glisse un `(p_new/p_old)^(θ/α)` non budgété sur le `g^(paliers × θ)` voulu à
+ * chaque éclosion — mesuré : environ ×18 sur une partie complète.
+ */
+export function densiteDuSejour(etat: EtatJeu): number {
+  let densite = 0
+  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
+    densite = Math.max(densite, densiteDuPalier(etat, palier))
+  }
+  return densite
 }
 
 /**

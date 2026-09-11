@@ -14,13 +14,11 @@ import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import {
   detailDeCaptation,
-  multiplicateurDeProfondeur,
-  multiplicateurDesDrapeaux,
+  detailDuHeros,
+  multiplicateursGlobaux,
   productionDeLEspece,
   productionTotaleParSeconde,
 } from '../src/noyau/economie'
-import { densiteTotale, multiplicateurDensite } from '../src/noyau/densite'
-import { DEBIT_HEROS, ECHELLE_DE_PRODUCTION } from '../src/noyau/constantes'
 import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
@@ -32,17 +30,17 @@ describe('la production totale ne double-compte aucun multiplicateur global', ()
     // rien, tous les multiplicateurs y valant 1.
     const etat = etatDeTravail()
 
-    // L'égalité ci-dessous tient parce que `ECHELLE_DE_PRODUCTION` est neutre :
-    // elle ne multiplie que le TOTAL (voir `productionTotaleParSeconde`),
-    // jamais chaque espèce prise à part. Si elle cessait de valoir 1, le débit
-    // du héros ci-dessous devrait la porter lui aussi pour que l'égalité tienne
-    // encore — ce test le dirait.
-    expect(ECHELLE_DE_PRODUCTION).toBe(1)
-
-    const globaux = multiplicateurDeProfondeur(etat)
-      .mul(multiplicateurDensite(densiteTotale(etat)))
-      .mul(multiplicateurDesDrapeaux(etat))
-    const termeDuHeros = new Decimal(DEBIT_HEROS).mul(globaux)
+    // Le terme du héros vient du détail PUBLIÉ, pas d'une valeur refabriquée
+    // ici : une copie à la main de `DEBIT_HEROS` et des multiplicateurs
+    // globaux est exactement ce qui avait laissé la densité de côté (revue de
+    // qualité de la tâche 9) sans que ce test s'en aperçoive. En passant par
+    // `detailDuHeros` et par `multiplicateursGlobaux` — la même fonction que
+    // `productionTotaleParSeconde` utilise —, un multiplicateur global ajouté
+    // demain sans y être répercuté fait diverger ce test, pas seulement la
+    // production réelle.
+    const ligneDebitHeros = detailDuHeros().find((ligne) => ligne.terme === 'debit_heros')
+    if (ligneDebitHeros === undefined) throw new Error('le détail publié ne porte plus debit_heros')
+    const termeDuHeros = new Decimal(ligneDebitHeros.valeur).mul(multiplicateursGlobaux(etat))
 
     const sommeDesEspeces = ESPECES.reduce(
       (somme, espece) => somme.add(productionDeLEspece(etat, espece)),

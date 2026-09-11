@@ -98,5 +98,7 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return profondeur(Math.max(0, source.paliersOuverts - 1))
     case 'densite':
       return source.densite <= 0 ? 'eau neutre' : `eau à ${source.densite.toFixed(1)} de densité`
+    case 'heros':
+      return 'le héros, qui capte seul'
   }
 }

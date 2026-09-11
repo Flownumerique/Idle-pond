@@ -33,7 +33,7 @@ import {
   productionTotaleParSeconde,
   toutEstCreuse,
 } from './economie'
-import { densiteDuPalier, multiplicateurDensite } from './densite'
+import { densiteDuSejour, multiplicateurDensite } from './densite'
 import { cycleInitial } from './eclosion'
 import { creditCompteur } from './technique'
 import { verifierSucces } from './succes'
@@ -174,24 +174,6 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   }
 
   return verifierSucces(avance)
-}
-
-/**
- * Densité du séjour : la plus dense des eaux où le héros se tient.
- *
- * [P] — le §2.B écrit `multiplicateurDensite(s)` pour l'état entier, alors que
- * la densité est portée par palier. Le maximum sur les paliers ouverts est
- * retenu : c'est celle qu'il peut effectivement habiter. En pratique la
- * question est peu sensible — l'éclosion porte tous les paliers occupés à la
- * même valeur —, mais elle le deviendrait si une assise cessait d'être
- * revisitée à chaque vie.
- */
-function densiteDuSejour(etat: EtatJeu): number {
-  let densite = 0
-  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    densite = Math.max(densite, densiteDuPalier(etat, palier))
-  }
-  return densite
 }
 
 /** Le contrat du §5.1. `tickDetaille` en rend en plus les succès déclenchés. */

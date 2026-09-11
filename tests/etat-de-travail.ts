@@ -7,9 +7,15 @@
  * il est payé, donc l'état est complet dès le dernier achat. C'est exactement
  * ce que le passage au modèle à niveau a supprimé — le régime transitoire où
  * l'exponentielle pouvait mentir.
+ *
+ * La première espèce ouverte est montée au drapeau permanent (niveau 100) :
+ * sans ça, `multiplicateurDesDrapeaux` vaut exactement 1 dans cette fixture,
+ * et aucun test bâti sur elle ne peut voir ce terme global (revue de qualité
+ * de la tâche 9, minor B).
  */
 import Decimal from 'break_infinity.js'
 import type { EtatJeu } from '../src/noyau/types'
+import { SEUIL_DU_DRAPEAU_PERMANENT } from '../src/noyau/constantes'
 import { ameliorer, creuser, debloquer, etatInitial } from '../src/noyau/noyau'
 import { ESPECES } from '../src/donnees/especes'
 
@@ -26,9 +32,11 @@ export function etatDeTravail(graine = 12345, contenance = '1e14'): EtatJeu {
     },
   }
   for (let i = 0; i < 6; i += 1) etat = creuser(etat)
-  for (const espece of ESPECES.filter((e) => e.palier < etat.cycle.paliersOuverts)) {
+  const especesOuvertes = ESPECES.filter((e) => e.palier < etat.cycle.paliersOuverts)
+  for (const [index, espece] of especesOuvertes.entries()) {
     etat = debloquer(etat, espece.id)
-    for (let n = 0; n < 12 + espece.palier; n += 1) etat = ameliorer(etat, espece.id)
+    const niveauCible = index === 0 ? SEUIL_DU_DRAPEAU_PERMANENT : 12 + espece.palier
+    for (let n = 0; n < niveauCible; n += 1) etat = ameliorer(etat, espece.id)
   }
   return etat
 }

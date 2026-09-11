@@ -35,9 +35,8 @@ import {
   coutDeDeblocage,
   coutDeNiveau,
   debitBaseDeLEspece,
-  multiplicateurDeProfondeur,
   multiplicateurDeSeuil,
-  multiplicateurDesDrapeaux,
+  multiplicateursGlobaux,
   toutEstCreuse,
 } from '../noyau/economie'
 import { ACQUIS_MAX } from '../noyau/constantes'
@@ -115,8 +114,14 @@ function optionsOuvertes(etat: EtatJeu): readonly Option[] {
   }
 
   // Les multiplicateurs globaux sont les mêmes pour toutes les espèces : ils
-  // sortent du signe somme, et le gain se calcule sur la seule assiette.
-  const globaux = multiplicateurDeProfondeur(etat).mul(multiplicateurDesDrapeaux(etat))
+  // sortent du signe somme, et le gain se calcule sur la seule assiette. Pris
+  // tels quels depuis `economie.ts`, pas relistés à la main : une liste à la
+  // main avait oublié la densité et l'échelle, sous-estimant le gain marginal
+  // d'un achat — le joueur simulé creusait alors qu'acheter était rentable, un
+  // biais qui poussait dans le même sens que celui d'`attenteAvantCreusement`
+  // plus bas, qui lit lui la PRODUCTION RÉELLE (revue de qualité de la tâche
+  // 9, finding 2).
+  const globaux = multiplicateursGlobaux(etat)
 
   for (const espece of ESPECES) {
     if (espece.palier >= etat.cycle.paliersOuverts) continue
