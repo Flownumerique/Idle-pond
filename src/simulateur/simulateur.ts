@@ -236,8 +236,15 @@ function attenteAvantLeProchainAchat(etat: EtatJeu, options: readonly Option[]):
  * acheter n'est pas une raison de partir — c'est exactement le moment où
  * rester ne rapporte plus que de la Foi et de la contenance, donc le moment
  * que le §2.B veut voir arriver.
+ *
+ * Exportée (tâche 11) : c'est la seule vraie décision du jeu, et elle ne doit
+ * vivre qu'ICI. Une partie headless qui écrirait sa propre règle d'éclosion —
+ * même équivalente en apparence — dériverait en silence le jour où l'une des
+ * deux bouge sans l'autre (c'est la leçon de la tâche 9 sur les listes
+ * recopiées à la main). Une réécriture ultérieure du simulateur doit
+ * préserver cet export.
  */
-function doitEclore(etat: EtatJeu, politique: Politique): boolean {
+export function doitEclore(etat: EtatJeu, politique: Politique): boolean {
   if (!estBloque(etat)) return false
   return etat.cycle.acquisDeSejour >= politique.fractionDeSaturationPourEclore * ACQUIS_MAX
 }
