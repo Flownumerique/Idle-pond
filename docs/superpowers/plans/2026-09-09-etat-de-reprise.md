@@ -14,6 +14,185 @@ git et détruit à la fin du plan. Ce qui suit est ce qui doit survivre.
 
 ---
 
+## Mise à jour du 2026-09-11 — à lire en premier
+
+Elle remplace les §1 et §2 ci-dessous, qui décrivent l'état au 2026-09-09 ; les
+§3 à §6 restent vrais et sont prolongés ici. Écrite pendant la revue de la
+tâche 10 : trois plafonds de session ont coupé des implémenteurs dans la
+journée, et les arbitrages R11 à R39 ne vivaient que dans le journal
+git-ignoré.
+
+### Où en est le travail
+
+| # | Tâche | Commits | État |
+|---|---|---|---|
+| 8 | Verrouiller la purge par balayage | `23dd32c..ad86e77` | close, 2 rounds |
+| 9 | L'amorçage, et tout terme de production nommé | `ad86e77..dce03ce` | close, 2 rounds de revue |
+| 10 | L'éclosion ; l'acquis de séjour réparé | `d380e8d` | livrée, **en revue** |
+| 11 à 14 | | — | arbitrées d'avance, voir plus bas |
+
+**La phase 1 est close.** Suite : 138 tests sur 18 fichiers, `tsc`, `eslint` et
+`build` propres ; une assertion parquée en `it.fails` (voir R23).
+
+Vérifié dans le vrai jeu le 2026-09-11 (Playwright, profil vierge) : l'œuf
+démarre à 36 mana, la première espèce est achetable immédiatement, le premier
+succès tombe à l'instant, le panneau de captation montre six termes nommés, et
+le total porte la ligne du héros.
+
+### Le vrai sujet du §4, résolu
+
+Mesuré avant la réparation (`simuler(15)` à `dce03ce`) : à partir du troisième
+cycle, **un cycle durait de 4 à 14 secondes** ; quinze cycles tenaient en
+0,12 h actives, et l'acquis valait `A∞` à chaque éclosion. Après : des cycles de
+4 h, 4,4 paliers en moyenne, un acquis à 0,990 de `A∞` à l'éclosion — la loi
+relit la durée du séjour. Le temps caractéristique du séjour est désormais
+constant ; la densité n'agit plus que par la production. La justification de
+V11 était fausse : la saturation borne la VALEUR de l'acquis, pas le TEMPS pour
+l'atteindre. Le canon est amendé (`docs/amendement-v1.1.md`, §2.B et V11), avec
+la loi exponentielle mesurée et écartée.
+
+### Les arbitrages R11 à R39
+
+Chacun avec ce qu'il coûte s'il est faux. Trois ont été renversés par la mesure
+en cours de route ; ils restent ici, marqués, plutôt qu'effacés.
+
+- **R11** — `sansChaines` devient un seul parcours gauche-droite (le double
+  passage laissait une apostrophe avaler du code réel). *Coût* : un helper de
+  test plus long.
+- **R12** — T9 ne réécrit ni `multiplicateurDePalier` ni
+  `multiplicateurDeProfondeur`, déjà livrés, et ne duplique pas leur test.
+  *Coût* : nul.
+- **R13** — ~~retirer la charge de mana de l'œuf~~ — **révoqué par R22.**
+- **R14** — la densité s'applique aussi à la production par espèce ; la somme
+  des espèces égale le total. *Coût* : nul.
+- **R15** — `multiplicateur_profondeur` et `multiplicateur_densite` nommés au
+  registre : la profondeur multipliait la production sans nom depuis la tâche 5,
+  contre le §7.5 règle 3. *Coût* : deux lignes de captation.
+- **R16** — le test « le héros devient négligeable » achète des niveaux avant
+  d'affirmer. *Coût* : nul.
+- **R17** — le temps du séjour est constant, la densité ne le raccourcit plus.
+  *Coût* : un joueur très dense n'accumule plus sa contenance plus vite ;
+  réintroductible sous forme BORNÉE en T13 si la mesure la réclame.
+- **R18** — `mult_densité = (1 + d/d₀)^(θ/α)` sur la production, `d₀ = 1` en
+  graine. *Coût* : un levier déplacé, pas supprimé.
+- **R19** — amender l'amendement v1.1, §2.B et V11. Fait en T10.
+- **R20** — `multiplicateurDensite(1) === 1` remplacé par l'invariant `≥ 1` et
+  monotone. *Coût* : nul.
+- **R21** — ~~dériver `DEBIT_HEROS` du plancher de cadence~~ — **caduc** :
+  aucune valeur ne tient les deux garanties du §8.4.
+- **R22** — la charge de l'œuf ET le débit du héros cohabitent. Une charge
+  unique et un débit permanent ne sont pas interchangeables : dimensionné pour
+  un premier succès rapide, le débit emballe l'économie précoce (mesuré sur
+  toute la plage 0,17–2). La charge tient le §8.4 et le §4.2, le débit tient
+  l'état dégénéré du finding 3. *Coût* : deux mécanismes d'amorçage.
+- **R23** — l'assertion de queue du plancher de cadence est parquée en
+  `it.fails`, pas en `skip` : 419 s de silence contre 300 s permis ;
+  `DEBIT_HEROS = 0` passe, toute valeur positive non. Se ferme en T12 (une
+  meilleure politique d'achat) ou T13. *Coût* : le rythme de la fin de la
+  première demi-heure reste troué jusque-là.
+- **R24** — `debit_heros` nommé au registre et affiché sous le total. *Coût* :
+  une ligne d'écran.
+- **R25** — le simulateur tire ses multiplicateurs de `multiplicateursGlobaux`,
+  source partagée. *Coût* : nul.
+- **R26** — une seule densité, `densiteDuSejour`, maximum sur les paliers
+  ouverts ; la somme sur 62 paliers glissait environ ×18 de compensation hors
+  budget. *Coût* : une compensation moindre, mesurée en T13.
+- **R27** — pas de `PALIERS_GAGNES_PAR_ECLOSION = 4` : c'est 4,4
+  (`docs/idlepond-noyau-v1_0.md:294`, « À 4,4 paliers par cycle »). *Coût* :
+  ~40 % de contenance de plus par éclosion qu'avec 4.
+- **R28** — le test de densité affirme la loi en `max`. *Coût* : nul.
+- **R29** — ~~réécrire le commentaire d'`ACQUIS_MAX`~~ — **caduc par R39.**
+- **R30** — quatre défauts de test du brief de T10 corrigés : mana à 36 et non 0
+  après éclosion, `.every` sur un objet vide, compteur `eclosion` à +1, et
+  `contenance.gt` sur un acquis nul. *Coût* : nul.
+- **R31** — T11 : l'éclosion headless suit `doitEclore` du simulateur (bloqué
+  ET acquis ≥ 0,95 `A∞`), importé et non recopié. *Coût* : ~2,6 h de séjour
+  par cycle.
+- **R32** — T11 : aucun `jouerJusquA` exporté d'un test. *Coût* : nul.
+- **R33** — T11 : ne pas resserrer l'équivalence de pas en égalité exacte.
+  *Coût* : nul.
+- **R34** — T12 : retirer `secondesEnRedescente` de la télémétrie exige une
+  migration 5 → 6 si elle est persistée, avec un test qui EXÉCUTE
+  `MIGRATIONS[5]` ; le champ rejoint le balayage de canon. *Coût* : une
+  migration triviale.
+- **R35** — T12 : la politique garde `fractionDeSaturationPourEclore`
+  (`doitEclore` exporté) et le garde-fou de non-convergence. *Coût* : deux
+  champs de plus.
+- **R36** — T12 : gain marginal depuis `multiplicateursGlobaux`, blocage depuis
+  `contenance()`, gain du drapeau exact `prod × 0,03 / (1 + 0,03 k)`. *Coût* :
+  nul.
+- **R37** — T14 : mesurer, écrire `RESULTATS.md` v2, puis seulement borner
+  `tests/courbe.test.ts` sur les valeurs mesurées. *Coût* : nul.
+- **R38** — T14 : la v2 porte la date réelle, et annote les findings v1 de ce
+  que ce plan a mesuré. *Coût* : un document plus long.
+- **R39** — la loi exponentielle de contenance est **révoquée** ; la loi reste
+  linéaire, `× (1 + acquis)`. Sous l'exponentielle, un séjour nominal donnait
+  ×41,66 au lieu de ×47,09, et 200 h contre 3 h rapportaient 1,130 au lieu de
+  1,032 — deux assertions de canon. *Coût* : un séjour écourté pénalise moins,
+  choix que le canon a fait.
+
+Restent à solder en T12 : R5 (`NOMBRE_D_ECLOSIONS_VISE` de 15 à 45) et le code
+mort `aDivergeSeul`. R4 est confirmé : les coûts de nœud font 167, pas 5.
+
+### Ce qui reste
+
+- **T10** : revue en cours.
+- **T11** : R31 à R33.
+- **T12** : R34 à R36, R5, `aDivergeSeul`. Attention : les cycles simulés
+  durent exactement l'intervalle de relevé du joueur (4 h) — la durée mesure la
+  politique, pas l'économie, tant que T12 ne l'a pas réécrite.
+- **T13** : défauts relevés, à arbitrer SUR MESURE après T12. Son test ne
+  compile pas (`croissanceTotale` manquant) ; `θ ∈ [0, 1]` et `α > 0` sont
+  vacus ; R4 ; θ et l'échelle sont lus comme constantes de module, donc
+  impossibles à passer « en argument » sans les faire entrer dans l'état. Et
+  surtout, le spec (l. 37) prédit que le calibreur pousse θ contre sa borne
+  basse ; le brief dit alors de remonter la question — **ce sera une question
+  pour l'utilisateur, pas un arbitrage.**
+- **T14** : R37 et R38.
+- Relecture finale sur le modèle le plus capable, avec les mineurs.
+
+### Mineurs différés, en plus des sept du §5
+
+8. **Prioritaire** — `src/ui/format.ts:24` arrondit à une décimale sous 10 :
+   0,05 /s s'affiche 0,1. L'écran double le débit du héros, seule valeur visible
+   à t = 0, et la ligne du héros le rend plus visible encore.
+9. Panneau de captation : identifiants de code bruts (`taux_base`…) au lieu de
+   libellés, et « 1 crans tenus ».
+10. `ECHELLE_DE_PRODUCTION` hors du registre des termes — auto-gardé par le test
+    d'invariant tant qu'elle vaut 1.
+11. `sansChaines` ne reconnaît pas les littéraux regex (voisin du n° 7).
+12. `BONUS_GLOBAL_A_CENT_INDIVIDUS` : vocabulaire du modèle à population.
+13. `src/noyau/eclosion.ts` cite « séjour prolongé en mana dense » ; « dense »
+    n'agit plus que par la production.
+
+### Fragilités à surveiller
+
+- **Le plancher de cadence du §8.4** ne tenait qu'avec 42 s de battement sur
+  1 800, le registre de succès de la Noue étant fini. Rien ne le signale ; toute
+  retouche de l'économie précoce le cassera.
+- **La redescente à 0 %** dans le simulateur est un artefact de sessions trop
+  courtes : elle ne ferme pas le risque n° 1 du §15.
+
+### Ce qu'on a appris, au-delà des chiffres
+
+- Un test vacu est apparu, ou a failli apparaître, à presque chaque tâche. Tout
+  test qui prétend prouver un changement doit désormais être vu échouer sur le
+  code d'avant.
+- Une liste recopiée à la main dérive (les multiplicateurs du simulateur, en
+  T9) : une seule source par notion.
+- Deux re-revues d'un même correctif ont divergé ; celle qui a EXÉCUTÉ la
+  fonction l'a emporté sur celle qui l'a tracée.
+- Trois arbitrages ont été renversés par la mesure (R13, R21, la loi
+  exponentielle) ; chaque fois, c'est l'implémenteur qui a mesuré au lieu de
+  croire.
+- Contre les plafonds de session : un rapport écrit au fil de l'eau. La
+  troisième coupure n'a rien coûté.
+- `git add -A` est interdit aux implémenteurs : des captures de navigateur
+  atterrissent à la racine du dépôt, et `git status` y liste `.playwright-mcp/`
+  comme non suivi.
+
+---
+
 ## 1. Où en est le travail
 
 **Sept tâches closes, revue propre à chaque fois.** La huitième était en boucle
