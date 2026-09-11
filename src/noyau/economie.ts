@@ -129,6 +129,19 @@ export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
 }
 
 /**
+ * Ce que le débit du héros apporte RÉELLEMENT à la production, multiplicateurs
+ * globaux compris — §7.5 règle 3 : même un débit qui n'appartient à aucune
+ * espèce doit cibler un `TermeDeFormule`, jamais flotter hors du registre.
+ * `DEBIT_HEROS` brut (voir `detailDuHeros` plus bas) ne suffit pas à expliquer
+ * l'écart entre le total affiché et la somme des espèces à l'écran — c'est
+ * cette valeur, multipliée, qui le fait, et c'est elle que
+ * `src/ui/Contenance.tsx` affiche en regard du total.
+ */
+export function productionDuHeros(etat: EtatJeu): Decimal {
+  return new Decimal(DEBIT_HEROS).mul(multiplicateursGlobaux(etat))
+}
+
+/**
  * La somme des espèces débloquées, PLUS le débit propre du héros — noyau v1.0
  * §10 : un seul canal pour le bestiaire, et sa mutation à lui pour empêcher
  * l'état DÉGÉNÉRÉ où plus rien ne produirait jamais (RESULTATS.md, finding 3,
@@ -137,28 +150,29 @@ export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
  * les deux mécanismes répondent à des besoins différents et ne se remplacent
  * pas l'un l'autre.
  *
- * Construite à partir de `productionDeLEspece`, pas d'un second calcul de
- * l'assiette : deux formules tenues manuellement en synchronisation sont
- * exactement ce qui a fait diverger la densité entre la production et le
- * séjour (revue de qualité de la tâche 9, finding 3). Un seul calcul, appelé
- * une fois par espèce plus une fois pour le héros, ne peut plus diverger de
- * lui-même.
+ * Construite à partir de `productionDeLEspece` et `productionDuHeros`, pas
+ * d'un second calcul de l'assiette : deux formules tenues manuellement en
+ * synchronisation sont exactement ce qui a fait diverger la densité entre la
+ * production et le séjour (revue de qualité de la tâche 9, finding 3). Un seul
+ * calcul, appelé une fois par espèce plus une fois pour le héros, ne peut plus
+ * diverger de lui-même.
  */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
   const especes = ESPECES.reduce(
     (somme, espece) => somme.add(productionDeLEspece(etat, espece)),
     new Decimal(0),
   )
-  return especes.add(new Decimal(DEBIT_HEROS).mul(multiplicateursGlobaux(etat)))
+  return especes.add(productionDuHeros(etat))
 }
 
 /**
- * Ce que le débit du héros apporte, nommé — §7.5 règle 3 : même un débit qui
- * n'appartient à aucune espèce doit cibler un `TermeDeFormule`, jamais flotter
- * hors du registre. Vit ICI, à côté du total qu'il explique
+ * Ce que le débit BRUT du héros vaut, nommé — `DEBIT_HEROS` avant tout
+ * multiplicateur. Vit ICI, à côté du total qu'il explique
  * (`productionTotaleParSeconde`, juste au-dessus), plutôt que dans
  * `detailDeCaptation` plus bas : ce dernier est attributable à UNE espèce, et
- * le héros n'en porte aucune.
+ * le héros n'en porte aucune. La valeur RÉELLEMENT captée — celle à afficher —
+ * est `productionDuHeros`, pas la valeur brute d'ici : §8.2 veut la
+ * contrepartie d'un effet, pas son seul nom.
  */
 export function detailDuHeros(): readonly LigneDeCaptation[] {
   return [{ terme: 'debit_heros', valeur: DEBIT_HEROS, source: { quoi: 'heros' } }]

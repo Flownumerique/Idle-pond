@@ -13,18 +13,21 @@
 import type { EtatJeu } from '../noyau/types'
 import {
   contenance,
+  detailDuHeros,
   eauTroublee,
   estBloque,
   estSature,
   partDeContenance,
+  productionDuHeros,
   productionTotaleParSeconde,
 } from '../noyau/economie'
-import { montant } from './format'
+import { montant, sourceDuTerme } from './format'
 
 export function Contenance({ etat }: { readonly etat: EtatJeu }) {
   const plafond = contenance(etat)
   const part = partDeContenance(etat)
   const production = productionTotaleParSeconde(etat)
+  const productionHeros = productionDuHeros(etat)
   const trouble = eauTroublee(etat)
   const plein = estSature(etat)
 
@@ -58,6 +61,17 @@ export function Contenance({ etat }: { readonly etat: EtatJeu }) {
           {plein ? '+0 / s' : `+${montant(production)} / s`}
         </span>
         {plein ? <span className="text-trouble">tu ne captes plus rien</span> : null}
+      </p>
+
+      {/* §8.2 : « la contrepartie obligatoire d'un effet appliqué
+          silencieusement. » Le total ci-dessus porte la mutation du héros
+          sans l'expliquer ; cette ligne dit d'où vient l'écart avec la somme
+          des espèces que la table de captation détaille. */}
+      <p className="flex items-baseline justify-between text-xs text-jour-tu">
+        <span className="font-chiffre tabular-nums">
+          dont {plein ? '+0' : `+${montant(productionHeros)}`} / s
+        </span>
+        <span>{sourceDuTerme(detailDuHeros()[0].source)}</span>
       </p>
 
       {estBloque(etat) ? (
