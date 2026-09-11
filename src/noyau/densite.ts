@@ -7,15 +7,21 @@
  * s'en assurer.
  *
  * §6.5 : le gain de densité est indexé sur la production de pic du cycle, pas
- * sur la profondeur. Elle a deux débouchés, tous deux via `multiplicateurDensite` :
- * l'acquis de séjour — « séjour en mana dense » (Tier 0 §8) — et, depuis la
- * tâche 9, la production elle-même (§10). Les deux usages appellent la MÊME
- * fonction avec la MÊME grandeur, `densiteDuSejour` ci-dessous : voir son
- * commentaire pour ce qui interdit qu'une autre grandeur porte ce nom.
+ * sur la profondeur. Elle n'a plus qu'UN débouché : la production (§10), via
+ * `multiplicateurDensite(densiteDuSejour(etat))`, au même titre que le
+ * multiplicateur de profondeur. Voir le commentaire de `densiteDuSejour` pour
+ * ce qui interdit qu'une autre grandeur porte ce nom.
  *
- * `vitesseDeRepeuplement` est partie avec le modèle à population le 2026-09-09.
- * V11 avait déjà découplé la densité du repeuplement ; il ne restait plus qu'un
- * `k` constant, et il n'y a plus de population à repeupler.
+ * Elle a eu deux autres débouchés, retirés tous deux pour la même raison : la
+ * densité vaut `pointe^α` et croît sans borne, donc un temps caractéristique
+ * divisé par elle s'effondre.
+ *   - le repeuplement (V11, 2026-09-08) : `τ` tombait de 300 s à 10⁻⁴ s en
+ *     quinze cycles. `vitesseDeRepeuplement` est ensuite partie avec le modèle
+ *     à population, le 2026-09-09 ;
+ *   - l'acquis de séjour (2026-09-11) : `t₉₀` tombait de 2 h à 0,09 h dès le
+ *     deuxième cycle, et l'acquis saturait toujours avant l'éclosion — la loi
+ *     de contenance lisait un forfait. Son temps est désormais `τ₀`, constant
+ *     (amendement v1.1, §2.B).
  */
 import type Decimal from 'break_infinity.js'
 import type { EtatJeu, IndexPalier } from './types'

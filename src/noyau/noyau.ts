@@ -33,7 +33,6 @@ import {
   productionTotaleParSeconde,
   toutEstCreuse,
 } from './economie'
-import { densiteDuSejour, multiplicateurDensite } from './densite'
 import { cycleInitial } from './eclosion'
 import { creditCompteur } from './technique'
 import { verifierSucces } from './succes'
@@ -143,14 +142,20 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
 
   const enRedescente = etat.cycle.paliersOuverts < etat.permanent.profondeurMaxAtteinte
 
-  // Acquis de séjour (§2.B) : accumulation saturante vers `A∞`, dont le temps
-  // caractéristique décroît quand la densité monte. Forme exponentielle, donc
-  // exacte pour n'importe quel `dt` — c'est ce qui permet à la contenance de
-  // monter correctement au retour d'une absence de 8 h.
-  const tauEffSecondes =
-    (TAU_SEJOUR_HEURES * 3600) / multiplicateurDensite(densiteDuSejour(etat))
+  // Acquis de séjour (§2.B) : accumulation saturante vers `A∞`, de temps
+  // caractéristique `τ₀` CONSTANT. Forme exponentielle, donc exacte pour
+  // n'importe quel `dt` — c'est ce qui permet à la contenance de monter
+  // correctement au retour d'une absence de 8 h.
+  //
+  // La densité n'entre PAS ici. Elle vaut `pointe^α` et croît sans borne : un
+  // `τ` divisé par elle tombait à 0,09 h de t₉₀ dès le deuxième cycle, et à
+  // quelques secondes de cycle ensuite. L'acquis saturait toujours avant
+  // l'éclosion, et la contenance dégénérait en forfait. La saturation borne la
+  // VALEUR de l'acquis, pas le TEMPS pour l'atteindre. `τ₀` jauge une durée de
+  // cycle constante par construction : il doit l'être aussi.
+  const tauSecondes = TAU_SEJOUR_HEURES * 3600
   const acquisDeSejour =
-    ACQUIS_MAX + (etat.cycle.acquisDeSejour - ACQUIS_MAX) * Math.exp(-dt / tauEffSecondes)
+    ACQUIS_MAX + (etat.cycle.acquisDeSejour - ACQUIS_MAX) * Math.exp(-dt / tauSecondes)
 
   const avance: EtatJeu = {
     ...etat,

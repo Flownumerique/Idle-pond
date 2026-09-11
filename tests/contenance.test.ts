@@ -70,13 +70,14 @@ describe('contenance', () => {
     expect(apres.cycle.acquisDeSejour).toBe(0)
   })
 
-  it('la densité raccourcit le séjour, elle ne le rallonge jamais', () => {
+  it('le multiplicateur de densité vaut 1 en eau neutre, jamais moins, et croît', () => {
     // Le point `multiplicateurDensite(1) === 1` verrouillait le PLANCHER de
-    // l'ancienne forme (`Math.max(1, densité)^e`), remplacée depuis la tâche 9
-    // par celle des contraintes globales du plan, `(1 + densité/d₀)^e` — les
-    // deux coïncident à densité 0, pas à densité 1. Ce que ce test protège
-    // n'est pas ce point-là : c'est l'invariant que son propre nom porte —
-    // « elle ne le rallonge jamais » — donc `≥ 1` partout, et croissant.
+    // l'ancienne forme (`Math.max(1, densité)^e`), remplacée par celle des
+    // contraintes globales, `(1 + densité/d₀)^e` — les deux coïncident à
+    // densité 0, pas à densité 1. Ce que ce test protège n'est pas ce point-là :
+    // c'est `≥ 1` partout, et croissant. Le multiplicateur ne raccourcit plus
+    // le séjour (voir les deux tests suivants) ; il multiplie la production,
+    // et une eau plus dense ne doit jamais la faire baisser.
     let precedent = multiplicateurDensite(0)
     expect(precedent).toBe(1)
     for (const densite of [0.5, 1, 2, 5, 10, 50]) {
@@ -86,13 +87,37 @@ describe('contenance', () => {
       precedent = valeur
     }
     expect(multiplicateurDensite(10)).toBeGreaterThan(1)
-    // Une eau dense sature plus vite : c'est la compensation du §2.A.
+  })
+
+  // Ces deux tests remplacent l'affirmation « une eau dense sature plus vite ».
+  // Elle verrouillait une dégénérescence : la densité vaut `pointe^α` et croît
+  // sans borne, donc un temps caractéristique divisé par elle s'effondre — t₉₀
+  // de 2 h à densité nulle, 0,09 h à densité 10, quasi nul à 10⁶. L'acquis
+  // saturait alors en quelques dizaines de secondes dès le deuxième cycle, et
+  // la contenance ne lisait plus que `A∞` : un forfait plat, sous le nom de
+  // séjour. Le temps du séjour est désormais `τ₀`, constant.
+  it('le temps du séjour ne dépend plus de la densité', () => {
+    const depart = etatInitial(1)
+    const dense = {
+      ...depart,
+      permanent: { ...depart.permanent, densites: depart.permanent.densites.map(() => 1e6) },
+    }
+    const neutre = tick(depart, H).cycle.acquisDeSejour
+    expect(tick(dense, H).cycle.acquisDeSejour).toBeCloseTo(neutre, 9)
+  })
+
+  it('en eau dense, une heure de séjour ne sature toujours pas l’acquis', () => {
+    // Densité 10 : celle qu'un deuxième cycle atteint déjà (pointe ≈ 46 /s).
+    // Après une heure, l'acquis vaut `1 − e^(−1 h / τ₀)` ≈ 0,683 de `A∞`, et non
+    // ≈ 1 : la loi de contenance lit encore la durée du séjour.
     const depart = etatInitial(1)
     const dense = {
       ...depart,
       permanent: { ...depart.permanent, densites: depart.permanent.densites.map(() => 10) },
     }
-    expect(tick(dense, H).cycle.acquisDeSejour).toBeGreaterThan(tick(depart, H).cycle.acquisDeSejour)
+    const rapport = tick(dense, H).cycle.acquisDeSejour / ACQUIS_MAX
+    expect(rapport).toBeCloseTo(1 - Math.exp(-1 / TAU_SEJOUR_HEURES), 6)
+    expect(rapport).toBeLessThan(0.7)
   })
 
   it('τ₀ est bien le temps caractéristique à densité neutre', () => {

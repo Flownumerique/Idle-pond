@@ -77,6 +77,59 @@ trois ne rapportent que 3 % de contenance en plus. Passé la saturation, rester
 ne rapporte plus de profondeur, seulement de la Foi — la seule vraie décision du
 joueur est réelle, et un test l'affirme.
 
+#### Amendé le 2026-09-11 — le temps du séjour ne dépend plus de la densité
+
+Le temps caractéristique de l'acquis était `τ₀ / mult_densité(densité)`. La
+densité vaut `pointe^α` et croît sans borne ; `τ` s'effondrait donc avec elle.
+Avec `θ/α = 1,333` et `τ₀ = 0,87 h`, `t₉₀ = τ × ln 10` :
+
+| densité | 0 | 3 | 10 | 100 | 10⁶ |
+|---|---|---|---|---|---|
+| `t₉₀` du séjour | 2,00 h | 0,46 h | 0,093 h | 0,004 h | ~0 |
+| pointe qui la laisse | — | 6 /s | 46 /s | 2 154 /s | 10¹⁰ /s |
+
+Une pointe de 46 mana/s est atteinte dès le premier cycle. Mesuré sur quinze
+cycles, politique par défaut du simulateur : les deux premiers cycles durent
+4 h, **tous les suivants de 4 à 14 secondes**, et l'acquis vaut exactement `A∞`
+à chaque éclosion. La loi de contenance ne lisait plus la durée du séjour : elle
+rendait un forfait de ×48,6 par éclosion, sous le nom de séjour. Le pilier
+Tier 0 « le plafond ne monte que par séjour prolongé » était devenu décoratif.
+
+**L'erreur.** Le §6 ci-dessous (V11) gardait ce canal au motif que la densité
+y passe « par un rapport que la saturation borne ». La saturation borne la
+VALEUR de l'acquis — `A∞` —, elle ne borne pas le TEMPS pour l'atteindre. Et le
+canal masquait son propre effondrement : la contenance ne lit l'acquis qu'à
+l'éclosion, donc toujours après saturation, alors que le repeuplement retiré
+montrait le sien dans un temps de convergence observable.
+
+**Décision : `τ = τ₀`, constant.** La durée de cycle visée est constante par
+construction — coûts et production montent tous deux en `g^paliers` —, et le
+temps qui la jauge doit l'être aussi. Même simulation après correction : chaque
+cycle dure un intervalle de check-in (4 h), l'acquis vaut 0,990 de `A∞` à
+l'éclosion, ×48,1 par cycle, 4,4 paliers par cycle en moyenne.
+
+L'effet secondaire recherché est conservé — cent heures au lieu de trois
+rapportent toujours 3 % de contenance —, mais il faut dire à quoi il tient :
+**il ne tient QUE parce que `τ₀` est calibré sur la durée de cycle.** Avec un
+acquis qui sature en quelques secondes, il était vrai à vide : rester trois
+heures au lieu de quarante secondes ne rapportait rien, et la décision « rester
+ou partir » se réduisait à « partir tout de suite ».
+
+**Une loi exponentielle a été mesurée et rejetée le 2026-09-11.** La loi
+`contenance × C^(acquis / A∞)`, avec `C = g^4.4`, a été essayée par-dessus
+`τ = τ₀`. Elle ne vise `C` qu'à saturation : à 3 h de séjour elle rend ×41,66
+contre ×47,09 visé, et 200 h rapportent 1,130 fois ce que rapportent 3 h,
+contre 1,032 pour la loi linéaire. Sur quinze cycles simulés, elle donne 4,356
+paliers de marge par cycle au lieu de 4,4. La raison tient en une ligne : avec
+`τ₀` calibré sur le cycle, un séjour nominal ne sature pas, donc une loi qui
+n'atteint sa cible qu'à saturation la manque à chaque cycle réel. La loi reste
+linéaire, `× (1 + acquis)`.
+
+La densité garde un débouché, et un seul : la production, par
+`mult_densité = (1 + densité / d₀)^(θ/α)`, au même titre que le multiplicateur
+de profondeur. C'est la grandeur que la chaîne de dérivation du §2.A écrit pour
+`θ`.
+
 ### 2.C — seuils cumulés, sur l'effectif
 
 La colonne est renommée `multiplicateurCumule` partout. Le joueur achète de la
@@ -203,6 +256,16 @@ que la saturation borne, lui tient. À exposant nu, `τ` tombait de 300 s à
 10⁻⁴ s en quinze cycles : la population devenait instantanée dès le deuxième, et
 avec elle disparaissait le délai entre l'achat d'une place et son effet —
 c'est-à-dire ce que le GDD §7.2 décrit comme la boucle elle-même.
+
+> **Corrigé le 2026-09-11 : le canal gardé ne tenait pas davantage.** La
+> saturation borne la valeur de l'acquis, pas le temps pour l'atteindre ; le
+> `τ` du séjour s'effondrait exactement comme celui du repeuplement — `t₉₀` de
+> 2 h à 0,09 h dès le deuxième cycle —, et l'effondrement était masqué parce
+> que la contenance ne lit l'acquis qu'à l'éclosion. Par le critère même de
+> V11, la densité sort aussi du temps du séjour : `τ = τ₀`, constant. Mesure et
+> décision au §3, sous « 2.B ». La phrase « elle travaille par l'acquis de
+> séjour, et par rien d'autre » ci-dessus est donc périmée : la densité
+> travaille désormais par la production, et par rien d'autre.
 
 ### Ce que le balayage a montré, et qui contredit le GDD §6.4
 

@@ -333,12 +333,20 @@ export const ECHELLE_DE_PRODUCTION = 1
  * ÉCRIRE CE FACTEUR DIRECTEMENT EST INTERDIT. Tier 0 §8 : le plafond ne monte
  * QUE par séjour prolongé en mana dense. Une contenance indexée sur le
  * compteur d'éclosions violerait l'invariant. Elle monte donc par une
- * accumulation saturante de l'acquis de séjour, dont le temps caractéristique
- * décroît quand la densité monte — « séjour en mana DENSE ».
+ * accumulation saturante de l'acquis de séjour, de temps caractéristique `τ₀`
+ * CONSTANT.
+ *
+ * La densité n'entre pas dans ce temps (amendement v1.1, §2.B, 2026-09-11).
+ * Elle vaut `pointe^α` et croît sans borne : un `τ` divisé par elle mettait le
+ * `t₉₀` à 0,09 h dès le deuxième cycle, l'acquis saturait toujours avant
+ * l'éclosion, et la contenance ne lisait plus qu'un forfait. « Séjour en mana
+ * DENSE » passe désormais par la production, via `multiplicateurDensite`.
  *
  * Effet secondaire recherché, à ne pas casser : passé la saturation, rester ne
  * rapporte plus de profondeur, seulement de la Foi. C'est ce qui rend réelle
- * la seule vraie décision du joueur.
+ * la seule vraie décision du joueur — et il ne tient QUE parce que `τ₀` est
+ * calibré sur la durée de cycle : un acquis qui sature en quelques secondes
+ * rend la décision vide.
  */
 
 /**
@@ -367,7 +375,9 @@ export const CONTENANCE_INITIALE = COUT_CREUSER_AU_PALIER_1 * Math.pow(G_COUT_PA
 export const ACQUIS_MAX = 47.6
 
 /**
- * `τ₀` — temps caractéristique du séjour, en heures, à densité neutre.
+ * `τ₀` — temps caractéristique du séjour, en heures. Constant : il ne dépend
+ * ni de la densité ni d'aucune grandeur qui croît avec la partie, parce qu'il
+ * jauge une durée de cycle constante par construction.
  *
  * [P] graine — réglé pour un `t₉₀` ≈ 2 h sur un cycle de 3 h.
  */
