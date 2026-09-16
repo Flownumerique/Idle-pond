@@ -414,11 +414,26 @@ export const TAU_SEJOUR_HEURES = 0.87
  * interminables. C'est pourquoi la valeur est un réglage résolu contre une
  * cible de durée totale, et non une graine posée à la main.
  *
- * [P] — vaut 1 en attendant que la tâche 13 la résolve, contre la cible de
- * courbe que l'utilisateur fixera. À 1, la loi est exactement celle d'avant le
- * 2026-09-16, et aucun chiffre mesuré du dépôt ne bouge.
+ * FIXÉ le 2026-09-16, par décision, contre cette table mesurée sur
+ * `simuler(45)` — joueur optimal, donc temps actif égal au temps écoulé :
+ *
+ * | `c`   | cycle 1 | cycles 15 à 45 | dernier/premier | partie complète |
+ * |-------|---------|----------------|-----------------|-----------------|
+ * | 1,000 |  2,62 h |         2,62 h |            ×1,0 |           118 h |
+ * | 1,020 |  2,92 h |         8,90 h |            ×3,1 |           353 h |
+ * | 1,030 |  3,08 h |        16,30 h |            ×5,3 |           621 h |
+ * | 1,050 |  3,43 h |        53,68 h |           ×15,6 |         1 941 h |
+ *
+ * 1,02 retenu : la courbe triple, le cycle 1 tombe à 2,92 h — la cible des 3 h
+ * du §12, atteinte sans toucher à l'échelle —, et la partie complète fait 353 h
+ * au lieu de 118. Au-delà de 1,03 un cycle de fin dépasse 16 h, ce qui n'est
+ * plus un cycle.
+ *
+ * La croissance s'arrête d'elle-même au cycle 14, quand les 62 paliers sont
+ * ouverts : `profondeurMaxAtteinte` plafonne, et les cycles suivants sont plats
+ * à `τ₀ × c^62`. Le jeu s'allonge tant qu'il reste du monde à ouvrir.
  */
-export const CROISSANCE_DU_SEJOUR_PAR_PALIER = 1
+export const CROISSANCE_DU_SEJOUR_PAR_PALIER = 1.02
 
 /** Le réglage du canon — celui qu'une partie reçoit, et qu'une save reprend. */
 export const REGLAGE_CANONIQUE: Reglage = {

@@ -206,9 +206,27 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
   })
 
   it('la politique optimale et la politique relâchée diffèrent (finding 2)', () => {
+    // Le seuil tenait un ×2 sur une absence de 4 h tant qu'un cycle durait
+    // 2,62 h : l'absence dépassait le cycle, et chaque cycle payait un
+    // intervalle entier. Sous la courbe v1.2 le cycle passe à 8,9 h dès le
+    // quinzième, donc une absence de 4 h y tient DEDANS et coûte relativement
+    // moins. Mesuré sur 13 cycles, graine 1 — optimale 67,9 h ; relâchée à
+    // 4 h 104,0 h (×1,532), à 8 h 184,0 h (×2,711), à 24 h 504,0 h (×7,425).
+    //
+    // Le contenu du finding 2 n'est pas le ×2, c'est que l'intervalle de relevé
+    // est le SEUL réglage qui gonfle le temps calendaire, et qu'il le gonfle
+    // d'autant plus qu'il est long. Le test dit maintenant cela, et le dit sur
+    // deux points au lieu d'un : un compteur qui ignorerait l'intervalle rend
+    // les trois valeurs égales et tombe sur les deux assertions.
     const optimale = simuler(13, POLITIQUE_PAR_DEFAUT, 1)
-    const relachee = simuler(13, { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: 4 * 3600 }, 1)
-    expect(relachee.secondesEcoulees).toBeGreaterThan(optimale.secondesEcoulees * 2)
+    const ecoule = (heures: number) =>
+      simuler(13, { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: heures * 3600 }, 1).secondesEcoulees
+    const a4 = ecoule(4)
+    const a24 = ecoule(24)
+    expect(a4, 'une absence de 4 h coûte du temps calendaire').toBeGreaterThan(
+      optimale.secondesEcoulees * 1.3,
+    )
+    expect(a24, 'et six fois plus d’absence en coûte davantage').toBeGreaterThan(a4 * 2)
   })
 
   it('le gain de chaque achat est la production qu’il ajoute réellement', () => {

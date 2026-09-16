@@ -198,10 +198,29 @@ l'effet secondaire du §2.B tient toujours — passé la saturation, rester ne
 rapporte plus que de la Foi, à n'importe quelle profondeur, puisque la
 saturation arrive toujours au bout de trois `τ`.
 
-**`c` vaut 1 en attendant la résolution**, c'est-à-dire exactement la loi
-d'avant le 2026-09-16 : aucun chiffre mesuré du dépôt ne bouge tant que le
-calibreur n'a pas tranché, contre une cible de courbe qui est une décision de
-canon et non une mesure.
+**`c` vaut 1,02**, fixé le 2026-09-16 par décision contre cette table mesurée
+sur `simuler(45)` — joueur optimal, donc temps actif égal au temps écoulé :
+
+| `c` | cycle 1 | cycles 15 à 45 | dernier/premier | partie complète |
+|---|---|---|---|---|
+| 1,000 | 2,62 h | 2,62 h | ×1,0 | 118 h |
+| **1,020** | **2,92 h** | **8,90 h** | **×3,1** | **353 h** |
+| 1,030 | 3,08 h | 16,30 h | ×5,3 | 621 h |
+| 1,050 | 3,43 h | 53,68 h | ×15,6 | 1 941 h |
+
+La courbe triple, le cycle 1 tombe à 2,92 h — la cible des 3 h du §12, atteinte
+sans toucher à l'échelle —, et la partie complète fait 353 h au lieu de 118.
+Au-delà de 1,03, un cycle de fin dépasse 16 h : ce n'est plus un cycle.
+
+**Ce que la courbe v1.2 déplace, mesuré.** Un seul chiffre du dépôt bouge
+vraiment, et c'est le finding 2 : l'absence de 4 h ne double plus le temps
+calendaire, parce qu'elle tient désormais DANS un cycle au lieu de le dépasser.
+Sur 13 cycles — optimale 67,9 h ; relâchée à 4 h 104,0 h (×1,53), à 8 h 184,0 h
+(×2,71), à 24 h 504,0 h (×7,43). Le finding lui-même est intact : l'intervalle
+de relevé reste le seul réglage qui gonfle le temps calendaire, et il le gonfle
+d'autant plus qu'il est long. La Foi et la densité à 45 cycles ne bougent, elles,
+qu'à la quatrième décimale (1,6512e+66 → 1,6505e+66) : l'économie est invariante
+d'échelle, et rallonger les cycles ne la déplace pas.
 
 ### 2.C — seuils cumulés, sur l'effectif
 
