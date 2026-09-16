@@ -424,6 +424,32 @@ export interface EtatTelemetrie {
   readonly intervallesEntreSucces: readonly number[]
 }
 
+/**
+ * Les réglages de la COURBE — ce que le calibreur résout, et que le canon fixe.
+ *
+ * Ils vivent dans l'état, et non en constantes de module lues directement par
+ * les fonctions pures, pour une seule raison : le calibreur doit pouvoir
+ * balayer des valeurs sans muter un module, et le §5.1 interdit au noyau tout
+ * état hors du reducer. Même précédent que `limiteDeContenu` juste en dessous —
+ * un seul code, plusieurs mondes.
+ *
+ * Ils ne sont PAS persistés (R41) : un réglage est une propriété de la VERSION
+ * du jeu, pas de la partie. Le persister figerait l'ancienne courbe dans les
+ * saves existantes au moment même où on la recalibre. `serialiser` l'omet,
+ * `deserialiser` le reprend du repli, c'est-à-dire du canon.
+ *
+ * La tâche 13 y ajoutera `θ` et l'échelle de production, qui se lisent
+ * aujourd'hui en constantes de module.
+ */
+export interface Reglage {
+  /**
+   * De combien le temps caractéristique du séjour est multiplié PAR PALIER de
+   * profondeur atteinte (amendement v1.2). 1 = `τ` constant, la loi d'avant le
+   * 2026-09-16.
+   */
+  readonly croissanceDuSejourParPalier: number
+}
+
 export interface EtatJeu {
   readonly versionSave: number
   readonly prng: EtatPrng
@@ -440,6 +466,8 @@ export interface EtatJeu {
    * deux mondes.
    */
   readonly limiteDeContenu: number
+  /** Voir `Reglage` : les boutons de la courbe, non persistés. */
+  readonly reglage: Reglage
   readonly cycle: EtatCycle
   readonly permanent: EtatPermanent
   readonly telemetrie: EtatTelemetrie

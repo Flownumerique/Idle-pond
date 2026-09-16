@@ -237,6 +237,23 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
     }
   })
 
+  it('la croissance du séjour est le bouton de la FORME de la courbe', () => {
+    // La contrepartie mesurable de l'amendement v1.2, et ce qui donne à la
+    // tâche 13 une bissection qui a prise : à `τ` constant, tous les cycles
+    // durent `τ₀ ln 20` et le rapport `dernier / premier` vaut 1 quoi qu'on
+    // règle ailleurs — c'est ce que la tâche 12 a mesuré sur 45 cycles.
+    const rapport = (croissance: number) => {
+      const r = simuler(6, undefined, 1, undefined, undefined, {
+        croissanceDuSejourParPalier: croissance,
+      })
+      const durees = r.cycles.map((c) => c.dureeEcouleeSecondes)
+      expect(durees.length).toBe(6)
+      return durees[durees.length - 1] / durees[0]
+    }
+    expect(rapport(1), 'à croissance 1, la courbe est plate — la loi d’avant').toBeCloseTo(1, 3)
+    expect(rapport(1.05), 'à croissance 1,05, les cycles s’allongent').toBeGreaterThan(2)
+  })
+
   it('le budget retire les achats hors de portée, et rien d’autre', () => {
     // Le chemin chaud passe un budget pour ne pas calculer le gain de ce qu'il
     // ne peut pas payer — une décision d'achat évalue toutes les espèces

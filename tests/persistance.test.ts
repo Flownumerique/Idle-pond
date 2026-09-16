@@ -6,7 +6,7 @@
  */
 import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
-import { VERSION_SAVE } from '../src/noyau/constantes'
+import { REGLAGE_CANONIQUE, VERSION_SAVE } from '../src/noyau/constantes'
 import { etatInitial } from '../src/noyau/noyau'
 import {
   deserialiser,
@@ -22,6 +22,17 @@ import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
 
 describe('persistance', () => {
+  it('le réglage n’est PAS persisté : il appartient à la version du jeu, pas à la partie', () => {
+    // R41. Un réglage persisté figerait l'ancienne courbe dans les saves
+    // existantes au moment même où la tâche 13 recalibre — et le jour où la
+    // croissance du séjour change de valeur, une partie en cours doit suivre.
+    expect(REGLAGE_CANONIQUE.croissanceDuSejourParPalier).toBeGreaterThan(0)
+    const regle = { ...etatInitial(1), reglage: { croissanceDuSejourParPalier: 1.5 } }
+    const save = serialiser(regle)
+    expect(JSON.stringify(save.contenu)).not.toContain('croissanceDuSejour')
+    expect(deserialiser(save, etatInitial(1)).reglage).toEqual(REGLAGE_CANONIQUE)
+  })
+
   it('un Decimal fait l’aller-retour à l’exact', () => {
     const valeurs = [
       new Decimal(0),

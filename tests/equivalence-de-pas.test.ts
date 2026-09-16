@@ -38,6 +38,19 @@ describe('équivalence de pas', () => {
     comparerAToleranceFlottante(parPetitsPas, enUnPas)
   })
 
+  it('la croissance du séjour ne coupe pas le pas', () => {
+    // `τ` dépend maintenant de la profondeur ATTEINTE (amendement v1.2), qui ne
+    // bouge que sur un acte du joueur — jamais pendant un tick. La forme
+    // exponentielle reste donc exacte pour n'importe quel `dt`. Si un jour `τ`
+    // se mettait à dépendre d'une grandeur qui bouge DANS le pas, c'est ici que
+    // cela se verrait, et c'est tout l'objet du §5.2.
+    const depart: EtatJeu = { ...etatDeTravail(), reglage: { croissanceDuSejourParPalier: 1.2 } }
+    expect(depart.permanent.profondeurMaxAtteinte).toBeGreaterThan(0)
+    let parPetitsPas = depart
+    for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
+    comparerAToleranceFlottante(parPetitsPas, tick(depart, HUIT_HEURES))
+  })
+
   it('la cadence de jeu à 100 ms vaut elle aussi un seul pas', () => {
     const depart = etatDeTravail()
     const duree = 600

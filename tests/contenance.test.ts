@@ -11,13 +11,15 @@
  * pas seulement son résultat.
  */
 import { describe, expect, it } from 'vitest'
+import type { EtatJeu } from '../src/noyau/types'
 import {
   ACQUIS_MAX,
   CONTENANCE_PAR_ECLOSION,
   DUREE_DU_CYCLE_1_HEURES,
+  REGLAGE_CANONIQUE,
   TAU_SEJOUR_HEURES,
 } from '../src/noyau/constantes'
-import { eclore, etatInitial, tick } from '../src/noyau/noyau'
+import { eclore, etatInitial, tauDuSejourSecondes, tick } from '../src/noyau/noyau'
 import { multiplicateurDensite } from '../src/noyau/densite'
 import { etatDeTravail } from './etat-de-travail'
 
@@ -120,6 +122,50 @@ describe('contenance', () => {
     const rapport = tick(dense, H).cycle.acquisDeSejour / ACQUIS_MAX
     expect(rapport).toBeCloseTo(1 - Math.exp(-1 / TAU_SEJOUR_HEURES), 6)
     expect(rapport).toBeLessThan(0.7)
+  })
+
+  it('le temps du séjour croît avec la profondeur ATTEINTE (amendement v1.2)', () => {
+    // La tâche 12 a mesuré ce que `τ` constant produit : les 45 cycles durent
+    // exactement 2,617 h — `τ₀ ln 20` — et `dernier / premier` vaut 1,000 quel
+    // que soit le réglage d'économie. La durée d'un cycle est plafonnée par le
+    // séjour, pas par l'économie ; aucun bouton d'économie n'a donc prise sur
+    // la forme de la courbe. C'est `τ` qui devient ce bouton.
+    //
+    // Ce n'est PAS le retour de la loi que R39 a révoquée : celle-là DIVISAIT
+    // `τ` par la densité, une grandeur sans borne, et `t₉₀` s'effondrait de 2 h
+    // à 0,05 s en trois cycles. Ici `τ` croît, et il croît par PALIER — une
+    // quantité entière et bornée par les 62 paliers du monde.
+    const depart = etatInitial(1)
+    expect(depart.reglage).toEqual(REGLAGE_CANONIQUE)
+    expect(tauDuSejourSecondes(depart)).toBeCloseTo(TAU_SEJOUR_HEURES * H, 9)
+
+    const profond = (p: number, croissance: number): EtatJeu => ({
+      ...depart,
+      reglage: { croissanceDuSejourParPalier: croissance },
+      permanent: { ...depart.permanent, profondeurMaxAtteinte: p },
+    })
+    // La profondeur zéro vaut toujours `τ₀` : la loi ne déplace pas son origine.
+    expect(tauDuSejourSecondes(profond(0, 1.05))).toBeCloseTo(TAU_SEJOUR_HEURES * H, 9)
+    expect(tauDuSejourSecondes(profond(10, 1.05))).toBeCloseTo(TAU_SEJOUR_HEURES * H * Math.pow(1.05, 10), 9)
+    expect(tauDuSejourSecondes(profond(10, 1.05))).toBeGreaterThan(tauDuSejourSecondes(profond(9, 1.05)))
+    // À croissance 1, la loi d'avant, à l'identique.
+    expect(tauDuSejourSecondes(profond(20, 1))).toBeCloseTo(TAU_SEJOUR_HEURES * H, 9)
+  })
+
+  it('en profondeur, la même heure de séjour rapporte moins d’acquis', () => {
+    // L'effet, et non la formule : c'est par là que les cycles s'allongent.
+    const depart = etatInitial(1)
+    const profond = (p: number): EtatJeu => ({
+      ...depart,
+      reglage: { croissanceDuSejourParPalier: 1.05 },
+      permanent: { ...depart.permanent, profondeurMaxAtteinte: p },
+    })
+    const surface = tick(profond(0), H).cycle.acquisDeSejour
+    const fond = tick(profond(20), H).cycle.acquisDeSejour
+    expect(fond).toBeLessThan(surface)
+    // Et l'acquis sature toujours vers le MÊME plafond : `τ` change le temps,
+    // jamais la valeur. Cent heures au fond y arrivent encore.
+    expect(tick(profond(20), 100 * H).cycle.acquisDeSejour / ACQUIS_MAX).toBeGreaterThan(0.95)
   })
 
   it('τ₀ est bien le temps caractéristique à densité neutre', () => {

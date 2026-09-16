@@ -19,7 +19,7 @@
  * ici.
  */
 import Decimal from 'break_infinity.js'
-import type { Espece, EtatJeu, MesureDeCycle } from '../noyau/types'
+import type { Espece, EtatJeu, MesureDeCycle, Reglage } from '../noyau/types'
 import {
   ameliorer,
   creuser,
@@ -304,13 +304,19 @@ export function simuler(
   graine = 1,
   observer?: Observateur,
   limiteDeContenu?: number,
+  /**
+   * Le réglage de la courbe, pour le calibreur — il balaie des valeurs, et le
+   * §5.1 lui interdit de muter un module pour le faire. Par défaut : le canon.
+   * La tâche 13 y ajoutera `θ` et l'échelle.
+   */
+  reglage?: Reglage,
 ): ResultatDeSimulation {
   if (!(politique.pas > 0)) throw new Error(`Le pas de la politique doit être positif (reçu ${politique.pas})`)
   if (!(politique.secondesEntreReleves >= 0))
     throw new Error(`L'intervalle entre relevés ne peut pas être négatif (reçu ${politique.secondesEntreReleves})`)
   const intervalle = politique.secondesEntreReleves > 0 ? politique.secondesEntreReleves : politique.pas
 
-  let etat = etatInitial(graine, limiteDeContenu)
+  let etat = etatInitial(graine, limiteDeContenu, reglage)
   let secondesActives = 0
   let cycleNonConvergent: number | null = null
   let acheves = 0

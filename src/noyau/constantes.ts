@@ -16,6 +16,8 @@
 /* ═══ §13.1 — FIXÉS ═════════════════════════════════════════════════════════ */
 
 /** `g` — coût de palier. Chaque palier coûte ×2.4 le précédent. */
+import type { Reglage } from './types'
+
 export const G_COUT_PALIER = 2.4
 
 /** Coût de niveau, achat répétable. */
@@ -380,13 +382,48 @@ export const CONTENANCE_INITIALE = COUT_CREUSER_AU_PALIER_1 * Math.pow(G_COUT_PA
 export const ACQUIS_MAX = 47.6
 
 /**
- * `τ₀` — temps caractéristique du séjour, en heures. Constant : il ne dépend
- * ni de la densité ni d'aucune grandeur qui croît avec la partie, parce qu'il
- * jauge une durée de cycle constante par construction.
+ * `τ₀` — temps caractéristique du séjour AU DÉPART, en heures.
  *
  * [P] graine — réglé pour un `t₉₀` ≈ 2 h sur un cycle de 3 h.
+ *
+ * Il ne dépend ni de la densité ni d'aucune grandeur sans borne : c'est la loi
+ * que R39 a révoquée le 2026-09-11, parce que `τ` divisé par la densité
+ * s'effondrait de 2 h à 0,05 s en trois cycles. Depuis le 2026-09-16 il n'est
+ * plus constant pour autant — voir `CROISSANCE_DU_SEJOUR_PAR_PALIER`.
  */
 export const TAU_SEJOUR_HEURES = 0.87
+
+/**
+ * De combien `τ` est multiplié par PALIER de profondeur atteinte — amendement
+ * v1.2, le 2026-09-16.
+ *
+ * POURQUOI CE BOUTON EXISTE, et ce qu'il répare. Avec `τ` constant, la durée
+ * d'un cycle vaut `τ₀ ln 20` et RIEN d'autre : mesuré par la tâche 12, les 45
+ * cycles durent 2,617 h chacun, sans exception, et le joueur passe 98 à 99 % de
+ * chacun bloqué à attendre l'acquis. Le rapport entre le dernier cycle et le
+ * premier vaut donc 1,000 quel que soit `θ`, l'échelle, ou tout autre réglage
+ * d'économie — la durée est plafonnée par le SÉJOUR, pas par l'économie. Le
+ * calibreur n'avait aucune prise sur la forme de la courbe, et le spec (l. 37)
+ * l'avait prédit.
+ *
+ * CE QUE CE N'EST PAS. La loi révoquée par R39 divisait `τ` par la densité,
+ * `pointe^α`, qui croît sans borne : `t₉₀` tombait à 0,05 s au troisième cycle
+ * et la contenance dégénérait en forfait. Ici `τ` CROÎT, et il croît par
+ * palier — une quantité entière, bornée par les 62 paliers du monde, et qui ne
+ * peut pas s'emballer. Le risque est l'autre : des cycles tardifs
+ * interminables. C'est pourquoi la valeur est un réglage résolu contre une
+ * cible de durée totale, et non une graine posée à la main.
+ *
+ * [P] — vaut 1 en attendant que la tâche 13 la résolve, contre la cible de
+ * courbe que l'utilisateur fixera. À 1, la loi est exactement celle d'avant le
+ * 2026-09-16, et aucun chiffre mesuré du dépôt ne bouge.
+ */
+export const CROISSANCE_DU_SEJOUR_PAR_PALIER = 1
+
+/** Le réglage du canon — celui qu'une partie reçoit, et qu'une save reprend. */
+export const REGLAGE_CANONIQUE: Reglage = {
+  croissanceDuSejourParPalier: CROISSANCE_DU_SEJOUR_PAR_PALIER,
+}
 
 /* ─── Graines d'éclosion ────────────────────────────────────────────────────*/
 

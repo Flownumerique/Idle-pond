@@ -15,11 +15,12 @@
  * simulateur. Le hasard n'a droit de cité que sur des événements discrets.
  */
 import Decimal from 'break_infinity.js'
-import type { EspeceId, EtatJeu, EtatPrng, SuccesId } from './types'
+import type { EspeceId, EtatJeu, EtatPrng, Reglage, SuccesId } from './types'
 import {
   ACQUIS_MAX,
   CONTENANCE_INITIALE,
   NOMBRE_DE_PALIERS,
+  REGLAGE_CANONIQUE,
   SEUIL_DU_DRAPEAU_PERMANENT,
   TAU_SEJOUR_HEURES,
   VERSION_SAVE,
@@ -70,12 +71,17 @@ export function tirer(prng: EtatPrng): readonly [number, EtatPrng] {
  * Un seul reducer, deux mondes : le §12 veut qu'aucune assise ne soit produite
  * avant que la précédente ait été mesurée, et c'est ce paramètre qui le tient.
  */
-export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS): EtatJeu {
+export function etatInitial(
+  graine: number,
+  limiteDeContenu = NOMBRE_DE_PALIERS,
+  reglage: Reglage = REGLAGE_CANONIQUE,
+): EtatJeu {
   return {
     versionSave: VERSION_SAVE,
     prng: { graine: graine >>> 0 },
     tempsJeuSecondes: 0,
     limiteDeContenu,
+    reglage,
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),
@@ -127,6 +133,34 @@ export interface ResultatDeTick {
  * en quatre cent quatre-vingts. C'est ce qui rend l'équivalence de pas triviale
  * au lieu de délicate, et pourquoi il n'y a plus de `prochaineCoupure`.
  */
+/**
+ * `τ` — le temps caractéristique du séjour, en secondes : `τ₀ × c^profondeur`
+ * (amendement v1.2, §2.B, amendé le 2026-09-16).
+ *
+ * La profondeur est celle ATTEINTE, `profondeurMaxAtteinte`, et non celle qui
+ * est ouverte dans la vie courante. Deux raisons, et la seconde est un
+ * invariant :
+ *
+ *   - c'est un acquis de l'être, pas de la plongée : on ne redevient pas jeune
+ *     en remontant, et la contenance ne doit pas se regagner plus vite parce
+ *     qu'on vient d'éclore ;
+ *   - `profondeurMaxAtteinte` est monotone (Tier 0), donc `τ` l'est aussi. Un
+ *     `τ` qui pourrait redescendre ferait d'une éclosion un moyen d'accélérer
+ *     l'acquis, ce qui rendrait la décision du §6.4 dégénérée.
+ *
+ * Elle ne bouge que sur un ACTE du joueur, jamais pendant un tick : la forme
+ * exponentielle de l'acquis reste donc exacte pour n'importe quel `dt`, et le
+ * §5.2 tient. Un test d'équivalence de pas le garde.
+ *
+ * `τ` change le TEMPS, jamais la valeur : l'acquis sature toujours vers `A∞`.
+ * Descendre ne réduit pas ce qu'on peut porter, cela rallonge le temps qu'il
+ * faut pour le porter.
+ */
+export function tauDuSejourSecondes(etat: EtatJeu): number {
+  const croissance = etat.reglage.croissanceDuSejourParPalier
+  return TAU_SEJOUR_HEURES * 3600 * Math.pow(croissance, etat.permanent.profondeurMaxAtteinte)
+}
+
 export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   if (!(dt > 0)) return { etat, declenches: [] }
 
@@ -150,9 +184,8 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   // l'éclosion, et la contenance dégénérait en forfait. La saturation borne la
   // VALEUR de l'acquis, pas le TEMPS pour l'atteindre. `τ₀` jauge une durée de
   // cycle constante par construction : il doit l'être aussi.
-  const tauSecondes = TAU_SEJOUR_HEURES * 3600
   const acquisDeSejour =
-    ACQUIS_MAX + (etat.cycle.acquisDeSejour - ACQUIS_MAX) * Math.exp(-dt / tauSecondes)
+    ACQUIS_MAX + (etat.cycle.acquisDeSejour - ACQUIS_MAX) * Math.exp(-dt / tauDuSejourSecondes(etat))
 
   const avance: EtatJeu = {
     ...etat,

@@ -240,6 +240,10 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
     // Une save d'un jalon antérieur reprend la limite du jalon courant : une
     // assise livrée depuis ne doit pas rester fermée à qui jouait déjà.
     limiteDeContenu: (brut.limiteDeContenu ?? repli.limiteDeContenu) as unknown as number,
+    // JAMAIS lu de la save (R41) : un réglage appartient à la version du jeu,
+    // pas à la partie. `serialiser` ne l'écrit pas ; s'il traînait dans un
+    // vieux fichier, on l'ignorerait quand même.
+    reglage: repli.reglage,
     cycle: {
       ...repli.cycle,
       ...cycle,

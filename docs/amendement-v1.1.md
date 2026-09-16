@@ -148,6 +148,61 @@ La densité garde un débouché, et un seul : la production, par
 de profondeur. C'est la grandeur que la chaîne de dérivation du §2.A écrit pour
 `θ`.
 
+#### Amendé le 2026-09-16 — le temps du séjour croît avec la profondeur
+
+`τ` n'est plus constant : `τ = τ₀ × c^profondeur_max_atteinte`, où `c` est
+`CROISSANCE_DU_SEJOUR_PAR_PALIER`.
+
+**Ce que `τ` constant produisait, mesuré.** La tâche 12 a simulé 45 cycles sous
+la politique du joueur optimal. Les 45 durent **exactement 2,617 h**, sans
+exception — soit `τ₀ ln 20`, le temps qu'il faut à l'acquis pour atteindre les
+95 % de `A∞` qui décident du départ, plus un pas de 60 s. Le joueur est bloqué
+au bout de 21 min au premier cycle et d'une à deux minutes ensuite : **98 à
+99 % de chaque cycle se passe à attendre l'acquis**, et l'économie ne décide
+plus de la durée d'aucun cycle.
+
+La conséquence est celle qui force cet amendement : le rapport entre la durée
+du dernier cycle et celle du premier vaut **1,000 pour toute valeur de `θ`, de
+l'échelle, ou de n'importe quel autre réglage d'économie**. La durée est
+plafonnée par le séjour, pas par l'économie. Le calibreur du §12 n'avait donc
+aucune prise sur la forme de la courbe — il aurait poussé `θ` contre sa borne
+sans rien régler, ce que le spec de la feuille de route prédisait déjà.
+
+**Ce que ce n'est pas.** La loi révoquée cinq jours plus tôt (sous-section
+ci-dessus) DIVISAIT `τ` par le multiplicateur de densité, donc par une grandeur
+qui vaut `pointe^α` et croît sans borne : `t₉₀` tombait de 2 h à 0,05 s en trois
+cycles et la contenance dégénérait en forfait. Ici `τ` est MULTIPLIÉ, et par
+l'exponentielle d'une quantité **entière et bornée** — les 62 paliers du monde.
+Le risque est l'autre, et il est borné de la même façon : des cycles tardifs
+trop longs. C'est pourquoi `c` est un réglage résolu contre une cible de durée
+totale, et non une graine posée à la main.
+
+**Pourquoi la profondeur ATTEINTE, et pas celle qui est ouverte.** C'est un
+acquis de l'être, pas de la plongée : on ne redevient pas jeune en remontant.
+Et `profondeurMaxAtteinte` est monotone (Tier 0), donc `τ` l'est aussi — un `τ`
+qui pourrait redescendre ferait de l'éclosion un moyen d'accélérer l'acquis, et
+la décision du §6.4 deviendrait dégénérée. Elle ne bouge que sur un ACTE du
+joueur, jamais pendant un tick : la forme exponentielle de l'acquis reste exacte
+pour n'importe quel `dt`, le §5.2 tient, et un test d'équivalence de pas le
+garde.
+
+**La croissance s'arrête au fond du monde.** `profondeurMaxAtteinte` plafonne à
+62 paliers, atteints vers le quatorzième cycle. La courbe s'allonge donc pendant
+la DESCENTE, puis redevient plate pour les cycles suivants, à `τ₀ × c^62`. Ce
+n'est pas un défaut de la loi, c'est la forme qu'elle a : le jeu s'allonge tant
+qu'il reste du monde à ouvrir.
+
+**Ce qui ne change pas.** `A∞` et la loi de contenance sont intacts : `τ` change
+le TEMPS, jamais la VALEUR. L'acquis sature toujours vers le même plafond, et
+l'effet secondaire du §2.B tient toujours — passé la saturation, rester ne
+rapporte plus que de la Foi, à n'importe quelle profondeur, puisque la
+saturation arrive toujours au bout de trois `τ`.
+
+**`c` vaut 1 en attendant la résolution**, c'est-à-dire exactement la loi
+d'avant le 2026-09-16 : aucun chiffre mesuré du dépôt ne bouge tant que le
+calibreur n'a pas tranché, contre une cible de courbe qui est une décision de
+canon et non une mesure.
+
 ### 2.C — seuils cumulés, sur l'effectif
 
 La colonne est renommée `multiplicateurCumule` partout. Le joueur achète de la
