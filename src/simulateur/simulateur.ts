@@ -13,15 +13,15 @@
  * §13.4, à garder en tête en lisant toute sortie d'ici : l'économie est
  * invariante d'échelle. Chaque cycle est le même problème économique à une plus
  * grande échelle, et le réglage de paramètres ne peut donc pas produire de
- * croissance de cycle en temps ACTIF. Seules les politiques de check-in
- * produisent une croissance apparente en temps calendaire. Toute cible
- * exprimée en heures actives par cycle sera rejetée ici.
+ * croissance de cycle en temps ACTIF. Seul l'intervalle entre deux relevés
+ * produit une croissance apparente en temps calendaire (RESULTATS.md,
+ * finding 2). Toute cible exprimée en heures actives par cycle sera rejetée
+ * ici.
  */
 import Decimal from 'break_infinity.js'
-import type { EspeceId, EtatJeu } from '../noyau/types'
+import type { Espece, EtatJeu, MesureDeCycle } from '../noyau/types'
 import {
   ameliorer,
-  contenance,
   creuser,
   debloquer,
   eclore,
@@ -36,30 +36,33 @@ import {
   coutDeNiveau,
   debitBaseDeLEspece,
   multiplicateurDeSeuil,
+  multiplicateurDesDrapeaux,
   multiplicateursGlobaux,
-  toutEstCreuse,
 } from '../noyau/economie'
-import { ACQUIS_MAX } from '../noyau/constantes'
+import { ACQUIS_MAX, BONUS_GLOBAL_A_CENT_INDIVIDUS, SEUIL_DU_DRAPEAU_PERMANENT } from '../noyau/constantes'
 import { ESPECES } from '../donnees/especes'
 import { relever, type Releve } from '../adaptateurs/telemetrie'
 
 export interface Politique {
   /**
-   * Intervalle entre deux retours du joueur. §5.4 : ~600 h calendaires « sous
-   * check-in à 4 h ».
+   * Intervalle entre deux relevés du joueur, en secondes.
    *
-   * C'est LE réglage de temps calendaire du jeu, et le seul. Entre deux
-   * sessions le mana s'accumule, plafonne à la contenance, et le surplus expire
-   * vers l'ambiant : revenir moins souvent coûte donc quelque chose, et c'est
-   * ce coût qui donne un sens à la branche Entretien.
+   * 0 = achat continu : le joueur optimal du finding 2 (RESULTATS.md), présent
+   * à chaque pas. 4 h = un relevé toutes les quatre heures : le joueur relâché,
+   * qui ne joue pas plus mal, mais moins souvent.
+   *
+   * C'est LE réglage de temps calendaire du jeu, et le seul. Entre deux relevés
+   * le mana s'accumule, plafonne à la contenance, et le surplus expire vers
+   * l'ambiant : revenir moins souvent coûte donc quelque chose.
    */
-  readonly intervalleDeCheckInSecondes: number
-  /** Le joueur reste tant que les achats s'enchaînent sous ce délai. */
-  readonly patienceDansLaSessionSecondes: number
-  /** Il ne reste jamais plus longtemps que ça d'affilée. */
-  readonly dureeMaxDeSessionSecondes: number
-  /** Granularité minimale d'un pas. */
-  readonly dtMinSecondes: number
+  readonly secondesEntreReleves: number
+  /**
+   * Pas d'intégration entre deux décisions, en secondes. En achat continu, c'est
+   * l'intervalle entre deux relevés ; sinon, la granularité de l'absence. C'est
+   * aussi ce que dure un relevé : le temps que le joueur passe devant l'écran à
+   * chaque retour.
+   */
+  readonly pas: number
   /**
    * Part de `A∞` au-delà de laquelle rester ne rapporte plus de profondeur.
    *
@@ -70,154 +73,166 @@ export interface Politique {
    * que l'impatience du simulateur.
    */
   readonly fractionDeSaturationPourEclore: number
-  /** Garde-fou : un cycle qui dépasse cette durée est déclaré non convergent. */
+  /**
+   * Garde-fou : un cycle qui dépasse cette durée est déclaré non convergent, et
+   * la simulation s'arrête là. Le calibrage balaie des réglages dont certains
+   * ne convergent pas : sans lui, il bouclerait.
+   */
   readonly dureeMaxParCycleSecondes: number
 }
 
 export const POLITIQUE_PAR_DEFAUT: Politique = {
-  intervalleDeCheckInSecondes: 4 * 3600,
-  patienceDansLaSessionSecondes: 90,
-  dureeMaxDeSessionSecondes: 15 * 60,
-  dtMinSecondes: 5,
+  secondesEntreReleves: 0,
+  pas: 60,
   fractionDeSaturationPourEclore: 0.95,
   dureeMaxParCycleSecondes: 4000 * 3600,
 }
 
-interface Option {
-  readonly cout: Decimal
-  /** Production supplémentaire immédiate : un niveau agit à l'instant où il est payé. */
-  readonly gain: Decimal
-  readonly estUnCreusement: boolean
-  readonly appliquer: (etat: EtatJeu) => EtatJeu
-}
+/** Les trois achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute. */
+export type Achat =
+  | { readonly type: 'creuser'; readonly cout: Decimal; readonly gain: Decimal }
+  | { readonly type: 'debloquer'; readonly espece: Espece; readonly cout: Decimal; readonly gain: Decimal }
+  | { readonly type: 'niveau'; readonly espece: Espece; readonly cout: Decimal; readonly gain: Decimal }
 
 /**
- * Toutes les dépenses ATTEIGNABLES à cet instant.
+ * Les achats ouverts, avec leur gain marginal — la production par seconde
+ * qu'ils ajoutent à l'instant où ils sont payés.
  *
- * Une dépense qui coûte plus que la contenance n'est pas « chère » : elle est
- * hors de portée pour toujours, puisque le stock ne peut pas monter jusque-là.
- * C'est la même limite qui produit le blocage doux du §6.4.
+ * La production est une assiette (espèces et héros) multipliée par des
+ * facteurs globaux, et ces facteurs viennent de `multiplicateursGlobaux`, la
+ * source que partagent la production, la production par espèce et le terme du
+ * héros. Ils ne sont PAS relistés ici : une liste recopiée à la main dans le
+ * simulateur avait laissé la densité hors du gain marginal et biaisé toute
+ * mesure en silence (revue de qualité de la tâche 9). Un facteur ajouté là-bas
+ * vaut ici sans resaisie.
  *
- * Le `gain` est celui de l'instant : depuis que l'espèce est un générateur à
- * niveau, un achat vaut immédiatement ce qu'il vaudra — il n'y a plus de pleine
- * charge à attendre.
+ *   débloquer : l'espèce entre au niveau 1, soit `débit × seuil(1) × globaux` ;
+ *   niveau    : `débit × Δ(n × seuil(n)) × globaux`, et si ce niveau pose le
+ *               drapeau des cent — mêmes conditions qu'`ameliorer` —, le
+ *               multiplicateur des drapeaux passe de `m` à `m + 0,03` : toute
+ *               la production, ce niveau compris, gagne `0,03 / m` ;
+ *   creuser   : le palier ouvert change les facteurs globaux — la profondeur,
+ *               et la densité du séjour si ce palier en porte plus —, donc la
+ *               production entière est multipliée par leur rapport. Ce rapport
+ *               se lit sur `multiplicateursGlobaux` d'un état où ce palier est
+ *               ouvert, et non sur `m_p` seul, qui ignorerait la densité.
+ *
+ * `budget`, s'il est donné, retire de la liste les achats qu'il ne paie pas —
+ * `cout > budget`, le test exact que la politique appliquerait ensuite — et
+ * leur gain n'est alors pas calculé. C'est le seul endroit où ce test est
+ * écrit : `meilleurAchat` lui passe le mana courant et ne le refait pas. Sans
+ * budget, la liste est complète, et c'est ce que lisent l'écran et le test du
+ * gain marginal. Un relevé évalue jusqu'à toutes les espèces pour n'en payer
+ * qu'une, et le gain vaut à lui seul la moitié du prix d'une évaluation.
+ *
+ * Creuser n'est proposé que s'il ne bloque pas (`estBloque`, qui lit
+ * `contenance`) : au-delà, il est hors de portée pour toujours, puisque le stock
+ * ne peut pas monter jusque-là. Ce gain ne compte pas l'accès aux espèces que
+ * le palier ouvre ; c'est la règle du harnais de RESULTATS.md, et creuser y
+ * entre dans la comparaison sans traitement de faveur.
  */
-function optionsOuvertes(etat: EtatJeu): readonly Option[] {
-  const plafond = contenance(etat)
-  const options: Option[] = []
+export function achatsDisponibles(etat: EtatJeu, budget?: Decimal): readonly Achat[] {
+  const achats: Achat[] = []
+  const horsDePortee = (cout: Decimal): boolean => budget !== undefined && cout.gt(budget)
 
-  if (!toutEstCreuse(etat)) {
-    const cout = coutDeDescente(etat, etat.cycle.paliersOuverts)
-    if (cout.lte(plafond)) {
-      options.push({ cout, gain: new Decimal(0), estUnCreusement: true, appliquer: creuser })
+  // La production totale et les multiplicateurs globaux coûtent à eux seuls
+  // plus que tout le reste de cette fonction — la première parcourt les
+  // espèces, et chacune redemande les seconds. Ils ne sont tirés qu'à la
+  // première DEMANDE : sous un budget serré, aucun candidat n'y arrive, et un
+  // relevé qui ne peut rien payer ne paie plus pour le savoir.
+  let production: Decimal | null = null
+  const productionTotale = (): Decimal => (production ??= productionTotaleParSeconde(etat))
+  let globaux: Decimal | null = null
+  const multiplicateurs = (): Decimal => (globaux ??= multiplicateursGlobaux(etat))
+
+  if (!estBloque(etat)) {
+    const cible = etat.cycle.paliersOuverts
+    const cout = coutDeDescente(etat, cible)
+    if (!horsDePortee(cout)) {
+      const ouvert: EtatJeu = { ...etat, cycle: { ...etat.cycle, paliersOuverts: cible + 1 } }
+      achats.push({
+        type: 'creuser',
+        cout,
+        gain: productionTotale().mul(multiplicateursGlobaux(ouvert).div(multiplicateurs()).sub(1)),
+      })
     }
   }
-
-  // Les multiplicateurs globaux sont les mêmes pour toutes les espèces : ils
-  // sortent du signe somme, et le gain se calcule sur la seule assiette. Pris
-  // tels quels depuis `economie.ts`, pas relistés à la main : une liste à la
-  // main avait oublié la densité et l'échelle, sous-estimant le gain marginal
-  // d'un achat — le joueur simulé creusait alors qu'acheter était rentable, un
-  // biais qui poussait dans le même sens que celui d'`attenteAvantCreusement`
-  // plus bas, qui lit lui la PRODUCTION RÉELLE (revue de qualité de la tâche
-  // 9, finding 2).
-  const globaux = multiplicateursGlobaux(etat)
 
   for (const espece of ESPECES) {
     if (espece.palier >= etat.cycle.paliersOuverts) continue
-    const id: EspeceId = espece.id
-    const vivante = etat.cycle.especes[id]
-    const niveau = vivante?.debloquee === true ? vivante.niveau : 0
-    const cout = niveau === 0 ? coutDeDeblocage(etat, espece) : coutDeNiveau(etat, espece, niveau)
-    if (cout.gt(plafond)) continue
-    const avant = niveau * multiplicateurDeSeuil(niveau)
-    const apres = (niveau + 1) * multiplicateurDeSeuil(niveau + 1)
-    options.push({
-      cout,
-      gain: debitBaseDeLEspece(espece).mul(apres - avant).mul(globaux),
-      estUnCreusement: false,
-      appliquer: niveau === 0 ? (e) => debloquer(e, id) : (e) => ameliorer(e, id),
-    })
+    const vivante = etat.cycle.especes[espece.id]
+    if (vivante === undefined || !vivante.debloquee) {
+      const cout = coutDeDeblocage(etat, espece)
+      if (horsDePortee(cout)) continue
+      achats.push({
+        type: 'debloquer',
+        espece,
+        cout,
+        gain: debitBaseDeLEspece(espece).mul(multiplicateurs()).mul(multiplicateurDeSeuil(1)),
+      })
+      continue
+    }
+    const n = vivante.niveau
+    const cout = coutDeNiveau(etat, espece, n)
+    if (horsDePortee(cout)) continue
+    const propre = debitBaseDeLEspece(espece)
+      .mul(multiplicateurs())
+      .mul((n + 1) * multiplicateurDeSeuil(n + 1) - n * multiplicateurDeSeuil(n))
+    const poseLeDrapeau =
+      n + 1 >= SEUIL_DU_DRAPEAU_PERMANENT && !etat.permanent.especesAyantAtteintCent.includes(espece.id)
+    const gain = poseLeDrapeau
+      ? propre.add(productionTotale().add(propre).mul(BONUS_GLOBAL_A_CENT_INDIVIDUS / multiplicateurDesDrapeaux(etat)))
+      : propre
+    achats.push({ type: 'niveau', espece, cout, gain })
   }
 
-  return options
+  return achats
 }
 
 /**
- * L'achat qu'un joueur qui vise la profondeur ferait maintenant, ou `null`.
- *
- * La règle est celle du retour sur investissement, et elle a une raison d'être
- * exactement celle-là : le cycle se termine quand on ne peut plus creuser, donc
- * la seule question qui vaille est « est-ce que cet achat me fait creuser plus
- * tôt ? ». Une place ne le fait que si elle se rembourse — `coût / gain` — avant
- * le creusement qu'on attend. Au-delà, elle retarde ce qu'elle prétend hâter.
- *
- * L'ancienne règle, « le moins cher d'abord », achetait des places dans les
- * eaux hautes parce qu'elles ne coûtaient rien, sans regarder ce qu'elles
- * rapportaient.
+ * Parmi les achats payables, celui qui se rembourse le plus vite — `coût / gain`
+ * le plus bas. C'est la règle du harnais qui a produit RESULTATS.md : le joueur
+ * optimal ne met rien de côté, il achète le meilleur rapport dès qu'il le peut.
  */
-function meilleurAchat(etat: EtatJeu, options: readonly Option[]): Option | null {
-  const payables = options.filter((o) => o.cout.lte(etat.cycle.manaCourant))
-  if (payables.length === 0) return null
-
-  const creusement = options.find((o) => o.estUnCreusement)
-  const production = productionTotaleParSeconde(etat)
-
-  // Plus rien à creuser : on peuple, du meilleur rapport au moins bon.
-  if (creusement === undefined || production.lte(0)) {
-    return payables.reduce<Option | null>((meilleure, option) => {
-      if (option.gain.lte(0)) return meilleure
-      if (meilleure === null) return option
-      return option.gain.div(option.cout).gt(meilleure.gain.div(meilleure.cout)) ? option : meilleure
-    }, null)
-  }
-
-  const creusementPayable = payables.find((o) => o.estUnCreusement)
-  const attenteAvantCreusement = Decimal.max(
-    0,
-    creusement.cout.sub(etat.cycle.manaCourant),
-  ).div(production)
-
-  let meilleure: Option | null = null
-  let meilleurRemboursement: Decimal | null = null
-  for (const option of payables) {
-    if (option.estUnCreusement || option.gain.lte(0)) continue
-    const remboursement = option.cout.div(option.gain)
-    // Se rembourse-t-elle avant le creusement qu'on attend ?
-    if (remboursement.gte(attenteAvantCreusement)) continue
-    if (meilleurRemboursement === null || remboursement.lt(meilleurRemboursement)) {
-      meilleure = option
-      meilleurRemboursement = remboursement
+function meilleurAchat(etat: EtatJeu): Achat | null {
+  let meilleur: Achat | null = null
+  let meilleurRetour: Decimal | null = null
+  // Le mana EST le budget : `achatsDisponibles` ne rend déjà que ce qu'il paie.
+  // Le test de portée n'est écrit qu'une fois, et il est écrit là-bas.
+  for (const achat of achatsDisponibles(etat, etat.cycle.manaCourant)) {
+    if (achat.gain.lte(0)) continue
+    const retour = achat.cout.div(achat.gain)
+    if (meilleurRetour === null || retour.lt(meilleurRetour)) {
+      meilleur = achat
+      meilleurRetour = retour
     }
   }
-  return meilleure ?? creusementPayable ?? null
+  return meilleur
 }
 
-/** Dépense tant qu'un achat fait gagner du temps sur le creusement suivant. */
+function appliquer(etat: EtatJeu, achat: Achat): EtatJeu {
+  if (achat.type === 'creuser') return creuser(etat)
+  if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
+  return ameliorer(etat, achat.espece.id)
+}
+
+/**
+ * Un relevé : le joueur dépense tant qu'un achat est payable.
+ *
+ * La boucle termine d'elle-même — chaque achat coûte, et le coût d'un niveau
+ * croît de ×1,15. La borne n'est là que contre un défaut du noyau, et elle
+ * CRIE : un relevé tronqué en silence fausserait toute mesure sans le dire.
+ */
 function depenser(etat: EtatJeu): EtatJeu {
   let courant = etat
-  for (let garde = 0; garde < 2000; garde += 1) {
-    const achat = meilleurAchat(courant, optionsOuvertes(courant))
+  for (let achats = 0; ; achats += 1) {
+    if (achats > 100_000) throw new Error('Un relevé ne finit pas de dépenser : le noyau refuse-t-il un achat payable ?')
+    const achat = meilleurAchat(courant)
     if (achat === null) return courant
-    const suivant = achat.appliquer(courant)
+    const suivant = appliquer(courant, achat)
     if (suivant === courant) return courant
     courant = suivant
   }
-  return courant
-}
-
-/** Secondes d'attente avant que l'achat visé devienne payable. */
-function attenteAvantLeProchainAchat(etat: EtatJeu, options: readonly Option[]): number | null {
-  let cible: Decimal | null = null
-  for (const option of options) {
-    if (cible === null || option.cout.lt(cible)) cible = option.cout
-  }
-  if (cible === null) return null
-  const production = productionTotaleParSeconde(etat)
-  if (production.lte(0)) return null
-  const manquant = cible.sub(etat.cycle.manaCourant)
-  if (manquant.lte(0)) return 0
-  return manquant.div(production).toNumber()
 }
 
 /**
@@ -249,26 +264,30 @@ export function doitEclore(etat: EtatJeu, politique: Politique): boolean {
   return etat.cycle.acquisDeSejour >= politique.fractionDeSaturationPourEclore * ACQUIS_MAX
 }
 
-export interface MesureDeSession {
-  readonly cycle: number
-  readonly secondesActives: number
-}
-
 export interface ResultatDeSimulation {
   readonly etat: EtatJeu
   readonly releve: Releve
+  /** Les cycles clos, dans l'ordre : la télémétrie du noyau, telle quelle. */
+  readonly cycles: readonly MesureDeCycle[]
   readonly cyclesDemandes: number
   readonly cyclesAcheves: number
   readonly cycleNonConvergent: number | null
-  /** Temps où le joueur était devant l'écran. La cible du §5.4 : ~38 h. */
-  readonly tempsActifSecondes: number
-  /** Temps de jeu écoulé, sessions et absences confondues. Cible : ~600 h. */
-  readonly tempsEcouleSecondes: number
-  readonly sessions: readonly MesureDeSession[]
+  /**
+   * Somme des relevés — le temps passé devant l'écran. Un relevé dure un pas ;
+   * en achat continu les relevés se touchent et l'actif égale l'écoulé : ce
+   * sont les ~38 h du finding 2, la quantité de jeu que le contenu porte.
+   */
+  readonly secondesActives: number
+  /**
+   * Temps de jeu total, plafonnements de contenance inclus — ce que vit le
+   * joueur au calendrier. Les ~25 jours du finding 2, à deux relevés par jour.
+   */
+  readonly secondesEcoulees: number
 }
 
-/** Appelé après chaque pas et après chaque éclosion : c'est par là que les
- * invariants du Tier 0 se vérifient sur la durée, et non seulement à l'arrivée. */
+/** Appelé après chaque relevé, chaque pas et chaque éclosion : c'est par là que
+ * les invariants du Tier 0 se vérifient sur la durée, et non seulement à
+ * l'arrivée. */
 export type Observateur = (etat: EtatJeu) => void
 
 export function simuler(
@@ -278,62 +297,42 @@ export function simuler(
   observer?: Observateur,
   limiteDeContenu?: number,
 ): ResultatDeSimulation {
+  if (!(politique.pas > 0)) throw new Error(`Le pas de la politique doit être positif (reçu ${politique.pas})`)
+  const intervalle = politique.secondesEntreReleves > 0 ? politique.secondesEntreReleves : politique.pas
+
   let etat = etatInitial(graine, limiteDeContenu)
+  let secondesActives = 0
   let cycleNonConvergent: number | null = null
   let acheves = 0
 
-  const sessions: MesureDeSession[] = []
-  let tempsActif = 0
-
   for (let cycle = 0; cycle < cycles; cycle += 1) {
-    let dureeDuCycle = 0
-
-    // Le tick peut clore le cycle tout seul : la divergence non choisie du
-    // §2.4 est une règle du monde, pas une décision de joueur, et elle vit donc
-    // dans le noyau. Le simulateur doit s'en apercevoir — sinon il éclôt une
-    // seconde fois derrière elle et compte deux cycles pour une vie.
-    const eclosionsAuDebut = etat.permanent.nombreEclosions
-    const aDivergeSeul = () => etat.permanent.nombreEclosions > eclosionsAuDebut
-
     for (;;) {
-      // ── Le joueur est là ──────────────────────────────────────────────────
-      let secondesDeSession = 0
+      // ── Un relevé : le joueur est là ────────────────────────────────────────
       etat = depenser(etat)
-      for (;;) {
-        const options = optionsOuvertes(etat)
-        if (doitEclore(etat, politique)) break
-        const attente = attenteAvantLeProchainAchat(etat, options)
-        if (attente === null || attente > politique.patienceDansLaSessionSecondes) break
-        const reste = politique.dureeMaxDeSessionSecondes - secondesDeSession
-        if (reste <= 0) break
-        const pas = Math.min(Math.max(attente, politique.dtMinSecondes), reste)
-        etat = depenser(tick(etat, pas))
-        secondesDeSession += pas
-        dureeDuCycle += pas
-        observer?.(etat)
-      }
-      tempsActif += secondesDeSession
-      sessions.push({ cycle, secondesActives: secondesDeSession })
-
-      if (aDivergeSeul()) break
+      observer?.(etat)
       if (doitEclore(etat, politique)) break
-      if (dureeDuCycle >= politique.dureeMaxParCycleSecondes) {
+      if (etat.cycle.dureeSecondes >= politique.dureeMaxParCycleSecondes) {
         cycleNonConvergent = cycle
         break
       }
 
-      // ── Il s'en va, et la mare tourne sans lui ────────────────────────────
-      // Le mana plafonne à la contenance pendant l'absence et le surplus expire
-      // vers l'ambiant : l'absence n'est pas punie, elle est simplement bornée.
-      const absence = Math.max(politique.intervalleDeCheckInSecondes - secondesDeSession, politique.dtMinSecondes)
-      etat = tick(etat, absence)
-      dureeDuCycle += absence
-      observer?.(etat)
-      if (aDivergeSeul()) break
+      // ── Jusqu'au relevé suivant ─────────────────────────────────────────────
+      // Le premier pas se passe devant l'écran ; le reste de l'intervalle, la
+      // mare tourne sans lui — le mana plafonne à la contenance et le surplus
+      // expire vers l'ambiant. En achat continu, l'intervalle EST ce premier pas.
+      // Un relevé qui fait éclore se prolonge dans le premier relevé du cycle
+      // suivant, au même instant : c'est une seule présence, comptée une fois.
+      for (let reste = intervalle, present = true; reste > 0; present = false) {
+        const dt = Math.min(politique.pas, reste)
+        etat = tick(etat, dt)
+        if (present) secondesActives += dt
+        reste -= dt
+        observer?.(etat)
+      }
     }
 
     if (cycleNonConvergent !== null) break
-    if (!aDivergeSeul()) etat = eclore(etat)
+    etat = eclore(etat)
     acheves += 1
     observer?.(etat)
   }
@@ -341,11 +340,11 @@ export function simuler(
   return {
     etat,
     releve: relever(etat),
+    cycles: etat.telemetrie.cycles,
     cyclesDemandes: cycles,
     cyclesAcheves: acheves,
     cycleNonConvergent,
-    tempsActifSecondes: tempsActif,
-    tempsEcouleSecondes: etat.tempsJeuSecondes,
-    sessions,
+    secondesActives,
+    secondesEcoulees: etat.tempsJeuSecondes,
   }
 }

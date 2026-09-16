@@ -17,6 +17,7 @@ import {
   serialiserDecimal,
   type SaveSerialisee,
 } from '../src/adaptateurs/persistance'
+import { relever } from '../src/adaptateurs/telemetrie'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
 
@@ -167,10 +168,11 @@ describe('migration 4 → 5 : le modèle à population meurt sans emporter la sa
     expect(migre.cycle).toHaveProperty('especes')
   })
 
-  it('la save porte la version 5 après migration', () => {
-    expect(VERSION_SAVE).toBe(5)
+  it('la save porte la version courante après migration — 4 → 5, puis 5 → 6', () => {
+    // Écrit `5` jusqu'à la tâche 12 : la chaîne s'est allongée d'un maillon
+    // (retrait de la mesure de redescente), et une save v4 le traverse aussi.
     const migre = deserialiser({ versionSave: 4, contenu: {} } as unknown as SaveSerialisee, etatInitial(0))
-    expect(migre.versionSave).toBe(5)
+    expect(migre.versionSave).toBe(6)
   })
 
   it('ce que le joueur perd et ce qu’il garde : le cycle n’est qu’une éclosion de plus, la progression permanente survit intacte', () => {
@@ -222,5 +224,58 @@ describe('migration 4 → 5 : le modèle à population meurt sans emporter la sa
       eclosion: 5,
     })
     expect(relu.permanent.noeudsTechnique).toEqual(['creusement-1'])
+  })
+})
+
+describe('migration 5 → 6 : la mesure de redescente meurt sans emporter la save', () => {
+  // Une télémétrie v5 telle que `serialiser` l'écrivait : le compteur courant
+  // et sa copie dans chaque cycle clos.
+  const telemetrieV5 = () => ({
+    cycles: [
+      {
+        index: 0,
+        dureeEcouleeSecondes: 10_800,
+        secondesEnRedescente: 700,
+        paliersOuverts: 5,
+        productionPicParSeconde: '321',
+        foiGagnee: '17',
+      },
+    ],
+    secondesEnRedescente: 1234,
+    secondesDepuisDernierSucces: 5,
+    intervallesEntreSucces: [60, 90],
+  })
+
+  it('MIGRATIONS[5] existe et ne supprime aucun champ : le compteur mort passe tel quel', () => {
+    // Appelée DIRECTEMENT : un test qui ne passerait que par `deserialiser`
+    // resterait vert sur une chaîne qui ne l'exécute pas (le repli comble).
+    const migre = MIGRATIONS[5]({ telemetrie: telemetrieV5() }) as {
+      telemetrie: { secondesEnRedescente: number; cycles: Record<string, unknown>[] }
+    }
+    expect(migre.telemetrie.secondesEnRedescente).toBe(1234)
+    expect(migre.telemetrie.cycles[0].secondesEnRedescente).toBe(700)
+  })
+
+  it('une save v5 se relit en version 6, sa télémétrie vivante intacte, la mesure morte plus lue', () => {
+    expect(VERSION_SAVE).toBe(6)
+    const v5 = {
+      versionSave: 5,
+      contenu: { telemetrie: telemetrieV5(), permanent: { nombreEclosions: 3 } },
+    } as unknown as SaveSerialisee
+    const relu = deserialiser(v5, etatInitial(0))
+
+    expect(relu.versionSave).toBe(6)
+    expect(relu.permanent.nombreEclosions).toBe(3)
+    expect(relu.telemetrie.intervallesEntreSucces).toEqual([60, 90])
+    expect(relu.telemetrie.secondesDepuisDernierSucces).toBe(5)
+    expect(relu.telemetrie.cycles).toHaveLength(1)
+    expect(relu.telemetrie.cycles[0].dureeEcouleeSecondes).toBe(10_800)
+    expect(relu.telemetrie.cycles[0].paliersOuverts).toBe(5)
+    expect(relu.telemetrie.cycles[0].productionPicParSeconde.eq(321)).toBe(true)
+    expect(relu.telemetrie.cycles[0].foiGagnee.eq(17)).toBe(true)
+
+    // Le seul lecteur qu'avait le champ ne le lit plus : le relevé de cycle
+    // n'en dérive plus aucune fraction.
+    expect(relever(relu).cycles[0]).not.toHaveProperty('fractionEnRedescente')
   })
 })

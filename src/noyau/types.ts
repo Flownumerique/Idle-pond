@@ -408,12 +408,11 @@ export interface MesureDeCycle {
    *
    * Ce n'est pas la durée « active » du §11 : le noyau ne sait pas quand le
    * joueur est devant l'écran. Le temps actif est une quantité de POLITIQUE —
-   * la somme des sessions — et il est mesuré par le simulateur, qui est le seul
+   * la somme des relevés — et il est mesuré par le simulateur, qui est le seul
    * à savoir quand son joueur revient. Confondre les deux fait lire ~600 h
    * calendaires comme si c'étaient les ~38 h actives visées.
    */
   readonly dureeEcouleeSecondes: number
-  readonly secondesEnRedescente: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: Decimal
   readonly foiGagnee: Decimal
@@ -421,7 +420,6 @@ export interface MesureDeCycle {
 
 export interface EtatTelemetrie {
   readonly cycles: readonly MesureDeCycle[]
-  readonly secondesEnRedescente: number
   readonly secondesDepuisDernierSucces: number
   readonly intervallesEntreSucces: readonly number[]
 }

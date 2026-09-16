@@ -20,8 +20,6 @@ import { REGIME_PAR_BRANCHE } from '../noyau/technique'
 export interface ReleveDeCycle {
   readonly index: number
   readonly dureeEcouleeSecondes: number
-  /** Risque n° 1 : « la redescente devient le jeu ». Métrique n° 1. */
-  readonly fractionEnRedescente: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: number
   readonly foiGagnee: number
@@ -53,8 +51,6 @@ export function relever(etat: EtatJeu): Releve {
     cycles: etat.telemetrie.cycles.map((c) => ({
       index: c.index,
       dureeEcouleeSecondes: c.dureeEcouleeSecondes,
-      fractionEnRedescente:
-        c.dureeEcouleeSecondes > 0 ? c.secondesEnRedescente / c.dureeEcouleeSecondes : 0,
       paliersOuverts: c.paliersOuverts,
       productionPicParSeconde: c.productionPicParSeconde.toNumber(),
       foiGagnee: c.foiGagnee.toNumber(),

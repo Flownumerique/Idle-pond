@@ -103,13 +103,11 @@ export function eclore(etat: EtatJeu): EtatJeu {
         {
           index: etat.permanent.nombreEclosions,
           dureeEcouleeSecondes: etat.cycle.dureeSecondes,
-          secondesEnRedescente: etat.telemetrie.secondesEnRedescente,
           paliersOuverts: etat.cycle.paliersOuverts,
           productionPicParSeconde: pic,
           foiGagnee,
         },
       ],
-      secondesEnRedescente: 0,
     },
   }
 }

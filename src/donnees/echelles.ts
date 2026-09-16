@@ -12,7 +12,14 @@
  * reste sans état hors du reducer.
  */
 import Decimal from 'break_infinity.js'
-import { G_COUT_PALIER, NOMBRE_DE_PALIERS, RATIO_COUT_NIVEAU } from '../noyau/constantes'
+import {
+  DEBIT_RATIO_ESPECE,
+  G_COUT_PALIER,
+  NOMBRE_DE_PALIERS,
+  RATIO_COUT_NIVEAU,
+  TAUX_BASE_AU_PALIER_0,
+  multiplicateurDePalier,
+} from '../noyau/constantes'
 
 function tabuler(ratio: number, longueur: number): readonly Decimal[] {
   const table: Decimal[] = [new Decimal(1)]
@@ -36,4 +43,44 @@ export function puissanceDeG(exposant: number): Decimal {
 
 export function puissanceDuCoutDeNiveau(exposant: number): Decimal {
   return PUISSANCES_DU_COUT_DE_NIVEAU[exposant] ?? Decimal.pow(RATIO_COUT_NIVEAU, exposant)
+}
+
+/**
+ * `m_p ^ paliers`, le multiplicateur global de profondeur.
+ *
+ * Tabulé, et non calculé par `tabuler` : les deux suites plus haut se
+ * construisent par multiplications successives, celle-ci par `Decimal.pow`
+ * comme l'écrivait `multiplicateurDeProfondeur`. Ce n'est pas un détail de
+ * forme — les deux chemins ne rendent pas le même flottant, et toute mesure
+ * déjà prise bougerait sous nos pieds. La table mémorise l'expression exacte,
+ * elle ne la réécrit pas.
+ */
+function puissanceDuPalier(exposant: number): Decimal {
+  return Decimal.pow(multiplicateurDePalier(), exposant)
+}
+
+const PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER = Array.from({ length: NOMBRE_DE_PALIERS + 2 }, (_, p) =>
+  puissanceDuPalier(p),
+)
+
+export function puissanceDuMultiplicateurDePalier(exposant: number): Decimal {
+  return PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER[exposant] ?? puissanceDuPalier(exposant)
+}
+
+/**
+ * Débit de base par RANG d'espèce — `TAUX_BASE_AU_PALIER_0 × ratio^rang`.
+ *
+ * Même raison que les puissances de `g` : `debitBaseDeLEspece` est appelée deux
+ * fois par espèce et par décision d'achat, soit des dizaines de millions de
+ * fois par `simuler(45)`, pour rendre à chaque fois l'un d'une vingtaine de
+ * nombres. La table porte l'expression telle quelle, `Math.pow` compris.
+ */
+function debitBaseDuRangCalcule(rang: number): Decimal {
+  return new Decimal(TAUX_BASE_AU_PALIER_0).mul(Math.pow(DEBIT_RATIO_ESPECE, rang))
+}
+
+const DEBITS_DE_BASE = Array.from({ length: NOMBRE_DE_PALIERS + 1 }, (_, rang) => debitBaseDuRangCalcule(rang))
+
+export function debitBaseDuRang(rang: number): Decimal {
+  return DEBITS_DE_BASE[rang] ?? debitBaseDuRangCalcule(rang)
 }

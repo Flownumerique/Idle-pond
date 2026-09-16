@@ -100,7 +100,6 @@ export function etatInitial(graine: number, limiteDeContenu = NOMBRE_DE_PALIERS)
     },
     telemetrie: {
       cycles: [],
-      secondesEnRedescente: 0,
       secondesDepuisDernierSucces: 0,
       intervallesEntreSucces: [],
     },
@@ -140,8 +139,6 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   const manaCourant = Decimal.min(brut, plafond)
   const expire = brut.sub(manaCourant)
 
-  const enRedescente = etat.cycle.paliersOuverts < etat.permanent.profondeurMaxAtteinte
-
   // Acquis de séjour (§2.B) : accumulation saturante vers `A∞`, de temps
   // caractéristique `τ₀` CONSTANT. Forme exponentielle, donc exacte pour
   // n'importe quel `dt` — c'est ce qui permet à la contenance de monter
@@ -173,7 +170,6 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
     },
     telemetrie: {
       ...etat.telemetrie,
-      secondesEnRedescente: etat.telemetrie.secondesEnRedescente + (enRedescente ? dt : 0),
       secondesDepuisDernierSucces: etat.telemetrie.secondesDepuisDernierSucces + dt,
     },
   }

@@ -8,11 +8,43 @@
  * quinze cycles s'enchaînent, et que les invariants du Tier 0 tiennent sur
  * toute la durée, pas seulement à l'arrivée.
  */
+import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
-import type { EtatJeu } from '../src/noyau/types'
+import type { Espece, EtatJeu } from '../src/noyau/types'
 import { ACQUIS_MAX, CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
-import { POLITIQUE_PAR_DEFAUT, simuler } from '../src/simulateur/simulateur'
+import { achatsDisponibles, POLITIQUE_PAR_DEFAUT, simuler, type Achat } from '../src/simulateur/simulateur'
+import { ameliorer, creuser, debloquer, productionTotaleParSeconde } from '../src/noyau/noyau'
+import { densiteDuSejour } from '../src/noyau/densite'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
+import { ESPECES } from '../src/donnees/especes'
+import { etatDeTravail } from './etat-de-travail'
+
+/**
+ * Un état où les TROIS achats sont ouverts en même temps, choisi pour que
+ * chaque approximation connue échoue : densités inégales par palier, donc
+ * ouvrir un palier change la densité du séjour (0,78 → 0,91) et un gain de
+ * creusement en `prod × (m_p − 1)` est faux ; une espèce déjà drapée, donc le
+ * drapeau suivant vaut `0,03 / 1,03` et non `0,03` ; une espèce à 99, non
+ * drapée, pour que ce drapeau soit en jeu ; et une espèce ouverte non
+ * débloquée, sans quoi la branche « débloquer » n'est jamais prise.
+ */
+function etatAuxTroisAchats(): { etat: EtatJeu; aCent: Espece; aDebloquer: Espece } {
+  const base = etatDeTravail()
+  const ouvertes = ESPECES.filter((e) => e.palier < base.cycle.paliersOuverts)
+  expect(ouvertes.length).toBeGreaterThanOrEqual(3)
+  const [, aCent, aDebloquer] = ouvertes
+  expect(base.permanent.especesAyantAtteintCent).not.toContain(aCent.id)
+  const especes = Object.fromEntries(
+    Object.entries(base.cycle.especes).filter(([id]) => id !== aDebloquer.id),
+  )
+  const etat: EtatJeu = {
+    ...base,
+    cycle: { ...base.cycle, especes: { ...especes, [aCent.id]: { debloquee: true, niveau: 99 } } },
+  }
+  expect(densiteDuSejour({ ...etat, cycle: { ...etat.cycle, paliersOuverts: etat.cycle.paliersOuverts + 1 } }))
+    .toBeGreaterThan(densiteDuSejour(etat))
+  return { etat, aCent, aDebloquer }
+}
 
 describe('simulateur', () => {
   it('une partie sans UI atteint l’éclosion 2 en headless', () => {
@@ -43,12 +75,23 @@ describe('simulateur', () => {
     // Les confondre fait lire les ~600 h calendaires du §5.4 comme si c'étaient
     // les ~38 h actives — l'erreur exacte que les jalons v0.1 et v0.2 ont
     // rapportée deux fois.
-    const resultat = simuler(5)
-    expect(resultat.tempsActifSecondes).toBeGreaterThan(0)
-    expect(resultat.tempsEcouleSecondes).toBeGreaterThan(resultat.tempsActifSecondes)
-    expect(resultat.sessions.length).toBeGreaterThan(0)
-    const somme = resultat.sessions.reduce((t, s) => t + s.secondesActives, 0)
-    expect(somme).toBeCloseTo(resultat.tempsActifSecondes, 6)
+    //
+    // Un relevé tient le joueur devant l'écran le temps d'un pas. En achat
+    // continu les relevés se touchent : il est là tout du long, et l'actif
+    // ÉGALE l'écoulé — c'est le joueur optimal du finding 2. Relâché, il n'est
+    // là qu'un pas par relevé : l'actif vaut exactement `pas / intervalle` de
+    // l'écoulé. Un compteur qui recopierait l'autre tomberait sur la seconde
+    // assertion ; un compteur resté à zéro, sur la première.
+    const continu = simuler(3)
+    expect(continu.secondesActives).toBeGreaterThan(0)
+    expect(continu.secondesActives / continu.secondesEcoulees).toBeCloseTo(1, 9)
+
+    const releves = { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: 4 * 3600 }
+    const relache = simuler(3, releves)
+    expect(relache.secondesActives / relache.secondesEcoulees).toBeCloseTo(
+      releves.pas / releves.secondesEntreReleves,
+      9,
+    )
   })
 
   it('l’intervalle de check-in est le seul réglage de temps calendaire', () => {
@@ -56,10 +99,10 @@ describe('simulateur', () => {
     // temps actif — seules les politiques ». Le vérifier plutôt que d'y croire :
     // doubler l'absence doit à peu près doubler le calendaire, et laisser
     // l'actif tranquille.
-    const court = simuler(6, { ...POLITIQUE_PAR_DEFAUT, intervalleDeCheckInSecondes: 2 * 3600 })
-    const long = simuler(6, { ...POLITIQUE_PAR_DEFAUT, intervalleDeCheckInSecondes: 8 * 3600 })
-    expect(long.tempsEcouleSecondes).toBeGreaterThan(court.tempsEcouleSecondes * 2)
-    const ecartActif = Math.abs(long.tempsActifSecondes / court.tempsActifSecondes - 1)
+    const court = simuler(6, { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: 2 * 3600 })
+    const long = simuler(6, { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: 8 * 3600 })
+    expect(long.secondesEcoulees).toBeGreaterThan(court.secondesEcoulees * 2)
+    const ecartActif = Math.abs(long.secondesActives / court.secondesActives - 1)
     expect(ecartActif).toBeLessThan(0.5)
   })
 
@@ -80,16 +123,27 @@ describe('simulateur', () => {
   })
 
   it('la densité ne redescend jamais (Tier 0)', () => {
+    // La comparaison est faite à la main et `expect` n'est appelé qu'à
+    // l'arrivée : l'observateur passe des dizaines de milliers de fois sur 62
+    // paliers, et un `expect` par palier coûtait six des quatorze secondes du
+    // test — du temps de harnais, pas de mesure. La discrimination est la même,
+    // la première violation est retenue avec son palier et ses deux valeurs.
     let precedentes: readonly number[] | null = null
+    let faute: string | null = null
     const verifier = (etat: EtatJeu) => {
-      if (precedentes !== null) {
-        etat.permanent.densites.forEach((densite, palier) => {
-          expect(densite, `densité du palier ${palier}`).toBeGreaterThanOrEqual(precedentes![palier])
-        })
+      const densites = etat.permanent.densites
+      if (precedentes !== null && faute === null) {
+        for (let palier = 0; palier < densites.length; palier += 1) {
+          if (densites[palier] < precedentes[palier]) {
+            faute = `densité du palier ${palier} : ${precedentes[palier]} → ${densites[palier]}`
+            break
+          }
+        }
       }
-      precedentes = etat.permanent.densites
+      precedentes = densites
     }
     simuler(NOMBRE_D_ECLOSIONS_VISE, undefined, 1, verifier)
+    expect(faute, 'la densité a reculé').toBeNull()
     expect(precedentes).not.toBeNull()
     expect(precedentes!.some((d) => d > 0)).toBe(true)
   })
@@ -130,15 +184,91 @@ describe('simulateur', () => {
     const dernier = resultat.releve.cycles[resultat.releve.cycles.length - 1]
     expect(dernier.paliersOuverts).toBeGreaterThan(premier.paliersOuverts)
   })
+})
 
-  it('la fraction passée à redescendre est relevée à chaque cycle', () => {
-    // Risque n° 1 du §15 : « la redescente devient le jeu ». La métrique
-    // existe dès le premier jalon, faute de quoi elle ne dira jamais rien.
-    const resultat = simuler(5)
-    for (const cycle of resultat.releve.cycles) {
-      expect(cycle.fractionEnRedescente).toBeGreaterThanOrEqual(0)
-      expect(cycle.fractionEnRedescente).toBeLessThanOrEqual(1)
+describe('le simulateur tourne sur le noyau v1.0', () => {
+  it('quinze éclosions, et le temps actif est distinct du temps écoulé', () => {
+    const r = simuler(15, POLITIQUE_PAR_DEFAUT, 1)
+    expect(r.cycles).toHaveLength(15)
+    expect(r.secondesActives).toBeGreaterThan(0)
+    expect(r.secondesEcoulees).toBeGreaterThanOrEqual(r.secondesActives)
+  })
+
+  it('le premier cycle dure environ trois heures', () => {
+    const r = simuler(15, POLITIQUE_PAR_DEFAUT, 1)
+    const h = r.cycles[0].dureeEcouleeSecondes / 3600
+    expect(h).toBeGreaterThan(1)
+    expect(h).toBeLessThan(8)
+  })
+
+  it('la politique optimale et la politique relâchée diffèrent (finding 2)', () => {
+    const optimale = simuler(13, POLITIQUE_PAR_DEFAUT, 1)
+    const relachee = simuler(13, { ...POLITIQUE_PAR_DEFAUT, secondesEntreReleves: 4 * 3600 }, 1)
+    expect(relachee.secondesEcoulees).toBeGreaterThan(optimale.secondesEcoulees * 2)
+  })
+
+  it('le gain de chaque achat est la production qu’il ajoute réellement', () => {
+    // L'outil qui mesure doit le moins pouvoir mentir : à la tâche 9, une liste
+    // de multiplicateurs recopiée à la main dans le simulateur a oublié la
+    // densité et biaisé toute mesure, en silence. Ici le gain analytique est
+    // confronté au noyau lui-même — la production APRÈS l'achat, moins la
+    // production avant —, pour les trois achats.
+    const { etat, aCent } = etatAuxTroisAchats()
+
+    const appliquer = (achat: Achat): EtatJeu => {
+      if (achat.type === 'creuser') return creuser(etat)
+      if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
+      return ameliorer(etat, achat.espece.id)
     }
-    expect(resultat.releve.cycles.slice(1).some((c) => c.fractionEnRedescente > 0)).toBe(true)
+    const avant = productionTotaleParSeconde(etat)
+    const achats = achatsDisponibles(etat)
+    expect(new Set(achats.map((a) => a.type))).toEqual(new Set(['creuser', 'debloquer', 'niveau']))
+    expect(achats.some((a) => a.type === 'niveau' && a.espece.id === aCent.id)).toBe(true)
+    for (const achat of achats) {
+      const apres = appliquer(achat)
+      expect(apres, `${achat.type} n’a pas été payé`).not.toBe(etat)
+      const reel = productionTotaleParSeconde(apres).sub(avant)
+      const libelle = achat.type === 'creuser' ? 'creuser' : `${achat.type} ${achat.espece.id}`
+      expect(achat.gain.div(reel).toNumber(), libelle).toBeCloseTo(1, 9)
+    }
+  })
+
+  it('le budget retire les achats hors de portée, et rien d’autre', () => {
+    // Le chemin chaud passe un budget pour ne pas calculer le gain de ce qu'il
+    // ne peut pas payer — une décision d'achat évalue toutes les espèces
+    // ouvertes et n'en paie qu'une. C'est une optimisation, donc une occasion
+    // de diverger en silence de la liste complète : la famille de défaut qui a
+    // mordu la tâche 9. Ce test attache l'une à l'autre.
+    const { etat } = etatAuxTroisAchats()
+    const libelle = (achat: Achat) => (achat.type === 'creuser' ? 'creuser' : `${achat.type} ${achat.espece.id}`)
+    const complets = achatsDisponibles(etat)
+    expect(new Set(complets.map((a) => a.type))).toEqual(new Set(['creuser', 'debloquer', 'niveau']))
+
+    // Chaque coût de la liste sert à son tour de budget : toutes les coupes
+    // sont éprouvées, et chacune sur sa propre valeur — un budget qui vaut
+    // exactement un coût doit PAYER cet achat, jamais le retirer.
+    for (const coupe of complets) {
+      const attendus = complets.filter((achat) => !achat.cout.gt(coupe.cout))
+      expect(attendus.map(libelle)).toContain(libelle(coupe))
+      const restreints = achatsDisponibles(etat, coupe.cout)
+      expect(restreints.map(libelle), `budget du ${libelle(coupe)}`).toEqual(attendus.map(libelle))
+      restreints.forEach((achat, rang) => {
+        expect(achat.cout.eq(attendus[rang].cout), `coût de ${libelle(achat)}`).toBe(true)
+        expect(achat.gain.eq(attendus[rang].gain), `gain de ${libelle(achat)}`).toBe(true)
+      })
+    }
+
+    // Un budget que rien ne paie rend une liste vide — et n'a pas eu besoin de
+    // la production totale pour le dire.
+    expect(achatsDisponibles(etat, new Decimal(0))).toEqual([])
+  })
+
+  it('un cycle qui dépasse le garde-fou est déclaré non convergent, et la simulation s’arrête', () => {
+    // La bissection de θ (tâche 13) passera par des réglages où un cycle ne
+    // converge pas : sans garde-fou, le calibrage boucle.
+    const r = simuler(3, { ...POLITIQUE_PAR_DEFAUT, dureeMaxParCycleSecondes: 3600 })
+    expect(r.cycleNonConvergent).toBe(0)
+    expect(r.cyclesAcheves).toBe(0)
+    expect(r.etat.permanent.nombreEclosions).toBe(0)
   })
 })

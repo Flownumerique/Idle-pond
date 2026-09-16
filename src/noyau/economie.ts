@@ -25,16 +25,18 @@ import {
   COUT_NIVEAU_PAR_DEBIT,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
   DEBIT_HEROS,
-  DEBIT_RATIO_ESPECE,
   ECHELLE_DE_PRODUCTION,
   NOMBRE_DE_PALIERS,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
-  TAUX_BASE_AU_PALIER_0,
-  multiplicateurDePalier,
 } from './constantes'
 import { densiteDuSejour, multiplicateurDensite } from './densite'
-import { puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
+import {
+  debitBaseDuRang,
+  puissanceDeG,
+  puissanceDuCoutDeNiveau,
+  puissanceDuMultiplicateurDePalier,
+} from '../donnees/echelles'
 import { ESPECES } from '../donnees/especes'
 import { facteurDeTechnique } from './technique'
 import { SUCCES } from '../donnees/succes/index'
@@ -81,7 +83,7 @@ export function multiplicateurDesDrapeaux(etat: EtatJeu): number {
  * aucune espèce.
  */
 export function debitBaseDeLEspece(espece: Espece): Decimal {
-  return new Decimal(TAUX_BASE_AU_PALIER_0).mul(Math.pow(DEBIT_RATIO_ESPECE, espece.rang))
+  return debitBaseDuRang(espece.rang)
 }
 
 /**
@@ -92,7 +94,7 @@ export function debitBaseDeLEspece(espece: Espece): Decimal {
  * l'écart se composerait jusqu'à rendre les cycles profonds interminables.
  */
 export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
-  return Decimal.pow(multiplicateurDePalier(), Math.max(0, etat.cycle.paliersOuverts - 1))
+  return puissanceDuMultiplicateurDePalier(Math.max(0, etat.cycle.paliersOuverts - 1))
 }
 
 /**

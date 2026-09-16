@@ -365,6 +365,10 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
       'population', 'maturation', 'acclimat', 'partMure',
       'cout_place', 'convaincre', 'acheterPlace', 'BANCS', 'bancParId',
       'bancs', 'acclimatations', 'secondesEnSaturation',
+      // Retirés par la tâche 12 : la mesure de redescente (GDD §16.4, dépassé
+      // par le noyau v1.0 selon `docs/PRESEANCE.md`). Le compteur survit dans
+      // le format de sauvegarde v5, que seul `persistance.ts` connaît.
+      'secondesEnRedescente', 'fractionEnRedescente',
     ]) {
       expect(source, `« ${mot} » subsiste dans src/`).not.toContain(mot)
     }

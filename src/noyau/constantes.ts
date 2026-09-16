@@ -71,8 +71,12 @@ export const NOMBRE_D_ASSISES = 6
 /** ~4,4 paliers par cycle. */
 export const PALIERS_PAR_CYCLE_VISE = 4.4
 
-/** Nombre d'éclosions visé sur la partie. */
-export const NOMBRE_D_ECLOSIONS_VISE = 15
+/**
+ * Nombre d'éclosions visé sur la partie : ~45 de ~2,7 h, un chapitre du récit
+ * toutes les trois. C'est la décision de durée du spec (§3), qui découple les
+ * chapitres des éclosions — 15 était le nombre de chapitres, pas d'éclosions.
+ */
+export const NOMBRE_D_ECLOSIONS_VISE = 45
 
 /** ~21 espèces de base + ~6 divergences. */
 export const NOMBRE_D_ESPECES_DE_BASE = 21
@@ -452,4 +456,4 @@ export const SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR = 60
 export const PERIODE_DE_TICK_MS = 100
 
 /** Version de save courante. Toute évolution passe par une migration. */
-export const VERSION_SAVE = 5
+export const VERSION_SAVE = 6

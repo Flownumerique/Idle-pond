@@ -195,6 +195,23 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
       cycle: { ...etat.cycle, especes: {} },
     }
   },
+
+  /**
+   * 5 → 6 — la mesure de redescente meurt.
+   *
+   * `telemetrie.secondesEnRedescente` et sa copie dans chaque cycle clos
+   * (`telemetrie.cycles[].secondesEnRedescente`) relevaient le risque « la
+   * redescente devient le jeu » du GDD §16.4, que `docs/PRESEANCE.md` déclare
+   * dépassé par le noyau v1.0 (`f = 1`, retraverser coûte plein tarif, comme
+   * dans n'importe quel idle). Mesurée une dernière fois avant son retrait :
+   * ~0,01 % du temps d'un cycle pour le joueur optimal.
+   *
+   * Les deux champs sortent du type en mémoire ; cette migration ne les touche
+   * pas (§8.3 : on ne SUPPRIME aucun champ). `deserialiser` désérialise par
+   * spread générique : ils deviennent des propriétés surnuméraires jamais lues.
+   * Rien n'est à reconstruire — aucun champ neuf n'entre dans l'état.
+   */
+  5: (contenu) => contenu,
 }
 
 export function migrer(save: SaveSerialisee): unknown {
