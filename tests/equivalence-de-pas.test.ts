@@ -20,7 +20,7 @@ import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
 import { etatInitial, tick } from '../src/noyau/noyau'
-import { multiplicateurDeSeuil, productionTotaleParSeconde } from '../src/noyau/economie'
+import { contenance, multiplicateurDeSeuil, productionTotaleParSeconde } from '../src/noyau/economie'
 import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
 import { comparerAToleranceFlottante } from './outils'
@@ -67,7 +67,7 @@ describe('équivalence de pas', () => {
     let parPetitsPas = depart
     for (let i = 0; i < NOMBRE_DE_PAS; i += 1) parPetitsPas = tick(parPetitsPas, PAS)
     const enUnPas = tick(depart, HUIT_HEURES)
-    expect(enUnPas.cycle.manaCourant.eq(enUnPas.permanent.contenanceMana)).toBe(true)
+    expect(enUnPas.cycle.manaCourant.eq(contenance(enUnPas))).toBe(true)
     expect(enUnPas.permanent.manaAmbiant.gt(0)).toBe(true)
     comparerAToleranceFlottante(parPetitsPas, enUnPas)
   })

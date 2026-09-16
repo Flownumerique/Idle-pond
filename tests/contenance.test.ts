@@ -19,7 +19,7 @@ import {
   REGLAGE_CANONIQUE,
   TAU_SEJOUR_HEURES,
 } from '../src/noyau/constantes'
-import { eclore, etatInitial, tauDuSejourSecondes, tick } from '../src/noyau/noyau'
+import { contenance, eclore, etatInitial, tauDuSejourSecondes, tick } from '../src/noyau/noyau'
 import { multiplicateurDensite } from '../src/noyau/densite'
 import { etatDeTravail } from './etat-de-travail'
 
@@ -124,6 +124,33 @@ describe('contenance', () => {
     expect(rapport).toBeLessThan(0.7)
   })
 
+  it('la contenance monte PENDANT le cycle, et l’éclosion ne fait que la fixer', () => {
+    // Amendement v1.3. Le plafond ne montait qu'à l'éclosion, donc il était
+    // GELÉ pendant toute la vie : le palier suivant coûtait plus que ce que le
+    // héros pouvait porter, et rien ne pouvait plus changer cela avant la vie
+    // d'après. Mesuré sur le cycle 15 : le dernier palier s'ouvrait à la
+    // première minute, et les 99,8 % restants ne voyaient ni palier, ni espèce,
+    // ni même de production (×1,1 en 8,9 h). Ce n'est pas un jeu incrémental,
+    // c'est un minuteur.
+    //
+    // Le plafond monte maintenant avec l'acquis, donc en continu. Tier 0 §8
+    // tient toujours — il ne monte QUE par séjour prolongé —, il monte
+    // simplement au fil du séjour au lieu d'être versé en bloc à la sortie.
+    const depart = etatInitial(1)
+    expect(contenance(depart).eq(depart.permanent.contenanceMana)).toBe(true)
+
+    const apres = tick(depart, H)
+    expect(contenance(apres).gt(contenance(depart))).toBe(true)
+    expect(contenance(apres).eq(apres.permanent.contenanceMana.mul(1 + apres.cycle.acquisDeSejour))).toBe(true)
+    // Le plafond BANQUÉ, lui, n'a pas bougé : l'acquis n'est pas encore dépensé.
+    expect(apres.permanent.contenanceMana.eq(depart.permanent.contenanceMana)).toBe(true)
+
+    // L'éclosion ne crée rien : elle fixe ce que le cycle portait déjà.
+    const eclos = eclore(apres)
+    expect(eclos.permanent.contenanceMana.eq(contenance(apres))).toBe(true)
+    expect(contenance(eclos).eq(eclos.permanent.contenanceMana)).toBe(true)
+  })
+
   it('le temps du séjour croît avec la profondeur ATTEINTE (amendement v1.2)', () => {
     // La tâche 12 a mesuré ce que `τ` constant produit : les 45 cycles durent
     // exactement 2,617 h — `τ₀ ln 20` — et `dernier / premier` vaut 1,000 quel
@@ -179,8 +206,14 @@ describe('le blocage est doux (noyau v1.0 §2.2)', () => {
     let etat = etatDeTravail()
     const eclosionsAvant = etat.permanent.nombreEclosions
     // 7 jours en un seul pas, jauge saturée du début à la fin
-    etat = tick({ ...etat, cycle: { ...etat.cycle, manaCourant: etat.permanent.contenanceMana } }, 7 * 24 * 3600)
+    const pleine = contenance(etat)
+    etat = tick({ ...etat, cycle: { ...etat.cycle, manaCourant: pleine } }, 7 * 24 * 3600)
     expect(etat.permanent.nombreEclosions).toBe(eclosionsAvant)
-    expect(etat.cycle.manaCourant.eq(etat.permanent.contenanceMana)).toBe(true)
+    // « Pleine » est devenue une cible MOBILE : le plafond monte avec l'acquis
+    // pendant que le joueur est absent, et peut s'éloigner plus vite que la
+    // production ne remplit. Ce qui doit tenir n'a pas changé : la jauge ne
+    // déborde jamais, elle ne redescend jamais, et rien n'éclôt à sa place.
+    expect(etat.cycle.manaCourant.lte(contenance(etat))).toBe(true)
+    expect(etat.cycle.manaCourant.gte(pleine)).toBe(true)
   })
 })

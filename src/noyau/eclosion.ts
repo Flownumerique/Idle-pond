@@ -23,6 +23,7 @@ import {
   PRODUCTION_DE_REFERENCE,
 } from './constantes'
 import { appliquerGainDeDensite } from './densite'
+import { contenance } from './economie'
 import { creditCompteur } from './technique'
 
 /**
@@ -78,8 +79,7 @@ export function eclore(etat: EtatJeu): EtatJeu {
   // agit sur la production, par le multiplicateur de densité.
   // Aucun facteur n'est écrit en dur — le ×47,1 visé est un RÉSULTAT de
   // `A∞` et `τ₀`, pas une ligne de code (§2.B).
-  const acquisFixe = etat.cycle.acquisDeSejour
-  const contenanceMana = etat.permanent.contenanceMana.mul(1 + acquisFixe)
+  const contenanceMana = contenance(etat)
 
   return {
     ...etat,

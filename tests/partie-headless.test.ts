@@ -19,7 +19,7 @@
 import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import { etatInitial, tick, creuser, debloquer, ameliorer, eclore } from '../src/noyau/noyau'
-import { coutDeDescente, coutDeDeblocage, coutDeNiveau, toutEstCreuse } from '../src/noyau/economie'
+import { contenance, coutDeDescente, coutDeDeblocage, coutDeNiveau, toutEstCreuse } from '../src/noyau/economie'
 import { doitEclore, POLITIQUE_PAR_DEFAUT } from '../src/simulateur/simulateur'
 import { ESPECES } from '../src/donnees/especes'
 import type { EtatJeu } from '../src/noyau/types'
@@ -37,7 +37,12 @@ function optionsPayables(etat: EtatJeu): readonly OptionAchat[] {
     const cout = coutDeDescente(etat, cible)
     // Hors de portée pour toujours si ça dépasse la contenance (§6.4), pas
     // seulement pour l'instant si ça dépasse le mana courant.
-    if (cout.lte(etat.permanent.contenanceMana) && etat.cycle.manaCourant.gte(cout)) {
+    // `contenance(etat)`, jamais `permanent.contenanceMana` : depuis que le
+    // plafond monte pendant le cycle, les deux ont cessé d'être la même chose,
+    // et lire la seconde faisait croire le creusement fermé alors que le noyau
+    // le rouvrait — la partie ne pouvait plus éclore du tout. La règle vit dans
+    // le noyau ; on l'appelle, on ne la recopie pas.
+    if (cout.lte(contenance(etat)) && etat.cycle.manaCourant.gte(cout)) {
       options.push({ cout, appliquer: creuser })
     }
   }

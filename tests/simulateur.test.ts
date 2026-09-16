@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest'
 import type { Espece, EtatJeu } from '../src/noyau/types'
 import { ACQUIS_MAX, CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { achatsDisponibles, POLITIQUE_PAR_DEFAUT, simuler, type Achat } from '../src/simulateur/simulateur'
-import { ameliorer, creuser, debloquer, productionTotaleParSeconde } from '../src/noyau/noyau'
+import { ameliorer, creuser, debloquer, estBloque, productionTotaleParSeconde } from '../src/noyau/noyau'
 import { densiteDuSejour } from '../src/noyau/densite'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { ESPECES } from '../src/donnees/especes'
@@ -252,6 +252,70 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
       const reel = productionTotaleParSeconde(apres).sub(avant)
       const libelle = achat.type === 'creuser' ? 'creuser' : `${achat.type} ${achat.espece.id}`
       expect(achat.gain.div(reel).toNumber(), libelle).toBeCloseTo(1, 9)
+    }
+  })
+
+  it('la saturation ne gèle pas la partie (amendement v1.3)', () => {
+    // LE test de genre : IdlePond est un idle incremental, pas un minuteur.
+    //
+    // Avec un plafond de contenance gelé jusqu'à l'éclosion, une partie mesurée
+    // donnait ceci — le dernier palier d'un cycle s'ouvrait à la PREMIÈRE
+    // MINUTE, puis 99 % du cycle ne voyait plus ni palier, ni espèce, ni même
+    // de production (×1,1 sur 8,9 h au cycle 15). Le joueur regardait un
+    // minuteur : le palier suivant coûtait plus que ce qu'il pouvait PORTER, et
+    // rien dans la vie courante ne pouvait plus changer cela.
+    //
+    // Deux quantités le disent, et ce sont les deux que le plafond continu
+    // rétablit. Mesuré sur les six premiers cycles, graine 1 :
+    //
+    //   part du cycle au dernier palier ouvert : 0,166 · 0,411 · 0,225 · 0,629 ·
+    //     0,304 · 0,184   (plafond gelé : 0,12 puis 0,005 à 0,01)
+    //   production gagnée après le premier blocage : ×36 · ×203 · ×449 · ×170 ·
+    //     ×254 · ×131      (plafond gelé : ×8,4 · ×20 · ×7 · ×9 · ×1,1)
+    //
+    // Les bornes sont posées sous le pire cycle mesuré, pas sur la moyenne :
+    // un seul cycle gelé est un cycle où le joueur n'a rien à faire.
+    interface Suivi {
+      duree: number
+      dernierPalier: number
+      paliers: number
+      prodAuBlocage: number
+      prodFin: number
+    }
+    const neuf = (paliers: number): Suivi => ({
+      duree: 0,
+      dernierPalier: 0,
+      paliers,
+      prodAuBlocage: 0,
+      prodFin: 0,
+    })
+    const cycles = new Map<number, Suivi>()
+    simuler(6, undefined, 1, (etat) => {
+      const index = etat.permanent.nombreEclosions
+      let suivi = cycles.get(index)
+      if (suivi === undefined) {
+        suivi = neuf(etat.cycle.paliersOuverts)
+        cycles.set(index, suivi)
+      }
+      if (etat.cycle.paliersOuverts > suivi.paliers) {
+        suivi.paliers = etat.cycle.paliersOuverts
+        suivi.dernierPalier = etat.cycle.dureeSecondes
+      }
+      suivi.duree = Math.max(suivi.duree, etat.cycle.dureeSecondes)
+      const production = productionTotaleParSeconde(etat).toNumber()
+      if (suivi.prodAuBlocage === 0 && estBloque(etat)) suivi.prodAuBlocage = production
+      suivi.prodFin = production
+    })
+
+    expect(cycles.size).toBeGreaterThanOrEqual(6)
+    for (const [index, suivi] of cycles) {
+      if (index >= 6) continue
+      const part = suivi.dernierPalier / suivi.duree
+      expect(part, `cycle ${index + 1} : le dernier palier s’ouvre à ${(part * 100).toFixed(1)} % du cycle`)
+        .toBeGreaterThan(0.1)
+      const gagnee = suivi.prodFin / suivi.prodAuBlocage
+      expect(gagnee, `cycle ${index + 1} : la production ne gagne que ×${gagnee.toFixed(1)} après le blocage`)
+        .toBeGreaterThan(25)
     }
   })
 

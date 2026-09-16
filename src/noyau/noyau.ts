@@ -166,13 +166,6 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
 
   const production = productionTotaleParSeconde(etat)
 
-  // La contenance limite le stock, pas la production. Le surplus n'est pas
-  // détruit : il expire vers l'ambiant (Tier 0 §5).
-  const brut = etat.cycle.manaCourant.add(production.mul(dt))
-  const plafond = contenance(etat)
-  const manaCourant = Decimal.min(brut, plafond)
-  const expire = brut.sub(manaCourant)
-
   // Acquis de séjour (§2.B) : accumulation saturante vers `A∞`, de temps
   // caractéristique `τ₀` CONSTANT. Forme exponentielle, donc exacte pour
   // n'importe quel `dt` — c'est ce qui permet à la contenance de monter
@@ -186,6 +179,14 @@ export function tickDetaille(etat: EtatJeu, dt: number): ResultatDeTick {
   // cycle constante par construction : il doit l'être aussi.
   const acquisDeSejour =
     ACQUIS_MAX + (etat.cycle.acquisDeSejour - ACQUIS_MAX) * Math.exp(-dt / tauDuSejourSecondes(etat))
+
+  // La contenance limite le stock, pas la production, et elle monte PENDANT le
+  // cycle avec l'acquis : le plafond se lit donc à la FIN du pas.
+  const brut = etat.cycle.manaCourant.add(production.mul(dt))
+  const plafond = contenance({ ...etat, cycle: { ...etat.cycle, acquisDeSejour } })
+  const manaCourant = Decimal.min(brut, plafond)
+  // Le surplus n'est pas détruit : il expire vers l'ambiant (Tier 0 §5).
+  const expire = brut.sub(manaCourant)
 
   const avance: EtatJeu = {
     ...etat,

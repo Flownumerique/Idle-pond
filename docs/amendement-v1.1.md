@@ -222,6 +222,68 @@ d'autant plus qu'il est long. La Foi et la densité à 45 cycles ne bougent, ell
 qu'à la quatrième décimale (1,6512e+66 → 1,6505e+66) : l'économie est invariante
 d'échelle, et rallonger les cycles ne la déplace pas.
 
+#### Amendé le 2026-09-16 (v1.3) — le plafond monte PENDANT le cycle
+
+`contenance = contenanceMana × (1 + acquis_de_séjour)`, lue à chaque instant.
+L'éclosion ne fait plus que FIXER ce que le cycle portait déjà — la valeur
+banquée est identique à celle d'avant, au bit près.
+
+**Le défaut, mesuré.** Le plafond ne montait qu'à l'éclosion : il était donc
+gelé pendant toute la vie, et le palier suivant coûtait plus que ce que le héros
+pouvait PORTER — pas plus que ce qu'il avait. Rien dans la vie courante ne
+pouvait changer cela. Ce que le joueur vivait, par cycle :
+
+| cycle | durée | dernier palier ouvert | part du cycle gelée | production gagnée ensuite |
+|---|---|---|---|---|
+| 1 | 2,92 h | 21 min | 88,0 % | ×8,4 |
+| 5 | 4,20 h | 2 min | 99,2 % | ×7,0 |
+| 15 | 8,90 h | 1 min | **99,8 %** | **×1,1** |
+| 30 | 8,90 h | 1 min | 99,8 % | ×1,0 |
+
+Passé la première minute : aucun palier, aucune espèce, et à partir du cycle 15
+plus de production non plus. Ce n'est pas un jeu incrémental, c'est un minuteur
+avec un décor. Le §2.2 promet un blocage DOUX — « il peut continuer à jouer
+indéfiniment » —, et il était devenu dur.
+
+**Après.** Le plafond monte au fil du séjour, donc le joueur descend au fil du
+cycle :
+
+| cycle | durée | dernier palier ouvert | part du cycle gelée | production gagnée ensuite |
+|---|---|---|---|---|
+| 1 | 3,12 h | 31 min | 83,4 % | ×36 |
+| 2 | 3,48 h | 86 min | 58,9 % | ×203 |
+| 4 | 4,13 h | 156 min | 37,1 % | ×170 |
+| 6 | 4,90 h | 54 min | 81,6 % | ×131 |
+
+**Ce qui ne change pas.** Tier 0 §8 tient : le plafond ne monte QUE par séjour
+prolongé — il monte simplement au fil du séjour au lieu d'être versé en bloc à
+la sortie. Le ×47,1 du cycle nominal reste un RÉSULTAT de `A∞` et `τ₀`, et la
+valeur banquée à l'éclosion est inchangée. La décision du §6.4 reste réelle et
+devient même plus nette : quand l'acquis sature, le plafond cesse de monter, la
+descente s'arrête pour de bon, et rester ne rapporte plus que de la Foi.
+
+**L'équivalence de pas tient, et ce n'est pas une chance.** Le plafond varie
+maintenant DANS le pas, ce que le §5.2 regarde de près. Le stock reste exact en
+un seul pas parce que la production est constante pendant le pas et que le
+plafond est concave croissant : la droite du stock ne croise la courbe du
+plafond qu'une fois, donc `min(stock + production × dt, plafond(fin du pas))`
+est la solution exacte, et non une approximation. Le tick lit donc le plafond
+APRÈS avoir intégré l'acquis. Le test d'équivalence le vérifie sur une fixture
+où le plafond mord en cours d'intervalle.
+
+**Un défaut latent trouvé par la même occasion.** Le joueur headless de
+`tests/partie-headless.test.ts` lisait `permanent.contenanceMana` au lieu
+d'appeler `contenance()` : tant que les deux valaient la même chose, la copie
+passait inaperçue. Elle a cessé de valoir la même chose, et la partie ne pouvait
+plus éclore du tout. La règle vit dans le noyau ; on l'appelle, on ne la recopie
+pas.
+
+**Ce que cet amendement ne règle PAS, et qui reste ouvert.** Les 62 paliers du
+monde sont épuisés au quatorzième cycle. Les cycles 15 à 45 restent gelés à
+99,8 % : il n'y a plus rien à ouvrir, et les niveaux seuls ne font gagner que
+×1,1 de production par cycle. C'est une question de CONTENU et d'axes de fin de
+partie — la Foi et l'arbre de technique —, pas de loi de contenance.
+
 ### 2.C — seuils cumulés, sur l'effectif
 
 La colonne est renommée `multiplicateurCumule` partout. Le joueur achète de la

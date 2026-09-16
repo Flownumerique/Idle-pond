@@ -307,7 +307,7 @@ export function coutDeNiveau(etat: EtatJeu, espece: Espece, niveau: number): Dec
 
 /** La contenance limite le stock, pas la production. */
 export function contenance(etat: EtatJeu): Decimal {
-  return etat.permanent.contenanceMana
+  return etat.permanent.contenanceMana.mul(1 + etat.cycle.acquisDeSejour)
 }
 
 /* ─── La jauge et sa saturation — GDD §2.4 ──────────────────────────────────
