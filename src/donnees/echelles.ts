@@ -59,8 +59,11 @@ function puissanceDuPalier(exposant: number): Decimal {
   return Decimal.pow(multiplicateurDePalier(), exposant)
 }
 
-const PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER = Array.from({ length: NOMBRE_DE_PALIERS + 2 }, (_, p) =>
-  puissanceDuPalier(p),
+// `NOMBRE_DE_PALIERS + 2` : l'exposant vaut `paliersOuverts - 1`, et le gain de
+// creusement en demande un de plus, sur un état où le palier suivant est ouvert.
+const PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER: readonly Decimal[] = Array.from(
+  { length: NOMBRE_DE_PALIERS + 2 },
+  (_, p) => puissanceDuPalier(p),
 )
 
 export function puissanceDuMultiplicateurDePalier(exposant: number): Decimal {
@@ -79,7 +82,14 @@ function debitBaseDuRangCalcule(rang: number): Decimal {
   return new Decimal(TAUX_BASE_AU_PALIER_0).mul(Math.pow(DEBIT_RATIO_ESPECE, rang))
 }
 
-const DEBITS_DE_BASE = Array.from({ length: NOMBRE_DE_PALIERS + 1 }, (_, rang) => debitBaseDuRangCalcule(rang))
+// Le rang est l'index dans `ESPECES`, pas un palier : une vingtaine
+// aujourd'hui. `NOMBRE_DE_PALIERS` n'est ici qu'une borne supérieure commode et
+// large — une espèce par palier au plus —, et le repli couvre le reste. Importer
+// `ESPECES` pour la dimensionner au plus juste ajouterait une dépendance de
+// données que ce fichier n'a pas.
+const DEBITS_DE_BASE: readonly Decimal[] = Array.from({ length: NOMBRE_DE_PALIERS + 1 }, (_, rang) =>
+  debitBaseDuRangCalcule(rang),
+)
 
 export function debitBaseDuRang(rang: number): Decimal {
   return DEBITS_DE_BASE[rang] ?? debitBaseDuRangCalcule(rang)

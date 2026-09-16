@@ -34,6 +34,10 @@ function etatAuxTroisAchats(): { etat: EtatJeu; aCent: Espece; aDebloquer: Espec
   expect(ouvertes.length).toBeGreaterThanOrEqual(3)
   const [, aCent, aDebloquer] = ouvertes
   expect(base.permanent.especesAyantAtteintCent).not.toContain(aCent.id)
+  // Le drapeau déjà posé vient d'`etatDeTravail`. S'il disparaissait de cette
+  // fixture partagée, `multiplicateurDesDrapeaux` retomberait à 1 et le terme
+  // `0,03 / m` cesserait d'être discriminé, sans qu'aucun test ne le dise.
+  expect(base.permanent.especesAyantAtteintCent.length).toBeGreaterThan(0)
   const especes = Object.fromEntries(
     Object.entries(base.cycle.especes).filter(([id]) => id !== aDebloquer.id),
   )
@@ -94,7 +98,7 @@ describe('simulateur', () => {
     )
   })
 
-  it('l’intervalle de check-in est le seul réglage de temps calendaire', () => {
+  it('l’intervalle entre deux relevés est le seul réglage de temps calendaire', () => {
     // §5.4 : « aucun réglage de paramètre ne produira de croissance de cycle en
     // temps actif — seules les politiques ». Le vérifier plutôt que d'y croire :
     // doubler l'absence doit à peu près doubler le calendaire, et laisser

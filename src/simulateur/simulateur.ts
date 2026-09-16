@@ -121,9 +121,10 @@ export type Achat =
  * `cout > budget`, le test exact que la politique appliquerait ensuite — et
  * leur gain n'est alors pas calculé. C'est le seul endroit où ce test est
  * écrit : `meilleurAchat` lui passe le mana courant et ne le refait pas. Sans
- * budget, la liste est complète, et c'est ce que lisent l'écran et le test du
- * gain marginal. Un relevé évalue jusqu'à toutes les espèces pour n'en payer
- * qu'une, et le gain vaut à lui seul la moitié du prix d'une évaluation.
+ * budget, la liste est complète — c'est sous cette forme que le test du gain
+ * marginal la confronte au noyau. Un relevé évalue jusqu'à toutes les espèces
+ * pour n'en payer qu'une, et le gain vaut à lui seul la moitié du prix d'une
+ * évaluation.
  *
  * Creuser n'est proposé que s'il ne bloque pas (`estBloque`, qui lit
  * `contenance`) : au-delà, il est hors de portée pour toujours, puisque le stock
@@ -230,7 +231,14 @@ function depenser(etat: EtatJeu): EtatJeu {
     const achat = meilleurAchat(courant)
     if (achat === null) return courant
     const suivant = appliquer(courant, achat)
-    if (suivant === courant) return courant
+    // Même symptôme que la borne ci-dessus, donc même traitement : la politique
+    // a cru payable un achat que le noyau refuse. Inatteignable aujourd'hui —
+    // les conditions d'`achatsDisponibles` couvrent les trois refus du noyau —,
+    // et c'est justement pourquoi le fermer ne coûte rien : c'était le dernier
+    // chemin par lequel une divergence politique/noyau passerait sans un mot.
+    if (suivant === courant) {
+      throw new Error(`Le noyau refuse un achat que la politique croyait payable : ${achat.type}`)
+    }
     courant = suivant
   }
 }
@@ -298,6 +306,8 @@ export function simuler(
   limiteDeContenu?: number,
 ): ResultatDeSimulation {
   if (!(politique.pas > 0)) throw new Error(`Le pas de la politique doit être positif (reçu ${politique.pas})`)
+  if (!(politique.secondesEntreReleves >= 0))
+    throw new Error(`L'intervalle entre relevés ne peut pas être négatif (reçu ${politique.secondesEntreReleves})`)
   const intervalle = politique.secondesEntreReleves > 0 ? politique.secondesEntreReleves : politique.pas
 
   let etat = etatInitial(graine, limiteDeContenu)
@@ -322,7 +332,10 @@ export function simuler(
       // expire vers l'ambiant. En achat continu, l'intervalle EST ce premier pas.
       // Un relevé qui fait éclore se prolonge dans le premier relevé du cycle
       // suivant, au même instant : c'est une seule présence, comptée une fois.
-      for (let reste = intervalle, present = true; reste > 0; present = false) {
+      // `reste > 1e-9`, et non `> 0` : un intervalle qui n'est pas un multiple
+      // du pas laisse un résidu flottant, et un tick de 1e-14 s n'est pas un
+      // pas de simulation. La tâche 13 balaiera des politiques.
+      for (let reste = intervalle, present = true; reste > 1e-9; present = false) {
         const dt = Math.min(politique.pas, reste)
         etat = tick(etat, dt)
         if (present) secondesActives += dt

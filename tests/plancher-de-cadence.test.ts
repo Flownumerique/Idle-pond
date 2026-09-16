@@ -81,13 +81,20 @@ describe('plancher de cadence de l’assise I', () => {
    * déclencher tous PLUS TÔT, ce qui allonge d'autant le silence après le
    * dernier d'entre eux, jusqu'à la trentième minute.
    *
-   * Ferme quand : la tâche 12 remplace la politique d'achat du joueur simulé
-   * par une politique de gain marginal analytique (un joueur plus rapide
-   * atteindrait alors le succès SUIVANT au lieu de seulement tirer les
-   * précédents plus tôt) ; ou la tâche 13, qui résout les nombres qui
-   * décident de l'atteignabilité. Une troisième voie — densifier les succès
-   * atteignables de la Noue entre la 25ᵉ et la 30ᵉ minute — existe mais sort
-   * de ce plan (GDD).
+   * MESURÉ DEPUIS (tâche 12) : la politique de gain marginal ne ferme PAS ce
+   * trou, elle l'aggrave de 21 s. Même harnais, assise I, graine 1 —
+   *
+   *   le moins cher d'abord (politique d'ici) : 20 succès, dernier 1381 s, silence 419 s
+   *   gain marginal (tâche 12)                : 20 succès, dernier 1360 s, silence 440 s
+   *
+   * — ce que le paragraphe ci-dessus prédisait, exactement : le nombre de
+   * succès ATTEIGNABLES ne bouge pas, il est fixé par le registre fini de la
+   * Noue ; un joueur qui achète MIEUX les déclenche seulement plus tôt. La
+   * voie « une meilleure politique » est donc close, et close par la mesure.
+   *
+   * Ferme quand : la tâche 13 résout les nombres qui décident de
+   * l'atteignabilité. Une seconde voie — densifier les succès atteignables de
+   * la Noue entre la 25ᵉ et la 30ᵉ minute — existe mais sort de ce plan (GDD).
    */
   it.fails(
     'le silence après le dernier succès atteignable ne dépasse pas cinq minutes — PARQUÉ, voir tâches 12/13',
