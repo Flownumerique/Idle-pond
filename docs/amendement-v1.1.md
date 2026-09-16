@@ -209,8 +209,15 @@ sur `simuler(45)` — joueur optimal, donc temps actif égal au temps écoulé :
 | 1,050 | 3,43 h | 53,68 h | ×15,6 | 1 941 h |
 
 La courbe triple, le cycle 1 tombe à 2,92 h — la cible des 3 h du §12, atteinte
-sans toucher à l'échelle —, et la partie complète fait 353 h au lieu de 118.
-Au-delà de 1,03, un cycle de fin dépasse 16 h : ce n'est plus un cycle.
+sans toucher à l'échelle. Au-delà de 1,03, un cycle de fin dépasse 16 h : ce
+n'est plus un cycle.
+
+> **Note du 2026-09-16, après l'amendement v1.3 et la décision des 14 cycles.**
+> La colonne « partie complète » de cette table a été mesurée sur 45 éclosions,
+> le chiffre d'alors. La descente s'arrête maintenant au cycle 13, et la partie
+> complète fait **~82 h** à `c = 1,02`, contre ~37 h à `c = 1`. Ce qui a motivé
+> le choix de `c` est intact : le rapport de la dernière durée à la première
+> vaut ×2,85 sur la descente (3,12 h → 8,90 h) au lieu de ×1,0.
 
 **Ce que la courbe v1.2 déplace, mesuré.** Un seul chiffre du dépôt bouge
 vraiment, et c'est le finding 2 : l'absence de 4 h ne double plus le temps
@@ -278,11 +285,31 @@ passait inaperçue. Elle a cessé de valoir la même chose, et la partie ne pouv
 plus éclore du tout. La règle vit dans le noyau ; on l'appelle, on ne la recopie
 pas.
 
-**Ce que cet amendement ne règle PAS, et qui reste ouvert.** Les 62 paliers du
-monde sont épuisés au quatorzième cycle. Les cycles 15 à 45 restent gelés à
-99,8 % : il n'y a plus rien à ouvrir, et les niveaux seuls ne font gagner que
-×1,1 de production par cycle. C'est une question de CONTENU et d'axes de fin de
-partie — la Foi et l'arbre de technique —, pas de loi de contenance.
+#### Décidé le 2026-09-16 — la descente n'est pas toute la partie
+
+Le plafond continu règle le corps du cycle ; il ne crée pas de monde. Mesuré
+sous la loi v1.3 : le héros gagne 10 paliers au premier cycle puis 4 à 5 par
+cycle, et le fond des 62 paliers tombe au **cycle 13**. Le quatorzième n'ouvre
+plus rien — c'est la moisson, la vie qui convertit en Foi et en densité la
+profondeur que la treizième a atteinte. Au-delà, plus rien ne s'ouvrirait : les
+niveaux seuls ne rendent que ×1,1 de production par cycle.
+
+Deux décisions en découlent.
+
+**`NOMBRE_D_ECLOSIONS_VISE` vaut 14, et mesure la DESCENTE, pas la partie.** Il
+a valu 15 — le nombre de chapitres du récit, confondu avec les éclosions —, puis
+45, une décision de durée prise avant qu'on mesure ce que le monde peut nourrir.
+45 était un chiffre qui mentait dans toutes les mesures : le monde est épuisé
+trois fois plus tôt, et les 31 cycles restants ne voyaient plus rien s'ouvrir.
+La descente complète fait ~82 h de jeu actif sous le joueur optimal.
+
+**Passé la treizième, la partie tient sur d'AUTRES axes : la Foi et l'arbre de
+technique** (phases 4 et 5). C'est la réponse d'un incrémental — quand un axe
+sature, la monnaie de prestige en ouvre un autre —, et le plan la contient déjà.
+Ce qui reste à faire n'est donc pas une loi de contenance : c'est de rendre ces
+deux axes réels, à commencer par les six couples (A, B) qui décident à quel
+rythme une branche de technique s'ouvre. Ils doivent être résolus contre une
+partie de 14 cycles, et non de 45.
 
 ### 2.C — seuils cumulés, sur l'effectif
 

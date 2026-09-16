@@ -74,11 +74,33 @@ export const NOMBRE_D_ASSISES = 6
 export const PALIERS_PAR_CYCLE_VISE = 4.4
 
 /**
- * Nombre d'éclosions visé sur la partie : ~45 de ~2,7 h, un chapitre du récit
- * toutes les trois. C'est la décision de durée du spec (§3), qui découple les
- * chapitres des éclosions — 15 était le nombre de chapitres, pas d'éclosions.
+ * Nombre d'éclosions que l'AXE DE PROFONDEUR porte — ce n'est pas la longueur
+ * du jeu, c'est la longueur de la descente.
+ *
+ * Mesuré le 2026-09-16 sous la loi de contenance v1.3, politique par défaut,
+ * graine 1 : le héros gagne 10 paliers au premier cycle puis 4 à 5 par cycle,
+ * et le fond des 62 paliers tombe au CYCLE 13. Le quatorzième n'ouvre plus
+ * rien : c'est la moisson, la vie qui convertit en Foi et en densité la
+ * profondeur que la treizième a atteinte. D'où 14.
+ *
+ * | cycle |  1 |  2 |  5 | 10 | 13 | 14 |
+ * |-------|----|----|----|----|----|----|
+ * | paliers | 10 | 15 | 28 | 50 | 62 | 62 |
+ * | durée | 3,12 h | 3,48 h | 4,50 h | 6,95 h | 8,88 h | 8,90 h |
+ *
+ * Total : ~82 h de jeu actif sous le joueur optimal.
+ *
+ * La valeur a été 15 (nombre de CHAPITRES du récit, confondu avec les
+ * éclosions), puis 45 (décision de durée du spec §3, prise avant qu'on mesure
+ * ce que le monde peut nourrir). 45 était un chiffre qui mentait dans toutes
+ * les mesures : le monde est épuisé trois fois plus tôt, et les 31 cycles
+ * restants ne voyaient plus rien s'ouvrir.
+ *
+ * Passé la treizième, la partie continue — mais sur d'AUTRES axes que la
+ * profondeur : la Foi et l'arbre de technique (phases 4 et 5). C'est ce que
+ * cette constante ne dit pas, et ne doit pas dire.
  */
-export const NOMBRE_D_ECLOSIONS_VISE = 45
+export const NOMBRE_D_ECLOSIONS_VISE = 14
 
 /** ~21 espèces de base + ~6 divergences. */
 export const NOMBRE_D_ESPECES_DE_BASE = 21
