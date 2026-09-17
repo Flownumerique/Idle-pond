@@ -82,7 +82,7 @@ describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d’autr
    * noyau §4 fait des bénédictions « l’écran d’améliorations du jeu ». Le code
    * avait gardé la suppression. Spec 2026-09-17 [D8].
    *
-   * Ce qui reste vrai, et vérifiée : la technique et les succès ne montent
+   * Ce qui reste vrai, et vérifié : la technique et les succès ne montent
    * jamais une production ; une bénédiction ne fait QUE cela.
    */
   it('aucun nœud de technique ne monte une production', () => {
@@ -102,7 +102,7 @@ describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d’autr
     }
   })
 
-  it("une bénédiction ciblée par espèce, une globale, et pas une de plus", () => {
+  it('une bénédiction ciblée par espèce, une globale, et pas une de plus', () => {
     const ciblees = BENEDICTIONS.filter((b) => b.portee === 'ciblee')
     const globales = BENEDICTIONS.filter((b) => b.portee === 'globale')
     expect(ciblees.map((b) => b.espece)).toEqual(ESPECES.map((e) => e.id))
