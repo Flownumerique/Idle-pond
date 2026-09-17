@@ -14,6 +14,7 @@ import {
   SEUILS_DE_JALON,
   THETA_PART_COMPENSEE,
   densiteExposant,
+  BONUS_PAR_NIVEAU_DU_HEROS,
   BUDGET_DE_VERBES_ARBRE,
   BUDGET_DE_VERBES_TOTAL,
   CROISSANCE_PAR_CYCLE_VISEE,
@@ -56,7 +57,8 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'profondeur', paliersOuverts: 7 },
   { quoi: 'densite', densite: 0 },
   { quoi: 'densite', densite: 12.5 },
-  { quoi: 'heros' },
+  { quoi: 'heros', niveau: 1 },
+  { quoi: 'heros', niveau: 7 },
 ]
 
 const RACINE = resolve(__dirname, '..')
@@ -242,9 +244,12 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     }
   })
 
-  it('le multiplicateur de palier porte la part de D que le bestiaire ne porte pas', () => {
+  it('le multiplicateur de palier et le héros portent ensemble la part de D que le bestiaire ne porte pas', () => {
+    // Spec 2026-09-17 [D3] : un niveau de héros par palier, et sa part sort de
+    // `m_p`. Ce qui doit tenir est le produit des deux, pas `m_p` seul.
     const parTroisPaliers =
-      Math.pow(multiplicateurDePalier(), ESPECE_TOUS_LES_N_PALIERS) * DEBIT_RATIO_ESPECE
+      Math.pow(multiplicateurDePalier() * (1 + BONUS_PAR_NIVEAU_DU_HEROS), ESPECE_TOUS_LES_N_PALIERS) *
+      DEBIT_RATIO_ESPECE
     expect(parTroisPaliers).toBeCloseTo(Math.pow(D_PRODUCTION_PAR_PALIER, ESPECE_TOUS_LES_N_PALIERS), 6)
   })
 })

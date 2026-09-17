@@ -19,6 +19,7 @@ import {
   FOI_BASE,
   FOI_EXPOSANT,
   MANA_A_LA_SORTIE_DE_L_OEUF,
+  NIVEAU_DU_HEROS_AU_DEPART,
   PALIERS_OUVERTS_AU_DEPART,
   PRODUCTION_DE_REFERENCE,
 } from './constantes'
@@ -57,6 +58,7 @@ export function cycleInitial(): EtatCycle {
     productionPicParSeconde: new Decimal(0),
     dureeSecondes: 0,
     acquisDeSejour: 0,
+    niveauDuHeros: NIVEAU_DU_HEROS_AU_DEPART,
   }
 }
 

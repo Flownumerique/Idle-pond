@@ -66,6 +66,12 @@ export type TermeDeProduction =
    * d'espèce à qui s'attribuer.
    */
   | 'debit_heros'
+  /**
+   * Multiplicateur global du niveau du héros — spec 2026-09-17 [D2] :
+   * `(1 + BONUS_PAR_NIVEAU_DU_HEROS) ^ (niveau − 1)`. C'est le quatrième achat
+   * en mana, et sa part de `D` est retirée au multiplicateur de profondeur.
+   */
+  | 'multiplicateur_heros'
 
 export type TermeDeCout =
   /**
@@ -86,6 +92,8 @@ export type TermeDeCout =
    * un levier ordinaire, que technique et succès peuvent viser.
    */
   | 'cout_deblocage'
+  /** Faire grandir le héros d'un niveau — spec 2026-09-17 [D3]. Fraction du coût du palier de même rang. */
+  | 'cout_croissance'
   | 'cout_temple'
   | 'cout_portail'
   | 'cout_reouverture'
@@ -108,12 +116,14 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'multiplicateur_profondeur',
   'multiplicateur_densite',
   'debit_heros',
+  'multiplicateur_heros',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
   'cout_niveau',
   'cout_deblocage',
+  'cout_croissance',
   'cout_temple',
   'cout_portail',
   'cout_reouverture',
@@ -364,6 +374,12 @@ export interface EtatCycle {
    * l'éclosion.
    */
   readonly acquisDeSejour: number
+  /**
+   * Le niveau du héros dans CETTE vie — spec 2026-09-17 [D1]. Part à 1, monte
+   * à l'achat, se reperd à l'éclosion : il ressort de l'œuf alevin. Ce qu'il
+   * EST (contenance, couches) persiste ; ce qu'il a bâti de lui-même régresse.
+   */
+  readonly niveauDuHeros: number
 }
 
 /** Ce que l'éclosion ne touche pas. Un être surévolué conserve ses acquis. */
@@ -489,8 +505,8 @@ export type SourceDeTerme =
   | { readonly quoi: 'profondeur'; readonly paliersOuverts: number }
   /** Source du multiplicateur de densité : la densité du séjour (le maximum sur les paliers ouverts). */
   | { readonly quoi: 'densite'; readonly densite: number }
-  /** Source de `debit_heros` : aucune donnée propre, il capte seul, toujours. */
-  | { readonly quoi: 'heros' }
+  /** Source de `debit_heros` et de `multiplicateur_heros` : son niveau dans cette vie. */
+  | { readonly quoi: 'heros'; readonly niveau: number }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

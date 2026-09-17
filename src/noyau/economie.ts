@@ -177,8 +177,8 @@ export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
  * est `productionDuHeros`, pas la valeur brute d'ici : §8.2 veut la
  * contrepartie d'un effet, pas son seul nom.
  */
-export function detailDuHeros(): readonly LigneDeCaptation[] {
-  return [{ terme: 'debit_heros', valeur: DEBIT_HEROS, source: { quoi: 'heros' } }]
+export function detailDuHeros(etat: EtatJeu): readonly LigneDeCaptation[] {
+  return [{ terme: 'debit_heros', valeur: DEBIT_HEROS, source: { quoi: 'heros', niveau: etat.cycle.niveauDuHeros } }]
 }
 
 /**

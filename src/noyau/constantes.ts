@@ -147,10 +147,14 @@ export const D_PRODUCTION_PAR_PALIER = G_COUT_PALIER / RAPPORT_G_SUR_D
  * deux tiers de paliers qui ne portent aucune espèce du bon côté du calibrage.
  */
 export function multiplicateurDePalier(): number {
-  return Math.pow(
+  const parPalier = Math.pow(
     Math.pow(D_PRODUCTION_PAR_PALIER, ESPECE_TOUS_LES_N_PALIERS) / DEBIT_RATIO_ESPECE,
     1 / ESPECE_TOUS_LES_N_PALIERS,
   )
+  // Spec 2026-09-17 [D3] : le héros grandit d'un niveau par palier sous le
+  // joueur optimal, et chaque niveau multiplie tout par (1 + b). Cette part
+  // sort du multiplicateur de profondeur pour que `D` par palier ne bouge pas.
+  return parPalier / (1 + BONUS_PAR_NIVEAU_DU_HEROS)
 }
 
 /**
@@ -211,6 +215,34 @@ export const DENSITE_DE_REFERENCE = 1
  * elle ne compose pas, donc elle ne peut pas surprendre à vingt et une espèces.
  */
 export const BONUS_GLOBAL_A_CENT_INDIVIDUS = 0.03
+
+/* ─── L'axe héros — spec 2026-09-17 §3.1 ────────────────────────────────────
+ * Le quatrième achat en mana. Le héros grandit pendant la vie ; son niveau se
+ * reperd à l'éclosion, comme les galeries. Ce qu'il apporte est un
+ * multiplicateur global nommé (`multiplicateur_heros`), et sa part de `D` est
+ * retirée au multiplicateur de profondeur — voir `multiplicateurDePalier`.
+ */
+
+/** Le héros sort de l'œuf au niveau 1. Pas une graine : le niveau 0 n'existe pas. */
+export const NIVEAU_DU_HEROS_AU_DEPART = 1
+
+/**
+ * [P] graine — ce que chaque niveau du héros ajoute à TOUTE la production.
+ * `(1 + b) ^ (niveau − 1)`. À 0,15, un niveau par palier vaut un sixième de la
+ * croissance par palier ; le reste vient de la profondeur. À mesurer.
+ */
+export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
+
+/**
+ * [P] graine — coût de croissance, en fraction du coût du palier de même rang :
+ * `coût(niveau n → n+1) = COUT_CREUSER_AU_PALIER_1 × ratio × g^(n − 1)`.
+ *
+ * Borné par le bas : le premier niveau (60 × 0,75 = 45) DOIT coûter plus que la
+ * charge de l'œuf (36), sinon le joueur naïf grandit avant de convaincre le
+ * vairon et le plancher de cadence tombe. `tests/heros.test.ts` le vérifie.
+ * Si le plancher tombe quand même, monter par pas de 0,25 et consigner.
+ */
+export const RATIO_COUT_DE_CROISSANCE = 0.75
 
 /* ─── Graines d'échelle économique ──────────────────────────────────────────
  * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle

@@ -71,7 +71,7 @@ export function Contenance({ etat }: { readonly etat: EtatJeu }) {
         <span className="font-chiffre tabular-nums">
           dont {plein ? '+0' : `+${montant(productionHeros)}`} / s
         </span>
-        <span>{sourceDuTerme(detailDuHeros()[0].source)}</span>
+        <span>{sourceDuTerme(detailDuHeros(etat)[0].source)}</span>
       </p>
 
       {estBloque(etat) ? (

@@ -38,7 +38,7 @@ describe('la production totale ne double-compte aucun multiplicateur global', ()
     // `productionTotaleParSeconde` utilise —, un multiplicateur global ajouté
     // demain sans y être répercuté fait diverger ce test, pas seulement la
     // production réelle.
-    const ligneDebitHeros = detailDuHeros().find((ligne) => ligne.terme === 'debit_heros')
+    const ligneDebitHeros = detailDuHeros(etat).find((ligne) => ligne.terme === 'debit_heros')
     if (ligneDebitHeros === undefined) throw new Error('le détail publié ne porte plus debit_heros')
     const termeDuHeros = new Decimal(ligneDebitHeros.valeur).mul(multiplicateursGlobaux(etat))
 
