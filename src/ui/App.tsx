@@ -11,6 +11,7 @@ import { useMagasin } from '../etat/magasin'
 import { creerBoucle } from '../adaptateurs/boucle'
 import { montant } from './format'
 import { Contenance } from './Contenance'
+import { Heros } from './Heros'
 import { Mare } from './Mare'
 import { Eclosion } from './Eclosion'
 import { Succes } from './Succes'
@@ -57,6 +58,7 @@ export function App() {
       <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
         <main className="space-y-4">
           <Contenance etat={etat} />
+          <Heros etat={etat} surCroissance={() => useMagasin.getState().grandir()} />
           {captation !== null ? (
             <Captation etat={etat} espece={captation} surFermeture={() => setCaptation(null)} />
           ) : null}
