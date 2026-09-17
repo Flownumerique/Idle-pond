@@ -104,6 +104,7 @@ export function etatInitial(
       especesAyantAtteintCent: [],
       manaAmbiant: new Decimal(0),
       heuresHorsLigneCreditees: 0,
+      benedictions: {},
     },
     telemetrie: {
       cycles: [],

@@ -116,7 +116,7 @@ describe('persistance', () => {
       registre: 'directives',
     })
     expect(Object.keys(reprise.permanent.succes)).toHaveLength(2)
-    expect('benedictions' in reprise.permanent).toBe(false)
+    expect(reprise.permanent.benedictions).toEqual({})
     expect('succesDebloques' in reprise.permanent).toBe(false)
   })
 
@@ -179,11 +179,11 @@ describe('migration 4 → 5 : le modèle à population meurt sans emporter la sa
     expect(migre.cycle).toHaveProperty('especes')
   })
 
-  it('la save porte la version courante après migration — 4 → 5, puis 5 → 6', () => {
+  it('la save porte la version courante après migration — 4 → 5, 5 → 6, puis 6 → 7', () => {
     // Écrit `5` jusqu'à la tâche 12 : la chaîne s'est allongée d'un maillon
     // (retrait de la mesure de redescente), et une save v4 le traverse aussi.
     const migre = deserialiser({ versionSave: 4, contenu: {} } as unknown as SaveSerialisee, etatInitial(0))
-    expect(migre.versionSave).toBe(6)
+    expect(migre.versionSave).toBe(7)
   })
 
   it('ce que le joueur perd et ce qu’il garde : le cycle n’est qu’une éclosion de plus, la progression permanente survit intacte', () => {
@@ -268,14 +268,14 @@ describe('migration 5 → 6 : la mesure de redescente meurt sans emporter la sav
   })
 
   it('une save v5 se relit en version 6, sa télémétrie vivante intacte, la mesure morte plus lue', () => {
-    expect(VERSION_SAVE).toBe(6)
+    expect(VERSION_SAVE).toBe(7)
     const v5 = {
       versionSave: 5,
       contenu: { telemetrie: telemetrieV5(), permanent: { nombreEclosions: 3 } },
     } as unknown as SaveSerialisee
     const relu = deserialiser(v5, etatInitial(0))
 
-    expect(relu.versionSave).toBe(6)
+    expect(relu.versionSave).toBe(7)
     expect(relu.permanent.nombreEclosions).toBe(3)
     expect(relu.telemetrie.intervallesEntreSucces).toEqual([60, 90])
     expect(relu.telemetrie.secondesDepuisDernierSucces).toBe(5)
@@ -288,5 +288,32 @@ describe('migration 5 → 6 : la mesure de redescente meurt sans emporter la sav
     // Le seul lecteur qu'avait le champ ne le lit plus : le relevé de cycle
     // n'en dérive plus aucune fraction.
     expect(relever(relu).cycles[0]).not.toHaveProperty('fractionEnRedescente')
+  })
+})
+
+describe('migration 6 → 7 : le héros a un niveau, la Foi a un débouché', () => {
+  it('une save v6 se réveille au niveau 1, sans bénédiction, et ne perd rien', () => {
+    const v6 = {
+      versionSave: 6,
+      contenu: {
+        cycle: { manaCourant: '500', paliersOuverts: 4, especes: { vairon: { debloquee: true, niveau: 12 } } },
+        permanent: { nombreEclosions: 2, foi: '40' },
+      },
+    } as unknown as SaveSerialisee
+    const relu = deserialiser(v6, etatInitial(1))
+    expect(relu.cycle.niveauDuHeros).toBe(1)
+    expect(relu.cycle.especes.vairon.niveau).toBe(12)
+    expect(relu.permanent.foi.eq(40)).toBe(true)
+    expect(relu.permanent.benedictions).toEqual({})
+  })
+
+  it('la migration écrit les deux champs neufs et ne supprime rien', () => {
+    const migre = MIGRATIONS[6]({
+      cycle: { manaCourant: '1' },
+      permanent: { foi: '2', unChampInconnu: true },
+    }) as Record<string, Record<string, unknown>>
+    expect(migre.cycle).toHaveProperty('niveauDuHeros', 1)
+    expect(migre.permanent).toHaveProperty('benedictions')
+    expect(migre.permanent).toHaveProperty('unChampInconnu', true)
   })
 })

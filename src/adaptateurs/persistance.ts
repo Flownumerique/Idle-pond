@@ -212,6 +212,27 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
    * Rien n'est à reconstruire — aucun champ neuf n'entre dans l'état.
    */
   5: (contenu) => contenu,
+
+  /**
+   * 6 → 7 — l'axe héros et les bénédictions (spec 2026-09-17).
+   *
+   * Deux champs NEUFS, aucun retiré : `cycle.niveauDuHeros` part à 1 — une
+   * save en cours de vie reprend avec un héros qui n'a pas encore grandi, ce
+   * qui est vrai — et `permanent.benedictions` part vide. Le spread de
+   * `deserialiser` les comblerait depuis le repli, mais une sémantique nouvelle
+   * exige son incrément de version (noyau v1.0 §8.3), et l'écrire ici rend
+   * l'intention lisible dans la chaîne.
+   */
+  6: (contenu) => {
+    const brut = (contenu ?? {}) as Record<string, unknown>
+    const cycle = (brut.cycle ?? {}) as Record<string, unknown>
+    const permanent = (brut.permanent ?? {}) as Record<string, unknown>
+    return {
+      ...brut,
+      cycle: { ...cycle, niveauDuHeros: 1 },
+      permanent: { ...permanent, benedictions: {} },
+    }
+  },
 }
 
 export function migrer(save: SaveSerialisee): unknown {

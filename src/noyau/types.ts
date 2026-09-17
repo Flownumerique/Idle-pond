@@ -29,6 +29,7 @@ export type EspeceId = string
 export type TypeManaId = string
 export type NoeudTechniqueId = string
 export type SuccesId = string
+export type BenedictionId = string
 
 /* ─── Termes de formule (§7.5 règle 3) ──────────────────────────────────────
  * « Aucun effet chiffré flottant. Un nœud cible toujours un TermeDeFormule
@@ -415,6 +416,12 @@ export interface EtatPermanent {
   readonly manaAmbiant: Decimal
   /** Compteur Entretien : heures effectivement créditées, jamais écoulées. */
   readonly heuresHorsLigneCreditees: number
+  /**
+   * Rang acheté de chaque bénédiction — noyau v1.0 §4, spec 2026-09-17 [D5].
+   * Permanent : c'est l'écran d'améliorations du jeu. Vide tant que B1 n'a pas
+   * rempli le registre.
+   */
+  readonly benedictions: Readonly<Record<BenedictionId, number>>
 }
 
 export interface MesureDeCycle {
