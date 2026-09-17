@@ -20,6 +20,7 @@ import type {
   TermeDeCout,
 } from './types'
 import {
+  BONUS_PAR_NIVEAU_DU_HEROS,
   COUT_CREUSER_AU_PALIER_1,
   COUT_DEBLOCAGE_RATIO,
   COUT_NIVEAU_PAR_DEBIT,
@@ -27,6 +28,7 @@ import {
   DEBIT_HEROS,
   ECHELLE_DE_PRODUCTION,
   NOMBRE_DE_PALIERS,
+  RATIO_COUT_DE_CROISSANCE,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
 } from './constantes'
@@ -98,6 +100,18 @@ export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
 }
 
 /**
+ * Multiplicateur global du niveau du héros — spec 2026-09-17 [D2].
+ *
+ * `(1 + b) ^ (niveau − 1)` : au niveau 1 il vaut exactement 1, et un cycle
+ * dont le héros n'a jamais grandi produit ce qu'il produisait avant ce terme.
+ * Sa part de `D` est retirée au multiplicateur de profondeur, pas ajoutée
+ * par-dessus : voir `multiplicateurDePalier` dans `constantes.ts`.
+ */
+export function multiplicateurDuHeros(etat: EtatJeu): number {
+  return Math.pow(1 + BONUS_PAR_NIVEAU_DU_HEROS, Math.max(0, etat.cycle.niveauDuHeros - 1))
+}
+
+/**
  * Tous les multiplicateurs globaux de la production, un seul produit — la
  * source commune à chaque espèce, au total, ET à la politique du simulateur
  * (`simulateur.ts`). Un multiplicateur ajouté ici vaut pour les trois sans
@@ -113,6 +127,7 @@ export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
 export function multiplicateursGlobaux(etat: EtatJeu): Decimal {
   return multiplicateurDeProfondeur(etat)
     .mul(multiplicateurDensite(densiteDuSejour(etat)))
+    .mul(multiplicateurDuHeros(etat))
     .mul(multiplicateurDesDrapeaux(etat))
     .mul(ECHELLE_DE_PRODUCTION)
 }
@@ -140,7 +155,7 @@ export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
  * `src/ui/Contenance.tsx` affiche en regard du total.
  */
 export function productionDuHeros(etat: EtatJeu): Decimal {
-  return new Decimal(DEBIT_HEROS).mul(multiplicateursGlobaux(etat))
+  return new Decimal(DEBIT_HEROS).mul(etat.cycle.niveauDuHeros).mul(multiplicateursGlobaux(etat))
 }
 
 /**
@@ -178,7 +193,11 @@ export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
  * contrepartie d'un effet, pas son seul nom.
  */
 export function detailDuHeros(etat: EtatJeu): readonly LigneDeCaptation[] {
-  return [{ terme: 'debit_heros', valeur: DEBIT_HEROS, source: { quoi: 'heros', niveau: etat.cycle.niveauDuHeros } }]
+  const source = { quoi: 'heros', niveau: etat.cycle.niveauDuHeros } as const
+  return [
+    { terme: 'debit_heros', valeur: DEBIT_HEROS, source },
+    { terme: 'multiplicateur_heros', valeur: multiplicateurDuHeros(etat), source },
+  ]
 }
 
 /**
@@ -214,6 +233,11 @@ export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly Ligne
       terme: 'multiplicateur_densite',
       valeur: multiplicateurDensite(densite),
       source: { quoi: 'densite', densite },
+    },
+    {
+      terme: 'multiplicateur_heros',
+      valeur: multiplicateurDuHeros(etat),
+      source: { quoi: 'heros', niveau: etat.cycle.niveauDuHeros },
     },
   ]
 }
@@ -301,6 +325,19 @@ export function coutDeNiveau(etat: EtatJeu, espece: Espece, niveau: number): Dec
     .mul(COUT_NIVEAU_PAR_DEBIT)
     .mul(puissanceDuCoutDeNiveau(Math.max(0, niveau)))
     .mul(facteurDeCout(etat, 'cout_niveau'))
+}
+
+/**
+ * Ce que coûte de faire grandir le héros de `niveau` à `niveau + 1` — spec
+ * 2026-09-17 [D3] : une fraction du coût du palier de même rang, donc `g^(n−1)`.
+ * Le joueur optimal en paie à peu près un par palier, et c'est ce qui autorise
+ * le rebudget de `D` dans `multiplicateurDePalier`.
+ */
+export function coutDeCroissance(etat: EtatJeu, niveau: number): Decimal {
+  return puissanceDeG(Math.max(0, niveau - 1))
+    .mul(COUT_CREUSER_AU_PALIER_1)
+    .mul(RATIO_COUT_DE_CROISSANCE)
+    .mul(facteurDeCout(etat, 'cout_croissance'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
