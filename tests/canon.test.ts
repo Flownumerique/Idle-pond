@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tests de canon — les phrases qui, si elles sont violées, invalident le build.
  *
  * Ils portent sur des registres aujourd'hui vides. C'est délibéré : le §8 note
@@ -74,12 +74,12 @@ function fichiersTs(racine: string): string[] {
   })
 }
 
-describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d’autre ne monte la production", () => {
+describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d'autre ne monte la production", () => {
   /**
    * RETOURNÉ une seconde fois, le 2026-09-17. Le 2026-09-08 ce bloc avait
    * supprimé les bénédictions au nom du GDD §4.2 ; le soir même la préséance
    * est passée au noyau v1.0 pour la mécanique (`docs/PRESEANCE.md`), et le
-   * noyau §4 fait des bénédictions « l’écran d’améliorations du jeu ». Le code
+   * noyau §4 fait des bénédictions « l'écran d'améliorations du jeu ». Le code
    * avait gardé la suppression. Spec 2026-09-17 [D8].
    *
    * Ce qui reste vrai, et vérifié : la technique et les succès ne montent
