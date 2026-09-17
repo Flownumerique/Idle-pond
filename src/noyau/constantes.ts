@@ -259,12 +259,10 @@ export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
  * |       |             | (≈101,43), donc le joueur achète ce   |
  * |       |             | dernier directement, sans détour      |
  *
- * Retenu à 1,75 — première valeur qui ferme le trou, sans dépasser. Note
- * ouverte : le second test de ce fichier (`it.fails` PARQUÉ, silence de fin)
- * reste flipped à cette valeur (silence mesuré 43 s, loin des >300 s attendus)
- * et n'a pas bougé dans le bon sens sur toute la plage testée — voir le
- * rapport de la tâche A5 pour la mesure complète et l'état BLOCKED qui en
- * découle.
+ * Retenu à 1,75 — première valeur qui ferme le trou, sans dépasser. Le second
+ * test de ce fichier (`it.fails` PARQUÉ, silence de fin) reste flipped à
+ * cette valeur, et c'est attendu et hors scope de ce plan — voir ruling du
+ * contrôleur, tâche A5 ; il ne se ferme qu'à une future tâche 13, hors GDD.
  */
 export const RATIO_COUT_DE_CROISSANCE = 1.75
 
