@@ -19,6 +19,11 @@ import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
 
+/** Recopiée de `tests/benedictions.test.ts` : pas encore de module d'aides de test partagé. */
+function benie(etat: EtatJeu, rangs: Record<string, number>): EtatJeu {
+  return { ...etat, permanent: { ...etat.permanent, benedictions: { ...etat.permanent.benedictions, ...rangs } } }
+}
+
 /**
  * Un état où les TROIS achats sont ouverts en même temps, choisi pour que
  * chaque approximation connue échoue : densités inégales par palier, donc
@@ -27,9 +32,11 @@ import { etatDeTravail } from './etat-de-travail'
  * drapeau suivant vaut `0,03 / 1,03` et non `0,03` ; une espèce à 99, non
  * drapée, pour que ce drapeau soit en jeu ; et une espèce ouverte non
  * débloquée, sans quoi la branche « débloquer » n'est jamais prise.
+ *
+ * `base` par défaut `etatDeTravail()`, mais accepte tout état déjà préparé
+ * (par exemple béni) : seule la forme (paliers ouverts, espèces) compte ici.
  */
-function etatAuxTroisAchats(): { etat: EtatJeu; aCent: Espece; aDebloquer: Espece } {
-  const base = etatDeTravail()
+function etatAuxTroisAchats(base: EtatJeu = etatDeTravail()): { etat: EtatJeu; aCent: Espece; aDebloquer: Espece } {
   const ouvertes = ESPECES.filter((e) => e.palier < base.cycle.paliersOuverts)
   expect(ouvertes.length).toBeGreaterThanOrEqual(3)
   const [, aCent, aDebloquer] = ouvertes
@@ -235,24 +242,40 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
     // densité et biaisé toute mesure, en silence. Ici le gain analytique est
     // confronté au noyau lui-même — la production APRÈS l'achat, moins la
     // production avant —, pour les quatre achats.
-    const { etat, aCent } = etatAuxTroisAchats()
+    //
+    // Un second passage, béni, referme la même mesure côté Tâche B2 : le
+    // simulateur doit lire l'assiette BÉNIE (`debitBeni` × multiplicateur de
+    // bénédiction), pas la seule assiette de base — sans quoi ses décisions
+    // d'achat sous-estimeraient toute espèce bénie.
+    const passages = [
+      { etiquette: 'sans bénédiction', base: etatDeTravail() },
+      {
+        etiquette: 'avec bénédiction',
+        base: benie(etatDeTravail(), { 'benediction-globale': 2, 'benediction-vairon': 1 }),
+      },
+    ]
+    for (const { etiquette, base } of passages) {
+      const { etat, aCent } = etatAuxTroisAchats(base)
 
-    const appliquer = (achat: Achat): EtatJeu => {
-      if (achat.type === 'creuser') return creuser(etat)
-      if (achat.type === 'grandir') return grandir(etat)
-      if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
-      return ameliorer(etat, achat.espece.id)
-    }
-    const avant = productionTotaleParSeconde(etat)
-    const achats = achatsDisponibles(etat)
-    expect(new Set(achats.map((a) => a.type))).toEqual(new Set(['creuser', 'grandir', 'debloquer', 'niveau']))
-    expect(achats.some((a) => a.type === 'niveau' && a.espece.id === aCent.id)).toBe(true)
-    for (const achat of achats) {
-      const apres = appliquer(achat)
-      expect(apres, `${achat.type} n’a pas été payé`).not.toBe(etat)
-      const reel = productionTotaleParSeconde(apres).sub(avant)
-      const libelle = achat.type === 'creuser' || achat.type === 'grandir' ? achat.type : `${achat.type} ${achat.espece.id}`
-      expect(achat.gain.div(reel).toNumber(), libelle).toBeCloseTo(1, 9)
+      const appliquer = (achat: Achat): EtatJeu => {
+        if (achat.type === 'creuser') return creuser(etat)
+        if (achat.type === 'grandir') return grandir(etat)
+        if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
+        return ameliorer(etat, achat.espece.id)
+      }
+      const avant = productionTotaleParSeconde(etat)
+      const achats = achatsDisponibles(etat)
+      expect(new Set(achats.map((a) => a.type)), etiquette).toEqual(
+        new Set(['creuser', 'grandir', 'debloquer', 'niveau']),
+      )
+      expect(achats.some((a) => a.type === 'niveau' && a.espece.id === aCent.id), etiquette).toBe(true)
+      for (const achat of achats) {
+        const apres = appliquer(achat)
+        expect(apres, `${etiquette} : ${achat.type} n’a pas été payé`).not.toBe(etat)
+        const reel = productionTotaleParSeconde(apres).sub(avant)
+        const libelle = achat.type === 'creuser' || achat.type === 'grandir' ? achat.type : `${achat.type} ${achat.espece.id}`
+        expect(achat.gain.div(reel).toNumber(), `${etiquette} : ${libelle}`).toBeCloseTo(1, 9)
+      }
     }
   })
 

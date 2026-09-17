@@ -19,6 +19,7 @@ import {
 } from '../src/noyau/constantes'
 import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
+import { comparerAToleranceFlottante } from './outils'
 import {
   coutDeBenediction,
   coutDeNiveau,
@@ -55,7 +56,7 @@ describe('B1 — le registre', () => {
   })
 })
 
-describe("B2 — ce qu'une bénédiction vaut", () => {
+describe('B2 — ce qu’une bénédiction vaut', () => {
   const vairon = ESPECES[0]
 
   it('sans bénédiction : rang 0, débit béni = débit de base, multiplicateur 1', () => {
@@ -79,7 +80,7 @@ describe("B2 — ce qu'une bénédiction vaut", () => {
     expect(multiplicateurDeBenediction(etat, ESPECES[1])).toBe(1)
   })
 
-  it("la production de l'espèce lit les deux", () => {
+  it('la production de l’espèce lit les deux', () => {
     const nue = etatDeTravail()
     const etat = benie(nue, { [BENEDICTION_GLOBALE_ID]: 1, [benedictionCibleeDe(vairon.id).id]: 1 })
     const rapport = productionDeLEspece(etat, vairon).div(productionDeLEspece(nue, vairon)).toNumber()
@@ -90,7 +91,7 @@ describe("B2 — ce qu'une bénédiction vaut", () => {
     expect(rapport).toBeCloseTo(attendu, 9)
   })
 
-  it("bénir ne renchérit pas le niveau : le coût suit le débit NON béni", () => {
+  it('bénir ne renchérit pas le niveau : le coût suit le débit NON béni', () => {
     const nue = etatDeTravail()
     const etat = benie(nue, { [BENEDICTION_GLOBALE_ID]: 5 })
     expect(coutDeNiveau(etat, vairon, 7).eq(coutDeNiveau(nue, vairon, 7))).toBe(true)
@@ -114,9 +115,21 @@ describe("B2 — ce qu'une bénédiction vaut", () => {
     const lignes = detailDeCaptation(etat, vairon)
     const globale = lignes.find((l) => l.terme === 'benediction_globale')
     const ciblee = lignes.find((l) => l.terme === 'multiplicateur_benediction')
-    expect(globale?.valeur).toBeCloseTo(BENEDICTION_GLOBALE_PAR_RANG * 2, 12)
+    const attenduRatioGlobale = debitBeni(etat, vairon).div(debitBaseDeLEspece(vairon)).toNumber()
+    expect(globale?.valeur).toBeCloseTo(attenduRatioGlobale, 9)
     expect(globale?.source).toEqual({ quoi: 'benediction', rang: 2 })
     expect(ciblee?.valeur).toBeCloseTo(1 + BENEDICTION_CIBLEE_PAR_RANG, 12)
     expect(ciblee?.source).toEqual({ quoi: 'benediction', rang: 1 })
+  })
+
+  it('le produit des lignes de détail reste exact quand la globale est active', () => {
+    // Régression : `benediction_globale` comptait deux fois son effet (une
+    // fois figé dans `taux_base`, une fois comme ligne additive) — le produit
+    // valait 0.15 au lieu de 1.00 quand une globale était active. Aucun test,
+    // ni ici ni dans `captation.test.ts`, n'exerçait alors cette combinaison.
+    const etat = benie(etatDeTravail(), { [BENEDICTION_GLOBALE_ID]: 3 })
+    const lignes = detailDeCaptation(etat, vairon)
+    const produit = lignes.reduce((acc, ligne) => acc.mul(ligne.valeur), new Decimal(1))
+    comparerAToleranceFlottante(produit, productionDeLEspece(etat, vairon))
   })
 })

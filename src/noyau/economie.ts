@@ -250,29 +250,25 @@ export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly Ligne
     { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
     {
       terme: 'taux_base',
-      valeur: debitBeni(etat, espece).toNumber(),
+      valeur: debitBaseDeLEspece(espece).toNumber(),
       source: { quoi: 'palier', palier: espece.palier },
     },
-  ]
-  if (beniRang > 0) {
-    lignes.push({
+    {
       terme: 'benediction_globale',
-      valeur: BENEDICTION_GLOBALE_PAR_RANG * beniRang,
+      valeur: debitBeni(etat, espece).div(debitBaseDeLEspece(espece)).toNumber(),
       source: { quoi: 'benediction', rang: beniRang },
-    })
-  }
+    },
+  ]
   lignes.push({
     terme: 'multiplicateur_jalon',
     valeur: multiplicateurDeSeuil(niveau),
     source: { quoi: 'niveau', niveau },
   })
-  if (beniCibleeRang > 0) {
-    lignes.push({
-      terme: 'multiplicateur_benediction',
-      valeur: multiplicateurDeBenediction(etat, espece),
-      source: { quoi: 'benediction', rang: beniCibleeRang },
-    })
-  }
+  lignes.push({
+    terme: 'multiplicateur_benediction',
+    valeur: multiplicateurDeBenediction(etat, espece),
+    source: { quoi: 'benediction', rang: beniCibleeRang },
+  })
   lignes.push(
     {
       terme: 'multiplicateur_drapeau',
