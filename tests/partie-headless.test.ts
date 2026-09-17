@@ -18,8 +18,15 @@
  */
 import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
-import { etatInitial, tick, creuser, debloquer, ameliorer, eclore } from '../src/noyau/noyau'
-import { contenance, coutDeDescente, coutDeDeblocage, coutDeNiveau, toutEstCreuse } from '../src/noyau/economie'
+import { etatInitial, tick, creuser, debloquer, ameliorer, eclore, grandir } from '../src/noyau/noyau'
+import {
+  contenance,
+  coutDeCroissance,
+  coutDeDescente,
+  coutDeDeblocage,
+  coutDeNiveau,
+  toutEstCreuse,
+} from '../src/noyau/economie'
 import { doitEclore, POLITIQUE_PAR_DEFAUT } from '../src/simulateur/simulateur'
 import { ESPECES } from '../src/donnees/especes'
 import type { EtatJeu } from '../src/noyau/types'
@@ -45,6 +52,10 @@ function optionsPayables(etat: EtatJeu): readonly OptionAchat[] {
     if (cout.lte(contenance(etat)) && etat.cycle.manaCourant.gte(cout)) {
       options.push({ cout, appliquer: creuser })
     }
+  }
+  {
+    const cout = coutDeCroissance(etat, etat.cycle.niveauDuHeros)
+    if (etat.cycle.manaCourant.gte(cout)) options.push({ cout, appliquer: grandir })
   }
   for (const espece of ESPECES) {
     if (espece.palier >= etat.cycle.paliersOuverts) continue

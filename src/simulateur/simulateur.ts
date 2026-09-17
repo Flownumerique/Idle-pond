@@ -27,10 +27,12 @@ import {
   eclore,
   estBloque,
   etatInitial,
+  grandir,
   productionTotaleParSeconde,
   tick,
 } from '../noyau/noyau'
 import {
+  coutDeCroissance,
   coutDeDescente,
   coutDeDeblocage,
   coutDeNiveau,
@@ -39,7 +41,13 @@ import {
   multiplicateurDesDrapeaux,
   multiplicateursGlobaux,
 } from '../noyau/economie'
-import { ACQUIS_MAX, BONUS_GLOBAL_A_CENT_INDIVIDUS, SEUIL_DU_DRAPEAU_PERMANENT } from '../noyau/constantes'
+import {
+  ACQUIS_MAX,
+  BONUS_GLOBAL_A_CENT_INDIVIDUS,
+  BONUS_PAR_NIVEAU_DU_HEROS,
+  DEBIT_HEROS,
+  SEUIL_DU_DRAPEAU_PERMANENT,
+} from '../noyau/constantes'
 import { ESPECES } from '../donnees/especes'
 import { relever, type Releve } from '../adaptateurs/telemetrie'
 
@@ -88,9 +96,10 @@ export const POLITIQUE_PAR_DEFAUT: Politique = {
   dureeMaxParCycleSecondes: 4000 * 3600,
 }
 
-/** Les trois achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute. */
+/** Les quatre achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute. */
 export type Achat =
   | { readonly type: 'creuser'; readonly cout: Decimal; readonly gain: Decimal }
+  | { readonly type: 'grandir'; readonly cout: Decimal; readonly gain: Decimal }
   | { readonly type: 'debloquer'; readonly espece: Espece; readonly cout: Decimal; readonly gain: Decimal }
   | { readonly type: 'niveau'; readonly espece: Espece; readonly cout: Decimal; readonly gain: Decimal }
 
@@ -159,6 +168,23 @@ export function achatsDisponibles(etat: EtatJeu, budget?: Decimal): readonly Ach
     }
   }
 
+  // Grandir — spec 2026-09-17 [D2]. Après l'achat, TOUTE la production est
+  // multipliée par (1 + b), et le débit propre du héros passe de n à n + 1 :
+  //   P' = (S + D·(n+1)) · M · (1 + b)  avec  P = (S + D·n) · M
+  //   P' − P = P·b + D·M·(1 + b)
+  // où M est `multiplicateursGlobaux` de l'état courant (héros compris).
+  {
+    const cout = coutDeCroissance(etat, etat.cycle.niveauDuHeros)
+    if (!horsDePortee(cout)) {
+      const propre = new Decimal(DEBIT_HEROS).mul(multiplicateurs()).mul(1 + BONUS_PAR_NIVEAU_DU_HEROS)
+      achats.push({
+        type: 'grandir',
+        cout,
+        gain: productionTotale().mul(BONUS_PAR_NIVEAU_DU_HEROS).add(propre),
+      })
+    }
+  }
+
   for (const espece of ESPECES) {
     if (espece.palier >= etat.cycle.paliersOuverts) continue
     const vivante = etat.cycle.especes[espece.id]
@@ -213,6 +239,7 @@ function meilleurAchat(etat: EtatJeu): Achat | null {
 
 function appliquer(etat: EtatJeu, achat: Achat): EtatJeu {
   if (achat.type === 'creuser') return creuser(etat)
+  if (achat.type === 'grandir') return grandir(etat)
   if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
   return ameliorer(etat, achat.espece.id)
 }

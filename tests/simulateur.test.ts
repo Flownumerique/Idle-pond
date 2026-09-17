@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest'
 import type { Espece, EtatJeu } from '../src/noyau/types'
 import { ACQUIS_MAX, CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { achatsDisponibles, POLITIQUE_PAR_DEFAUT, simuler, type Achat } from '../src/simulateur/simulateur'
-import { ameliorer, creuser, debloquer, estBloque, productionTotaleParSeconde } from '../src/noyau/noyau'
+import { ameliorer, creuser, debloquer, estBloque, grandir, productionTotaleParSeconde } from '../src/noyau/noyau'
 import { densiteDuSejour } from '../src/noyau/densite'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { ESPECES } from '../src/donnees/especes'
@@ -234,25 +234,48 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
     // de multiplicateurs recopiée à la main dans le simulateur a oublié la
     // densité et biaisé toute mesure, en silence. Ici le gain analytique est
     // confronté au noyau lui-même — la production APRÈS l'achat, moins la
-    // production avant —, pour les trois achats.
+    // production avant —, pour les quatre achats.
     const { etat, aCent } = etatAuxTroisAchats()
 
     const appliquer = (achat: Achat): EtatJeu => {
       if (achat.type === 'creuser') return creuser(etat)
+      if (achat.type === 'grandir') return grandir(etat)
       if (achat.type === 'debloquer') return debloquer(etat, achat.espece.id)
       return ameliorer(etat, achat.espece.id)
     }
     const avant = productionTotaleParSeconde(etat)
     const achats = achatsDisponibles(etat)
-    expect(new Set(achats.map((a) => a.type))).toEqual(new Set(['creuser', 'debloquer', 'niveau']))
+    expect(new Set(achats.map((a) => a.type))).toEqual(new Set(['creuser', 'grandir', 'debloquer', 'niveau']))
     expect(achats.some((a) => a.type === 'niveau' && a.espece.id === aCent.id)).toBe(true)
     for (const achat of achats) {
       const apres = appliquer(achat)
       expect(apres, `${achat.type} n’a pas été payé`).not.toBe(etat)
       const reel = productionTotaleParSeconde(apres).sub(avant)
-      const libelle = achat.type === 'creuser' ? 'creuser' : `${achat.type} ${achat.espece.id}`
+      const libelle = achat.type === 'creuser' || achat.type === 'grandir' ? achat.type : `${achat.type} ${achat.espece.id}`
       expect(achat.gain.div(reel).toNumber(), libelle).toBeCloseTo(1, 9)
     }
+  })
+
+  it('le joueur optimal fait grandir le héros, à peu près une fois par palier', () => {
+    // Spec [D3] : le coût suit g comme le palier, donc le rapport coût/gain des
+    // deux achats reste comparable tout le long. On ne demande pas l'égalité —
+    // le gain d'un palier vaut (m_p − 1), celui d'un niveau vaut b — mais un
+    // héros laissé au niveau 1 signifierait que l'achat n'est jamais rentable,
+    // et le rebudget de D serait faux.
+    //
+    // Le niveau du héros se reperd à chaque éclosion, mais `paliersOuverts`
+    // croît cycle après cycle (10 → 15 → 19 sur trois cycles, mesuré) : le pic
+    // de `niveauMax` sur plusieurs cycles est donc atteint dans le DERNIER
+    // cycle simulé, jamais dans le premier. Comparer contre le premier
+    // sous-estimait la référence et rendait le test infaisable — corrigé,
+    // task A5, sur ruling du contrôleur.
+    let niveauMax = 0
+    const resultat = simuler(3, undefined, 1, (etat) => {
+      niveauMax = Math.max(niveauMax, etat.cycle.niveauDuHeros)
+    })
+    const paliersDuDernierCycle = resultat.cycles[resultat.cycles.length - 1].paliersOuverts
+    expect(niveauMax).toBeGreaterThanOrEqual(Math.floor(paliersDuDernierCycle / 2))
+    expect(niveauMax).toBeLessThanOrEqual(paliersDuDernierCycle + 2)
   })
 
   it('la saturation ne gèle pas la partie (amendement v1.3)', () => {
@@ -343,9 +366,10 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
     // de diverger en silence de la liste complète : la famille de défaut qui a
     // mordu la tâche 9. Ce test attache l'une à l'autre.
     const { etat } = etatAuxTroisAchats()
-    const libelle = (achat: Achat) => (achat.type === 'creuser' ? 'creuser' : `${achat.type} ${achat.espece.id}`)
+    const libelle = (achat: Achat) =>
+      achat.type === 'creuser' || achat.type === 'grandir' ? achat.type : `${achat.type} ${achat.espece.id}`
     const complets = achatsDisponibles(etat)
-    expect(new Set(complets.map((a) => a.type))).toEqual(new Set(['creuser', 'debloquer', 'niveau']))
+    expect(new Set(complets.map((a) => a.type))).toEqual(new Set(['creuser', 'grandir', 'debloquer', 'niveau']))
 
     // Chaque coût de la liste sert à son tour de budget : toutes les coupes
     // sont éprouvées, et chacune sur sa propre valeur — un budget qui vaut

@@ -8,9 +8,16 @@
  */
 import type { EtatJeu, SuccesId } from '../src/noyau/types'
 import { FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES } from '../src/noyau/constantes'
-import { ameliorer, creuser, debloquer, etatInitial, tickDetaille } from '../src/noyau/noyau'
+import { ameliorer, creuser, debloquer, etatInitial, grandir, tickDetaille } from '../src/noyau/noyau'
 import { enregistrerIntervalleDeSucces } from '../src/noyau/succes'
-import { contenance, coutDeDescente, coutDeDeblocage, coutDeNiveau, toutEstCreuse } from '../src/noyau/economie'
+import {
+  contenance,
+  coutDeCroissance,
+  coutDeDescente,
+  coutDeDeblocage,
+  coutDeNiveau,
+  toutEstCreuse,
+} from '../src/noyau/economie'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { ESPECES } from '../src/donnees/especes'
 
@@ -29,6 +36,7 @@ function depenser(etat: EtatJeu): EtatJeu {
       if (meilleure === null || cout.lt(meilleure.cout)) meilleure = { cout, appliquer }
     }
     if (!toutEstCreuse(courant)) retenir(coutDeDescente(courant, courant.cycle.paliersOuverts), creuser)
+    retenir(coutDeCroissance(courant, courant.cycle.niveauDuHeros), grandir)
     for (const espece of ESPECES) {
       if (espece.palier >= courant.cycle.paliersOuverts) continue
       const vivante = courant.cycle.especes[espece.id]

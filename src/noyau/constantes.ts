@@ -241,8 +241,32 @@ export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
  * charge de l'œuf (36), sinon le joueur naïf grandit avant de convaincre le
  * vairon et le plancher de cadence tombe. `tests/heros.test.ts` le vérifie.
  * Si le plancher tombe quand même, monter par pas de 0,25 et consigner.
+ *
+ * MESURÉ — tâche A5, 2026-09-17. Après avoir câblé `grandir` dans le joueur
+ * headless (`tests/joueur.ts`), le trou du plancher de cadence s'est déplacé :
+ * le premier niveau du héros (75 de mana à 1,25) devenait le candidat le moins
+ * cher, et le joueur s'y détournait avant `acte-deuxieme-niveau`, allongeant le
+ * trou au lieu de le fermer — contre-intuitif, mais mesuré :
+ *
+ * | ratio | coût niv. 1 | trou mesuré                          |
+ * |-------|-------------|---------------------------------------|
+ * | 0,75  | 45          | 5,9 min avant acte-premier-creusement |
+ * | 1,00  | 60          | 5,6 min avant acte-deuxieme-niveau    |
+ * | 1,25  | 75          | 6,2 min avant acte-deuxieme-niveau    |
+ * | 1,50  | 90          | 6,8 min avant acte-deuxieme-niveau    |
+ * | 1,75  | 105         | AUCUN — le niveau 1 du héros (105)    |
+ * |       |             | dépasse alors le niveau 2 du vairon   |
+ * |       |             | (≈101,43), donc le joueur achète ce   |
+ * |       |             | dernier directement, sans détour      |
+ *
+ * Retenu à 1,75 — première valeur qui ferme le trou, sans dépasser. Note
+ * ouverte : le second test de ce fichier (`it.fails` PARQUÉ, silence de fin)
+ * reste flipped à cette valeur (silence mesuré 43 s, loin des >300 s attendus)
+ * et n'a pas bougé dans le bon sens sur toute la plage testée — voir le
+ * rapport de la tâche A5 pour la mesure complète et l'état BLOCKED qui en
+ * découle.
  */
-export const RATIO_COUT_DE_CROISSANCE = 0.75
+export const RATIO_COUT_DE_CROISSANCE = 1.75
 
 /* ─── Graines d'échelle économique ──────────────────────────────────────────
  * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle
