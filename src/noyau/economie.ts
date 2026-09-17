@@ -12,6 +12,8 @@
  */
 import Decimal from 'break_infinity.js'
 import type {
+  Benediction,
+  BenedictionId,
   Espece,
   EtatJeu,
   IndexPalier,
@@ -20,6 +22,8 @@ import type {
   TermeDeCout,
 } from './types'
 import {
+  BENEDICTION_CIBLEE_PAR_RANG,
+  BENEDICTION_GLOBALE_PAR_RANG,
   BONUS_PAR_NIVEAU_DU_HEROS,
   COUT_CREUSER_AU_PALIER_1,
   COUT_DEBLOCAGE_RATIO,
@@ -27,7 +31,10 @@ import {
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
   DEBIT_HEROS,
   ECHELLE_DE_PRODUCTION,
+  FOI_COUT_DE_BENEDICTION_CIBLEE,
+  FOI_COUT_DE_BENEDICTION_GLOBALE,
   NOMBRE_DE_PALIERS,
+  RATIO_COUT_DE_BENEDICTION,
   RATIO_COUT_DE_CROISSANCE,
   SEUIL_D_ALERTE_DE_CONTENANCE,
   SEUILS_DE_JALON,
@@ -40,6 +47,7 @@ import {
   puissanceDuMultiplicateurDePalier,
 } from '../donnees/echelles'
 import { ESPECES } from '../donnees/especes'
+import { BENEDICTION_GLOBALE_ID, benedictionCibleeDe } from '../donnees/benedictions'
 import { facteurDeTechnique } from './technique'
 import { SUCCES } from '../donnees/succes/index'
 
@@ -86,6 +94,32 @@ export function multiplicateurDesDrapeaux(etat: EtatJeu): number {
  */
 export function debitBaseDeLEspece(espece: Espece): Decimal {
   return debitBaseDuRang(espece.rang)
+}
+
+/* ─── Bénédictions — noyau v1.0 §4.2 ────────────────────────────────────────*/
+
+export function rangDeBenediction(etat: EtatJeu, id: BenedictionId): number {
+  return etat.permanent.benedictions[id] ?? 0
+}
+
+/**
+ * Le débit de base d'une espèce, augmenté de la bénédiction GLOBALE : additif,
+ * « sur le débit de base de toutes les espèces, présentes et futures ». Il
+ * domine quand les débits sont minuscules et s'efface une fois les
+ * multiplicateurs décollés — aucun ratio à régler.
+ *
+ * Le coût d'un niveau ne le lit PAS : il lit `debitBaseDeLEspece`. Bénir ne
+ * renchérit rien.
+ */
+export function debitBeni(etat: EtatJeu, espece: Espece): Decimal {
+  const rang = rangDeBenediction(etat, BENEDICTION_GLOBALE_ID)
+  if (rang === 0) return debitBaseDeLEspece(espece)
+  return debitBaseDeLEspece(espece).add(BENEDICTION_GLOBALE_PAR_RANG * rang)
+}
+
+/** La bénédiction CIBLÉE de l'espèce : `(1 + c) ^ rang`, empilable, 1 à rang 0. */
+export function multiplicateurDeBenediction(etat: EtatJeu, espece: Espece): number {
+  return Math.pow(1 + BENEDICTION_CIBLEE_PAR_RANG, rangDeBenediction(etat, benedictionCibleeDe(espece.id).id))
 }
 
 /**
@@ -136,7 +170,10 @@ export function multiplicateursGlobaux(etat: EtatJeu): Decimal {
 function debitDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
   const vivante = etat.cycle.especes[espece.id]
   if (vivante === undefined || !vivante.debloquee || vivante.niveau === 0) return new Decimal(0)
-  return debitBaseDeLEspece(espece).mul(vivante.niveau).mul(multiplicateurDeSeuil(vivante.niveau))
+  return debitBeni(etat, espece)
+    .mul(vivante.niveau)
+    .mul(multiplicateurDeSeuil(vivante.niveau))
+    .mul(multiplicateurDeBenediction(etat, espece))
 }
 
 /** Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués. */
@@ -207,18 +244,36 @@ export function detailDuHeros(etat: EtatJeu): readonly LigneDeCaptation[] {
 export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly LigneDeCaptation[] {
   const niveau = etat.cycle.especes[espece.id]?.niveau ?? 0
   const densite = densiteDuSejour(etat)
-  return [
+  const beniRang = rangDeBenediction(etat, BENEDICTION_GLOBALE_ID)
+  const beniCibleeRang = rangDeBenediction(etat, benedictionCibleeDe(espece.id).id)
+  const lignes: LigneDeCaptation[] = [
     { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
     {
       terme: 'taux_base',
-      valeur: debitBaseDeLEspece(espece).toNumber(),
+      valeur: debitBeni(etat, espece).toNumber(),
       source: { quoi: 'palier', palier: espece.palier },
     },
-    {
-      terme: 'multiplicateur_jalon',
-      valeur: multiplicateurDeSeuil(niveau),
-      source: { quoi: 'niveau', niveau },
-    },
+  ]
+  if (beniRang > 0) {
+    lignes.push({
+      terme: 'benediction_globale',
+      valeur: BENEDICTION_GLOBALE_PAR_RANG * beniRang,
+      source: { quoi: 'benediction', rang: beniRang },
+    })
+  }
+  lignes.push({
+    terme: 'multiplicateur_jalon',
+    valeur: multiplicateurDeSeuil(niveau),
+    source: { quoi: 'niveau', niveau },
+  })
+  if (beniCibleeRang > 0) {
+    lignes.push({
+      terme: 'multiplicateur_benediction',
+      valeur: multiplicateurDeBenediction(etat, espece),
+      source: { quoi: 'benediction', rang: beniCibleeRang },
+    })
+  }
+  lignes.push(
     {
       terme: 'multiplicateur_drapeau',
       valeur: multiplicateurDesDrapeaux(etat),
@@ -239,7 +294,8 @@ export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly Ligne
       valeur: multiplicateurDuHeros(etat),
       source: { quoi: 'heros', niveau: etat.cycle.niveauDuHeros },
     },
-  ]
+  )
+  return lignes
 }
 
 /* ─── Coûts ─────────────────────────────────────────────────────────────────*/
@@ -338,6 +394,18 @@ export function coutDeCroissance(etat: EtatJeu, niveau: number): Decimal {
     .mul(COUT_CREUSER_AU_PALIER_1)
     .mul(RATIO_COUT_DE_CROISSANCE)
     .mul(facteurDeCout(etat, 'cout_croissance'))
+}
+
+/**
+ * Ce que coûte le rang suivant d'une bénédiction, EN FOI — spec 2026-09-17
+ * [D6]. Géométrique : `base × ratio ^ rang`. `cout_benediction` est un terme
+ * de coût nommé, donc la technique et les succès pourront le viser.
+ */
+export function coutDeBenediction(etat: EtatJeu, benediction: Benediction): Decimal {
+  const base = benediction.portee === 'globale' ? FOI_COUT_DE_BENEDICTION_GLOBALE : FOI_COUT_DE_BENEDICTION_CIBLEE
+  return new Decimal(base)
+    .mul(Decimal.pow(RATIO_COUT_DE_BENEDICTION, rangDeBenediction(etat, benediction.id)))
+    .mul(facteurDeCout(etat, 'cout_benediction'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/

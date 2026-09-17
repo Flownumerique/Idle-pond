@@ -36,7 +36,8 @@ import {
   coutDeDescente,
   coutDeDeblocage,
   coutDeNiveau,
-  debitBaseDeLEspece,
+  debitBeni,
+  multiplicateurDeBenediction,
   multiplicateurDeSeuil,
   multiplicateurDesDrapeaux,
   multiplicateursGlobaux,
@@ -195,16 +196,17 @@ export function achatsDisponibles(etat: EtatJeu, budget?: Decimal): readonly Ach
         type: 'debloquer',
         espece,
         cout,
-        gain: debitBaseDeLEspece(espece).mul(multiplicateurs()).mul(multiplicateurDeSeuil(1)),
+        gain: debitBeni(etat, espece).mul(multiplicateurs()).mul(multiplicateurDeSeuil(1)).mul(multiplicateurDeBenediction(etat, espece)),
       })
       continue
     }
     const n = vivante.niveau
     const cout = coutDeNiveau(etat, espece, n)
     if (horsDePortee(cout)) continue
-    const propre = debitBaseDeLEspece(espece)
+    const propre = debitBeni(etat, espece)
       .mul(multiplicateurs())
       .mul((n + 1) * multiplicateurDeSeuil(n + 1) - n * multiplicateurDeSeuil(n))
+      .mul(multiplicateurDeBenediction(etat, espece))
     const poseLeDrapeau =
       n + 1 >= SEUIL_DU_DRAPEAU_PERMANENT && !etat.permanent.especesAyantAtteintCent.includes(espece.id)
     const gain = poseLeDrapeau
