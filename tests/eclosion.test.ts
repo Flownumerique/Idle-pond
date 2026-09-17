@@ -36,6 +36,7 @@ describe('§3.1 — l’éclosion remet le cycle à l’œuf', () => {
       productionPicParSeconde: new Decimal(500),
       dureeSecondes: 7200,
       acquisDeSejour: 30,
+      niveauDuHeros: 4,
     })
     // Rien de tout cela n'est déjà à sa valeur de départ.
     expect(avant.cycle.manaCourant.eq(MANA_A_LA_SORTIE_DE_L_OEUF)).toBe(false)
@@ -52,6 +53,7 @@ describe('§3.1 — l’éclosion remet le cycle à l’œuf', () => {
     expect(apres.productionPicParSeconde.eq(0)).toBe(true)
     expect(apres.dureeSecondes).toBe(0)
     expect(apres.acquisDeSejour).toBe(0)
+    expect(apres.niveauDuHeros).toBe(1)
   })
 })
 

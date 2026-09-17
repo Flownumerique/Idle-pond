@@ -21,7 +21,7 @@ import {
   multiplicateurDePalier,
 } from "../src/noyau/constantes"
 import { TERMES_DE_COUT, TERMES_DE_PRODUCTION } from "../src/noyau/types"
-import { etatInitial } from "../src/noyau/noyau"
+import { etatInitial, grandir, eclore, tick } from "../src/noyau/noyau"
 import {
   coutDeCroissance,
   detailDuHeros,
@@ -31,6 +31,7 @@ import {
   productionTotaleParSeconde,
 } from "../src/noyau/economie"
 import { etatDeTravail } from "./etat-de-travail"
+import { comparerAToleranceFlottante } from "./outils"
 import type { EtatJeu } from "../src/noyau/types"
 
 function auNiveau(etat: EtatJeu, niveauDuHeros: number): EtatJeu {
@@ -106,5 +107,38 @@ describe("A2 — ce que le niveau du héros vaut", () => {
     expect(lignes.map((l) => l.terme)).toEqual(['debit_heros', 'multiplicateur_heros'])
     expect(lignes[0].source).toEqual({ quoi: 'heros', niveau: 4 })
     expect(lignes[1].valeur).toBeCloseTo(Math.pow(1 + BONUS_PAR_NIVEAU_DU_HEROS, 3), 12)
+  })
+})
+
+describe('A3 — grandir', () => {
+  it("paie le coût, monte d'un niveau, crédite le compteur Amélioration", () => {
+    const avant = { ...etatInitial(1), cycle: { ...etatInitial(1).cycle, manaCourant: new Decimal(1000) } }
+    const cout = coutDeCroissance(avant, avant.cycle.niveauDuHeros)
+    const apres = grandir(avant)
+    expect(apres.cycle.niveauDuHeros).toBe(2)
+    expect(apres.cycle.manaCourant.eq(avant.cycle.manaCourant.sub(cout))).toBe(true)
+    expect(apres.permanent.compteursTechnique.amelioration).toBeCloseTo(
+      avant.permanent.compteursTechnique.amelioration + cout.toNumber(),
+      9,
+    )
+  })
+
+  it('refuse sans rien changer si le mana manque', () => {
+    const pauvre = { ...etatInitial(1), cycle: { ...etatInitial(1).cycle, manaCourant: new Decimal(1) } }
+    expect(grandir(pauvre)).toBe(pauvre)
+  })
+
+  it("le niveau se reperd à l'éclosion : il ressort alevin", () => {
+    const grandi = auNiveau(etatDeTravail(), 9)
+    expect(eclore(grandi).cycle.niveauDuHeros).toBe(NIVEAU_DU_HEROS_AU_DEPART)
+  })
+
+  it('le niveau ne bouge jamais pendant un tick — le pas reste homogène', () => {
+    const depart = auNiveau(etatDeTravail(), 6)
+    let petits = depart
+    for (let i = 0; i < 480; i += 1) petits = tick(petits, 60)
+    const grand = tick(depart, 8 * 3600)
+    expect(grand.cycle.niveauDuHeros).toBe(6)
+    comparerAToleranceFlottante(petits, grand)
   })
 })

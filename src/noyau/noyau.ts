@@ -31,6 +31,7 @@ import {
   coutDeDescente,
   coutDeDeblocage,
   coutDeNiveau,
+  coutDeCroissance,
   productionTotaleParSeconde,
   toutEstCreuse,
 } from './economie'
@@ -300,6 +301,31 @@ export function ameliorer(etat: EtatJeu, especeId: EspeceId): EtatJeu {
             (e) => e.id === especeId || etat.permanent.especesAyantAtteintCent.includes(e.id),
           ).map((e) => e.id)
         : etat.permanent.especesAyantAtteintCent,
+      compteursTechnique: creditCompteur(etat.permanent.compteursTechnique, 'amelioration', cout.toNumber()),
+    },
+  }
+}
+
+/**
+ * Faire grandir le héros d'un niveau — le quatrième achat, spec 2026-09-17.
+ *
+ * Même forme que les trois autres : payable ou rien ne change. Le compteur
+ * crédité est celui d'Amélioration : c'est du mana dépensé en niveaux, et
+ * l'arbre n'a pas de branche « héros ». Le niveau agit à l'instant où il est
+ * payé, jamais pendant un pas.
+ */
+export function grandir(etat: EtatJeu): EtatJeu {
+  const cout = coutDeCroissance(etat, etat.cycle.niveauDuHeros)
+  if (etat.cycle.manaCourant.lt(cout)) return etat
+  return {
+    ...etat,
+    cycle: {
+      ...etat.cycle,
+      manaCourant: etat.cycle.manaCourant.sub(cout),
+      niveauDuHeros: etat.cycle.niveauDuHeros + 1,
+    },
+    permanent: {
+      ...etat.permanent,
       compteursTechnique: creditCompteur(etat.permanent.compteursTechnique, 'amelioration', cout.toNumber()),
     },
   }
