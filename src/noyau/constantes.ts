@@ -266,6 +266,29 @@ export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
  */
 export const RATIO_COUT_DE_CROISSANCE = 1.75
 
+/* ─── Les bénédictions — noyau v1.0 §4, spec 2026-09-17 §3.2 ────────────────
+ * L'écran d'améliorations permanentes du jeu, payé en Foi. Toutes ces valeurs
+ * sont des graines : le premier cycle rapporte ~5 Foi, le deuxième ~1 600, et
+ * c'est contre cette échelle qu'elles seront réfutées.
+ */
+
+/** [P] graine — une ciblée multiplie son espèce par `(1 + c)` à chaque rang. */
+export const BENEDICTION_CIBLEE_PAR_RANG = 0.5
+
+/**
+ * [P] graine — la globale ajoute `k × rang` au débit de base de CHAQUE espèce,
+ * en mana/s par niveau. Le vairon capte 0,2 : à 0,05 le premier rang lui
+ * donne +25 %, et il ne donne plus rien de visible à la dixième espèce.
+ */
+export const BENEDICTION_GLOBALE_PAR_RANG = 0.05
+
+/** [P] graine — coût du premier rang, en Foi. */
+export const FOI_COUT_DE_BENEDICTION_CIBLEE = 3
+export const FOI_COUT_DE_BENEDICTION_GLOBALE = 2
+
+/** [P] graine — chaque rang coûte ce facteur de plus que le précédent. */
+export const RATIO_COUT_DE_BENEDICTION = 4
+
 /* ─── Graines d'échelle économique ──────────────────────────────────────────
  * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle
  * absolue. Ces graines fixent l'origine des trois courbes géométriques ; elles

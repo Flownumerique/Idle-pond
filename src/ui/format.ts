@@ -100,5 +100,7 @@ export function sourceDuTerme(source: SourceDeTerme): string {
       return source.densite <= 0 ? 'eau neutre' : `eau à ${source.densite.toFixed(1)} de densité`
     case 'heros':
       return source.niveau <= 1 ? 'toi, qui captes seul' : `toi, grandi ${source.niveau - 1} fois`
+    case 'benediction':
+      return source.rang === 0 ? 'rien de béni' : `béni ${source.rang} fois`
   }
 }

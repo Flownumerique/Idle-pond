@@ -35,6 +35,7 @@ import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
 import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
+import { BENEDICTIONS } from '../src/donnees/benedictions'
 import { sansChaines, sansCommentaires } from './outils'
 import {
   NOM_DES_ASSISES,
@@ -59,6 +60,8 @@ const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
   { quoi: 'densite', densite: 12.5 },
   { quoi: 'heros', niveau: 1 },
   { quoi: 'heros', niveau: 7 },
+  { quoi: 'benediction', rang: 0 },
+  { quoi: 'benediction', rang: 3 },
 ]
 
 const RACINE = resolve(__dirname, '..')
@@ -71,18 +74,16 @@ function fichiersTs(racine: string): string[] {
   })
 }
 
-describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
+describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d’autre ne monte la production", () => {
   /**
-   * Ce bloc a été RETOURNÉ le 2026-09-08, et c'est le fait marquant du jalon.
+   * RETOURNÉ une seconde fois, le 2026-09-17. Le 2026-09-08 ce bloc avait
+   * supprimé les bénédictions au nom du GDD §4.2 ; le soir même la préséance
+   * est passée au noyau v1.0 pour la mécanique (`docs/PRESEANCE.md`), et le
+   * noyau §4 fait des bénédictions « l’écran d’améliorations du jeu ». Le code
+   * avait gardé la suppression. Spec 2026-09-17 [D8].
    *
-   * Il exigeait auparavant, sous le titre « la frontière technique /
-   * bénédiction », qu'une bénédiction cible un terme de PRODUCTION — c'est-à-
-   * dire exactement ce que le GDD §4.2 interdit : « elle n'achète ni rendement,
-   * ni multiplicateur », « tout arbre d'achats en Foi est une erreur de
-   * conception ». Le garde-fou protégeait la faute.
-   *
-   * Les bénédictions sont supprimées, pas converties. Ce qui reste à vérifier
-   * est qu'aucune source ne les réintroduise par un autre chemin.
+   * Ce qui reste vrai, et vérifiée : la technique et les succès ne montent
+   * jamais une production ; une bénédiction ne fait QUE cela.
    */
   it('aucun nœud de technique ne monte une production', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
@@ -92,24 +93,21 @@ describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
     }
   })
 
-  it('plus aucun terme de production n’est atteignable par un achat', () => {
-    // La Foi n'a plus de débouché chiffré : le registre de production ne
-    // subsiste que pour NOMMER les termes du détail de captation (§14.3).
-    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_ciblee')
-    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_globale')
+  it("une bénédiction ne cible qu'un terme de production, jamais un coût ni un plafond", () => {
+    for (const benediction of BENEDICTIONS) {
+      const terme = benediction.portee === 'ciblee' ? 'multiplicateur_benediction' : 'benediction_globale'
+      expect(TERMES_DE_PRODUCTION as string[]).toContain(terme)
+      expect(TERMES_DE_COUT as string[]).not.toContain(terme)
+      expect(TERMES_DE_CONFORT as string[]).not.toContain(terme)
+    }
   })
 
-  it('aucune source de bénédiction ne subsiste dans le code', () => {
-    // La migration de save est la seule exception, et elle est structurelle :
-    // pour RETIRER une clef morte d'une save v2, il faut la nommer. Une
-    // migration est le dernier endroit où un mot supprimé survit légitimement,
-    // et le seul où l'interdire empêcherait de finir le travail.
-    const migrations = join('src', 'adaptateurs', 'persistance.ts')
-    const fautes = fichiersTs(join(RACINE, 'src'))
-      .map((f) => relative(RACINE, f))
-      .filter((f) => f !== migrations)
-      .filter((f) => /b[ée]n[ée]diction/i.test(sansCommentaires(readFileSync(join(RACINE, f), 'utf8'))))
-    expect(fautes).toEqual([])
+  it("une bénédiction ciblée par espèce, une globale, et pas une de plus", () => {
+    const ciblees = BENEDICTIONS.filter((b) => b.portee === 'ciblee')
+    const globales = BENEDICTIONS.filter((b) => b.portee === 'globale')
+    expect(ciblees.map((b) => b.espece)).toEqual(ESPECES.map((e) => e.id))
+    expect(globales).toHaveLength(1)
+    expect(globales[0].espece).toBeNull()
   })
 
   it('aucun succès ne monte une production (amendement v1.1 §2.D)', () => {

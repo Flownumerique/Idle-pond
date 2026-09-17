@@ -31,6 +31,20 @@ export type NoeudTechniqueId = string
 export type SuccesId = string
 export type BenedictionId = string
 
+export type PorteeDeBenediction = 'ciblee' | 'globale'
+
+/**
+ * Une bénédiction — noyau v1.0 §4.2. Deux formes, deux natures : la ciblée
+ * MULTIPLIE une espèce nommée, la globale ADDITIONNE au débit de base de
+ * toutes. L'additif écrase tôt et s'efface tard ; le croisement se fait seul.
+ */
+export interface Benediction {
+  readonly id: BenedictionId
+  readonly portee: PorteeDeBenediction
+  /** L'espèce visée. `null` pour la globale. */
+  readonly espece: EspeceId | null
+}
+
 /* ─── Termes de formule (§7.5 règle 3) ──────────────────────────────────────
  * « Aucun effet chiffré flottant. Un nœud cible toujours un TermeDeFormule
  * nommé, donc auditable dans le détail de captation. »
@@ -73,6 +87,10 @@ export type TermeDeProduction =
    * en mana, et sa part de `D` est retirée au multiplicateur de profondeur.
    */
   | 'multiplicateur_heros'
+  /** Bénédiction ciblée sur l'espèce : `(1 + c) ^ rang`. Noyau v1.0 §4.2. */
+  | 'multiplicateur_benediction'
+  /** Bénédiction globale : `+ k × rang` sur le débit de base de chaque espèce. */
+  | 'benediction_globale'
 
 export type TermeDeCout =
   /**
@@ -95,6 +113,8 @@ export type TermeDeCout =
   | 'cout_deblocage'
   /** Faire grandir le héros d'un niveau — spec 2026-09-17 [D3]. Fraction du coût du palier de même rang. */
   | 'cout_croissance'
+  /** Une bénédiction, en Foi. Un terme de coût comme un autre : la technique pourra le viser. */
+  | 'cout_benediction'
   | 'cout_temple'
   | 'cout_portail'
   | 'cout_reouverture'
@@ -118,6 +138,8 @@ export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'multiplicateur_densite',
   'debit_heros',
   'multiplicateur_heros',
+  'multiplicateur_benediction',
+  'benediction_globale',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
@@ -125,6 +147,7 @@ export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_niveau',
   'cout_deblocage',
   'cout_croissance',
+  'cout_benediction',
   'cout_temple',
   'cout_portail',
   'cout_reouverture',
@@ -514,6 +537,7 @@ export type SourceDeTerme =
   | { readonly quoi: 'densite'; readonly densite: number }
   /** Source de `debit_heros` et de `multiplicateur_heros` : son niveau dans cette vie. */
   | { readonly quoi: 'heros'; readonly niveau: number }
+  | { readonly quoi: 'benediction'; readonly rang: number }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {
