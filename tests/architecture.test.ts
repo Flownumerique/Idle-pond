@@ -13,6 +13,7 @@ import { sansCommentaires } from './outils'
 const RACINE = resolve(__dirname, '..')
 const NOYAU = join(RACINE, 'src/noyau')
 const DONNEES = join(RACINE, 'src/donnees')
+const SCENE = join(RACINE, 'src/scene')
 
 /**
  * `break_infinity.js` est la seule dépendance externe admise dans le noyau.
@@ -59,6 +60,7 @@ function importsDe(source: string): string[] {
 describe('architecture', () => {
   const fichiersDuNoyau = fichiersTs(NOYAU)
   const fichiersDesDonnees = fichiersTs(DONNEES)
+  const fichiersDeLaScene = fichiersTs(SCENE)
 
   it('le noyau contient des fichiers à vérifier', () => {
     expect(fichiersDuNoyau.length).toBeGreaterThan(5)
@@ -83,6 +85,25 @@ describe('architecture', () => {
     }
   })
 
+  it("scene/ n'importe rien hors de noyau/, donnees/ et scene/", () => {
+    for (const fichier of fichiersDeLaScene) {
+      const source = readFileSync(fichier, 'utf8')
+      for (const specificateur of importsDe(source)) {
+        const ou = relative(RACINE, fichier)
+        if (!specificateur.startsWith('.')) {
+          expect(
+            PAQUETS_PURS_AUTORISES.has(specificateur),
+            `${ou} importe le paquet « ${specificateur} », hors de la liste des paquets purs`,
+          ).toBe(true)
+          continue
+        }
+        const cible = resolve(fichier, '..', specificateur)
+        const admis = cible.startsWith(NOYAU) || cible.startsWith(DONNEES) || cible.startsWith(SCENE)
+        expect(admis, `${ou} importe « ${specificateur} », hors de noyau/, donnees/ et scene/`).toBe(true)
+      }
+    }
+  })
+
   it('donnees/ reste du contenu pur, sans logique impure', () => {
     for (const fichier of fichiersDesDonnees) {
       const source = readFileSync(fichier, 'utf8')
@@ -101,8 +122,8 @@ describe('architecture', () => {
     }
   })
 
-  it('noyau/ et donnees/ ne touchent ni horloge, ni hasard, ni DOM', () => {
-    for (const fichier of [...fichiersDuNoyau, ...fichiersDesDonnees]) {
+  it('noyau/, donnees/ et scene/ ne touchent ni horloge, ni hasard, ni DOM', () => {
+    for (const fichier of [...fichiersDuNoyau, ...fichiersDesDonnees, ...fichiersDeLaScene]) {
       const code = sansCommentaires(readFileSync(fichier, 'utf8'))
       for (const { motif, quoi } of MOTIFS_IMPURS) {
         expect(motif.test(code), `${relative(RACINE, fichier)} utilise ${quoi}`).toBe(false)
