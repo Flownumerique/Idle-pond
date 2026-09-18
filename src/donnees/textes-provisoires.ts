@@ -40,6 +40,19 @@ export const NOM_DES_ESPECES: Readonly<Record<EspeceId, string>> = {
   epinoche: 'l’épinoche',
 }
 
+/**
+ * Ce que l'écran dit d'une bénédiction — un verbe, ce que ça fait. La globale
+ * a un nom à elle ; une ciblée prend le nom de son espèce.
+ */
+export const TEXTE_DE_LA_BENEDICTION_GLOBALE = {
+  nom: 'Bénir l’eau',
+  effet: 'tout ce qui vit ici capte un peu plus, et tout ce qui viendra',
+} as const
+
+export const TEXTE_DE_BENEDICTION_CIBLEE = {
+  effet: 'ils te donnent moitié plus, à chaque fois',
+} as const
+
 export interface TexteDeSucces {
   /** Titre court. Visible dès que le succès est listé, même fermé. */
   readonly nom: string

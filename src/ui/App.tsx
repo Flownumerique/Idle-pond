@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { useMagasin } from '../etat/magasin'
 import { creerBoucle } from '../adaptateurs/boucle'
 import { montant } from './format'
+import { Benedictions } from './Benedictions'
 import { Contenance } from './Contenance'
 import { Heros } from './Heros'
 import { Mare } from './Mare'
@@ -74,6 +75,9 @@ export function App() {
 
         <aside>
           <Succes etat={etat} />
+          <div className="mt-6">
+            <Benedictions etat={etat} surBenediction={(id) => useMagasin.getState().benir(id)} />
+          </div>
         </aside>
       </div>
 

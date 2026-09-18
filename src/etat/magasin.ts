@@ -8,8 +8,8 @@
  */
 import { create } from 'zustand'
 import { persist, type PersistStorage } from 'zustand/middleware'
-import type { EspeceId, EtatJeu, SuccesId } from '../noyau/types'
-import { ameliorer, creuser, debloquer, eclore, etatInitial, grandir } from '../noyau/noyau'
+import type { BenedictionId, EspeceId, EtatJeu, SuccesId } from '../noyau/types'
+import { ameliorer, benir, creuser, debloquer, eclore, etatInitial, grandir } from '../noyau/noyau'
 import { PALIERS_LIVRES } from '../donnees/assises'
 import { SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR } from '../noyau/constantes'
 import { deserialiser, serialiser, type SaveSerialisee } from '../adaptateurs/persistance'
@@ -35,6 +35,7 @@ interface Magasin {
   debloquer(espece: EspeceId): void
   ameliorer(espece: EspeceId): void
   grandir(): void
+  benir(id: BenedictionId): void
   eclore(): void
   reprendre(): void
   annoncer(declenches: readonly SuccesId[]): void
@@ -91,6 +92,7 @@ export const useMagasin = create<Magasin>()(
       debloquer: (espece) => set({ etat: debloquer(get().etat, espece) }),
       ameliorer: (espece) => set({ etat: ameliorer(get().etat, espece) }),
       grandir: () => set({ etat: grandir(get().etat) }),
+      benir: (id) => set({ etat: benir(get().etat, id) }),
       eclore: () => set({ etat: eclore(get().etat) }),
 
       /** Un seul appel à tick pour toute l'absence. Rien ne s'est dégradé. */

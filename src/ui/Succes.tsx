@@ -61,7 +61,7 @@ export function Succes({ etat }: { readonly etat: EtatJeu }) {
   const secrets = liste.filter((e) => !e.acquis && e.visibilite === 'secret')
 
   return (
-    <section className="flex max-h-[calc(100vh-8rem)] flex-col gap-3 md:sticky md:top-6">
+    <section className="flex max-h-[calc(100vh-8rem)] flex-col gap-3">
       <h2 className="font-texte text-lg text-jour-doux">
         Ce qui est arrivé — {nomDeLAssise(assise)}
       </h2>
