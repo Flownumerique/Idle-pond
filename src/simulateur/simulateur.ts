@@ -22,6 +22,7 @@ import Decimal from 'break_infinity.js'
 import type { Espece, EtatJeu, MesureDeCycle, Reglage } from '../noyau/types'
 import {
   ameliorer,
+  benir,
   creuser,
   debloquer,
   eclore,
@@ -32,6 +33,7 @@ import {
   tick,
 } from '../noyau/noyau'
 import {
+  coutDeBenediction,
   coutDeCroissance,
   coutDeDescente,
   coutDeDeblocage,
@@ -49,6 +51,7 @@ import {
   DEBIT_HEROS,
   SEUIL_DU_DRAPEAU_PERMANENT,
 } from '../noyau/constantes'
+import { BENEDICTIONS } from '../donnees/benedictions'
 import { ESPECES } from '../donnees/especes'
 import { relever, type Releve } from '../adaptateurs/telemetrie'
 
@@ -327,6 +330,32 @@ export interface ResultatDeSimulation {
  * l'arrivée. */
 export type Observateur = (etat: EtatJeu) => void
 
+/**
+ * Ce que le joueur fait de sa Foi : il bénit, la moins chère d'abord, tant
+ * qu'il peut payer. Une politique, pas une règle du noyau — la globale et les
+ * ciblées ont chacune leur échelle de prix, et le simulateur n'a pas à savoir
+ * laquelle rapporte le plus dans une vie qui n'a pas encore commencé.
+ *
+ * Appelée juste après `eclore` : c'est là que la Foi est créditée. Elle
+ * termine d'elle-même — chaque rang multiplie le prix par le ratio.
+ */
+export function benirAuMieux(etat: EtatJeu): EtatJeu {
+  let courant = etat
+  for (let garde = 0; garde < 10_000; garde += 1) {
+    let choix: { readonly id: string; readonly cout: Decimal } | null = null
+    for (const b of BENEDICTIONS) {
+      const cout = coutDeBenediction(courant, b)
+      if (cout.gt(courant.permanent.foi)) continue
+      if (choix === null || cout.lt(choix.cout)) choix = { id: b.id, cout }
+    }
+    if (choix === null) return courant
+    const suivant = benir(courant, choix.id)
+    if (suivant === courant) throw new Error(`Le noyau refuse une bénédiction que la politique croyait payable : ${choix.id}`)
+    courant = suivant
+  }
+  throw new Error('La politique de bénédiction ne termine pas')
+}
+
 export function simuler(
   cycles: number,
   politique: Politique = POLITIQUE_PAR_DEFAUT,
@@ -380,7 +409,7 @@ export function simuler(
     }
 
     if (cycleNonConvergent !== null) break
-    etat = eclore(etat)
+    etat = benirAuMieux(eclore(etat))
     acheves += 1
     observer?.(etat)
   }

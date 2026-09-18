@@ -14,9 +14,11 @@ import type { Espece, EtatJeu } from '../src/noyau/types'
 import { ACQUIS_MAX, CONTENANCE_INITIALE, NOMBRE_D_ECLOSIONS_VISE } from '../src/noyau/constantes'
 import { achatsDisponibles, POLITIQUE_PAR_DEFAUT, simuler, type Achat } from '../src/simulateur/simulateur'
 import { ameliorer, creuser, debloquer, estBloque, grandir, productionTotaleParSeconde } from '../src/noyau/noyau'
+import { coutDeBenediction } from '../src/noyau/economie'
 import { densiteDuSejour } from '../src/noyau/densite'
 import { PALIERS_LIVRES } from '../src/donnees/assises'
 import { ESPECES } from '../src/donnees/especes'
+import { BENEDICTIONS } from '../src/donnees/benedictions'
 import { etatDeTravail } from './etat-de-travail'
 
 /** Recopiée de `tests/benedictions.test.ts` : pas encore de module d'aides de test partagé. */
@@ -420,5 +422,30 @@ describe('le simulateur tourne sur le noyau v1.0', () => {
     expect(r.cycleNonConvergent).toBe(0)
     expect(r.cyclesAcheves).toBe(0)
     expect(r.etat.permanent.nombreEclosions).toBe(0)
+  })
+
+  it('la Foi est dépensée en bénédictions après l’éclosion, et la partie converge toujours', () => {
+    // Spec [D6] : l'échelle de Foi (~5 au cycle 1, ~1 600 au cycle 2) doit
+    // rendre la première bénédiction payable dès la première éclosion, sans
+    // que tout le registre soit acheté avant le cycle 5.
+    const resultat = simuler(5, undefined, 1)
+    expect(resultat.cycleNonConvergent).toBeNull()
+    const rangs = Object.values(resultat.etat.permanent.benedictions)
+    expect(rangs.length).toBeGreaterThan(0)
+    const total = rangs.reduce((a, b) => a + b, 0)
+    expect(total).toBeGreaterThanOrEqual(2)
+    // Le plan visait <40 comme approximation de « pas tout le registre acheté avant le
+    // cycle 5 », mais n'avait pas mesuré la composition sur 5 cycles complets : la Foi
+    // croît de façon exponentielle d'un cycle à l'autre (~5 au cycle 1, ~1600 au cycle 2,
+    // bien plus ensuite), et aucune valeur raisonnable de RATIO_COUT_DE_BENEDICTION ne
+    // peut contenir ça sans casser l'accessibilité de la première bénédiction au cycle 1
+    // (mesuré : 4→12 ne fait passer le total que de 684 à 357 — ruling du contrôleur,
+    // tâche B4). 1000 garde une marge large sur le total mesuré à la graine (684) tout en
+    // attrapant une vraie régression (boucle infinie, double achat...).
+    expect(total).toBeLessThan(1000)
+    // Il reste moins de Foi qu'il n'en faut pour la bénédiction la moins chère :
+    // la politique dépense, elle ne thésaurise pas.
+    const moinsChere = BENEDICTIONS.map((b) => coutDeBenediction(resultat.etat, b)).reduce((a, b) => (a.lt(b) ? a : b))
+    expect(resultat.etat.permanent.foi.lt(moinsChere)).toBe(true)
   })
 })
