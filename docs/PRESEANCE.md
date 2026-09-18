@@ -19,6 +19,11 @@ v1.0 avait posé en graine, la mesure gagne.
 **Sections du GDD dépassées par le noyau v1.0** : §3 la captation, §7 le
 vivant, §10 la ponte, §16 l'équilibrage. Le reste du GDD tient.
 
+**Ajouté le 2026-09-17.** GDD §4.2 (« la Foi n'achète que des miracles ») est
+dépassé par le noyau v1.0 §4 : la Foi achète des **bénédictions**, permanentes,
+qui montent la production. Les miracles restent gelés (`[P26]`). Le noyau v1.0
+§1.2 compte désormais **quatre** achats — voir `docs/amendement-v1.1.md`, v1.4.
+
 **Contradiction interne au noyau v1.0, tranchée.** Sa §2 place
 `mult_technique` dans la production totale et sa §6.2 donne au nœud
 « Réputation » un `+5 % de production`, contre sa propre §6.3 — « la technique

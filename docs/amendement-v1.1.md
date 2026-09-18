@@ -311,6 +311,40 @@ deux axes réels, à commencer par les six couples (A, B) qui décident à quel
 rythme une branche de technique s'ouvre. Ils doivent être résolus contre une
 partie de 14 cycles, et non de 45.
 
+#### Amendé le 2026-09-17 (v1.4) — le héros grandit, la Foi bénit, la scène montre
+
+Spec : `docs/superpowers/specs/2026-09-17-axe-heros-benedictions-scene-design.md`.
+
+**Le constat.** Après la refonte du 8 au 16 septembre, le joueur disposait de
+trois achats et d'une décision, aucun sur le héros, aucune image ; et passé le
+cycle 13, plus aucun chiffre ne montait — la Foi n'achetait rien, la technique
+ne monte jamais la production. Un idle sans chiffre qui monte n'est plus un
+idle.
+
+**Quatre achats, pas trois** (noyau v1.0 §1.2 amendé). *Grandir* : le héros
+monte de niveau en mana, `coût = COUT_CREUSER_AU_PALIER_1 × 1,75 × g^(n−1)`,
+effet `multiplicateur_heros = 1,15^(n−1)` global, plus son débit propre × n.
+Le niveau se reperd à l'éclosion. **`D` par palier est inchangé** : le
+multiplicateur de profondeur est divisé par 1,15, et le test de canon porte
+sur le produit des deux.
+
+**Les bénédictions sont de retour** (noyau v1.0 §4, par la préséance de
+`PRESEANCE.md` — le GDD §4.2 est dépassé sur ce point). Ciblée :
+`× 1,5^rang` sur une espèce. Globale : `+ 0,05 × rang` sur le débit de base
+de toutes. Coût en Foi `3 × 4^rang` et `2 × 4^rang`. **Achetables à tout
+moment**, et non « dans l'œuf » : un état où rien ne produit pénaliserait
+l'absence. La Foi n'est de toute façon créditée qu'en rentrant dans l'œuf.
+
+**`couches` est enfin écrit** : une marque par assise traversée dans la vie,
+à l'éclosion, dans l'ordre des assises. Visuelle, sans effet chiffré.
+
+**Mesuré après** : cycle 1 : 10 paliers, 3,12 h ; cycle 5 : 28 paliers, 4,50 h ;
+cycle 13 : 62 paliers, 8,88 h ; total actif ~82,0 h — inchangé de la table
+`NOMBRE_D_ECLOSIONS_VISE` ci-dessus ; et niveau maximal du héros au cycle 1 :
+`10`.
+
+Toutes les valeurs ci-dessus sont des graines `[P]`, dans `constantes.ts`.
+
 ### 2.C — seuils cumulés, sur l'effectif
 
 La colonne est renommée `multiplicateurCumule` partout. Le joueur achète de la

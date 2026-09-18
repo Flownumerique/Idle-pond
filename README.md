@@ -13,7 +13,10 @@ Tailwind 4.
 
 La Noue, ses six paliers, le vairon, la loche et l'épinoche ; la boucle complète
 débloquer → améliorer → éclore ; les succès avec le plancher de cadence du §8.4,
-mesuré et non promis. Sans technique ni bénédictions : c'est le jalon v0.4.
+mesuré et non promis. Depuis le 2026-09-17 : le héros **grandit** (quatrième
+achat, en mana), la Foi achète des **bénédictions** permanentes, et une
+**scène** dessinée au trait montre le héros, ses marques et ses bancs. Sans
+technique : c'est le jalon v0.4.
 
 Comptes rendus, mesures et décisions ouvertes :
 [`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) ·
@@ -36,9 +39,10 @@ Comptes rendus, mesures et décisions ouvertes :
 
 ```sh
 npm install
-npm test          # 78 tests : architecture, déterminisme, équivalence de pas,
+npm test          # 197 tests : architecture, déterminisme, équivalence de pas,
                   # seuils, contenance, persistance, canon, horloge, hors
-                  # ligne, plancher de cadence, simulateur
+                  # ligne, plancher de cadence, simulateur, héros,
+                  # bénédictions, scène
 npm run build     # tsc -b && vite build
 npm run lint
 npm run dev       # le jeu
@@ -56,8 +60,8 @@ existe pour chacune :
 2. Toute mécanique du cœur se calcule en **un seul pas** pour `dt = 8 h`
    (`tests/equivalence-de-pas.test.ts`).
 3. La technique baisse les **coûts** et automatise ; la bénédiction monte la
-   **production**. Aucun nœud, **aucun succès** ne franchit cette ligne
-   (`tests/canon.test.ts`).
+   **production**, et c'est la seule chose qu'elle fait. Aucun nœud, **aucun
+   succès** ne franchit cette ligne (`tests/canon.test.ts`).
 4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est
    calibré contre cette lecture (`tests/seuils.test.ts`).
 5. Le plafond ne monte **que** par séjour prolongé en mana dense : le ×47,1 par
