@@ -92,6 +92,7 @@ export class SceneDeLaMare extends Phaser.Scene {
   }
 
   private dessinerLesBancs(paliers: readonly VueDePalier[], largeur: number) {
+    this.bancs.getChildren().forEach((p) => this.tweens.killTweensOf(p))
     this.bancs.clear(true, true)
     paliers.forEach((palier, i) => {
       if (palier.espece === null) return
@@ -116,6 +117,7 @@ export class SceneDeLaMare extends Phaser.Scene {
   }
 
   private dessinerLeHeros(vue: VueDeScene, largeur: number) {
+    this.tweens.killTweensOf(this.heros)
     this.heros.removeAll(true)
     const bandeDuBas = Math.max(0, vue.paliers.length - 1)
     const x = largeur - MARGE - 60
