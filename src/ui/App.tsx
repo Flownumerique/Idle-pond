@@ -12,6 +12,7 @@ import { creerBoucle } from '../adaptateurs/boucle'
 import { montant } from './format'
 import { Benedictions } from './Benedictions'
 import { Contenance } from './Contenance'
+import { Scene } from './Scene'
 import { Heros } from './Heros'
 import { Mare } from './Mare'
 import { Eclosion } from './Eclosion'
@@ -58,6 +59,7 @@ export function App() {
 
       <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
         <main className="space-y-4">
+          <Scene etat={etat} />
           <Contenance etat={etat} />
           <Heros etat={etat} surCroissance={() => useMagasin.getState().grandir()} />
           {captation !== null ? (

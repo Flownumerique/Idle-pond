@@ -73,7 +73,7 @@ export class SceneDeLaMare extends Phaser.Scene {
     this.dessinerLesBancs(vue.paliers, largeur)
     this.dessinerLeHeros(vue, largeur)
 
-    this.tweens.add({ targets: this.trouble, alpha: vue.eauTroublee ? 0.28 : 0, duration: 900 })
+    this.tweens.add({ targets: this.trouble, fillAlpha: vue.eauTroublee ? 0.28 : 0, duration: 900 })
   }
 
   private dessinerLesBandes(paliers: readonly VueDePalier[], largeur: number) {
