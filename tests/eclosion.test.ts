@@ -102,6 +102,23 @@ describe('§3.1 — ce qui traverse l’éclosion', () => {
     const avant = avecPermanent(etatDeTravail(), { benedictions: { 'benediction-globale': 2, 'benediction-vairon': 1 } })
     expect(eclore(avant).permanent.benedictions).toEqual(avant.permanent.benedictions)
   })
+
+  it('chaque assise traversée dans cette vie laisse une couche, dans l’ordre des assises, une seule fois', () => {
+    // GDD §15.1 : « une marque par assise fixée ». `couches` était déclaré et
+    // jamais écrit (audit du 2026-09-08). Spec 2026-09-17 [D11].
+    const dansLaNoue = avecCycle(etatDeTravail(), { paliersOuverts: 4 })
+    expect(dansLaNoue.permanent.couches).toEqual([])
+    const uneFois = eclore(dansLaNoue)
+    expect(uneFois.permanent.couches).toEqual(['noue'])
+
+    // Deux assises ouvertes, la première déjà marquée : une seule couche neuve.
+    const plusBas = avecCycle(avecPermanent(uneFois, { couches: ['noue'] }), { paliersOuverts: 8 })
+    expect(eclore(plusBas).permanent.couches).toEqual(['noue', 'assise-2'])
+
+    // L'ordre est celui des assises, pas celui de l'obtention.
+    const desordre = avecCycle(avecPermanent(etatDeTravail(), { couches: ['assise-2'] }), { paliersOuverts: 2 })
+    expect(eclore(desordre).permanent.couches).toEqual(['noue', 'assise-2'])
+  })
 })
 
 describe('§6.5 — la densité se pose par max, et son gain vaut pointe^α', () => {

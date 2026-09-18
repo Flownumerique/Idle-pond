@@ -14,7 +14,7 @@
  *   Le mana expire vers l'ambiant — il n'est pas détruit (Tier 0 §5).
  */
 import Decimal from 'break_infinity.js'
-import type { EtatCycle, EtatJeu } from './types'
+import type { AssiseId, EtatCycle, EtatJeu } from './types'
 import {
   FOI_BASE,
   FOI_EXPOSANT,
@@ -26,6 +26,7 @@ import {
 import { appliquerGainDeDensite } from './densite'
 import { contenance } from './economie'
 import { creditCompteur } from './technique'
+import { ASSISES } from '../donnees/assises'
 
 /**
  * Gain de Foi prévu, indexé sur la production de pic du cycle.
@@ -63,6 +64,22 @@ export function cycleInitial(): EtatCycle {
 }
 
 /**
+ * Les couches du corps — GDD §15.1, « une marque par assise fixée ».
+ *
+ * Toute assise dont le premier palier a été ouvert dans cette vie laisse sa
+ * marque. Dans l'ordre des assises, jamais dans l'ordre de l'obtention : la
+ * divergence « se lit comme une somme d'histoire », et une somme n'a pas
+ * d'ordre — mais la save, elle, compare des chaînes.
+ */
+export function couchesApres(etat: EtatJeu, paliersOuverts: number): readonly AssiseId[] {
+  const acquises = new Set(etat.permanent.couches)
+  for (const assise of ASSISES) {
+    if (assise.indexPremierPalier < paliersOuverts) acquises.add(assise.id)
+  }
+  return ASSISES.filter((a) => acquises.has(a.id)).map((a) => a.id)
+}
+
+/**
  * L'éclosion.
  *
  * Le seul geste volontaire du jeu (§10.1) : toute éclosion est choisie, et
@@ -89,6 +106,7 @@ export function eclore(etat: EtatJeu): EtatJeu {
     permanent: {
       ...etat.permanent,
       densites,
+      couches: couchesApres(etat, etat.cycle.paliersOuverts),
       foi: etat.permanent.foi.add(foiGagnee),
       contenanceMana,
       profondeurMaxAtteinte: Math.max(etat.permanent.profondeurMaxAtteinte, etat.cycle.paliersOuverts),
