@@ -15,7 +15,7 @@
  * simulateur. Le hasard n'a droit de cité que sur des événements discrets.
  */
 import Decimal from 'break_infinity.js'
-import type { EspeceId, EtatJeu, EtatPrng, Reglage, SuccesId } from './types'
+import type { BenedictionId, EspeceId, EtatJeu, EtatPrng, Reglage, SuccesId } from './types'
 import {
   ACQUIS_MAX,
   CONTENANCE_INITIALE,
@@ -26,12 +26,14 @@ import {
   VERSION_SAVE,
 } from './constantes'
 import { ESPECES, especeParId } from '../donnees/especes'
+import { BENEDICTIONS, benedictionParId } from '../donnees/benedictions'
 import {
   contenance,
   coutDeDescente,
   coutDeDeblocage,
   coutDeNiveau,
   coutDeCroissance,
+  coutDeBenediction,
   productionTotaleParSeconde,
   toutEstCreuse,
 } from './economie'
@@ -328,6 +330,36 @@ export function grandir(etat: EtatJeu): EtatJeu {
     permanent: {
       ...etat.permanent,
       compteursTechnique: creditCompteur(etat.permanent.compteursTechnique, 'amelioration', cout.toNumber()),
+    },
+  }
+}
+
+/**
+ * Bénir — noyau v1.0 §4. Payé en FOI, permanent, et le seul débouché de la Foi
+ * tant que les miracles sont gelés ([P26]).
+ *
+ * La table est reconstruite dans l'ordre du registre, jamais dans l'ordre des
+ * achats — même raison que `especesAyantAtteintCent` : l'ordre des clefs d'un
+ * objet est celui de l'insertion, et le test de déterminisme compare la chaîne
+ * de save.
+ */
+export function benir(etat: EtatJeu, id: BenedictionId): EtatJeu {
+  const benediction = benedictionParId(id)
+  if (benediction === undefined) return etat
+  const cout = coutDeBenediction(etat, benediction)
+  if (etat.permanent.foi.lt(cout)) return etat
+  const rangs = { ...etat.permanent.benedictions, [id]: (etat.permanent.benedictions[id] ?? 0) + 1 }
+  const benedictions: Record<BenedictionId, number> = {}
+  for (const b of BENEDICTIONS) {
+    const rang = rangs[b.id]
+    if (rang !== undefined && rang > 0) benedictions[b.id] = rang
+  }
+  return {
+    ...etat,
+    permanent: {
+      ...etat.permanent,
+      foi: etat.permanent.foi.sub(cout),
+      benedictions,
     },
   }
 }

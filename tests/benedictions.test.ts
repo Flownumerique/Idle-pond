@@ -8,7 +8,7 @@
 import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
-import { etatInitial } from '../src/noyau/noyau'
+import { benir, etatInitial, eclore } from '../src/noyau/noyau'
 import { BENEDICTION_GLOBALE_ID, BENEDICTIONS, benedictionCibleeDe, benedictionParId } from '../src/donnees/benedictions'
 import {
   BENEDICTION_CIBLEE_PAR_RANG,
@@ -131,5 +131,46 @@ describe('B2 — ce qu’une bénédiction vaut', () => {
     const lignes = detailDeCaptation(etat, vairon)
     const produit = lignes.reduce((acc, ligne) => acc.mul(ligne.valeur), new Decimal(1))
     comparerAToleranceFlottante(produit, productionDeLEspece(etat, vairon))
+  })
+})
+
+describe('B3 — bénir', () => {
+  const vairon = ESPECES[0]
+
+  it('paie la Foi, monte le rang d’un', () => {
+    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, foi: new Decimal(100) } }
+    const globale = benedictionParId(BENEDICTION_GLOBALE_ID)!
+    const prix = coutDeBenediction(riche, globale)
+    const apres = benir(riche, globale.id)
+    expect(rangDeBenediction(apres, globale.id)).toBe(1)
+    expect(apres.permanent.foi.eq(riche.permanent.foi.sub(prix))).toBe(true)
+    // Le mana n'est pas touché : la Foi n'est pas une seconde monnaie de mana.
+    expect(apres.cycle.manaCourant.eq(riche.cycle.manaCourant)).toBe(true)
+  })
+
+  it('refuse sans rien changer si la Foi manque, ou si l’identifiant est inconnu', () => {
+    const pauvre = etatInitial(1)
+    expect(pauvre.permanent.foi.eq(0)).toBe(true)
+    expect(benir(pauvre, BENEDICTION_GLOBALE_ID)).toBe(pauvre)
+    const riche = { ...pauvre, permanent: { ...pauvre.permanent, foi: new Decimal(100) } }
+    expect(benir(riche, 'benediction-qui-n-existe-pas')).toBe(riche)
+  })
+
+  it('le rang traverse l’éclosion — c’est permanent', () => {
+    const avecUneCiblee = benir(
+      { ...etatDeTravail(), permanent: { ...etatDeTravail().permanent, foi: new Decimal(1000) } },
+      benedictionCibleeDe(vairon.id).id,
+    )
+    expect(rangDeBenediction(avecUneCiblee, benedictionCibleeDe(vairon.id).id)).toBe(1)
+    expect(eclore(avecUneCiblee).permanent.benedictions).toEqual(avecUneCiblee.permanent.benedictions)
+  })
+
+  it('les rangs sont sérialisés dans l’ordre du registre, pas de l’achat', () => {
+    // Deux parties qui bénissent les mêmes choses dans un ordre différent
+    // doivent produire la même chaîne de save (déterminisme).
+    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, foi: new Decimal(1e6) } }
+    const a = benir(benir(riche, 'benediction-loche'), BENEDICTION_GLOBALE_ID)
+    const b = benir(benir(riche, BENEDICTION_GLOBALE_ID), 'benediction-loche')
+    expect(Object.keys(a.permanent.benedictions)).toEqual(Object.keys(b.permanent.benedictions))
   })
 })

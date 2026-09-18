@@ -97,6 +97,11 @@ describe('§3.1 — ce qui traverse l’éclosion', () => {
     const avant = avecPermanent(etatDeTravail(), { especesAyantAtteintCent: ['vairon'] })
     expect(eclore(avant).permanent.especesAyantAtteintCent).toEqual(['vairon'])
   })
+
+  it('les bénédictions traversent', () => {
+    const avant = avecPermanent(etatDeTravail(), { benedictions: { 'benediction-globale': 2, 'benediction-vairon': 1 } })
+    expect(eclore(avant).permanent.benedictions).toEqual(avant.permanent.benedictions)
+  })
 })
 
 describe('§6.5 — la densité se pose par max, et son gain vaut pointe^α', () => {
