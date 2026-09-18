@@ -359,9 +359,14 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
     // chaînes (identifiants de succès compris) exactement comme
     // `sansCommentaires` neutralise celle portée par des commentaires, pour
     // que le balayage porte sur le code et non sur la fiction.
+    // `src/scene/` est aussi exclu car la scène dessine les bancs de poissons.
     const migrations = join('src', 'adaptateurs', 'persistance.ts')
+    const sceneDir = join(RACINE, 'src', 'scene')
     const source = fichiersTs(join(RACINE, 'src'))
-      .filter((f) => relative(RACINE, f) !== migrations)
+      .filter((f) => {
+        const chemin = relative(RACINE, f)
+        return chemin !== migrations && !f.startsWith(sceneDir)
+      })
       .map((f) => sansChaines(sansCommentaires(readFileSync(f, 'utf8'))))
       .join('\n')
     for (const mot of [

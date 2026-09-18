@@ -91,8 +91,13 @@ describe('architecture', () => {
       for (const specificateur of importsDe(source)) {
         const ou = relative(RACINE, fichier)
         if (!specificateur.startsWith('.')) {
+          // Phaser est autorisé dans les fichiers de scène (sauf vue.ts et palette.ts)
+          const fichierNom = fichier.split(/[\\/]/).pop() ?? ''
+          const estVueOuPalette = fichierNom === 'vue.ts' || fichierNom === 'palette.ts'
+          const phaserAutorise = specificateur === 'phaser' && !estVueOuPalette
+
           expect(
-            PAQUETS_PURS_AUTORISES.has(specificateur),
+            PAQUETS_PURS_AUTORISES.has(specificateur) || phaserAutorise,
             `${ou} importe le paquet « ${specificateur} », hors de la liste des paquets purs`,
           ).toBe(true)
           continue
