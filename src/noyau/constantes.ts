@@ -237,7 +237,7 @@ export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
  * [P] graine — coût de croissance, en fraction du coût du palier de même rang :
  * `coût(niveau n → n+1) = COUT_CREUSER_AU_PALIER_1 × ratio × g^(n − 1)`.
  *
- * Borné par le bas : le premier niveau (60 × 0,75 = 45) DOIT coûter plus que la
+ * Borné par le bas : le premier niveau (60 × 1,75 = 105) DOIT coûter plus que la
  * charge de l'œuf (36), sinon le joueur naïf grandit avant de convaincre le
  * vairon et le plancher de cadence tombe. `tests/heros.test.ts` le vérifie.
  * Si le plancher tombe quand même, monter par pas de 0,25 et consigner.
@@ -286,7 +286,31 @@ export const BENEDICTION_GLOBALE_PAR_RANG = 0.05
 export const FOI_COUT_DE_BENEDICTION_CIBLEE = 3
 export const FOI_COUT_DE_BENEDICTION_GLOBALE = 2
 
-/** [P] graine — chaque rang coûte ce facteur de plus que le précédent. */
+/**
+ * [P] graine — chaque rang coûte ce facteur de plus que le précédent.
+ *
+ * MESURÉ — tâche B4. Faire monter ce ratio par pas de +2 depuis la graine (4)
+ * ne fait que ralentir, sans jamais borner, le total de rangs de bénédiction
+ * achetés par la politique simulée optimale d'ici le cycle 5 :
+ *
+ * | ratio | rangs achetés (cycle 5) |
+ * |-------|--------------------------|
+ * | 4     | 684                      |
+ * | 6     | 511                      |
+ * | 8     | 435                      |
+ * | 10    | 391                      |
+ * | 12    | 357                      |
+ *
+ * Décroissant, mais ne converge vers aucune cible raisonnable. Aucune valeur
+ * plausible de ce ratio ne peut vraiment plafonner le total sans rendre la
+ * première bénédiction impayable au cycle 1 — exigence dure et séparée : la
+ * première bénédiction doit rester payable dès la première éclosion.
+ *
+ * Le vrai levier, si ce point revient : la politique de dépense gloutonne du
+ * SIMULATEUR (`benirAuMieux`, `src/simulateur/simulateur.ts`), pas ce facteur
+ * de coût — changer la politique est une décision de design plus large,
+ * volontairement laissée ouverte, non tentée ici.
+ */
 export const RATIO_COUT_DE_BENEDICTION = 4
 
 /* ─── Graines d'échelle économique ──────────────────────────────────────────
