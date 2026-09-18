@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tests de canon — les phrases qui, si elles sont violées, invalident le build.
  *
  * Ils portent sur des registres aujourd'hui vides. C'est délibéré : le §8 note
