@@ -7,9 +7,10 @@
  * l'œuf ; mais un joueur qui revient d'une absence ne doit pas trouver une
  * porte fermée.
  *
- * Les ciblées ne sont listées que pour les espèces déjà convaincues au moins
- * une fois dans cette vie ou une autre — on ne bénit pas ce qu'on n'a jamais
- * vu. Le registre entier existe dans la donnée ; l'écran le filtre.
+ * Le registre entier est toujours affiché, sans filtre — comme le simulateur
+ * (`benirAuMieux`) qui considère lui aussi toutes les bénédictions sans
+ * distinction. La donnée est petite (une entrée par espèce, plus une
+ * globale) : ce n'est pas un enjeu d'affichage ou de performance.
  */
 import type { EtatJeu } from '../noyau/types'
 import { BENEDICTIONS, BENEDICTION_GLOBALE_ID } from '../donnees/benedictions'
@@ -24,12 +25,6 @@ interface Props {
 
 export function Benedictions({ etat, surBenediction }: Props) {
   const foi = etat.permanent.foi
-  const connues = new Set<string>([
-    ...Object.keys(etat.cycle.especes).filter((id) => etat.cycle.especes[id].debloquee),
-    ...etat.permanent.especesAyantAtteintCent,
-    ...BENEDICTIONS.filter((b) => b.espece !== null && rangDeBenediction(etat, b.id) > 0).map((b) => b.espece as string),
-  ])
-  const visibles = BENEDICTIONS.filter((b) => b.portee === 'globale' || (b.espece !== null && connues.has(b.espece)))
 
   return (
     <section className="space-y-2">
@@ -38,7 +33,7 @@ export function Benedictions({ etat, surBenediction }: Props) {
         <span className="font-chiffre text-sm text-foi tabular-nums">{montant(foi)} de Foi</span>
       </div>
       <ol className="space-y-2">
-        {visibles.map((b) => {
+        {BENEDICTIONS.map((b) => {
           const rang = rangDeBenediction(etat, b.id)
           const prix = coutDeBenediction(etat, b)
           const payable = foi.gte(prix)
