@@ -2,7 +2,7 @@
  * L'éclosion — noyau v1.0 §3 et §6.5.
  *
  * Reset complet (f = 1) : ce qui appartient au cycle repart de l'œuf, et
- * quatre choses traversent — contenance, densité, Foi, technique —, plus le
+ * quatre choses traversent — contenance, densité, Souffle, technique —, plus le
  * drapeau des cent, l'unique exception au « tout se reperd ».
  *
  * Chaque assertion porte sur un état de départ où la grandeur visée n'est PAS
@@ -13,7 +13,7 @@ import Decimal from 'break_infinity.js'
 import { describe, expect, it } from 'vitest'
 import type { EtatJeu } from '../src/noyau/types'
 import { etatDeTravail } from './etat-de-travail'
-import { eclore, gainDeFoiPrevu } from '../src/noyau/eclosion'
+import { eclore, gainDeSoufflePrevu } from '../src/noyau/eclosion'
 import {
   ACQUIS_MAX,
   ALPHA_GAIN_DE_DENSITE,
@@ -67,13 +67,13 @@ describe('§3.1 — ce qui traverse l’éclosion', () => {
     expect(eclore(avant).permanent.contenanceMana.eq(avant.permanent.contenanceMana)).toBe(true)
   })
 
-  it('la Foi traverse, augmentée du gain que la pointe du cycle a mérité', () => {
+  it('le Souffle traverse, augmenté du gain que la pointe du cycle a mérité', () => {
     const avant = avecPermanent(avecCycle(etatDeTravail(), { productionPicParSeconde: new Decimal(1e6) }), {
-      foi: new Decimal(7),
+      souffle: new Decimal(7),
     })
-    const gain = gainDeFoiPrevu(avant)
+    const gain = gainDeSoufflePrevu(avant)
     expect(gain.gt(0)).toBe(true)
-    expect(eclore(avant).permanent.foi.eq(avant.permanent.foi.add(gain))).toBe(true)
+    expect(eclore(avant).permanent.souffle.eq(avant.permanent.souffle.add(gain))).toBe(true)
   })
 
   it('les nœuds de technique traversent', () => {

@@ -41,7 +41,7 @@ import { cycleInitial } from './eclosion'
 import { creditCompteur } from './technique'
 import { verifierSucces } from './succes'
 
-export { eclore, gainDeFoiPrevu } from './eclosion'
+export { eclore, gainDeSoufflePrevu } from './eclosion'
 export {
   contenance,
   detailDeCaptation,
@@ -88,7 +88,7 @@ export function etatInitial(
     cycle: cycleInitial(),
     permanent: {
       densites: new Array<number>(NOMBRE_DE_PALIERS).fill(0),
-      foi: new Decimal(0),
+      souffle: new Decimal(0),
       contenanceMana: new Decimal(CONTENANCE_INITIALE),
       couches: [],
       profondeurMaxAtteinte: 0,
@@ -335,8 +335,8 @@ export function grandir(etat: EtatJeu): EtatJeu {
 }
 
 /**
- * Bénir — noyau v1.0 §4. Payé en FOI, permanent, et le seul débouché de la Foi
- * tant que les miracles sont gelés ([P26]).
+ * Bénir — noyau v1.0 §4. Payé en SOUFFLE, permanent, et le seul débouché du
+ * Souffle tant que les miracles sont gelés ([P26]).
  *
  * La table est reconstruite dans l'ordre du registre, jamais dans l'ordre des
  * achats — même raison que `especesAyantAtteintCent` : l'ordre des clefs d'un
@@ -347,7 +347,7 @@ export function benir(etat: EtatJeu, id: BenedictionId): EtatJeu {
   const benediction = benedictionParId(id)
   if (benediction === undefined) return etat
   const cout = coutDeBenediction(etat, benediction)
-  if (etat.permanent.foi.lt(cout)) return etat
+  if (etat.permanent.souffle.lt(cout)) return etat
   const rangs = { ...etat.permanent.benedictions, [id]: (etat.permanent.benedictions[id] ?? 0) + 1 }
   const benedictions: Record<BenedictionId, number> = {}
   for (const b of BENEDICTIONS) {
@@ -358,7 +358,7 @@ export function benir(etat: EtatJeu, id: BenedictionId): EtatJeu {
     ...etat,
     permanent: {
       ...etat.permanent,
-      foi: etat.permanent.foi.sub(cout),
+      souffle: etat.permanent.souffle.sub(cout),
       benedictions,
     },
   }

@@ -97,8 +97,8 @@ export function estAtteint(etat: EtatJeu, declencheur: DeclencheurDeSucces): boo
       return niveauxCumules(etat) >= declencheur.seuil
     case 'production_par_seconde':
       return productionTotaleParSeconde(etat).gte(declencheur.seuil)
-    case 'foi':
-      return etat.permanent.foi.gte(declencheur.seuil)
+    case 'souffle':
+      return etat.permanent.souffle.gte(declencheur.seuil)
     case 'densite_de_palier':
       return (etat.permanent.densites[declencheur.palier] ?? 0) >= declencheur.seuil
     case 'palier_au_complet':
@@ -285,8 +285,8 @@ function valeurCourante(etat: EtatJeu, declencheur: DeclencheurDeSucces): number
       return niveauxCumules(etat)
     case 'production_par_seconde':
       return productionTotaleParSeconde(etat).toNumber()
-    case 'foi':
-      return etat.permanent.foi.toNumber()
+    case 'souffle':
+      return etat.permanent.souffle.toNumber()
     case 'densite_de_palier':
       return etat.permanent.densites[declencheur.palier] ?? 0
     case 'palier_au_complet':

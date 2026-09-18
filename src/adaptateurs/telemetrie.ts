@@ -22,7 +22,7 @@ export interface ReleveDeCycle {
   readonly dureeEcouleeSecondes: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: number
-  readonly foiGagnee: number
+  readonly souffleGagne: number
 }
 
 export interface Releve {
@@ -53,7 +53,7 @@ export function relever(etat: EtatJeu): Releve {
       dureeEcouleeSecondes: c.dureeEcouleeSecondes,
       paliersOuverts: c.paliersOuverts,
       productionPicParSeconde: c.productionPicParSeconde.toNumber(),
-      foiGagnee: c.foiGagnee.toNumber(),
+      souffleGagne: c.souffleGagne.toNumber(),
     })),
     intervalleMoyenEntreSuccesSecondes:
       intervalles.length > 0 ? intervalles.reduce((a, b) => a + b, 0) / intervalles.length : null,

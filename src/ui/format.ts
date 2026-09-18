@@ -15,7 +15,7 @@ import { NOM_DES_ASSISES, NOM_DES_ESPECES } from '../donnees/textes-provisoires'
 
 const SUFFIXES = ['', ' k', ' M', ' G', ' T', ' P', ' E'] as const
 
-/** Un montant de mana ou de Foi, lisible d'un coup d'œil. */
+/** Un montant de mana ou de Souffle, lisible d'un coup d'œil. */
 export function montant(valeur: Decimal): string {
   const nombre = valeur.toNumber()
   if (!Number.isFinite(nombre)) return valeur.toExponential(2)

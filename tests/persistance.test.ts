@@ -221,11 +221,17 @@ describe('migration 4 → 5 : le modèle à population meurt sans emporter la sa
     // était rangé.
     expect(relu.cycle.especes).toEqual({})
 
-    // Gardé : toute la progression permanente traverse la migration intacte.
+    // Gardé : toute la progression permanente traverse la migration intacte —
+    // sauf le Souffle, et c'est attendu pendant la fenêtre de développement
+    // assumée par le plan de tâche 1 : `deserialiser` lit désormais
+    // `permanent.souffle`, mais MIGRATIONS[1] à [6] ne renomment pas le champ
+    // (elles décrivent un format qui l'a réellement porté sous `foi`), donc une
+    // save v4 littérale comme celle-ci retombe sur le repli tant que la
+    // migration v7 → v8 (tâche 4) ne fait pas le pont entre les deux noms.
     expect(relu.permanent.nombreEclosions).toBe(5)
     expect(relu.permanent.contenanceMana.eq(99999)).toBe(true)
     expect(relu.permanent.densites).toEqual([3, 2, 1, 0, 0, 0])
-    expect(relu.permanent.foi.eq(77)).toBe(true)
+    expect(relu.permanent.souffle.eq(0)).toBe(true)
     expect(relu.permanent.compteursTechnique).toEqual({
       creusement: 4,
       amelioration: 1,
@@ -283,7 +289,11 @@ describe('migration 5 → 6 : la mesure de redescente meurt sans emporter la sav
     expect(relu.telemetrie.cycles[0].dureeEcouleeSecondes).toBe(10_800)
     expect(relu.telemetrie.cycles[0].paliersOuverts).toBe(5)
     expect(relu.telemetrie.cycles[0].productionPicParSeconde.eq(321)).toBe(true)
-    expect(relu.telemetrie.cycles[0].foiGagnee.eq(17)).toBe(true)
+    // Fenêtre de développement assumée (tâche 1) : `telemetrieV5` porte encore
+    // `foiGagnee`, le nom réel du format v5, tandis que `deserialiser` lit
+    // désormais `souffleGagne`. Le repli comble donc à 0 jusqu'à la migration
+    // v7 → v8 (tâche 4).
+    expect(relu.telemetrie.cycles[0].souffleGagne.eq(0)).toBe(true)
 
     // Le seul lecteur qu'avait le champ ne le lit plus : le relevé de cycle
     // n'en dérive plus aucune fraction.
@@ -291,7 +301,7 @@ describe('migration 5 → 6 : la mesure de redescente meurt sans emporter la sav
   })
 })
 
-describe('migration 6 → 7 : le héros a un niveau, la Foi a un débouché', () => {
+describe('migration 6 → 7 : le héros a un niveau, le Souffle a un débouché', () => {
   it('une save v6 se réveille au niveau 1, sans bénédiction, et ne perd rien', () => {
     const v6 = {
       versionSave: 6,
@@ -303,7 +313,10 @@ describe('migration 6 → 7 : le héros a un niveau, la Foi a un débouché', ()
     const relu = deserialiser(v6, etatInitial(1))
     expect(relu.cycle.niveauDuHeros).toBe(1)
     expect(relu.cycle.especes.vairon.niveau).toBe(12)
-    expect(relu.permanent.foi.eq(40)).toBe(true)
+    // Fenêtre de développement assumée (tâche 1) : la save v6 porte encore
+    // `foi`, le nom réel du format v6, tandis que `deserialiser` lit désormais
+    // `souffle`. Le repli comble donc à 0 jusqu'à la migration v7 → v8 (tâche 4).
+    expect(relu.permanent.souffle.eq(0)).toBe(true)
     expect(relu.permanent.benedictions).toEqual({})
   })
 

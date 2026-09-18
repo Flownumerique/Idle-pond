@@ -1,7 +1,7 @@
 /**
  * IdlePond — vocabulaire de l'état de jeu.
  *
- * Tier 2. Lexique : assise, palier, espèce, niveau, densité, Foi, technique.
+ * Tier 2. Lexique : assise, palier, espèce, niveau, densité, Souffle, technique.
  * Aucun anglicisme, aucun « prestige ».
  *
  * Le banc a disparu le 2026-09-09 avec le modèle à population : une espèce
@@ -9,7 +9,7 @@
  * débloque une fois et dont on monte le niveau (noyau v1.0 §1.3).
  *
  * Le GDD est le document directif depuis le 2026-09-08. Deux conséquences ici :
- * `bénédiction` a disparu — la Foi n'achète que des miracles (§4.2) — et le mot
+ * `bénédiction` a disparu — le Souffle n'achète que des miracles (§4.2) — et le mot
  * « éclosion » désigne encore l'acte que le GDD nomme PONTE, en attendant le
  * renommage transverse qui touche les identifiants et les sauvegardes.
  *
@@ -55,7 +55,7 @@ export interface Benediction {
  * touche que des termes de coût ou de confort.
  *
  * Plus aucune source ne cible un terme de production : le GDD §4.2 interdit que
- * la Foi achète du rendement, et l'amendement v1.1 §2.D interdit qu'un succès
+ * le Souffle achète du rendement, et l'amendement v1.1 §2.D interdit qu'un succès
  * en donne. Le registre est donc entièrement descriptif aujourd'hui — il nomme
  * ce qui compose la captation, pour le détail auditable du §14.3.
  */
@@ -113,7 +113,7 @@ export type TermeDeCout =
   | 'cout_deblocage'
   /** Faire grandir le héros d'un niveau — spec 2026-09-17 [D3]. Fraction du coût du palier de même rang. */
   | 'cout_croissance'
-  /** Une bénédiction, en Foi. Un terme de coût comme un autre : la technique pourra le viser. */
+  /** Une bénédiction, en Souffle. Un terme de coût comme un autre : la technique pourra le viser. */
   | 'cout_benediction'
   | 'cout_temple'
   | 'cout_portail'
@@ -249,7 +249,7 @@ export type DeclencheurDeSucces =
   | { readonly quoi: 'niveau_d_espece'; readonly espece: EspeceId; readonly seuil: number }
   | { readonly quoi: 'niveaux_cumules'; readonly seuil: number }
   | { readonly quoi: 'production_par_seconde'; readonly seuil: number }
-  | { readonly quoi: 'foi'; readonly seuil: number }
+  | { readonly quoi: 'souffle'; readonly seuil: number }
   | { readonly quoi: 'densite_de_palier'; readonly palier: IndexPalier; readonly seuil: number }
   /**
    * Le palier ne peut plus rien recevoir.
@@ -279,7 +279,7 @@ export type DeclencheurDeSucces =
  *      aux succès, une source unique par CapaciteId.
  *
  * Une troisième raison est tombée avec les bénédictions : « la production est
- * le seul débouché de la Foi » n'a plus d'objet, la Foi n'achetant que des
+ * le seul débouché du Souffle » n'a plus d'objet, le Souffle n'achetant que des
  * miracles (GDD §4.2).
  *
  * [P] ARBITRAGE OUVERT. Le GDD §14.3 range `rendement` parmi les cibles
@@ -289,8 +289,8 @@ export type DeclencheurDeSucces =
  * qu'elle est strictement plus sûre et que le schéma du §14.9 est antérieur à
  * l'amendement. À trancher explicitement plutôt qu'à subir.
  *
- * Écarté explicitement : faire payer les succès en Foi. La Foi est ADRESSÉE,
- * elle ne se gagne pas par exploit.
+ * Écarté explicitement : faire payer les succès en Souffle. Le Souffle est ADRESSÉ,
+ * il ne se gagne pas par exploit.
  */
 export type EffetDeSucces =
   | { readonly genre: 'reduction_cout'; readonly terme: TermeDeCout; readonly part: number }
@@ -385,7 +385,7 @@ export interface EtatCycle {
   readonly manaCourant: Decimal
   readonly paliersOuverts: number
   readonly especes: Readonly<Record<EspeceId, EtatEspece>>
-  /** Indexe le gain de densité et le gain de Foi (§6.5, §6.6). */
+  /** Indexe le gain de densité et le gain de Souffle (§6.5, §6.6). */
   readonly productionPicParSeconde: Decimal
   readonly dureeSecondes: number
   /**
@@ -410,7 +410,7 @@ export interface EtatCycle {
 export interface EtatPermanent {
   /** Charge de mana par palier. Persistante, monotone croissante. */
   readonly densites: readonly number[]
-  readonly foi: Decimal
+  readonly souffle: Decimal
   /** Limite le stock de mana, pas la production. Conservée à l'éclosion. */
   readonly contenanceMana: Decimal
   /** Une marque par assise fixée. */
@@ -461,7 +461,7 @@ export interface MesureDeCycle {
   readonly dureeEcouleeSecondes: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: Decimal
-  readonly foiGagnee: Decimal
+  readonly souffleGagne: Decimal
 }
 
 export interface EtatTelemetrie {

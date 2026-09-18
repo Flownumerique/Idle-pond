@@ -31,8 +31,8 @@ import {
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
   DEBIT_HEROS,
   ECHELLE_DE_PRODUCTION,
-  FOI_COUT_DE_BENEDICTION_CIBLEE,
-  FOI_COUT_DE_BENEDICTION_GLOBALE,
+  SOUFFLE_COUT_DE_BENEDICTION_CIBLEE,
+  SOUFFLE_COUT_DE_BENEDICTION_GLOBALE,
   NOMBRE_DE_PALIERS,
   RATIO_COUT_DE_BENEDICTION,
   RATIO_COUT_DE_CROISSANCE,
@@ -393,12 +393,12 @@ export function coutDeCroissance(etat: EtatJeu, niveau: number): Decimal {
 }
 
 /**
- * Ce que coûte le rang suivant d'une bénédiction, EN FOI — spec 2026-09-17
+ * Ce que coûte le rang suivant d'une bénédiction, EN SOUFFLE — spec 2026-09-17
  * [D6]. Géométrique : `base × ratio ^ rang`. `cout_benediction` est un terme
  * de coût nommé, donc la technique et les succès pourront le viser.
  */
 export function coutDeBenediction(etat: EtatJeu, benediction: Benediction): Decimal {
-  const base = benediction.portee === 'globale' ? FOI_COUT_DE_BENEDICTION_GLOBALE : FOI_COUT_DE_BENEDICTION_CIBLEE
+  const base = benediction.portee === 'globale' ? SOUFFLE_COUT_DE_BENEDICTION_GLOBALE : SOUFFLE_COUT_DE_BENEDICTION_CIBLEE
   return new Decimal(base)
     .mul(Decimal.pow(RATIO_COUT_DE_BENEDICTION, rangDeBenediction(etat, benediction.id)))
     .mul(facteurDeCout(etat, 'cout_benediction'))
@@ -446,10 +446,10 @@ export function toutEstCreuse(etat: EtatJeu): boolean {
 
 /**
  * Le blocage doux : le palier suivant coûte plus que ce que la contenance peut
- * porter. Le joueur peut continuer à monter des niveaux et à faire grossir sa
- * Foi ; il ne peut simplement plus descendre. C'est la raison diégétique de
+ * porter. Le joueur peut continuer à monter des niveaux et à faire grossir son
+ * Souffle ; il ne peut simplement plus descendre. C'est la raison diégétique de
  * l'éclosion, et sa seule vraie décision : partir maintenant pour la
- * profondeur, ou rester pour la Foi.
+ * profondeur, ou rester pour le Souffle.
  */
 export function estBloque(etat: EtatJeu): boolean {
   if (toutEstCreuse(etat)) return true

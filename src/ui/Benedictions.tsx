@@ -1,8 +1,8 @@
 /**
  * Ce que tu bénis — noyau v1.0 §4.1 : « l'écran d'améliorations du jeu, comme
- * le veut la convention du genre ». Permanent, payé en Foi.
+ * le veut la convention du genre ». Permanent, payé en Souffle.
  *
- * Spec 2026-09-17 [D7] : ouvert tout le temps. La Foi n'est créditée qu'à
+ * Spec 2026-09-17 [D7] : ouvert tout le temps. Le Souffle n'est crédité qu'à
  * l'éclosion, donc ce que cet écran permet ne change qu'en rentrant dans
  * l'œuf ; mais un joueur qui revient d'une absence ne doit pas trouver une
  * porte fermée.
@@ -24,19 +24,19 @@ interface Props {
 }
 
 export function Benedictions({ etat, surBenediction }: Props) {
-  const foi = etat.permanent.foi
+  const souffle = etat.permanent.souffle
 
   return (
     <section className="space-y-2">
       <div className="flex items-baseline justify-between">
         <h2 className="font-texte text-lg text-jour-doux">Ce que tu bénis</h2>
-        <span className="font-chiffre text-sm text-foi tabular-nums">{montant(foi)} de Foi</span>
+        <span className="font-chiffre text-sm text-foi tabular-nums">{montant(souffle)} de Souffle</span>
       </div>
       <ol className="space-y-2">
         {BENEDICTIONS.map((b) => {
           const rang = rangDeBenediction(etat, b.id)
           const prix = coutDeBenediction(etat, b)
-          const payable = foi.gte(prix)
+          const payable = souffle.gte(prix)
           const nom = b.id === BENEDICTION_GLOBALE_ID ? TEXTE_DE_LA_BENEDICTION_GLOBALE.nom : `Bénir ${nomDeLEspece(b.espece as string)}`
           const effet = b.id === BENEDICTION_GLOBALE_ID ? TEXTE_DE_LA_BENEDICTION_GLOBALE.effet : TEXTE_DE_BENEDICTION_CIBLEE.effet
           return (
@@ -53,7 +53,7 @@ export function Benedictions({ etat, surBenediction }: Props) {
                 className="mt-2 w-full rounded-md border border-foi/60 px-3 py-1.5 text-sm text-foi transition-colors enabled:hover:bg-foi/10 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Bénir
-                <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(prix)} de Foi</span>
+                <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(prix)} de Souffle</span>
               </button>
             </li>
           )

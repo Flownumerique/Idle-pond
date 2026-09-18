@@ -16,8 +16,8 @@
 import Decimal from 'break_infinity.js'
 import type { AssiseId, EtatCycle, EtatJeu } from './types'
 import {
-  FOI_BASE,
-  FOI_EXPOSANT,
+  SOUFFLE_BASE,
+  SOUFFLE_EXPOSANT,
   MANA_A_LA_SORTIE_DE_L_OEUF,
   NIVEAU_DU_HEROS_AU_DEPART,
   PALIERS_OUVERTS_AU_DEPART,
@@ -29,18 +29,18 @@ import { creditCompteur } from './technique'
 import { ASSISES } from '../donnees/assises'
 
 /**
- * Gain de Foi prévu, indexé sur la production de pic du cycle.
+ * Gain de Souffle prévu, indexé sur la production de pic du cycle.
  *
  * C'est ce que le nœud « Lire l'eau » affichera en permanence, et c'est le
- * versant « rester pour la Foi » de la seule vraie décision du joueur : la Foi
- * ne se gagne pas en attendant, elle se gagne en faisant monter le pic.
+ * versant « rester pour le Souffle » de la seule vraie décision du joueur : le
+ * Souffle ne se gagne pas en attendant, il se gagne en faisant monter le pic.
  *
  * [P] graine — le barème n'est fixé par aucun document. À réfuter en v0.3.
  */
-export function gainDeFoiPrevu(etat: EtatJeu): Decimal {
+export function gainDeSoufflePrevu(etat: EtatJeu): Decimal {
   const rapport = etat.cycle.productionPicParSeconde.div(PRODUCTION_DE_REFERENCE)
   if (rapport.lte(1)) return new Decimal(0)
-  return new Decimal(FOI_BASE).mul(Decimal.pow(rapport, FOI_EXPOSANT)).floor()
+  return new Decimal(SOUFFLE_BASE).mul(Decimal.pow(rapport, SOUFFLE_EXPOSANT)).floor()
 }
 
 /**
@@ -89,7 +89,7 @@ export function couchesApres(etat: EtatJeu, paliersOuverts: number): readonly As
  */
 export function eclore(etat: EtatJeu): EtatJeu {
   const pic = etat.cycle.productionPicParSeconde
-  const foiGagnee = gainDeFoiPrevu(etat)
+  const souffleGagne = gainDeSoufflePrevu(etat)
   const densites = appliquerGainDeDensite(etat, etat.cycle.paliersOuverts, pic)
 
   // Le plafond ne monte QUE par séjour prolongé en mana dense (Tier 0 §8) :
@@ -107,7 +107,7 @@ export function eclore(etat: EtatJeu): EtatJeu {
       ...etat.permanent,
       densites,
       couches: couchesApres(etat, etat.cycle.paliersOuverts),
-      foi: etat.permanent.foi.add(foiGagnee),
+      souffle: etat.permanent.souffle.add(souffleGagne),
       contenanceMana,
       profondeurMaxAtteinte: Math.max(etat.permanent.profondeurMaxAtteinte, etat.cycle.paliersOuverts),
       nombreEclosions: etat.permanent.nombreEclosions + 1,
@@ -125,7 +125,7 @@ export function eclore(etat: EtatJeu): EtatJeu {
           dureeEcouleeSecondes: etat.cycle.dureeSecondes,
           paliersOuverts: etat.cycle.paliersOuverts,
           productionPicParSeconde: pic,
-          foiGagnee,
+          souffleGagne,
         },
       ],
     },

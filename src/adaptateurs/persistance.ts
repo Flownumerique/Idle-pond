@@ -52,7 +52,7 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
       },
       permanent: {
         ...etat.permanent,
-        foi: serialiserDecimal(etat.permanent.foi),
+        souffle: serialiserDecimal(etat.permanent.souffle),
         contenanceMana: serialiserDecimal(etat.permanent.contenanceMana),
         manaAmbiant: serialiserDecimal(etat.permanent.manaAmbiant),
       },
@@ -61,7 +61,7 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
         cycles: etat.telemetrie.cycles.map((c) => ({
           ...c,
           productionPicParSeconde: serialiserDecimal(c.productionPicParSeconde),
-          foiGagnee: serialiserDecimal(c.foiGagnee),
+          souffleGagne: serialiserDecimal(c.souffleGagne),
         })),
       },
     },
@@ -277,7 +277,7 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
     permanent: {
       ...repli.permanent,
       ...permanent,
-      foi: deserialiserDecimal(permanent.foi, repli.permanent.foi),
+      souffle: deserialiserDecimal(permanent.souffle, repli.permanent.souffle),
       contenanceMana: deserialiserDecimal(permanent.contenanceMana, repli.permanent.contenanceMana),
       manaAmbiant: deserialiserDecimal(permanent.manaAmbiant, repli.permanent.manaAmbiant),
     },
@@ -287,7 +287,7 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
       cycles: cycles.map((c) => ({
         ...(c as unknown as EtatJeu['telemetrie']['cycles'][number]),
         productionPicParSeconde: deserialiserDecimal(c.productionPicParSeconde, new Decimal(0)),
-        foiGagnee: deserialiserDecimal(c.foiGagnee, new Decimal(0)),
+        souffleGagne: deserialiserDecimal(c.souffleGagne, new Decimal(0)),
       })),
     },
   }

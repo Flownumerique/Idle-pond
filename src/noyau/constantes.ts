@@ -80,7 +80,7 @@ export const PALIERS_PAR_CYCLE_VISE = 4.4
  * Mesuré le 2026-09-16 sous la loi de contenance v1.3, politique par défaut,
  * graine 1 : le héros gagne 10 paliers au premier cycle puis 4 à 5 par cycle,
  * et le fond des 62 paliers tombe au CYCLE 13. Le quatorzième n'ouvre plus
- * rien : c'est la moisson, la vie qui convertit en Foi et en densité la
+ * rien : c'est la moisson, la vie qui convertit en Souffle et en densité la
  * profondeur que la treizième a atteinte. D'où 14.
  *
  * | cycle |  1 |  2 |  5 | 10 | 13 | 14 |
@@ -97,7 +97,7 @@ export const PALIERS_PAR_CYCLE_VISE = 4.4
  * restants ne voyaient plus rien s'ouvrir.
  *
  * Passé la treizième, la partie continue — mais sur d'AUTRES axes que la
- * profondeur : la Foi et l'arbre de technique (phases 4 et 5). C'est ce que
+ * profondeur : le Souffle et l'arbre de technique (phases 4 et 5). C'est ce que
  * cette constante ne dit pas, et ne doit pas dire.
  */
 export const NOMBRE_D_ECLOSIONS_VISE = 14
@@ -267,8 +267,8 @@ export const BONUS_PAR_NIVEAU_DU_HEROS = 0.15
 export const RATIO_COUT_DE_CROISSANCE = 1.75
 
 /* ─── Les bénédictions — noyau v1.0 §4, spec 2026-09-17 §3.2 ────────────────
- * L'écran d'améliorations permanentes du jeu, payé en Foi. Toutes ces valeurs
- * sont des graines : le premier cycle rapporte ~5 Foi, le deuxième ~1 600, et
+ * L'écran d'améliorations permanentes du jeu, payé en Souffle. Toutes ces valeurs
+ * sont des graines : le premier cycle rapporte ~5 Souffle, le deuxième ~1 600, et
  * c'est contre cette échelle qu'elles seront réfutées.
  */
 
@@ -282,9 +282,9 @@ export const BENEDICTION_CIBLEE_PAR_RANG = 0.5
  */
 export const BENEDICTION_GLOBALE_PAR_RANG = 0.05
 
-/** [P] graine — coût du premier rang, en Foi. */
-export const FOI_COUT_DE_BENEDICTION_CIBLEE = 3
-export const FOI_COUT_DE_BENEDICTION_GLOBALE = 2
+/** [P] graine — coût du premier rang, en Souffle. */
+export const SOUFFLE_COUT_DE_BENEDICTION_CIBLEE = 3
+export const SOUFFLE_COUT_DE_BENEDICTION_GLOBALE = 2
 
 /**
  * [P] graine — chaque rang coûte ce facteur de plus que le précédent.
@@ -473,7 +473,7 @@ export const ECHELLE_DE_PRODUCTION = 1
  * DENSE » passe désormais par la production, via `multiplicateurDensite`.
  *
  * Effet secondaire recherché, à ne pas casser : passé la saturation, rester ne
- * rapporte plus de profondeur, seulement de la Foi. C'est ce qui rend réelle
+ * rapporte plus de profondeur, seulement du Souffle. C'est ce qui rend réelle
  * la seule vraie décision du joueur — et il ne tient QUE parce que `τ₀` est
  * calibré sur la durée de cycle : un acquis qui sature en quelques secondes
  * rend la décision vide.
@@ -565,12 +565,12 @@ export const REGLAGE_CANONIQUE: Reglage = {
 
 /* ─── Graines d'éclosion ────────────────────────────────────────────────────*/
 
-/** [P] graine — référence de production servant à indexer densité et Foi. */
+/** [P] graine — référence de production servant à indexer densité et Souffle. */
 export const PRODUCTION_DE_REFERENCE = 1
 
-/** [P] graine — barème de Foi. Foi = base × (pic / référence) ^ exposant. */
-export const FOI_BASE = 1
-export const FOI_EXPOSANT = 0.5
+/** [P] graine — barème de Souffle. Souffle = base × (pic / référence) ^ exposant. */
+export const SOUFFLE_BASE = 1
+export const SOUFFLE_EXPOSANT = 0.5
 
 /* ─── Saturation de la jauge — noyau v1.0 §2.2 ──────────────────────────────
  *

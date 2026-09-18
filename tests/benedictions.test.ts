@@ -1,7 +1,7 @@
 /**
  * Les bénédictions — noyau v1.0 §4, spec 2026-09-17 §3.2.
  *
- * Permanentes, payées en Foi, et l'unique chose que la Foi achète tant que les
+ * Permanentes, payées en Souffle, et l'unique chose que le Souffle achète tant que les
  * miracles sont gelés. Ciblée : multiplicateur sur une espèce. Globale :
  * additif sur le débit de base de toutes les espèces, présentes et futures.
  */
@@ -13,8 +13,8 @@ import { BENEDICTION_GLOBALE_ID, BENEDICTIONS, benedictionCibleeDe, benedictionP
 import {
   BENEDICTION_CIBLEE_PAR_RANG,
   BENEDICTION_GLOBALE_PAR_RANG,
-  FOI_COUT_DE_BENEDICTION_CIBLEE,
-  FOI_COUT_DE_BENEDICTION_GLOBALE,
+  SOUFFLE_COUT_DE_BENEDICTION_CIBLEE,
+  SOUFFLE_COUT_DE_BENEDICTION_GLOBALE,
   RATIO_COUT_DE_BENEDICTION,
 } from '../src/noyau/constantes'
 import { ESPECES } from '../src/donnees/especes'
@@ -50,8 +50,8 @@ describe('B1 — le registre', () => {
   it('les graines sont positives, et le coût croît', () => {
     expect(BENEDICTION_CIBLEE_PAR_RANG).toBeGreaterThan(0)
     expect(BENEDICTION_GLOBALE_PAR_RANG).toBeGreaterThan(0)
-    expect(FOI_COUT_DE_BENEDICTION_CIBLEE).toBeGreaterThan(0)
-    expect(FOI_COUT_DE_BENEDICTION_GLOBALE).toBeGreaterThan(0)
+    expect(SOUFFLE_COUT_DE_BENEDICTION_CIBLEE).toBeGreaterThan(0)
+    expect(SOUFFLE_COUT_DE_BENEDICTION_GLOBALE).toBeGreaterThan(0)
     expect(RATIO_COUT_DE_BENEDICTION).toBeGreaterThan(1)
   })
 })
@@ -97,15 +97,15 @@ describe('B2 — ce qu’une bénédiction vaut', () => {
     expect(coutDeNiveau(etat, vairon, 7).eq(coutDeNiveau(nue, vairon, 7))).toBe(true)
   })
 
-  it('le coût en Foi est géométrique, et la globale et la ciblée ont chacune leur base', () => {
+  it('le coût en Souffle est géométrique, et la globale et la ciblée ont chacune leur base', () => {
     const etat = etatInitial(1)
     const globale = benedictionParId(BENEDICTION_GLOBALE_ID)!
     const ciblee = benedictionCibleeDe(vairon.id)
-    expect(coutDeBenediction(etat, globale).toNumber()).toBeCloseTo(FOI_COUT_DE_BENEDICTION_GLOBALE, 9)
-    expect(coutDeBenediction(etat, ciblee).toNumber()).toBeCloseTo(FOI_COUT_DE_BENEDICTION_CIBLEE, 9)
+    expect(coutDeBenediction(etat, globale).toNumber()).toBeCloseTo(SOUFFLE_COUT_DE_BENEDICTION_GLOBALE, 9)
+    expect(coutDeBenediction(etat, ciblee).toNumber()).toBeCloseTo(SOUFFLE_COUT_DE_BENEDICTION_CIBLEE, 9)
     const deuxRangs = benie(etat, { [ciblee.id]: 2 })
     expect(coutDeBenediction(deuxRangs, ciblee).toNumber()).toBeCloseTo(
-      FOI_COUT_DE_BENEDICTION_CIBLEE * Math.pow(RATIO_COUT_DE_BENEDICTION, 2),
+      SOUFFLE_COUT_DE_BENEDICTION_CIBLEE * Math.pow(RATIO_COUT_DE_BENEDICTION, 2),
       9,
     )
   })
@@ -137,28 +137,28 @@ describe('B2 — ce qu’une bénédiction vaut', () => {
 describe('B3 — bénir', () => {
   const vairon = ESPECES[0]
 
-  it('paie la Foi, monte le rang d’un', () => {
-    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, foi: new Decimal(100) } }
+  it('paie le Souffle, monte le rang d’un', () => {
+    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, souffle: new Decimal(100) } }
     const globale = benedictionParId(BENEDICTION_GLOBALE_ID)!
     const prix = coutDeBenediction(riche, globale)
     const apres = benir(riche, globale.id)
     expect(rangDeBenediction(apres, globale.id)).toBe(1)
-    expect(apres.permanent.foi.eq(riche.permanent.foi.sub(prix))).toBe(true)
-    // Le mana n'est pas touché : la Foi n'est pas une seconde monnaie de mana.
+    expect(apres.permanent.souffle.eq(riche.permanent.souffle.sub(prix))).toBe(true)
+    // Le mana n'est pas touché : le Souffle n'est pas une seconde monnaie de mana.
     expect(apres.cycle.manaCourant.eq(riche.cycle.manaCourant)).toBe(true)
   })
 
-  it('refuse sans rien changer si la Foi manque, ou si l’identifiant est inconnu', () => {
+  it('refuse sans rien changer si le Souffle manque, ou si l’identifiant est inconnu', () => {
     const pauvre = etatInitial(1)
-    expect(pauvre.permanent.foi.eq(0)).toBe(true)
+    expect(pauvre.permanent.souffle.eq(0)).toBe(true)
     expect(benir(pauvre, BENEDICTION_GLOBALE_ID)).toBe(pauvre)
-    const riche = { ...pauvre, permanent: { ...pauvre.permanent, foi: new Decimal(100) } }
+    const riche = { ...pauvre, permanent: { ...pauvre.permanent, souffle: new Decimal(100) } }
     expect(benir(riche, 'benediction-qui-n-existe-pas')).toBe(riche)
   })
 
   it('le rang traverse l’éclosion — c’est permanent', () => {
     const avecUneCiblee = benir(
-      { ...etatDeTravail(), permanent: { ...etatDeTravail().permanent, foi: new Decimal(1000) } },
+      { ...etatDeTravail(), permanent: { ...etatDeTravail().permanent, souffle: new Decimal(1000) } },
       benedictionCibleeDe(vairon.id).id,
     )
     expect(rangDeBenediction(avecUneCiblee, benedictionCibleeDe(vairon.id).id)).toBe(1)
@@ -168,7 +168,7 @@ describe('B3 — bénir', () => {
   it('les rangs sont sérialisés dans l’ordre du registre, pas de l’achat', () => {
     // Deux parties qui bénissent les mêmes choses dans un ordre différent
     // doivent produire la même chaîne de save (déterminisme).
-    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, foi: new Decimal(1e6) } }
+    const riche = { ...etatInitial(1), permanent: { ...etatInitial(1).permanent, souffle: new Decimal(1e6) } }
     const a = benir(benir(riche, 'benediction-loche'), BENEDICTION_GLOBALE_ID)
     const b = benir(benir(riche, BENEDICTION_GLOBALE_ID), 'benediction-loche')
     expect(Object.keys(a.permanent.benedictions)).toEqual(Object.keys(b.permanent.benedictions))

@@ -80,7 +80,7 @@ export interface Politique {
    *
    * C'est la forme opérationnelle de la seule vraie décision du joueur (§6.4).
    * L'acquis de séjour sature ; passé ce point, une heure de plus dans la même
-   * vie n'achète que de la Foi, alors qu'une éclosion achète de la profondeur.
+   * vie n'achète que du Souffle, alors qu'une éclosion achète de la profondeur.
    * Le joueur optimal part. Un minuteur de patience, à sa place, ne mesurerait
    * que l'impatience du simulateur.
    */
@@ -280,7 +280,7 @@ function depenser(etat: EtatJeu): EtatJeu {
  *
  * Deux conditions, et aucun minuteur : il n'y a plus de profondeur à prendre
  * dans cette vie, ET l'acquis de séjour a fait son travail. Rester au-delà
- * n'achète plus que de la Foi — c'est exactement l'arbitrage du §6.4, et c'est
+ * n'achète plus que du Souffle — c'est exactement l'arbitrage du §6.4, et c'est
  * le §2.B qui le rend réel en faisant saturer l'acquis.
  *
  * Une troisième condition a été RETIRÉE le 2026-09-09 : « plus aucune dépense
@@ -289,7 +289,7 @@ function depenser(etat: EtatJeu): EtatJeu {
  * l'instant où il est payé, elle tombe au bout de quelques minutes, et faisait
  * partir le joueur avant que la contenance ait rien gagné. Ne plus avoir quoi
  * acheter n'est pas une raison de partir — c'est exactement le moment où
- * rester ne rapporte plus que de la Foi et de la contenance, donc le moment
+ * rester ne rapporte plus que du Souffle et de la contenance, donc le moment
  * que le §2.B veut voir arriver.
  *
  * Exportée (tâche 11) : c'est la seule vraie décision du jeu, et elle ne doit
@@ -331,12 +331,12 @@ export interface ResultatDeSimulation {
 export type Observateur = (etat: EtatJeu) => void
 
 /**
- * Ce que le joueur fait de sa Foi : il bénit, la moins chère d'abord, tant
+ * Ce que le joueur fait de son Souffle : il bénit, la moins chère d'abord, tant
  * qu'il peut payer. Une politique, pas une règle du noyau — la globale et les
  * ciblées ont chacune leur échelle de prix, et le simulateur n'a pas à savoir
  * laquelle rapporte le plus dans une vie qui n'a pas encore commencé.
  *
- * Appelée juste après `eclore` : c'est là que la Foi est créditée. Elle
+ * Appelée juste après `eclore` : c'est là que le Souffle est crédité. Elle
  * termine d'elle-même — chaque rang multiplie le prix par le ratio.
  */
 export function benirAuMieux(etat: EtatJeu): EtatJeu {
@@ -345,7 +345,7 @@ export function benirAuMieux(etat: EtatJeu): EtatJeu {
     let choix: { readonly id: string; readonly cout: Decimal } | null = null
     for (const b of BENEDICTIONS) {
       const cout = coutDeBenediction(courant, b)
-      if (cout.gt(courant.permanent.foi)) continue
+      if (cout.gt(courant.permanent.souffle)) continue
       if (choix === null || cout.lt(choix.cout)) choix = { id: b.id, cout }
     }
     if (choix === null) return courant

@@ -45,8 +45,8 @@ export function App() {
         <h1 className="font-texte text-xl">IdlePond</h1>
         <dl className="flex items-baseline gap-5 text-sm">
           <div className="flex items-baseline gap-1.5">
-            <dt className="text-jour-tu">Foi</dt>
-            <dd className="font-chiffre text-foi tabular-nums">{montant(etat.permanent.foi)}</dd>
+            <dt className="text-jour-tu">Souffle</dt>
+            <dd className="font-chiffre text-foi tabular-nums">{montant(etat.permanent.souffle)}</dd>
           </div>
           <div className="flex items-baseline gap-1.5">
             <dt className="text-jour-tu">retours dans l’œuf</dt>
