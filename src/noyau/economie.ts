@@ -1,20 +1,10 @@
 /**
  * IdlePond — production, coûts, seuils.
  *
- * DEUX CANAUX ADDITIFS — GDD §3, « Fixé (canon) » au §16.1 :
- *
- *   captation/s =   débit_natif(population vivante présente)
- *                 + débit_acclimaté(part_mûre(palier) × rendement_acclimatation)
- *
- * Additifs, jamais multiplicatifs — c'est ce qui rend l'arbitrage réel plutôt
- * que cosmétique. Le natif est le débit des bancs, à 100 % d'emblée, et il tombe
- * avec la population. L'acclimaté ne dépend d'aucun vivant : il vient de l'eau
- * elle-même, et il est borné par la part mûre du palier (§3.0), que peupler
- * dilue.
- *
- * Les deux se rejoignent dans `productionTotaleParSeconde`, et nulle part
- * ailleurs : un module qui n'additionnerait qu'un canal serait faux sans qu'un
- * type ne s'en aperçoive.
+ * UN SEUL CANAL DE REVENU — noyau v1.0 §10 : les espèces. Et une espèce est un
+ * générateur avec un NIVEAU (§1.3) : on la débloque une fois, on monte son
+ * niveau, l'effet est immédiat. Plus aucune population n'est simulée, donc plus
+ * rien ne varie à l'intérieur d'un pas de tick.
  *
  * Les multiplicateurs qui s'ajoutent au canal sont des TermeDeFormule nommés,
  * jamais des facteurs anonymes : c'est ce qui rend le détail de captation
@@ -22,7 +12,9 @@
  */
 import Decimal from 'break_infinity.js'
 import type {
-  Banc,
+  Benediction,
+  BenedictionId,
+  Espece,
   EtatJeu,
   IndexPalier,
   LigneDeCaptation,
@@ -30,201 +22,276 @@ import type {
   TermeDeCout,
 } from './types'
 import {
-  AFFINITE_PLEINE_JUSQU_EN_V05,
+  BENEDICTION_CIBLEE_PAR_RANG,
+  BENEDICTION_GLOBALE_PAR_RANG,
+  BONUS_PAR_NIVEAU_DU_HEROS,
   COUT_CREUSER_AU_PALIER_1,
-  COUT_DEBLOCAGE_AU_PALIER_0,
-  COUT_DE_PLACE_AU_PALIER_0,
+  COUT_DEBLOCAGE_RATIO,
+  COUT_NIVEAU_PAR_DEBIT,
   BONUS_GLOBAL_A_CENT_INDIVIDUS,
-  DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES,
-  EXPOSANT_RECONVICTION_DENSITE,
-  F_FRACTION_D_AMENAGEMENT,
-  INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE,
+  DEBIT_HEROS,
+  ECHELLE_DE_PRODUCTION,
+  SOUFFLE_COUT_DE_BENEDICTION_CIBLEE,
+  SOUFFLE_COUT_DE_BENEDICTION_GLOBALE,
   NOMBRE_DE_PALIERS,
+  RATIO_COUT_DE_BENEDICTION,
+  RATIO_COUT_DE_CROISSANCE,
   SEUIL_D_ALERTE_DE_CONTENANCE,
-  RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05,
   SEUILS_DE_JALON,
-  TAUX_BASE_AU_PALIER_0,
 } from './constantes'
-import { assiseDuPalier } from '../donnees/assises'
-import { densiteDuPalier } from './densite'
-import { PART_MURE_D_UNE_EAU_INTOUCHEE } from './maturation'
-import { puissanceDeD, puissanceDeG, puissanceDuCoutDeNiveau } from '../donnees/echelles'
-import { PALIERS, bancsDuPalier } from '../donnees/paliers'
+import { densiteDuSejour, multiplicateurDensite } from './densite'
+import {
+  debitBaseDuRang,
+  puissanceDeG,
+  puissanceDuCoutDeNiveau,
+  puissanceDuMultiplicateurDePalier,
+} from '../donnees/echelles'
+import { ESPECES } from '../donnees/especes'
+import { BENEDICTION_GLOBALE_ID, benedictionCibleeDe } from '../donnees/benedictions'
 import { facteurDeTechnique } from './technique'
 import { SUCCES } from '../donnees/succes/index'
 
 /* ─── Seuils de jalon ───────────────────────────────────────────────────────*/
 
 /**
- * Multiplicateur de seuil d'un banc, d'après son EFFECTIF (§2.C).
+ * Multiplicateur de seuil d'une espèce, d'après son NIVEAU (§2.C).
  *
  * La table donne le multiplicateur CUMULÉ lu au seuil : on retient celui du
  * seuil le plus haut franchi, on ne multiplie pas les colonnes entre elles.
- * Cent individus valent ×16, jamais ×1024 — et `D = 2.31` a été calibré
- * contre cette lecture-là.
+ * Le niveau cent vaut ×16, jamais ×1024 — et `D = 2.31` a été calibré contre
+ * cette lecture-là.
  *
- * Il se lit sur l'effectif courant à chaque tick, donc il se reperd à
- * l'éclosion avec la population. Le seul acquis qui survit est le drapeau
+ * Il se lit sur le niveau courant, donc il tombe à l'ACHAT et se reperd à
+ * l'éclosion avec le niveau. Le seul acquis qui survit est le drapeau
  * permanent, plus bas.
  */
-export function multiplicateurDeSeuil(effectif: number): number {
+export function multiplicateurDeSeuil(niveau: number): number {
   let multiplicateur = 1
-  for (const seuil of SEUILS_DE_JALON) {
-    if (effectif >= seuil.seuil) multiplicateur = seuil.multiplicateurCumule
+  for (const palier of SEUILS_DE_JALON) {
+    if (niveau >= palier.seuil) multiplicateur = palier.multiplicateurCumule
   }
   return multiplicateur
 }
 
 /**
- * Bonus global des espèces ayant DÉJÀ atteint cent individus (§2.C).
+ * Bonus global des espèces ayant DÉJÀ atteint le niveau cent (§2.C).
  * Définitif, conservé à l'éclosion, additif entre espèces.
  */
 export function multiplicateurDesDrapeaux(etat: EtatJeu): number {
   return 1 + BONUS_GLOBAL_A_CENT_INDIVIDUS * etat.permanent.especesAyantAtteintCent.length
 }
 
-/* ─── Taux de base ──────────────────────────────────────────────────────────*/
+/* ─── Production ────────────────────────────────────────────────────────────*/
 
 /**
- * Production totale d'un palier à pleine puissance, rapportée au précédent :
- * `D`. Mesurée sur le PALIER, jamais par espèce — les bancs d'un même palier se
- * partagent ce taux, de sorte que le nombre d'espèces par palier ne fait pas
- * dériver le ratio (§6.3).
- */
-export function tauxBaseDuPalier(palier: IndexPalier): Decimal {
-  return puissanceDeD(palier).mul(TAUX_BASE_AU_PALIER_0)
-}
-
-export function tauxBaseDuBanc(banc: Banc): Decimal {
-  return tauxBaseDuPalier(banc.palier).div(bancsDuPalier(banc.palier).length)
-}
-
-/** Rendement du héros sur le type de mana du palier. Jamais repayé (Tier 0). */
-export function rendementAcclimatation(etat: EtatJeu, palier: IndexPalier): number {
-  const typeMana = assiseDuPalier(palier).typeMana
-  return etat.permanent.acclimatations[typeMana] ?? RENDEMENT_ACCLIMATATION_PLEIN_JUSQU_EN_V05
-}
-
-/**
- * Taux par individu SANS le multiplicateur de seuil.
+ * Débit de base d'une espèce, mana/s par niveau.
  *
- * Tous les termes qui restent constants pendant un tick sont ici ; le seul qui
- * varie en cours d'intervalle — le multiplicateur de seuil, qui se lit sur
- * l'effectif (§2.C) — en est sorti, pour que le noyau puisse l'intégrer
- * analytiquement plutôt que de le figer au début du pas.
+ * « Chaque espèce nouvelle a un débit de base égal à la somme de toutes les
+ * précédentes : elle double donc l'assiette additive à niveaux égaux. » Le
+ * reste de `D` est porté par le multiplicateur de profondeur, plus bas — le
+ * bestiaire seul ne le porte pas, puisque deux paliers sur trois n'apportent
+ * aucune espèce.
  */
-export function tauxParIndividuHorsSeuil(etat: EtatJeu, banc: Banc): Decimal {
-  return tauxBaseDuBanc(banc)
-    .mul(rendementAcclimatation(etat, banc.palier))
+export function debitBaseDeLEspece(espece: Espece): Decimal {
+  return debitBaseDuRang(espece.rang)
+}
+
+/* ─── Bénédictions — noyau v1.0 §4.2 ────────────────────────────────────────*/
+
+export function rangDeBenediction(etat: EtatJeu, id: BenedictionId): number {
+  return etat.permanent.benedictions[id] ?? 0
+}
+
+/**
+ * Le débit de base d'une espèce, augmenté de la bénédiction GLOBALE : additif,
+ * « sur le débit de base de toutes les espèces, présentes et futures ». Il
+ * domine quand les débits sont minuscules et s'efface une fois les
+ * multiplicateurs décollés — aucun ratio à régler.
+ *
+ * Le coût d'un niveau ne le lit PAS : il lit `debitBaseDeLEspece`. Bénir ne
+ * renchérit rien.
+ */
+export function debitBeni(etat: EtatJeu, espece: Espece): Decimal {
+  const rang = rangDeBenediction(etat, BENEDICTION_GLOBALE_ID)
+  if (rang === 0) return debitBaseDeLEspece(espece)
+  return debitBaseDeLEspece(espece).add(BENEDICTION_GLOBALE_PAR_RANG * rang)
+}
+
+/** La bénédiction CIBLÉE de l'espèce : `(1 + c) ^ rang`, empilable, 1 à rang 0. */
+export function multiplicateurDeBenediction(etat: EtatJeu, espece: Espece): number {
+  return Math.pow(1 + BENEDICTION_CIBLEE_PAR_RANG, rangDeBenediction(etat, benedictionCibleeDe(espece.id).id))
+}
+
+/**
+ * Multiplicateur global accordé par la profondeur ouverte.
+ *
+ * Il porte la part de `D` que le bestiaire ne porte pas : sans lui, la
+ * production croîtrait de 26 % par palier là où le coût croît de 140 %, et
+ * l'écart se composerait jusqu'à rendre les cycles profonds interminables.
+ */
+export function multiplicateurDeProfondeur(etat: EtatJeu): Decimal {
+  return puissanceDuMultiplicateurDePalier(Math.max(0, etat.cycle.paliersOuverts - 1))
+}
+
+/**
+ * Multiplicateur global du niveau du héros — spec 2026-09-17 [D2].
+ *
+ * `(1 + b) ^ (niveau − 1)` : au niveau 1 il vaut exactement 1, et un cycle
+ * dont le héros n'a jamais grandi produit ce qu'il produisait avant ce terme.
+ * Sa part de `D` est retirée au multiplicateur de profondeur, pas ajoutée
+ * par-dessus : voir `multiplicateurDePalier` dans `constantes.ts`.
+ */
+export function multiplicateurDuHeros(etat: EtatJeu): number {
+  return Math.pow(1 + BONUS_PAR_NIVEAU_DU_HEROS, Math.max(0, etat.cycle.niveauDuHeros - 1))
+}
+
+/**
+ * Tous les multiplicateurs globaux de la production, un seul produit — la
+ * source commune à chaque espèce, au total, ET à la politique du simulateur
+ * (`simulateur.ts`). Un multiplicateur ajouté ici vaut pour les trois sans
+ * resaisie : une liste recopiée à la main, plutôt que prise ici, est
+ * exactement ce qui avait laissé la densité hors du calcul du gain simulé
+ * (revue de qualité de la tâche 9, finding 2).
+ *
+ * `ECHELLE_DE_PRODUCTION` y entre aussi, malgré son statut de simple cadran :
+ * elle doit multiplier TOUT ce qui produit, pas seulement le total, sous
+ * peine de refaire diverger la somme par espèce du total dès qu'elle
+ * bougera (revue de qualité de la tâche 9, minor A).
+ */
+export function multiplicateursGlobaux(etat: EtatJeu): Decimal {
+  return multiplicateurDeProfondeur(etat)
+    .mul(multiplicateurDensite(densiteDuSejour(etat)))
+    .mul(multiplicateurDuHeros(etat))
     .mul(multiplicateurDesDrapeaux(etat))
+    .mul(ECHELLE_DE_PRODUCTION)
 }
 
-/** Taux d'un banc par individu et par seconde, tous termes nommés appliqués. */
-export function tauxParIndividu(etat: EtatJeu, banc: Banc, effectif: number): Decimal {
-  return tauxParIndividuHorsSeuil(etat, banc).mul(multiplicateurDeSeuil(effectif))
+/** Ce qu'une espèce apporte à l'assiette additive, avant les multiplicateurs globaux. */
+function debitDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
+  const vivante = etat.cycle.especes[espece.id]
+  if (vivante === undefined || !vivante.debloquee || vivante.niveau === 0) return new Decimal(0)
+  return debitBeni(etat, espece)
+    .mul(vivante.niveau)
+    .mul(multiplicateurDeSeuil(vivante.niveau))
+    .mul(multiplicateurDeBenediction(etat, espece))
 }
 
-export function productionDuBanc(etat: EtatJeu, banc: Banc): Decimal {
-  const bancEtat = etat.cycle.bancs[banc.id]
-  if (bancEtat === undefined || bancEtat.place <= 0) return new Decimal(0)
-  return tauxParIndividu(etat, banc, bancEtat.effectif).mul(bancEtat.effectif)
-}
-
-/* ─── Le canal acclimaté — GDD §3 et §3.0 ───────────────────────────────────*/
-
-export function partMureDuPalier(etat: EtatJeu, palier: IndexPalier): number {
-  return etat.permanent.partsMures[palier] ?? PART_MURE_D_UNE_EAU_INTOUCHEE
-}
-
-/** Place totale installée sur un palier — ce qui dilue son type (§3.0). */
-export function placeDuPalier(etat: EtatJeu, palier: IndexPalier): number {
-  let place = 0
-  for (const banc of PALIERS[palier].bancs) place += etat.cycle.bancs[banc.id]?.place ?? 0
-  return place
+/** Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués. */
+export function productionDeLEspece(etat: EtatJeu, espece: Espece): Decimal {
+  if (espece.palier >= etat.cycle.paliersOuverts) return new Decimal(0)
+  return debitDeLEspece(etat, espece).mul(multiplicateursGlobaux(etat))
 }
 
 /**
- * Débit acclimaté d'un palier, par seconde. Ne dépend d'AUCUN vivant.
- *
- * Il vient de l'eau : `part_mûre × rendement_acclimatation`, à la force que la
- * graine exprime en individus équivalents. C'est ce qui donne au héros un revenu
- * dès l'instant où il rouvre une galerie, avant d'y avoir ramené qui que ce
- * soit — et c'est pour ça que le §3 tient à ce que les canaux soient ADDITIFS.
+ * Ce que le débit du héros apporte RÉELLEMENT à la production, multiplicateurs
+ * globaux compris — §7.5 règle 3 : même un débit qui n'appartient à aucune
+ * espèce doit cibler un `TermeDeFormule`, jamais flotter hors du registre.
+ * `DEBIT_HEROS` brut (voir `detailDuHeros` plus bas) ne suffit pas à expliquer
+ * l'écart entre le total affiché et la somme des espèces à l'écran — c'est
+ * cette valeur, multipliée, qui le fait, et c'est elle que
+ * `src/ui/Contenance.tsx` affiche en regard du total.
  */
-export function productionAcclimateeDuPalier(etat: EtatJeu, palier: IndexPalier): Decimal {
-  return tauxBaseDuPalier(palier)
-    .mul(INDIVIDUS_EQUIVALENTS_DU_CANAL_ACCLIMATE)
-    .mul(partMureDuPalier(etat, palier))
-    .mul(rendementAcclimatation(etat, palier))
+export function productionDuHeros(etat: EtatJeu): Decimal {
+  return new Decimal(DEBIT_HEROS).mul(etat.cycle.niveauDuHeros).mul(multiplicateursGlobaux(etat))
 }
 
-/** La somme des deux canaux, sur tous les paliers ouverts. */
+/**
+ * La somme des espèces débloquées, PLUS le débit propre du héros — noyau v1.0
+ * §10 : un seul canal pour le bestiaire, et sa mutation à lui pour empêcher
+ * l'état DÉGÉNÉRÉ où plus rien ne produirait jamais (RESULTATS.md, finding 3,
+ * tâche 9). Le premier achat, lui, est tenu par la charge de départ
+ * (`MANA_A_LA_SORTIE_DE_L_OEUF`, voir son commentaire dans `constantes.ts`) —
+ * les deux mécanismes répondent à des besoins différents et ne se remplacent
+ * pas l'un l'autre.
+ *
+ * Construite à partir de `productionDeLEspece` et `productionDuHeros`, pas
+ * d'un second calcul de l'assiette : deux formules tenues manuellement en
+ * synchronisation sont exactement ce qui avait fait nourrir le multiplicateur
+ * de densité de deux grandeurs différentes — une somme sur les paliers d'un
+ * côté, un maximum de l'autre. Un seul
+ * calcul, appelé une fois par espèce plus une fois pour le héros, ne peut plus
+ * diverger de lui-même.
+ */
 export function productionTotaleParSeconde(etat: EtatJeu): Decimal {
-  let total = new Decimal(0)
-  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
-    for (const banc of PALIERS[palier].bancs) {
-      total = total.add(productionDuBanc(etat, banc))
-    }
-    total = total.add(productionAcclimateeDuPalier(etat, palier))
-  }
-  return total
+  const especes = ESPECES.reduce(
+    (somme, espece) => somme.add(productionDeLEspece(etat, espece)),
+    new Decimal(0),
+  )
+  return especes.add(productionDuHeros(etat))
+}
+
+/**
+ * Ce que le débit BRUT du héros vaut, nommé — `DEBIT_HEROS` avant tout
+ * multiplicateur. Vit ICI, à côté du total qu'il explique
+ * (`productionTotaleParSeconde`, juste au-dessus), plutôt que dans
+ * `detailDeCaptation` plus bas : ce dernier est attributable à UNE espèce, et
+ * le héros n'en porte aucune. La valeur RÉELLEMENT captée — celle à afficher —
+ * est `productionDuHeros`, pas la valeur brute d'ici : §8.2 veut la
+ * contrepartie d'un effet, pas son seul nom.
+ */
+export function detailDuHeros(etat: EtatJeu): readonly LigneDeCaptation[] {
+  const source = { quoi: 'heros', niveau: etat.cycle.niveauDuHeros } as const
+  return [
+    { terme: 'debit_heros', valeur: DEBIT_HEROS, source },
+    { terme: 'multiplicateur_heros', valeur: multiplicateurDuHeros(etat), source },
+  ]
 }
 
 /**
  * Détail de la captation (§8.2) : chaque terme actif attribuable à sa source.
  * C'est la contrepartie obligatoire d'un effet appliqué silencieusement.
  */
-export function detailDeCaptation(etat: EtatJeu, banc: Banc): readonly LigneDeCaptation[] {
-  const bancEtat = etat.cycle.bancs[banc.id]
-  const effectif = bancEtat?.effectif ?? 0
-  return [
-    { terme: 'effectif', valeur: effectif, source: { quoi: 'population' } },
-    { terme: 'taux_base', valeur: tauxBaseDuBanc(banc).toNumber(), source: { quoi: 'palier', palier: banc.palier } },
+export function detailDeCaptation(etat: EtatJeu, espece: Espece): readonly LigneDeCaptation[] {
+  const niveau = etat.cycle.especes[espece.id]?.niveau ?? 0
+  const densite = densiteDuSejour(etat)
+  const beniRang = rangDeBenediction(etat, BENEDICTION_GLOBALE_ID)
+  const beniCibleeRang = rangDeBenediction(etat, benedictionCibleeDe(espece.id).id)
+  const lignes: LigneDeCaptation[] = [
+    { terme: 'niveau', valeur: niveau, source: { quoi: 'niveau', niveau } },
     {
-      terme: 'rendement_acclimatation',
-      valeur: rendementAcclimatation(etat, banc.palier),
-      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(banc.palier).typeMana },
+      terme: 'taux_base',
+      valeur: debitBaseDeLEspece(espece).toNumber(),
+      source: { quoi: 'palier', palier: espece.palier },
     },
     {
-      terme: 'multiplicateur_jalon',
-      valeur: multiplicateurDeSeuil(effectif),
-      source: { quoi: 'place', place: bancEtat?.place ?? 0 },
+      terme: 'benediction_globale',
+      valeur: debitBeni(etat, espece).div(debitBaseDeLEspece(espece)).toNumber(),
+      source: { quoi: 'benediction', rang: beniRang },
     },
+  ]
+  lignes.push({
+    terme: 'multiplicateur_jalon',
+    valeur: multiplicateurDeSeuil(niveau),
+    source: { quoi: 'niveau', niveau },
+  })
+  lignes.push({
+    terme: 'multiplicateur_benediction',
+    valeur: multiplicateurDeBenediction(etat, espece),
+    source: { quoi: 'benediction', rang: beniCibleeRang },
+  })
+  lignes.push(
     {
       terme: 'multiplicateur_drapeau',
       valeur: multiplicateurDesDrapeaux(etat),
       source: { quoi: 'drapeaux_permanents', especes: etat.permanent.especesAyantAtteintCent.length },
     },
-  ]
-}
-
-/**
- * Détail du canal acclimaté d'un palier.
- *
- * Séparé du précédent, et il doit l'être : le natif se lit par banc, l'acclimaté
- * par palier. Les mêler dans une seule liste laisserait croire qu'un banc porte
- * une part du revenu de l'eau, alors que celui-ci tombe même quand il n'y a
- * personne — ce qui est précisément ce que le joueur doit comprendre du §3.
- */
-export function detailDuCanalAcclimate(etat: EtatJeu, palier: IndexPalier): readonly LigneDeCaptation[] {
-  const part = partMureDuPalier(etat, palier)
-  return [
     {
-      terme: 'part_mure',
-      valeur: part,
-      source: { quoi: 'eau_murie', part },
+      terme: 'multiplicateur_profondeur',
+      valeur: multiplicateurDeProfondeur(etat).toNumber(),
+      source: { quoi: 'profondeur', paliersOuverts: etat.cycle.paliersOuverts },
     },
     {
-      terme: 'rendement_acclimatation',
-      valeur: rendementAcclimatation(etat, palier),
-      source: { quoi: 'acclimatation', typeMana: assiseDuPalier(palier).typeMana },
+      terme: 'multiplicateur_densite',
+      valeur: multiplicateurDensite(densite),
+      source: { quoi: 'densite', densite },
     },
     {
-      terme: 'debit_acclimate',
-      valeur: productionAcclimateeDuPalier(etat, palier).toNumber(),
-      source: { quoi: 'canal_acclimate' },
+      terme: 'multiplicateur_heros',
+      valeur: multiplicateurDuHeros(etat),
+      source: { quoi: 'heros', niveau: etat.cycle.niveauDuHeros },
     },
-  ]
+  )
+  return lignes
 }
 
 /* ─── Coûts ─────────────────────────────────────────────────────────────────*/
@@ -264,79 +331,84 @@ export function coutBaseDuPalier(cible: IndexPalier): Decimal {
 }
 
 /**
- * Vrai si ce palier a déjà été atteint dans une vie précédente — GDD §6.4.
+ * Ce que coûte de descendre d'un palier — un seul puits, noyau v1.0 §3.1.
  *
- * C'est toute la distinction entre les deux puits du §4.1 : CREUSER ouvre le
- * palier suivant, AMÉNAGER rend habitable un palier que les galeries
- * effondrées ont refermé. « La roche ne se souvient pas des galeries »
- * (§10.1) ; le héros, lui, se souvient de la profondeur.
- */
-export function estUnAmenagement(etat: EtatJeu, cible: IndexPalier): boolean {
-  return cible < etat.permanent.profondeurMaxAtteinte
-}
-
-/**
- * Ce que coûte de descendre d'un palier — les deux puits du GDD §4.1.
+ *   coût_base(palier) × technique × succès
  *
- *   creuser   : coût_base(palier)
- *   aménager  : coût_base(palier) × f × réduction_technique      (§6.4)
- *
- * `reduction_technique` ne touche QUE l'aménagement, et c'est voulu : « un
- * puits, un levier ». Jusqu'au 2026-09-08 elle s'appliquait aussi au
- * creusement, ce qui donnait deux leviers au même coût et rendait l'ensemble
- * inéquilibrable.
+ * `f` valait 1 depuis toujours : le noyau v1.0 §3.1 ferme [P5] et retire le
+ * tarif réduit qu'un palier déjà atteint dans une vie passée payait avant le
+ * 2026-09-09. Retraverser coûte exactement ce qu'un creusement neuf coûterait
+ * — la profondeur maximale atteinte n'entre plus dans ce calcul.
  */
 export function coutDeDescente(etat: EtatJeu, cible: IndexPalier): Decimal {
-  const base = coutBaseDuPalier(cible)
-  if (!estUnAmenagement(etat, cible)) return base.mul(facteurDeCout(etat, 'cout_creuser'))
-  return base.mul(F_FRACTION_D_AMENAGEMENT).mul(facteurDeCout(etat, 'reduction_technique'))
+  return coutBaseDuPalier(cible)
+    .mul(facteurDeTechnique(etat, 'cout_creuser'))
+    .mul(facteurDeSucces(etat, 'cout_creuser'))
 }
 
 /**
- * Coût de conviction d'un banc — GDD §7.1.
+ * Ce que coûte de débloquer une espèce — noyau v1.0 §1.3.
  *
- *   coût_base(espèce) ÷ affinité(type, espèce) ÷ densité_locale_du_type
+ *   coût_base(palier de l'espèce) × COUT_DEBLOCAGE_RATIO
  *
- * « Le second dénominateur est la réponse au problème du prestige : une espèce
- * se laisse reconvaincre d'autant plus facilement que l'eau est déjà chargée du
- * type qu'elle supporte. Ce n'est pas un bonus, c'est une conséquence — la
- * densité conservée est la mémoire du monde, et c'est elle qui paie le retour. »
+ * Une fois par espèce et par vie. Le déblocage suit le coût de son palier
+ * plutôt qu'une échelle à lui : c'est la profondeur où elle vit qui dit ce
+ * qu'il en coûte de l'atteindre.
  *
- * Aucun facteur de technique ni de succès n'entre ici : la conviction est payée
- * par la densité, et par elle seule (§6.4, « un puits, un levier »).
- *
- * [P] La densité est portée par palier, là où le §7.1 l'indexe sur le TYPE de
- * mana. Les deux coïncident tant qu'une assise entière porte un type unique ;
- * elles cesseront de coïncider avec les temples, qui chargent un palier d'un
- * type qui n'est pas celui de son assise (§9).
+ * La densité n'entre plus ici. Elle payait la reconviction (GDD §7.1) tant
+ * qu'il y avait une population à reconvaincre ; elle n'a plus qu'un seul
+ * débouché, la production, par le multiplicateur de densité, et le coût de
+ * déblocage est redevenu un levier ordinaire.
  */
-export function coutDeConviction(etat: EtatJeu, banc: Banc): Decimal {
-  const memoireDuMonde = Math.pow(
-    1 + densiteDuPalier(etat, banc.palier),
-    EXPOSANT_RECONVICTION_DENSITE,
-  )
-  return puissanceDeG(banc.palier)
-    .mul(COUT_DEBLOCAGE_AU_PALIER_0)
-    .div(AFFINITE_PLEINE_JUSQU_EN_V05)
-    .div(memoireDuMonde)
+export function coutDeDeblocage(etat: EtatJeu, espece: Espece): Decimal {
+  return coutBaseDuPalier(espece.palier)
+    .mul(COUT_DEBLOCAGE_RATIO)
+    .mul(facteurDeCout(etat, 'cout_deblocage'))
 }
 
 /**
- * Coût d'une place de plus. Achat répétable, ×1.15.
- * Le joueur achète de la place, jamais des individus (§2.C).
+ * Coût du niveau suivant. Achat répétable de la boucle, ×1.15.
+ *
+ * Il suit le débit de base de SON espèce, donc le temps de remboursement d'un
+ * niveau est le même pour la première espèce et pour la vingt et unième.
  */
-export function coutDePlace(etat: EtatJeu, banc: Banc, place: number): Decimal {
-  return puissanceDeG(banc.palier)
-    .mul(COUT_DE_PLACE_AU_PALIER_0)
-    .mul(puissanceDuCoutDeNiveau(Math.max(0, place - 1)))
-    .mul(facteurDeCout(etat, 'cout_place'))
+export function coutDeNiveau(etat: EtatJeu, espece: Espece, niveau: number): Decimal {
+  return debitBaseDeLEspece(espece)
+    .mul(COUT_NIVEAU_PAR_DEBIT)
+    .mul(puissanceDuCoutDeNiveau(Math.max(0, niveau)))
+    .mul(facteurDeCout(etat, 'cout_niveau'))
+}
+
+/**
+ * Ce que coûte de faire grandir le héros de `niveau` à `niveau + 1` — spec
+ * 2026-09-17 [D3] : une fraction du coût du palier de même rang, donc `g^(n−1)`.
+ * Le joueur optimal en paie à peu près un par palier, et c'est ce qui autorise
+ * le rebudget de `D` dans `multiplicateurDePalier`.
+ */
+export function coutDeCroissance(etat: EtatJeu, niveau: number): Decimal {
+  return puissanceDeG(Math.max(0, niveau - 1))
+    .mul(COUT_CREUSER_AU_PALIER_1)
+    .mul(RATIO_COUT_DE_CROISSANCE)
+    .mul(facteurDeCout(etat, 'cout_croissance'))
+}
+
+/**
+ * Ce que coûte le rang suivant d'une bénédiction, EN SOUFFLE — spec 2026-09-17
+ * [D6]. Géométrique : `base × ratio ^ rang`. `cout_benediction` est un terme
+ * de coût nommé, donc la technique et les succès pourront le viser.
+ */
+export function coutDeBenediction(etat: EtatJeu, benediction: Benediction): Decimal {
+  const base = benediction.portee === 'globale' ? SOUFFLE_COUT_DE_BENEDICTION_GLOBALE : SOUFFLE_COUT_DE_BENEDICTION_CIBLEE
+  return new Decimal(base)
+    .mul(Decimal.pow(RATIO_COUT_DE_BENEDICTION, rangDeBenediction(etat, benediction.id)))
+    .mul(facteurDeCout(etat, 'cout_benediction'))
 }
 
 /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
 
 /** La contenance limite le stock, pas la production. */
 export function contenance(etat: EtatJeu): Decimal {
-  return etat.permanent.contenanceMana
+  return etat.permanent.contenanceMana.mul(1 + etat.cycle.acquisDeSejour)
 }
 
 /* ─── La jauge et sa saturation — GDD §2.4 ──────────────────────────────────
@@ -367,17 +439,6 @@ export function estSature(etat: EtatJeu): boolean {
   return etat.cycle.manaCourant.gte(contenance(etat))
 }
 
-/**
- * La divergence non choisie est due : la jauge est restée pleine trop longtemps.
- *
- * Jamais « forcée » — le mot est pris au Tier 0 §2 par le cas inverse, celui
- * de la tentative délibérée qui tue. Ici le joueur n'a rien tenté, il a laissé
- * monter.
- */
-export function divergenceNonChoisieEstDue(etat: EtatJeu): boolean {
-  return etat.cycle.secondesEnSaturation >= DELAI_DE_DIVERGENCE_NON_CHOISIE_HEURES * 3600
-}
-
 /** Plus rien à creuser : soit la roche est finie, soit le contenu l'est. */
 export function toutEstCreuse(etat: EtatJeu): boolean {
   return etat.cycle.paliersOuverts >= Math.min(etat.limiteDeContenu, NOMBRE_DE_PALIERS)
@@ -385,10 +446,10 @@ export function toutEstCreuse(etat: EtatJeu): boolean {
 
 /**
  * Le blocage doux : le palier suivant coûte plus que ce que la contenance peut
- * porter. Le joueur peut continuer à monter des niveaux et à faire grossir sa
- * Foi ; il ne peut simplement plus descendre. C'est la raison diégétique de
+ * porter. Le joueur peut continuer à monter des niveaux et à faire grossir son
+ * Souffle ; il ne peut simplement plus descendre. C'est la raison diégétique de
  * l'éclosion, et sa seule vraie décision : partir maintenant pour la
- * profondeur, ou rester pour la Foi.
+ * profondeur, ou rester pour le Souffle.
  */
 export function estBloque(etat: EtatJeu): boolean {
   if (toutEstCreuse(etat)) return true

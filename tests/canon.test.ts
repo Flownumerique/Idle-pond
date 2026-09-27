@@ -14,16 +14,19 @@ import {
   SEUILS_DE_JALON,
   THETA_PART_COMPENSEE,
   densiteExposant,
+  BONUS_PAR_NIVEAU_DU_HEROS,
   BUDGET_DE_VERBES_ARBRE,
   BUDGET_DE_VERBES_TOTAL,
   CROISSANCE_PAR_CYCLE_VISEE,
+  DEBIT_RATIO_ESPECE,
   D_PRODUCTION_PAR_PALIER,
-  F_TARIF_REDESCENTE,
+  ESPECE_TOUS_LES_N_PALIERS,
   G_COUT_PALIER,
   NOMBRE_DE_PALIERS,
   NOMBRE_D_ESPECES_DE_BASE,
   PALIERS_PAR_CYCLE_VISE,
   RAPPORT_G_SUR_D,
+  multiplicateurDePalier,
 } from '../src/noyau/constantes'
 import { TERMES_DE_CONFORT, TERMES_DE_COUT, TERMES_DE_PRODUCTION } from '../src/noyau/types'
 import type { CapaciteId } from '../src/noyau/types'
@@ -32,8 +35,8 @@ import { SUCCES } from '../src/donnees/succes/index'
 import { PALIERS } from '../src/donnees/paliers'
 import { ESPECE_RESERVEE, ESPECES } from '../src/donnees/especes'
 import { ASSISES } from '../src/donnees/assises'
-import { FRACTION_CONSERVEE } from '../src/noyau/eclosion'
-import { sansCommentaires } from './outils'
+import { BENEDICTIONS } from '../src/donnees/benedictions'
+import { sansChaines, sansCommentaires } from './outils'
 import {
   NOM_DES_ASSISES,
   NOM_DES_ESPECES,
@@ -45,13 +48,20 @@ import type { SourceDeTerme } from '../src/noyau/types'
 
 /** Toutes les formes de source, pour que le test couvre le gabarit entier. */
 const SOURCES_A_VERIFIER: readonly SourceDeTerme[] = [
-  { quoi: 'population' },
+  { quoi: 'niveau', niveau: 0 },
+  { quoi: 'niveau', niveau: 12 },
   { quoi: 'palier', palier: 0 },
   { quoi: 'palier', palier: 4 },
-  { quoi: 'acclimatation', typeMana: 'type-mana-1' },
-  { quoi: 'place', place: 12 },
   { quoi: 'drapeaux_permanents', especes: 0 },
   { quoi: 'drapeaux_permanents', especes: 3 },
+  { quoi: 'profondeur', paliersOuverts: 1 },
+  { quoi: 'profondeur', paliersOuverts: 7 },
+  { quoi: 'densite', densite: 0 },
+  { quoi: 'densite', densite: 12.5 },
+  { quoi: 'heros', niveau: 1 },
+  { quoi: 'heros', niveau: 7 },
+  { quoi: 'benediction', rang: 0 },
+  { quoi: 'benediction', rang: 3 },
 ]
 
 const RACINE = resolve(__dirname, '..')
@@ -64,18 +74,16 @@ function fichiersTs(racine: string): string[] {
   })
 }
 
-describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
+describe("noyau v1.0 §4 — la Foi achète des bénédictions, et rien d'autre ne monte la production", () => {
   /**
-   * Ce bloc a été RETOURNÉ le 2026-09-08, et c'est le fait marquant du jalon.
+   * RETOURNÉ une seconde fois, le 2026-09-17. Le 2026-09-08 ce bloc avait
+   * supprimé les bénédictions au nom du GDD §4.2 ; le soir même la préséance
+   * est passée au noyau v1.0 pour la mécanique (`docs/PRESEANCE.md`), et le
+   * noyau §4 fait des bénédictions « l'écran d'améliorations du jeu ». Le code
+   * avait gardé la suppression. Spec 2026-09-17 [D8].
    *
-   * Il exigeait auparavant, sous le titre « la frontière technique /
-   * bénédiction », qu'une bénédiction cible un terme de PRODUCTION — c'est-à-
-   * dire exactement ce que le GDD §4.2 interdit : « elle n'achète ni rendement,
-   * ni multiplicateur », « tout arbre d'achats en Foi est une erreur de
-   * conception ». Le garde-fou protégeait la faute.
-   *
-   * Les bénédictions sont supprimées, pas converties. Ce qui reste à vérifier
-   * est qu'aucune source ne les réintroduise par un autre chemin.
+   * Ce qui reste vrai, et vérifié : la technique et les succès ne montent
+   * jamais une production ; une bénédiction ne fait QUE cela.
    */
   it('aucun nœud de technique ne monte une production', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
@@ -85,24 +93,21 @@ describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
     }
   })
 
-  it('plus aucun terme de production n’est atteignable par un achat', () => {
-    // La Foi n'a plus de débouché chiffré : le registre de production ne
-    // subsiste que pour NOMMER les termes du détail de captation (§14.3).
-    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_ciblee')
-    expect(TERMES_DE_PRODUCTION as string[]).not.toContain('benediction_globale')
+  it("une bénédiction ne cible qu'un terme de production, jamais un coût ni un plafond", () => {
+    for (const benediction of BENEDICTIONS) {
+      const terme = benediction.portee === 'ciblee' ? 'multiplicateur_benediction' : 'benediction_globale'
+      expect(TERMES_DE_PRODUCTION as string[]).toContain(terme)
+      expect(TERMES_DE_COUT as string[]).not.toContain(terme)
+      expect(TERMES_DE_CONFORT as string[]).not.toContain(terme)
+    }
   })
 
-  it('aucune source de bénédiction ne subsiste dans le code', () => {
-    // La migration de save est la seule exception, et elle est structurelle :
-    // pour RETIRER une clef morte d'une save v2, il faut la nommer. Une
-    // migration est le dernier endroit où un mot supprimé survit légitimement,
-    // et le seul où l'interdire empêcherait de finir le travail.
-    const migrations = join('src', 'adaptateurs', 'persistance.ts')
-    const fautes = fichiersTs(join(RACINE, 'src'))
-      .map((f) => relative(RACINE, f))
-      .filter((f) => f !== migrations)
-      .filter((f) => /b[ée]n[ée]diction/i.test(sansCommentaires(readFileSync(join(RACINE, f), 'utf8'))))
-    expect(fautes).toEqual([])
+  it('une bénédiction ciblée par espèce, une globale, et pas une de plus', () => {
+    const ciblees = BENEDICTIONS.filter((b) => b.portee === 'ciblee')
+    const globales = BENEDICTIONS.filter((b) => b.portee === 'globale')
+    expect(ciblees.map((b) => b.espece)).toEqual(ESPECES.map((e) => e.id))
+    expect(globales).toHaveLength(1)
+    expect(globales[0].espece).toBeNull()
   })
 
   it('aucun succès ne monte une production (amendement v1.1 §2.D)', () => {
@@ -122,23 +127,23 @@ describe('GDD §4.2 — la Foi n’achète que des miracles', () => {
     }
   })
 
-  it('GDD §6.4 — un puits, un levier : rien ne double la densité sur la conviction', () => {
-    // « L'aménagement est payé par la technique ; la reconviction garde sa
-    // formule et reste payée par la densité. Aucun coût n'a deux leviers —
-    // c'est ce qui rend l'ensemble équilibrable. »
-    //
-    // `cout_reconviction` existe pour être NOMMÉ dans le détail de captation,
-    // jamais pour être ciblé. C'est le genre de règle qu'on enfreint sans le
-    // voir, en ajoutant un nœud « Conviction −20 % » qui a l'air inoffensif.
-    for (const noeud of NOEUDS_TECHNIQUE) {
-      if (noeud.effet.nature !== 'chiffre') continue
-      expect(noeud.effet.terme, `le nœud ${noeud.id}`).not.toBe('cout_reconviction')
-    }
-    for (const succes of SUCCES) {
-      if (succes.effet === null || succes.effet.genre === 'verbe') continue
-      expect(succes.effet.terme, `le succès ${succes.id}`).not.toBe('cout_reconviction')
-    }
-  })
+  /*
+   * RETIRÉ le 2026-09-09 : « un puits, un levier — rien ne double la densité
+   * sur la conviction ».
+   *
+   * Il vérifiait qu'aucun nœud ni succès ne visait `cout_reconviction`, parce
+   * que la conviction était payée par la DENSITÉ et par elle seule (GDD §7.1) :
+   * lui donner un second levier rendait l'ensemble inéquilibrable. Le terme est
+   * devenu `cout_deblocage`, et sa formule ne lit plus la densité du tout — le
+   * noyau v1.0 §1.3 en fait une fraction du coût de son palier. Il n'y a donc
+   * plus de premier levier à protéger, et interdire le second reviendrait à
+   * défendre une règle dont l'objet a disparu.
+   *
+   * `reduction_technique` et le puits d'aménagement qu'il portait sont partis
+   * à leur tour le 2026-09-09 (tâche 6, noyau v1.0 §3.1) : `f` = 1, il n'y a
+   * plus qu'un seul puits de descente, `cout_creuser`. Ce qui reste vrai et
+   * reste vérifié : aucun effet ne monte une production.
+   */
 
   it('aucun effet chiffré ne flotte sans terme nommé', () => {
     for (const noeud of NOEUDS_TECHNIQUE) {
@@ -189,12 +194,15 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     expect(D_PRODUCTION_PAR_PALIER).not.toBeCloseTo(G_COUT_PALIER, 2)
   })
 
-  it('f = 1 : reset complet, aucune fraction conservée', () => {
-    expect(F_TARIF_REDESCENTE).toBe(1)
-    expect(FRACTION_CONSERVEE).toBe(0)
+  it('f = 1 : reset complet, et la constante elle-même n’existe plus', () => {
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    expect(source).not.toContain('F_TARIF_REDESCENTE')
+    expect(source).not.toContain('estUnAmenagement')
   })
 
-  it('les seuils sont CUMULÉS : cent individus valent ×16, pas ×1024', () => {
+  it('les seuils sont CUMULÉS : le centième niveau vaut ×16, pas ×1024', () => {
     // Le §2.C ordonne cette vérification avant toute ligne de code : `D = 2.31`
     // a été ajusté contre cette lecture, et une table multiplicative rendrait
     // tout le calibrage faux.
@@ -214,11 +222,33 @@ describe('§13 — les valeurs fixées et leurs dérivations', () => {
     expect(ESPECES.length).toBe(NOMBRE_D_ESPECES_DE_BASE)
   })
 
-  it('chaque palier appartient à une assise et porte au moins un banc', () => {
+  it('chaque palier appartient à une assise, et porte au plus une espèce', () => {
     for (const palier of PALIERS) {
       expect(ASSISES.some((a) => a.id === palier.assise)).toBe(true)
-      expect(palier.bancs.length).toBeGreaterThan(0)
+      if (palier.espece === null) continue
+      expect(ESPECES.map((e) => e.id)).toContain(palier.espece)
     }
+    expect(PALIERS.filter((p) => p.espece !== null)).toHaveLength(NOMBRE_D_ESPECES_DE_BASE)
+  })
+
+  it('une espèce est ancrée à trois fois son rang, sinon son débit décroche de D', () => {
+    // Le débit de base d'une espèce croît de `DEBIT_RATIO_ESPECE` par RANG, et
+    // le multiplicateur de profondeur porte le reste de `D` par PALIER. Les
+    // deux ne se composent en `D^palier` que si l'ancre vaut exactement
+    // `3 × rang` — ce que la répartition 6/12/12/12/12/8 garantit, et qu'une
+    // autre casserait sans qu'aucun autre test ne le dise.
+    for (const espece of ESPECES) {
+      expect(espece.palier, `l’espèce ${espece.id}`).toBe(espece.rang * ESPECE_TOUS_LES_N_PALIERS)
+    }
+  })
+
+  it('le multiplicateur de palier et le héros portent ensemble la part de D que le bestiaire ne porte pas', () => {
+    // Spec 2026-09-17 [D3] : un niveau de héros par palier, et sa part sort de
+    // `m_p`. Ce qui doit tenir est le produit des deux, pas `m_p` seul.
+    const parTroisPaliers =
+      Math.pow(multiplicateurDePalier() * (1 + BONUS_PAR_NIVEAU_DU_HEROS), ESPECE_TOUS_LES_N_PALIERS) *
+      DEBIT_RATIO_ESPECE
+    expect(parTroisPaliers).toBeCloseTo(Math.pow(D_PRODUCTION_PAR_PALIER, ESPECE_TOUS_LES_N_PALIERS), 6)
   })
 })
 
@@ -260,6 +290,97 @@ describe('§3 — le lexique s’applique au code, pas seulement à la prose', (
     }
     expect(fautes).toEqual([])
   })
+
+  it('la maturation ne survit nulle part dans le noyau', () => {
+    // Noyau v1.0 : la maturation gouverne ce qu'un lieu peut DEVENIR dans la
+    // fiction, jamais ce que le héros GAGNE. Elle n'a donc plus sa place dans
+    // le calcul de revenu du noyau.
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of ['partMure', 'partsMures', 'maturation', 'cibleDeMaturation']) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
+
+  it('un seul canal de revenu : les espèces (noyau v1.0 §10)', () => {
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of ['acclimat', 'debitAcclimate', 'canalAcclimate']) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
+
+  it('le modèle à population ne subsiste pas dans le noyau (noyau v1.0 §1.3)', () => {
+    // Le banc, la place et l'effectif sont morts ensemble le 2026-09-09 : une
+    // espèce est un générateur avec un niveau. La tâche 4 a montré qu'une
+    // suppression peut paraître complète dans `economie.ts` et survivre dans
+    // `noyau.ts` — le balayage porte donc sur le répertoire entier.
+    const source = fichiersTs(join(RACINE, 'src', 'noyau'))
+      .map((f) => sansCommentaires(readFileSync(f, 'utf8')))
+      .join('\n')
+    for (const mot of [
+      'effectif',
+      'BancId',
+      'EtatBanc',
+      'convaincre',
+      'acheterPlace',
+      'coutDePlace',
+      'cout_place',
+      'cout_reconviction',
+      'vitesseDeRepeuplement',
+    ]) {
+      expect(source, `« ${mot} » subsiste dans src/noyau/`).not.toContain(mot)
+    }
+  })
+
+  it('le modèle mort ne subsiste nulle part dans src/ (spec §4)', () => {
+    // Portail de fin de phase (noyau v1.0, tâche 8) : les tâches 2 à 7 ont
+    // retiré la population simulée, la maturation, le second canal de revenu,
+    // la capacité de palier et le tarif réduit de redescente. Ce test ne les
+    // reretire pas ; il verrouille qu'ils ne reviennent pas, sur `src` ENTIER
+    // — pas seulement `src/noyau` comme les gardes ci-dessus, parce que la
+    // tâche 4 a déjà montré qu'une suppression peut sembler complète dans un
+    // module et survivre dans un autre.
+    //
+    // `src/adaptateurs/persistance.ts` est exclu : c'est le seul fichier qui a
+    // le droit de connaître les anciens noms de champs, parce qu'il lit les
+    // vieilles sauvegardes (v4 et antérieures) pour les migrer. Lui interdire
+    // ces mots empêcherait la migration d'exister.
+    //
+    // « banc » a un usage fictionnel légitime — un banc de poissons — dans
+    // `src/ui/Mare.tsx`, `src/donnees/succes/actes.ts` et
+    // `src/donnees/textes-provisoires.ts`, jusque dans des identifiants de
+    // succès figés qu'on n'a pas le droit de renommer (`acte-deux-bancs`,
+    // `acte-trois-bancs` : le registre des succès est immuable par canon, §16.1
+    // le classe « Fixé »). Le mot n'est pas interdit ; seul le CHAMP D'ÉTAT
+    // `bancs` est mort. `sansChaines` neutralise la prose portée par des
+    // chaînes (identifiants de succès compris) exactement comme
+    // `sansCommentaires` neutralise celle portée par des commentaires, pour
+    // que le balayage porte sur le code et non sur la fiction.
+    // `src/scene/` est aussi exclu car la scène dessine les bancs de poissons.
+    const migrations = join('src', 'adaptateurs', 'persistance.ts')
+    const sceneDir = join(RACINE, 'src', 'scene')
+    const source = fichiersTs(join(RACINE, 'src'))
+      .filter((f) => {
+        const chemin = relative(RACINE, f)
+        return chemin !== migrations && !f.startsWith(sceneDir)
+      })
+      .map((f) => sansChaines(sansCommentaires(readFileSync(f, 'utf8'))))
+      .join('\n')
+    for (const mot of [
+      'population', 'maturation', 'acclimat', 'partMure',
+      'cout_place', 'convaincre', 'acheterPlace', 'BANCS', 'bancParId',
+      'bancs', 'acclimatations', 'secondesEnSaturation',
+      // Retirés par la tâche 12 : la mesure de redescente (GDD §16.4, dépassé
+      // par le noyau v1.0 selon `docs/PRESEANCE.md`). Le compteur survit dans
+      // le format de sauvegarde v5, que seul `persistance.ts` connaît.
+      'secondesEnRedescente', 'fractionEnRedescente',
+    ]) {
+      expect(source, `« ${mot} » subsiste dans src/`).not.toContain(mot)
+    }
+  })
 })
 
 describe('§3 — la règle d’UI absolue', () => {
@@ -297,7 +418,7 @@ describe('§3 — la règle d’UI absolue', () => {
 
   it('`tanche` n’est assignée à aucun générateur', () => {
     // Longévité, faible débit, très forte contenance : c'est le portrait du
-    // héros, pas d'un banc (§2.E).
+    // héros, pas d'une espèce ordinaire (§2.E).
     expect(ESPECES.map((e) => e.id)).not.toContain(ESPECE_RESERVEE)
   })
 

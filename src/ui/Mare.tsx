@@ -5,92 +5,88 @@
  * lieu et une profondeur en brasses.
  *
  * Le joueur ne choisit jamais quelle espèce va où — le placement est fixé par
- * l'auteur (§4.2). Il convainc, il monte des niveaux, il creuse.
+ * l'auteur (§4.2). Il débloque, il monte des crans, il creuse. L'effet est
+ * immédiat : il n'y a plus de population qui rejoint lentement une cible.
  */
 import type { EtatJeu } from '../noyau/types'
-import { PALIERS } from '../donnees/paliers'
+import { ESPECES } from '../donnees/especes'
 import { ASSISES } from '../donnees/assises'
 import {
   contenance,
   coutDeDescente,
-  coutDeConviction,
-  estUnAmenagement,
-  coutDePlace,
-  productionDuBanc,
+  coutDeDeblocage,
+  coutDeNiveau,
+  productionDeLEspece,
   toutEstCreuse,
 } from '../noyau/economie'
-import { effectifCible } from '../noyau/population'
 import { cout, nomDeLAssise, nomDeLEspece, montant, profondeur } from './format'
 
 interface Props {
   readonly etat: EtatJeu
-  readonly surConviction: (banc: string) => void
-  readonly surPlace: (banc: string) => void
+  readonly surDeblocage: (espece: string) => void
+  readonly surNiveau: (espece: string) => void
   readonly surCreusement: () => void
-  readonly surCaptation: (banc: string) => void
+  readonly surCaptation: (espece: string) => void
 }
 
-export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptation }: Props) {
+export function Mare({ etat, surDeblocage, surNiveau, surCreusement, surCaptation }: Props) {
   const mana = etat.cycle.manaCourant
   const coutDuCreusement = coutDeDescente(etat, etat.cycle.paliersOuverts)
   const creusementPossible = !toutEstCreuse(etat) && coutDuCreusement.lte(contenance(etat))
-  // Deux puits, deux verbes (GDD §4.1). Rouvrir une galerie effondrée n'est pas
-  // creuser : la roche est déjà percée, c'est l'eau qu'il faut rendre vivable.
-  const aAmenager = estUnAmenagement(etat, etat.cycle.paliersOuverts)
 
   return (
     <section className="space-y-2">
       <h2 className="font-texte text-lg text-jour-doux">{nomDeLAssise(ASSISES[0].id)}</h2>
 
       <ol className="space-y-2">
-        {PALIERS.slice(0, etat.cycle.paliersOuverts).map((palier) =>
-          palier.bancs.map((banc) => {
-            const vivant = etat.cycle.bancs[banc.id]
-            const place = vivant?.place ?? 0
-            const coutDuBanc = place === 0 ? coutDeConviction(etat, banc) : coutDePlace(etat, banc, place)
-            const payable = mana.gte(coutDuBanc) && coutDuBanc.lte(contenance(etat))
-            const cible = effectifCible(place)
+        {ESPECES.filter((espece) => espece.palier < etat.cycle.paliersOuverts).map((espece) => {
+          const vivante = etat.cycle.especes[espece.id]
+          const niveau = vivante?.debloquee === true ? vivante.niveau : 0
+          const coutDeLEspece =
+            niveau === 0 ? coutDeDeblocage(etat, espece) : coutDeNiveau(etat, espece, niveau)
+          const payable = mana.gte(coutDeLEspece) && coutDeLEspece.lte(contenance(etat))
 
-            return (
-              <li
-                key={banc.id}
-                className="rounded-lg border border-eau-bord bg-eau-fond/40 p-3 transition-colors hover:border-eau-clair"
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-texte text-base">
-                    {place === 0 ? <span className="text-jour-tu">un banc s’attarde</span> : nomDeLEspece(banc.espece)}
-                  </span>
-                  <span className="font-chiffre text-xs text-jour-tu">{profondeur(banc.palier)}</span>
+          return (
+            <li
+              key={espece.id}
+              className="rounded-lg border border-eau-bord bg-eau-fond/40 p-3 transition-colors hover:border-eau-clair"
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="font-texte text-base">
+                  {niveau === 0 ? (
+                    <span className="text-jour-tu">un banc s’attarde</span>
+                  ) : (
+                    nomDeLEspece(espece.id)
+                  )}
+                </span>
+                <span className="font-chiffre text-xs text-jour-tu">{profondeur(espece.palier)}</span>
+              </div>
+
+              {niveau > 0 ? (
+                <div className="mt-1 flex items-baseline gap-4 text-sm text-jour-doux">
+                  <span className="font-chiffre tabular-nums">{niveau}</span>
+                  <button
+                    type="button"
+                    onClick={() => surCaptation(espece.id)}
+                    className="font-chiffre tabular-nums text-mana underline decoration-dotted underline-offset-4 hover:text-jour"
+                  >
+                    +{montant(productionDeLEspece(etat, espece))} / s
+                  </button>
                 </div>
+              ) : null}
 
-                {place > 0 ? (
-                  <div className="mt-1 flex items-baseline gap-4 text-sm text-jour-doux">
-                    <span className="font-chiffre tabular-nums">
-                      {(vivant?.effectif ?? 0).toFixed(1)} / {cible}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => surCaptation(banc.id)}
-                      className="font-chiffre tabular-nums text-mana underline decoration-dotted underline-offset-4 hover:text-jour"
-                    >
-                      +{montant(productionDuBanc(etat, banc))} / s
-                    </button>
-                  </div>
-                ) : null}
-
-                <button
-                  type="button"
-                  disabled={!payable}
-                  onClick={() => (place === 0 ? surConviction(banc.id) : surPlace(banc.id))}
-                  className="mt-2 w-full rounded-md border border-eau-clair px-3 py-1.5 text-sm transition-colors enabled:hover:bg-eau-bord disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {place === 0 ? 'Convaincre' : 'Faire de la place'}
-                  <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDuBanc)}</span>
-                </button>
-              </li>
-            )
-          }),
-        )}
+              <button
+                type="button"
+                disabled={!payable}
+                onClick={() => (niveau === 0 ? surDeblocage(espece.id) : surNiveau(espece.id))}
+                className="mt-2 w-full rounded-md border border-eau-clair px-3 py-1.5 text-sm transition-colors enabled:hover:bg-eau-bord disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {niveau === 0 ? 'Convaincre' : 'Les faire venir en nombre'}
+                <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDeLEspece)}</span>
+              </button>
+            </li>
+          )
+        })}
       </ol>
 
       <button
@@ -103,7 +99,7 @@ export function Mare({ etat, surConviction, surPlace, surCreusement, surCaptatio
           'Il n’y a plus de roche à ouvrir ici'
         ) : (
           <>
-            {aAmenager ? 'Rendre le fond habitable' : 'Creuser plus bas'}
+            Creuser plus bas
             <span className="ml-2 font-chiffre text-jour-tu tabular-nums">{cout(coutDuCreusement)}</span>
           </>
         )}

@@ -15,7 +15,7 @@ import { NOM_DES_ASSISES, NOM_DES_ESPECES } from '../donnees/textes-provisoires'
 
 const SUFFIXES = ['', ' k', ' M', ' G', ' T', ' P', ' E'] as const
 
-/** Un montant de mana ou de Foi, lisible d'un coup d'œil. */
+/** Un montant de mana ou de Souffle, lisible d'un coup d'œil. */
 export function montant(valeur: Decimal): string {
   const nombre = valeur.toNumber()
   if (!Number.isFinite(nombre)) return valeur.toExponential(2)
@@ -62,7 +62,7 @@ export function duree(secondes: number): string {
 }
 
 /**
- * La profondeur d'un banc, en brasses. Une mesure, pas un nom de couche : le
+ * La profondeur d'un creux, en brasses. Une mesure, pas un nom de couche : le
  * premier creux est à zéro brasse, on descend d'une brasse par creusement.
  */
 export function profondeur(palier: number): string {
@@ -86,26 +86,21 @@ export function nomDeLEspece(espece: EspeceId): string {
 /** La source d'un terme, mise en mots ici et pas dans le noyau. */
 export function sourceDuTerme(source: SourceDeTerme): string {
   switch (source.quoi) {
-    case 'population':
-      return 'ce qui vit là'
+    case 'niveau':
+      return source.niveau === 0 ? 'personne encore' : `${source.niveau} crans tenus`
     case 'palier':
       return profondeur(source.palier)
-    case 'acclimatation':
-      return 'ce que tu supportes'
-    case 'place':
-      return `${source.place} places faites`
     case 'drapeaux_permanents':
       return source.especes === 0
         ? 'aucune espèce au complet'
         : `${source.especes} espèce${source.especes > 1 ? 's' : ''} déjà au complet`
-    case 'eau_murie':
-      // Ce que le joueur doit comprendre du §3.0 sans qu'on le lui explique :
-      // c'est le peuplement qui rajeunit l'eau, donc qui écrase ce canal-là.
-      if (source.part >= 0.9) return 'une eau vieille que rien n’a troublée'
-      if (source.part >= 0.5) return 'une eau qui se réveille'
-      if (source.part >= 0.15) return 'trop de monde pour que l’eau vieillisse'
-      return 'une eau rendue jeune par ce qui l’habite'
-    case 'canal_acclimate':
-      return 'ce que tu prends à l’eau elle-même'
+    case 'profondeur':
+      return profondeur(Math.max(0, source.paliersOuverts - 1))
+    case 'densite':
+      return source.densite <= 0 ? 'eau neutre' : `eau à ${source.densite.toFixed(1)} de densité`
+    case 'heros':
+      return source.niveau <= 1 ? 'toi, qui captes seul' : `toi, grandi ${source.niveau - 1} fois`
+    case 'benediction':
+      return source.rang === 0 ? 'rien de béni' : `béni ${source.rang} fois`
   }
 }

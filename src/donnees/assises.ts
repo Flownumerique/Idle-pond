@@ -21,7 +21,16 @@ import { NOMBRE_DE_PALIERS } from '../noyau/constantes'
 /** Nommées au fur et à mesure que la charte phonétique descend (§2.E). */
 const IDENTIFIANTS_D_ASSISE: readonly (string | undefined)[] = ['noue']
 
-const PALIERS_PAR_ASSISE: readonly number[] = [6, 11, 11, 11, 11, 12]
+/**
+ * 6 / 12 / 12 / 12 / 12 / 8 — la géométrie du spec §3, et elle n'est pas
+ * arbitraire : c'est la seule répartition à 62 paliers où « une espèce tous les
+ * trois paliers, à partir du premier de l'assise » tombe exactement sur
+ * `3 × rang`. L'ancre d'une espèce et son rang cessent alors de dériver l'un
+ * par rapport à l'autre, ce qui est la condition pour que son débit de base
+ * suive `D` palier par palier. Elle donne 2 + 4 + 4 + 4 + 4 + 3 = 21 espèces
+ * (RESULTATS.md, finding 4).
+ */
+const PALIERS_PAR_ASSISE: readonly number[] = [6, 12, 12, 12, 12, 8]
 
 function construireAssises(): readonly Assise[] {
   const assises: Assise[] = []
@@ -54,8 +63,6 @@ export function assiseDuPalier(index: number): Assise {
   if (assise === undefined) throw new Error(`Palier hors des assises : ${index}`)
   return assise
 }
-
-export const TYPE_MANA_NATAL = ASSISES[0].typeMana
 
 /**
  * Ce que le jalon v0.2 livre réellement : l'assise I, et elle seule.

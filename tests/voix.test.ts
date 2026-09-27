@@ -17,8 +17,8 @@ import {
 } from '../src/noyau/constantes'
 import { eclore, etatInitial, tick } from '../src/noyau/noyau'
 import { palierDeVoix, palierDeVoixApres, voixAuMoins } from '../src/noyau/voix'
-import { convaincre } from '../src/noyau/noyau'
-import { BANCS } from '../src/donnees/paliers'
+import { debloquer } from '../src/noyau/noyau'
+import { ESPECES } from '../src/donnees/especes'
 import { etatDeTravail } from './etat-de-travail'
 import { SUCCES } from '../src/donnees/succes/index'
 import type { EtatJeu } from '../src/noyau/types'
@@ -70,7 +70,7 @@ describe('§14.5 — le registre figé', () => {
     // C'est tout l'objet du système : « la bibliothèque devient la preuve du
     // chemin parcouru — le joueur qui relit ses vieilles entrées voit à quel
     // point il se trompait, et personne n'a eu besoin de le lui dire ».
-    let etat = convaincre(etatInitial(1), BANCS[0].id)
+    let etat = debloquer(etatInitial(1), ESPECES[0].id)
     etat = tick(etat, 1)
 
     const premiers = Object.entries(etat.permanent.succes)
@@ -94,7 +94,7 @@ describe('§14.5 — le registre figé', () => {
     expect(palierDeVoix(etat)).toBe('signes')
 
     const avant = new Set(Object.keys(etat.permanent.succes))
-    etat = tick(convaincre(etat, BANCS[0].id), 1)
+    etat = tick(debloquer(etat, ESPECES[0].id), 1)
     const nouveaux = Object.entries(etat.permanent.succes).filter(([id]) => !avant.has(id))
 
     expect(nouveaux.length).toBeGreaterThan(0)
@@ -108,11 +108,11 @@ describe('§14.5 — le registre figé', () => {
     // §14.4 : « les succès ne sont pas re-déclenchables. Un succès marque la
     // première fois. » Sinon le gain devient une rente indexée sur le nombre
     // de pontes, et la courbe casse.
-    let etat = tick(convaincre(etatInitial(1), BANCS[0].id), 1)
+    let etat = tick(debloquer(etatInitial(1), ESPECES[0].id), 1)
     const premiere = { ...etat.permanent.succes }
 
     etat = eclore(tick(etat, 3 * H))
-    etat = tick(convaincre(etat, BANCS[0].id), 1)
+    etat = tick(debloquer(etat, ESPECES[0].id), 1)
 
     for (const [id, entree] of Object.entries(premiere)) {
       expect(etat.permanent.succes[id]).toEqual(entree)
@@ -120,9 +120,9 @@ describe('§14.5 — le registre figé', () => {
   })
 
   it('la table est ordonnée par le registre, jamais par l’arrivée', () => {
-    // `etatDeTravail` a six paliers ouverts et des bancs peuplés : de quoi
+    // `etatDeTravail` a six paliers ouverts et des espèces montées : de quoi
     // faire tomber plusieurs succès, ce qu'une partie neuve ne permet pas —
-    // elle démarre avec de quoi convaincre un seul banc.
+    // elle démarre avec de quoi débloquer une seule espèce.
     const etat = tick(etatDeTravail(), 600)
 
     const obtenus = Object.keys(etat.permanent.succes)

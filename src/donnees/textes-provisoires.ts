@@ -2,8 +2,10 @@
  * IdlePond — TOUS les textes affichés, et ils sont PROVISOIRES.
  *
  * ╔════════════════════════════════════════════════════════════════════════╗
- * ║  Les NOMS de la Noue sont désormais du canon (amendement v1.1 §2.E).   ║
- * ║  Le lieu, les trois espèces et l'espèce réservée sont arrêtés.         ║
+ * ║  Les NOMS nommés au canon le restent (amendement v1.1 §2.E) : le lieu, ║
+ * ║  le vairon, la loche, l'épinoche et l'espèce réservée. L'épinoche a    ║
+ * ║  suivi la répartition 2/4/4/4/4/3 en tête de l'assise II ; son nom ne  ║
+ * ║  bouge pas pour autant, il est justifié au canon.                      ║
  * ║                                                                        ║
  * ║  Les PHRASES, elles, restent provisoires : le jalon v0.2 demande       ║
  * ║  « aucun texte définitif ». Elles vivent ici, à un seul endroit, et    ║
@@ -38,6 +40,19 @@ export const NOM_DES_ESPECES: Readonly<Record<EspeceId, string>> = {
   epinoche: 'l’épinoche',
 }
 
+/**
+ * Ce que l'écran dit d'une bénédiction — un verbe, ce que ça fait. La globale
+ * a un nom à elle ; une ciblée prend le nom de son espèce.
+ */
+export const TEXTE_DE_LA_BENEDICTION_GLOBALE = {
+  nom: 'Bénir l’eau',
+  effet: 'tout ce qui vit ici capte un peu plus, et tout ce qui viendra',
+} as const
+
+export const TEXTE_DE_BENEDICTION_CIBLEE = {
+  effet: 'ils te donnent moitié plus, à chaque fois',
+} as const
+
 export interface TexteDeSucces {
   /** Titre court. Visible dès que le succès est listé, même fermé. */
   readonly nom: string
@@ -56,17 +71,17 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
   },
   'acte-deuxieme-niveau': {
     nom: 'Ils reviennent',
-    condition: 'Faire une deuxième place dans un banc',
+    condition: 'Monter un banc d’un cran',
     rapport: 'Un de plus s’est joint sans qu’on insiste.',
   },
   'acte-cinquieme-niveau': {
     nom: 'Le geste prend',
-    condition: 'Faire cinq places dans un banc',
+    condition: 'Monter un banc de cinq crans',
     rapport: 'Ça va plus vite qu’au début.',
   },
   'acte-premier-banc-de-cinq': {
-    nom: 'Cinq à demeure',
-    condition: 'Cinq individus installés dans un même banc',
+    nom: 'Trois à demeure',
+    condition: 'Trois crans tenus dans la Noue',
     rapport: 'Ils ne repartent plus entre deux passages.',
   },
   'acte-premier-creusement': {
@@ -76,38 +91,38 @@ export const TEXTES_DE_SUCCES: Readonly<Record<SuccesId, TexteDeSucces>> = {
   },
   'acte-deux-bancs': {
     nom: 'Ils sont deux',
-    condition: 'Convaincre deux bancs à la fois',
+    condition: 'Convaincre deux bancs dans la même vie',
     rapport: 'Le second n’a pas fui en voyant le premier.',
   },
   'acte-trois-bancs': {
     nom: 'La Noue répond',
-    condition: 'Convaincre trois bancs à la fois',
+    condition: 'Monter la loche de dix crans',
     rapport: 'On ne peut plus les compter d’un seul regard.',
   },
   'acte-premier-palier-sature': {
     nom: 'Plein à ras',
-    condition: 'Remplir un creux jusqu’à sa cible',
+    condition: 'Mener un banc jusqu’à cent',
     rapport: 'Ce creux ne prend plus personne. Il faudra descendre.',
   },
   'acte-dixieme-niveau': {
     nom: 'La main est faite',
-    condition: 'Faire dix places dans un banc',
+    condition: 'Monter un banc de dix crans',
     rapport: 'Le geste se répète tout seul, maintenant.',
   },
 
   /* — Seuils, engendrés par gabarit ——————————————————————————————————————— */
-  'seuil-vairon-10': { nom: 'Dix vairons', condition: 'Dix individus', rapport: 'Ils tiennent le banc ensemble.' },
-  'seuil-vairon-25': { nom: 'Vingt-cinq vairons', condition: 'Vingt-cinq individus', rapport: 'Le banc vire d’un seul tenant.' },
-  'seuil-vairon-50': { nom: 'Cinquante vairons', condition: 'Cinquante individus', rapport: 'On entend le courant qu’ils font.' },
-  'seuil-vairon-100': { nom: 'Cent vairons', condition: 'Cent individus', rapport: 'Ils ne repartiront plus. Jamais.' },
-  'seuil-loche-10': { nom: 'Dix loches', condition: 'Dix individus', rapport: 'Le fond est remué par en dessous.' },
-  'seuil-loche-25': { nom: 'Vingt-cinq loches', condition: 'Vingt-cinq individus', rapport: 'Elles ouvrent des passages qu’on n’a pas creusés.' },
-  'seuil-loche-50': { nom: 'Cinquante loches', condition: 'Cinquante individus', rapport: 'La vase ne tient plus en place.' },
-  'seuil-loche-100': { nom: 'Cent loches', condition: 'Cent individus', rapport: 'Elles ne repartiront plus. Jamais.' },
-  'seuil-epinoche-10': { nom: 'Dix épinoches', condition: 'Dix individus', rapport: 'Elles tiennent là où l’eau se charge.' },
-  'seuil-epinoche-25': { nom: 'Vingt-cinq épinoches', condition: 'Vingt-cinq individus', rapport: 'Rien ne les déloge du bord.' },
-  'seuil-epinoche-50': { nom: 'Cinquante épinoches', condition: 'Cinquante individus', rapport: 'L’eau lourde ne leur fait plus rien.' },
-  'seuil-epinoche-100': { nom: 'Cent épinoches', condition: 'Cent individus', rapport: 'Elles ne repartiront plus. Jamais.' },
+  'seuil-vairon-10': { nom: 'Dix vairons', condition: 'Dixième cran', rapport: 'Ils tiennent le banc ensemble.' },
+  'seuil-vairon-25': { nom: 'Vingt-cinq vairons', condition: 'Vingt-cinquième cran', rapport: 'Le banc vire d’un seul tenant.' },
+  'seuil-vairon-50': { nom: 'Cinquante vairons', condition: 'Cinquantième cran', rapport: 'On entend le courant qu’ils font.' },
+  'seuil-vairon-100': { nom: 'Cent vairons', condition: 'Centième cran', rapport: 'Ils ne repartiront plus. Jamais.' },
+  'seuil-loche-10': { nom: 'Dix loches', condition: 'Dixième cran', rapport: 'Le fond est remué par en dessous.' },
+  'seuil-loche-25': { nom: 'Vingt-cinq loches', condition: 'Vingt-cinquième cran', rapport: 'Elles ouvrent des passages qu’on n’a pas creusés.' },
+  'seuil-loche-50': { nom: 'Cinquante loches', condition: 'Cinquantième cran', rapport: 'La vase ne tient plus en place.' },
+  'seuil-loche-100': { nom: 'Cent loches', condition: 'Centième cran', rapport: 'Elles ne repartiront plus. Jamais.' },
+  'seuil-epinoche-10': { nom: 'Dix épinoches', condition: 'Dixième cran', rapport: 'Elles tiennent là où l’eau se charge.' },
+  'seuil-epinoche-25': { nom: 'Vingt-cinq épinoches', condition: 'Vingt-cinquième cran', rapport: 'Rien ne les déloge du bord.' },
+  'seuil-epinoche-50': { nom: 'Cinquante épinoches', condition: 'Cinquantième cran', rapport: 'L’eau lourde ne leur fait plus rien.' },
+  'seuil-epinoche-100': { nom: 'Cent épinoches', condition: 'Centième cran', rapport: 'Elles ne repartiront plus. Jamais.' },
 
   /* — Franchissements ————————————————————————————————————————————————————— */
   'franchissement-premiere-eclosion': {
@@ -169,7 +184,7 @@ const GABARITS: readonly { readonly motif: RegExp; readonly texte: (n: number) =
     motif: /^seuil-mare-(\d+)$/,
     texte: (n) => ({
       nom: `${n} dans la Noue`,
-      condition: `${n} individus, tous bancs confondus`,
+      condition: `${n} crans tenus, tous bancs confondus`,
       rapport: tour(RAPPORTS_DE_MARE, Math.floor(n / 20)),
     }),
   },
@@ -185,7 +200,7 @@ const GABARITS: readonly { readonly motif: RegExp; readonly texte: (n: number) =
     motif: /^seuil-palier-sature-(\d+)$/,
     texte: () => ({
       nom: 'Un creux de plus est plein',
-      condition: 'Remplir un creux jusqu’à sa cible',
+      condition: 'Un creux qui ne prendra plus personne',
       rapport: 'Celui-là ne prendra plus personne.',
     }),
   },

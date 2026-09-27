@@ -12,8 +12,7 @@
  */
 import Decimal from 'break_infinity.js'
 import type { EtatJeu } from '../noyau/types'
-import { NOMBRE_DE_PALIERS, VERSION_SAVE } from '../noyau/constantes'
-import { PART_MURE_D_UNE_EAU_INTOUCHEE } from '../noyau/maturation'
+import { VERSION_SAVE } from '../noyau/constantes'
 import { palierDeVoixApres } from '../noyau/voix'
 import { SUCCES } from '../donnees/succes/index'
 
@@ -53,7 +52,7 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
       },
       permanent: {
         ...etat.permanent,
-        foi: serialiserDecimal(etat.permanent.foi),
+        souffle: serialiserDecimal(etat.permanent.souffle),
         contenanceMana: serialiserDecimal(etat.permanent.contenanceMana),
         manaAmbiant: serialiserDecimal(etat.permanent.manaAmbiant),
       },
@@ -62,7 +61,7 @@ export function serialiser(etat: EtatJeu): SaveSerialisee {
         cycles: etat.telemetrie.cycles.map((c) => ({
           ...c,
           productionPicParSeconde: serialiserDecimal(c.productionPicParSeconde),
-          foiGagnee: serialiserDecimal(c.foiGagnee),
+          souffleGagne: serialiserDecimal(c.souffleGagne),
         })),
       },
     },
@@ -157,26 +156,81 @@ export const MIGRATIONS: Readonly<Record<number, (contenu: unknown) => unknown>>
   },
 
   /**
-   * 3 → 4 — les deux canaux de captation (GDD §3 et §3.0).
+   * 3 → 4 — les deux canaux de captation (GDD §3), à l'origine.
    *
-   * `partsMures` entre dans l'état permanent. Une save v3 ne le porte pas, et
-   * la valeur d'accueil n'est pas 0 mais 1 : une eau que rien n'a habitée est
-   * mûre (§6.5). Le peuplement de la save la rediluera en quelques heures de
-   * jeu, à la vitesse que `TAU_MATURATION_HEURES` fixe.
+   * Cette version introduisait `partsMures` dans l'état permanent. La
+   * maturation qu'il portait est retirée depuis le noyau v1.0 (2026-09-08) :
+   * elle gouverne ce qu'un lieu peut DEVENIR, jamais ce que le héros GAGNE, et
+   * le champ a disparu du type en mémoire avec elle.
    *
-   * Une migration explicite plutôt qu'un repli silencieux du désérialiseur : le
-   * champ change l'économie, et un défaut qui n'apparaît nulle part est un
-   * défaut que personne ne relira le jour où il faudra le remettre en cause.
+   * Le contenu n'est donc plus modifié ici. Une save v3 qui traverse cette
+   * étape n'a jamais porté `partsMures` ; une save v4 antérieure à ce retrait
+   * peut encore le porter, et le garde comme propriété surnuméraire jamais lue
+   * — la migration ne supprime pas une clef morte, elle cesse seulement d'en
+   * écrire une neuve.
    */
-  3: (contenu) => {
+  3: (contenu) => contenu,
+
+  /**
+   * 4 → 5 — le noyau v1.0. La population, la maturation et le second canal
+   * meurent (§8.3 : on ne SUPPRIME aucun champ). `bancs`, `partsMures`,
+   * `acclimatations` et `secondesEnSaturation` restent dans la save telle
+   * quelle — cette migration ne les touche pas — mais plus personne ne les
+   * lit : `deserialiser` désérialise par spread générique, ils deviennent des
+   * propriétés surnuméraires jamais lues.
+   *
+   * On ouvre `cycle.especes` à `{}` : une save d'avant le modèle à niveau n'a
+   * aucun niveau d'espèce à reconstruire depuis `bancs`, qui décrivait des
+   * effectifs, pas des niveaux. Le reste de `cycle` (mana courant, paliers
+   * ouverts, durée) n'est pas touché. Ce n'est pas une perte de progression :
+   * les niveaux d'espèces sont scopés au cycle et se remettent à zéro à
+   * chaque éclosion de toute façon (f = 1, reset complet) ; la contenance, la
+   * densité, la Foi et la technique vivent dans `permanent`, que cette
+   * migration ne modifie pas non plus.
+   */
+  4: (contenu) => {
+    const etat = contenu as Record<string, Record<string, unknown>>
+    return {
+      ...etat,
+      cycle: { ...etat.cycle, especes: {} },
+    }
+  },
+
+  /**
+   * 5 → 6 — la mesure de redescente meurt.
+   *
+   * `telemetrie.secondesEnRedescente` et sa copie dans chaque cycle clos
+   * (`telemetrie.cycles[].secondesEnRedescente`) relevaient le risque « la
+   * redescente devient le jeu » du GDD §16.4, que `docs/PRESEANCE.md` déclare
+   * dépassé par le noyau v1.0 (`f = 1`, retraverser coûte plein tarif, comme
+   * dans n'importe quel idle). Mesurée une dernière fois avant son retrait :
+   * ~0,01 % du temps d'un cycle pour le joueur optimal.
+   *
+   * Les deux champs sortent du type en mémoire ; cette migration ne les touche
+   * pas (§8.3 : on ne SUPPRIME aucun champ). `deserialiser` désérialise par
+   * spread générique : ils deviennent des propriétés surnuméraires jamais lues.
+   * Rien n'est à reconstruire — aucun champ neuf n'entre dans l'état.
+   */
+  5: (contenu) => contenu,
+
+  /**
+   * 6 → 7 — l'axe héros et les bénédictions (spec 2026-09-17).
+   *
+   * Deux champs NEUFS, aucun retiré : `cycle.niveauDuHeros` part à 1 — une
+   * save en cours de vie reprend avec un héros qui n'a pas encore grandi, ce
+   * qui est vrai — et `permanent.benedictions` part vide. Le spread de
+   * `deserialiser` les comblerait depuis le repli, mais une sémantique nouvelle
+   * exige son incrément de version (noyau v1.0 §8.3), et l'écrire ici rend
+   * l'intention lisible dans la chaîne.
+   */
+  6: (contenu) => {
     const brut = (contenu ?? {}) as Record<string, unknown>
+    const cycle = (brut.cycle ?? {}) as Record<string, unknown>
     const permanent = (brut.permanent ?? {}) as Record<string, unknown>
     return {
       ...brut,
-      permanent: {
-        ...permanent,
-        partsMures: new Array<number>(NOMBRE_DE_PALIERS).fill(PART_MURE_D_UNE_EAU_INTOUCHEE),
-      },
+      cycle: { ...cycle, niveauDuHeros: 1 },
+      permanent: { ...permanent, benedictions: {} },
     }
   },
 }
@@ -207,6 +261,10 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
     // Une save d'un jalon antérieur reprend la limite du jalon courant : une
     // assise livrée depuis ne doit pas rester fermée à qui jouait déjà.
     limiteDeContenu: (brut.limiteDeContenu ?? repli.limiteDeContenu) as unknown as number,
+    // JAMAIS lu de la save (R41) : un réglage appartient à la version du jeu,
+    // pas à la partie. `serialiser` ne l'écrit pas ; s'il traînait dans un
+    // vieux fichier, on l'ignorerait quand même.
+    reglage: repli.reglage,
     cycle: {
       ...repli.cycle,
       ...cycle,
@@ -219,7 +277,7 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
     permanent: {
       ...repli.permanent,
       ...permanent,
-      foi: deserialiserDecimal(permanent.foi, repli.permanent.foi),
+      souffle: deserialiserDecimal(permanent.souffle, repli.permanent.souffle),
       contenanceMana: deserialiserDecimal(permanent.contenanceMana, repli.permanent.contenanceMana),
       manaAmbiant: deserialiserDecimal(permanent.manaAmbiant, repli.permanent.manaAmbiant),
     },
@@ -229,7 +287,7 @@ export function deserialiser(save: SaveSerialisee, repli: EtatJeu): EtatJeu {
       cycles: cycles.map((c) => ({
         ...(c as unknown as EtatJeu['telemetrie']['cycles'][number]),
         productionPicParSeconde: deserialiserDecimal(c.productionPicParSeconde, new Decimal(0)),
-        foiGagnee: deserialiserDecimal(c.foiGagnee, new Decimal(0)),
+        souffleGagne: deserialiserDecimal(c.souffleGagne, new Decimal(0)),
       })),
     },
   }

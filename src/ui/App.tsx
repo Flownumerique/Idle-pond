@@ -10,7 +10,10 @@ import { useEffect, useState } from 'react'
 import { useMagasin } from '../etat/magasin'
 import { creerBoucle } from '../adaptateurs/boucle'
 import { montant } from './format'
+import { Benedictions } from './Benedictions'
 import { Contenance } from './Contenance'
+import { Scene } from './Scene'
+import { Heros } from './Heros'
 import { Mare } from './Mare'
 import { Eclosion } from './Eclosion'
 import { Succes } from './Succes'
@@ -42,8 +45,8 @@ export function App() {
         <h1 className="font-texte text-xl">IdlePond</h1>
         <dl className="flex items-baseline gap-5 text-sm">
           <div className="flex items-baseline gap-1.5">
-            <dt className="text-jour-tu">Foi</dt>
-            <dd className="font-chiffre text-foi tabular-nums">{montant(etat.permanent.foi)}</dd>
+            <dt className="text-jour-tu">Souffle</dt>
+            <dd className="font-chiffre text-foi tabular-nums">{montant(etat.permanent.souffle)}</dd>
           </div>
           <div className="flex items-baseline gap-1.5">
             <dt className="text-jour-tu">retours dans l’œuf</dt>
@@ -56,14 +59,16 @@ export function App() {
 
       <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
         <main className="space-y-4">
+          <Scene etat={etat} />
           <Contenance etat={etat} />
+          <Heros etat={etat} surCroissance={() => useMagasin.getState().grandir()} />
           {captation !== null ? (
-            <Captation etat={etat} banc={captation} surFermeture={() => setCaptation(null)} />
+            <Captation etat={etat} espece={captation} surFermeture={() => setCaptation(null)} />
           ) : null}
           <Mare
             etat={etat}
-            surConviction={(banc) => useMagasin.getState().convaincre(banc)}
-            surPlace={(banc) => useMagasin.getState().acheterPlace(banc)}
+            surDeblocage={(espece) => useMagasin.getState().debloquer(espece)}
+            surNiveau={(espece) => useMagasin.getState().ameliorer(espece)}
             surCreusement={() => useMagasin.getState().creuser()}
             surCaptation={setCaptation}
           />
@@ -72,6 +77,9 @@ export function App() {
 
         <aside>
           <Succes etat={etat} />
+          <div className="mt-6">
+            <Benedictions etat={etat} surBenediction={(id) => useMagasin.getState().benir(id)} />
+          </div>
         </aside>
       </div>
 

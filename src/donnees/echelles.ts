@@ -1,7 +1,7 @@
 /**
  * IdlePond — puissances tabulées des ratios géométriques.
  *
- * Contenu pur, sans logique : trois suites entièrement déterminées par les
+ * Contenu pur, sans logique : deux suites entièrement déterminées par les
  * constantes du §13. Elles sont tabulées une fois parce que `Decimal.pow` est
  * appelé des centaines de milliers de fois par simulation, et qu'un simulateur
  * lent est un simulateur qu'on ne lance pas.
@@ -13,10 +13,12 @@
  */
 import Decimal from 'break_infinity.js'
 import {
-  D_PRODUCTION_PAR_PALIER,
+  DEBIT_RATIO_ESPECE,
   G_COUT_PALIER,
   NOMBRE_DE_PALIERS,
   RATIO_COUT_NIVEAU,
+  TAUX_BASE_AU_PALIER_0,
+  multiplicateurDePalier,
 } from '../noyau/constantes'
 
 function tabuler(ratio: number, longueur: number): readonly Decimal[] {
@@ -27,9 +29,6 @@ function tabuler(ratio: number, longueur: number): readonly Decimal[] {
 
 /** g^p, pour tous les paliers. */
 const PUISSANCES_DE_G = tabuler(G_COUT_PALIER, NOMBRE_DE_PALIERS + 1)
-
-/** D^p, pour tous les paliers. */
-const PUISSANCES_DE_D = tabuler(D_PRODUCTION_PAR_PALIER, NOMBRE_DE_PALIERS + 1)
 
 /**
  * 1.15^n. Le niveau n'est pas borné par le canon, seulement par ce que le
@@ -42,10 +41,56 @@ export function puissanceDeG(exposant: number): Decimal {
   return PUISSANCES_DE_G[exposant] ?? Decimal.pow(G_COUT_PALIER, exposant)
 }
 
-export function puissanceDeD(exposant: number): Decimal {
-  return PUISSANCES_DE_D[exposant] ?? Decimal.pow(D_PRODUCTION_PAR_PALIER, exposant)
-}
-
 export function puissanceDuCoutDeNiveau(exposant: number): Decimal {
   return PUISSANCES_DU_COUT_DE_NIVEAU[exposant] ?? Decimal.pow(RATIO_COUT_NIVEAU, exposant)
+}
+
+/**
+ * `m_p ^ paliers`, le multiplicateur global de profondeur.
+ *
+ * Tabulé, et non calculé par `tabuler` : les deux suites plus haut se
+ * construisent par multiplications successives, celle-ci par `Decimal.pow`
+ * comme l'écrivait `multiplicateurDeProfondeur`. Ce n'est pas un détail de
+ * forme — les deux chemins ne rendent pas le même flottant, et toute mesure
+ * déjà prise bougerait sous nos pieds. La table mémorise l'expression exacte,
+ * elle ne la réécrit pas.
+ */
+function puissanceDuPalier(exposant: number): Decimal {
+  return Decimal.pow(multiplicateurDePalier(), exposant)
+}
+
+// `NOMBRE_DE_PALIERS + 2` : l'exposant vaut `paliersOuverts - 1`, et le gain de
+// creusement en demande un de plus, sur un état où le palier suivant est ouvert.
+const PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER: readonly Decimal[] = Array.from(
+  { length: NOMBRE_DE_PALIERS + 2 },
+  (_, p) => puissanceDuPalier(p),
+)
+
+export function puissanceDuMultiplicateurDePalier(exposant: number): Decimal {
+  return PUISSANCES_DU_MULTIPLICATEUR_DE_PALIER[exposant] ?? puissanceDuPalier(exposant)
+}
+
+/**
+ * Débit de base par RANG d'espèce — `TAUX_BASE_AU_PALIER_0 × ratio^rang`.
+ *
+ * Même raison que les puissances de `g` : `debitBaseDeLEspece` est appelée deux
+ * fois par espèce et par décision d'achat, soit des dizaines de millions de
+ * fois par `simuler(45)`, pour rendre à chaque fois l'un d'une vingtaine de
+ * nombres. La table porte l'expression telle quelle, `Math.pow` compris.
+ */
+function debitBaseDuRangCalcule(rang: number): Decimal {
+  return new Decimal(TAUX_BASE_AU_PALIER_0).mul(Math.pow(DEBIT_RATIO_ESPECE, rang))
+}
+
+// Le rang est l'index dans `ESPECES`, pas un palier : une vingtaine
+// aujourd'hui. `NOMBRE_DE_PALIERS` n'est ici qu'une borne supérieure commode et
+// large — une espèce par palier au plus —, et le repli couvre le reste. Importer
+// `ESPECES` pour la dimensionner au plus juste ajouterait une dépendance de
+// données que ce fichier n'a pas.
+const DEBITS_DE_BASE: readonly Decimal[] = Array.from({ length: NOMBRE_DE_PALIERS + 1 }, (_, rang) =>
+  debitBaseDuRangCalcule(rang),
+)
+
+export function debitBaseDuRang(rang: number): Decimal {
+  return DEBITS_DE_BASE[rang] ?? debitBaseDuRangCalcule(rang)
 }

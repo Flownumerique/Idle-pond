@@ -1,11 +1,15 @@
 /**
  * IdlePond — vocabulaire de l'état de jeu.
  *
- * Tier 2. Lexique : assise, palier, banc, densité, Foi, technique,
- * acclimatation, conviction. Aucun anglicisme, aucun « prestige ».
+ * Tier 2. Lexique : assise, palier, espèce, niveau, densité, Souffle, technique.
+ * Aucun anglicisme, aucun « prestige ».
+ *
+ * Le banc a disparu le 2026-09-09 avec le modèle à population : une espèce
+ * n'est plus une population installée sur un palier, c'est un générateur qu'on
+ * débloque une fois et dont on monte le niveau (noyau v1.0 §1.3).
  *
  * Le GDD est le document directif depuis le 2026-09-08. Deux conséquences ici :
- * `bénédiction` a disparu — la Foi n'achète que des miracles (§4.2) — et le mot
+ * `bénédiction` a disparu — le Souffle n'achète que des miracles (§4.2) — et le mot
  * « éclosion » désigne encore l'acte que le GDD nomme PONTE, en attendant le
  * renommage transverse qui touche les identifiants et les sauvegardes.
  *
@@ -22,11 +26,24 @@ export type AssiseId = string
 /** Subdivision d'une assise. 62 au total. Indexé globalement, 0-based. */
 export type IndexPalier = number
 export type EspeceId = string
-/** Une espèce installée sur un palier. « Le banc suit », « Compter les bancs ». */
-export type BancId = string
 export type TypeManaId = string
 export type NoeudTechniqueId = string
 export type SuccesId = string
+export type BenedictionId = string
+
+export type PorteeDeBenediction = 'ciblee' | 'globale'
+
+/**
+ * Une bénédiction — noyau v1.0 §4.2. Deux formes, deux natures : la ciblée
+ * MULTIPLIE une espèce nommée, la globale ADDITIONNE au débit de base de
+ * toutes. L'additif écrase tôt et s'efface tard ; le croisement se fait seul.
+ */
+export interface Benediction {
+  readonly id: BenedictionId
+  readonly portee: PorteeDeBenediction
+  /** L'espèce visée. `null` pour la globale. */
+  readonly espece: EspeceId | null
+}
 
 /* ─── Termes de formule (§7.5 règle 3) ──────────────────────────────────────
  * « Aucun effet chiffré flottant. Un nœud cible toujours un TermeDeFormule
@@ -38,40 +55,66 @@ export type SuccesId = string
  * touche que des termes de coût ou de confort.
  *
  * Plus aucune source ne cible un terme de production : le GDD §4.2 interdit que
- * la Foi achète du rendement, et l'amendement v1.1 §2.D interdit qu'un succès
+ * le Souffle achète du rendement, et l'amendement v1.1 §2.D interdit qu'un succès
  * en donne. Le registre est donc entièrement descriptif aujourd'hui — il nomme
  * ce qui compose la captation, pour le détail auditable du §14.3.
  */
 
 export type TermeDeProduction =
   | 'taux_base'
-  | 'effectif'
-  | 'rendement_acclimatation'
+  | 'niveau'
   | 'multiplicateur_jalon'
   | 'multiplicateur_drapeau'
-  /** Seule entrée du canal acclimaté (GDD §3.0). Peupler la dilue. */
-  | 'part_mure'
-  | 'debit_acclimate'
+  /**
+   * Multiplicateur global accordé par la profondeur ouverte. Multipliait déjà
+   * la production avant la tâche 9, sans être nommé ici — une violation du
+   * §7.5 règle 3 qu'aucun test ne surveillait. Fermée avec `multiplicateur_densite`.
+   */
+  | 'multiplicateur_profondeur'
+  /** Multiplicateur de densité (`(1 + densité/d₀)^(θ/α)`), appliqué à la production depuis la tâche 9. */
+  | 'multiplicateur_densite'
+  /**
+   * Débit propre du héros, mana/s — une constante, pas un multiplicateur.
+   * N'est attribuable à AUCUNE espèce, ce qui l'avait laissé hors du registre
+   * jusqu'à la revue de qualité de la tâche 9 : un effet chiffré flottant,
+   * exactement ce que §7.5 règle 3 interdit, juste parce qu'il n'avait pas
+   * d'espèce à qui s'attribuer.
+   */
+  | 'debit_heros'
+  /**
+   * Multiplicateur global du niveau du héros — spec 2026-09-17 [D2] :
+   * `(1 + BONUS_PAR_NIVEAU_DU_HEROS) ^ (niveau − 1)`. C'est le quatrième achat
+   * en mana, et sa part de `D` est retirée au multiplicateur de profondeur.
+   */
+  | 'multiplicateur_heros'
+  /** Bénédiction ciblée sur l'espèce : `(1 + c) ^ rang`. Noyau v1.0 §4.2. */
+  | 'multiplicateur_benediction'
+  /** Bénédiction globale : `+ k × rang` sur le débit de base de chaque espèce. */
+  | 'benediction_globale'
 
 export type TermeDeCout =
-  /** Ouvrir un palier JAMAIS atteint. L'autre moitié est `reduction_technique`. */
+  /**
+   * Ouvrir un palier — creusement neuf ou retraversée, noyau v1.0 §3.1 : `f` =
+   * 1, un seul puits, un seul levier. Débouché des effets chiffrés de succès
+   * (amendement v1.1 §2.D).
+   */
   | 'cout_creuser'
+  /** Monter une espèce d'un niveau. L'achat répétable de la boucle, ×1.15. */
+  | 'cout_niveau'
   /**
-   * Le levier de l'aménagement — GDD §6.4, seul terme qui allège un palier
-   * retraversé. Débouché des effets chiffrés de succès (amendement v1.1 §2.D).
-   */
-  | 'reduction_technique'
-  | 'cout_place'
-  /**
-   * Convaincre un banc. Payé par la DENSITÉ, et par elle seule (§7.1).
+   * Débloquer une espèce. Une fois par espèce et par vie.
    *
-   * « Un puits, un levier. L'aménagement est payé par la technique ; la
-   * reconviction garde sa formule et reste payée par la densité. Aucun coût n'a
-   * deux leviers — c'est ce qui rend l'ensemble équilibrable. » Le terme existe
-   * donc pour être NOMMÉ dans le détail de captation, jamais pour être ciblé :
-   * un test de canon vérifie qu'aucun nœud ni succès ne le vise.
+   * Il n'est plus payé par la densité. Le noyau v1.0 §1.3 en fait une fraction
+   * du coût du palier qui porte l'espèce, et rien d'autre : la densité n'a plus
+   * qu'un seul débouché, la production, par le multiplicateur de densité (elle
+   * est sortie du repeuplement puis du temps du séjour). Le terme redevient donc
+   * un levier ordinaire, que technique et succès peuvent viser.
    */
-  | 'cout_reconviction'
+  | 'cout_deblocage'
+  /** Faire grandir le héros d'un niveau — spec 2026-09-17 [D3]. Fraction du coût du palier de même rang. */
+  | 'cout_croissance'
+  /** Une bénédiction, en Souffle. Un terme de coût comme un autre : la technique pourra le viser. */
+  | 'cout_benediction'
   | 'cout_temple'
   | 'cout_portail'
   | 'cout_reouverture'
@@ -81,26 +124,30 @@ export type TermeDeConfort =
   | 'cap_hors_ligne'
   | 'densite_conservee'
   | 'contenance_de_depart'
-  | 'place_de_depart'
+  | 'niveau_de_depart'
   | 'charge_alliee_par_reponse'
 
 export type TermeDeFormule = TermeDeProduction | TermeDeCout | TermeDeConfort
 
 export const TERMES_DE_PRODUCTION: readonly TermeDeProduction[] = [
   'taux_base',
-  'effectif',
-  'rendement_acclimatation',
+  'niveau',
   'multiplicateur_jalon',
   'multiplicateur_drapeau',
-  'part_mure',
-  'debit_acclimate',
+  'multiplicateur_profondeur',
+  'multiplicateur_densite',
+  'debit_heros',
+  'multiplicateur_heros',
+  'multiplicateur_benediction',
+  'benediction_globale',
 ]
 
 export const TERMES_DE_COUT: readonly TermeDeCout[] = [
   'cout_creuser',
-  'reduction_technique',
-  'cout_place',
-  'cout_reconviction',
+  'cout_niveau',
+  'cout_deblocage',
+  'cout_croissance',
+  'cout_benediction',
   'cout_temple',
   'cout_portail',
   'cout_reouverture',
@@ -110,7 +157,7 @@ export const TERMES_DE_CONFORT: readonly TermeDeConfort[] = [
   'cap_hors_ligne',
   'densite_conservee',
   'contenance_de_depart',
-  'place_de_depart',
+  'niveau_de_depart',
   'charge_alliee_par_reponse',
 ]
 
@@ -198,15 +245,22 @@ export type DeclencheurDeSucces =
   | { readonly quoi: 'eclosions'; readonly seuil: number }
   | { readonly quoi: 'paliers_ouverts'; readonly seuil: number }
   | { readonly quoi: 'profondeur_max'; readonly seuil: number }
-  | { readonly quoi: 'bancs_convaincus'; readonly seuil: number }
-  | { readonly quoi: 'effectif_de_banc'; readonly banc: BancId; readonly seuil: number }
-  | { readonly quoi: 'effectif_d_espece'; readonly espece: EspeceId; readonly seuil: number }
-  | { readonly quoi: 'place_de_banc'; readonly banc: BancId; readonly seuil: number }
-  | { readonly quoi: 'effectif_total'; readonly seuil: number }
+  | { readonly quoi: 'especes_debloquees'; readonly seuil: number }
+  | { readonly quoi: 'niveau_d_espece'; readonly espece: EspeceId; readonly seuil: number }
+  | { readonly quoi: 'niveaux_cumules'; readonly seuil: number }
   | { readonly quoi: 'production_par_seconde'; readonly seuil: number }
-  | { readonly quoi: 'foi'; readonly seuil: number }
+  | { readonly quoi: 'souffle'; readonly seuil: number }
   | { readonly quoi: 'densite_de_palier'; readonly palier: IndexPalier; readonly seuil: number }
-  | { readonly quoi: 'palier_sature'; readonly palier: IndexPalier }
+  /**
+   * Le palier ne peut plus rien recevoir.
+   *
+   * Remplace `palier_sature`, qui lisait un effectif contre sa cible. Sans
+   * population, « plein » se lit sur le NIVEAU : le palier est au complet quand
+   * l'espèce qu'il porte a atteint le seuil du drapeau permanent. Un palier qui
+   * ne porte aucune espèce ne prendra jamais personne — il l'est dès qu'il
+   * s'ouvre.
+   */
+  | { readonly quoi: 'palier_au_complet'; readonly palier: IndexPalier }
 
 /**
  * Effet d'un succès — amendement v1.1 §2.D.
@@ -225,7 +279,7 @@ export type DeclencheurDeSucces =
  *      aux succès, une source unique par CapaciteId.
  *
  * Une troisième raison est tombée avec les bénédictions : « la production est
- * le seul débouché de la Foi » n'a plus d'objet, la Foi n'achetant que des
+ * le seul débouché du Souffle » n'a plus d'objet, le Souffle n'achetant que des
  * miracles (GDD §4.2).
  *
  * [P] ARBITRAGE OUVERT. Le GDD §14.3 range `rendement` parmi les cibles
@@ -235,8 +289,8 @@ export type DeclencheurDeSucces =
  * qu'elle est strictement plus sûre et que le schéma du §14.9 est antérieur à
  * l'amendement. À trancher explicitement plutôt qu'à subir.
  *
- * Écarté explicitement : faire payer les succès en Foi. La Foi est ADRESSÉE,
- * elle ne se gagne pas par exploit.
+ * Écarté explicitement : faire payer les succès en Souffle. Le Souffle est ADRESSÉ,
+ * il ne se gagne pas par exploit.
  */
 export type EffetDeSucces =
   | { readonly genre: 'reduction_cout'; readonly terme: TermeDeCout; readonly part: number }
@@ -283,22 +337,26 @@ export interface Assise {
   readonly nombreDePaliers: number
 }
 
+/**
+ * Un générateur, et l'unité d'achat du joueur (noyau v1.0 §1.3).
+ *
+ * `rang` est son rang global, de 0 à 20 : c'est lui qui porte le débit de base,
+ * qui croît d'une espèce à la suivante. `palier` est le palier qui l'ancre :
+ * elle n'est débloquable qu'une fois ce palier ouvert, et une espèce apparaît
+ * tous les trois paliers à partir du premier de son assise.
+ */
 export interface Espece {
   readonly id: EspeceId
   readonly assise: AssiseId
-}
-
-/** Une espèce installée sur un palier : l'unité d'achat du joueur. */
-export interface Banc {
-  readonly id: BancId
-  readonly espece: EspeceId
+  readonly rang: number
   readonly palier: IndexPalier
 }
 
+/** Un palier porte au plus une espèce — une tous les trois (RESULTATS, finding 4). */
 export interface Palier {
   readonly index: IndexPalier
   readonly assise: AssiseId
-  readonly bancs: readonly Banc[]
+  readonly espece: EspeceId | null
 }
 
 /* ─── État ──────────────────────────────────────────────────────────────────*/
@@ -308,65 +366,51 @@ export interface EtatPrng {
   readonly graine: number
 }
 
-export interface EtatBanc {
-  /**
-   * La PLACE achetée : le plafond de population du banc. 0 = pas encore
-   * convaincu.
-   *
-   * Le joueur achète de la place, jamais des individus (§2.C). C'est ce qui
-   * fait que les seuils 10 / 25 / 50 / 100 tombent avec le temps plutôt qu'à
-   * l'achat, et que le multiplicateur de seuil se reperd à l'éclosion en même
-   * temps que la population.
-   */
-  readonly place: number
-  /** Effectif réel, qui croît seul vers la place à la vitesse de repeuplement. */
-  readonly effectif: number
+/**
+ * Ce qu'une espèce est, dans l'état : un interrupteur et un niveau.
+ *
+ * Aucune population, aucun effectif, aucune convergence — noyau v1.0 §1.3. Le
+ * niveau agit à l'instant où il est payé, et les seuils 10 / 25 / 50 / 100 le
+ * lisent directement : ils tombent à l'achat, plus jamais avec le temps. C'est
+ * ce qui rend l'équivalence de pas triviale, là où une population qui converge
+ * la rendait délicate.
+ */
+export interface EtatEspece {
+  readonly debloquee: boolean
+  readonly niveau: number
 }
 
 /** Ce que l'éclosion emporte. f = 1 : reset complet, aucune fraction conservée. */
 export interface EtatCycle {
   readonly manaCourant: Decimal
   readonly paliersOuverts: number
-  readonly bancs: Readonly<Record<BancId, EtatBanc>>
-  /** Indexe le gain de densité et le gain de Foi (§6.5, §6.6). */
+  readonly especes: Readonly<Record<EspeceId, EtatEspece>>
+  /** Indexe le gain de densité et le gain de Souffle (§6.5, §6.6). */
   readonly productionPicParSeconde: Decimal
   readonly dureeSecondes: number
   /**
    * Acquis de séjour, accumulation saturante vers `A∞` (§2.B).
    *
    * C'est par lui, et par lui seul, que la contenance monte : le plafond ne
-   * monte QUE par séjour prolongé en mana dense (Tier 0 §8). Il se dépense
-   * entièrement à l'éclosion.
+   * monte QUE par séjour prolongé en mana dense (Tier 0 §8). « Dense » n'agit
+   * plus sur l'acquis, dont le temps vaut `τ₀` constant : il agit sur la
+   * production, par le multiplicateur de densité. Il se dépense entièrement à
+   * l'éclosion.
    */
   readonly acquisDeSejour: number
   /**
-   * Temps passé jauge pleine, sans interruption — GDD §2.4.
-   *
-   * Remis à zéro dès que le niveau redescend sous le plafond, donc dès la
-   * première dépense. Au-delà du délai, la divergence se déclenche seule et
-   * fixe moins d'acquis qu'une ponte choisie.
+   * Le niveau du héros dans CETTE vie — spec 2026-09-17 [D1]. Part à 1, monte
+   * à l'achat, se reperd à l'éclosion : il ressort de l'œuf alevin. Ce qu'il
+   * EST (contenance, couches) persiste ; ce qu'il a bâti de lui-même régresse.
    */
-  readonly secondesEnSaturation: number
+  readonly niveauDuHeros: number
 }
 
 /** Ce que l'éclosion ne touche pas. Un être surévolué conserve ses acquis. */
 export interface EtatPermanent {
   /** Charge de mana par palier. Persistante, monotone croissante. */
   readonly densites: readonly number[]
-  /**
-   * Part mûre de la charge de chaque palier — GDD §3.0. Seule entrée du canal
-   * acclimaté.
-   *
-   * Persistante : c'est une propriété de l'eau, pas du peuplement, et l'éclosion
-   * ne la remet pas à zéro. Elle n'est pas monotone, et c'est voulu — « la
-   * densité absolue continue de monter et ne redescend jamais : seule la
-   * proportion bouge ». Peupler la fait descendre, laisser maigre la fait
-   * remonter, et à l'éclosion la population disparaît donc elle remonte partout.
-   */
-  readonly partsMures: readonly number[]
-  /** Rendement du héros par type de mana. Jamais repayé, jamais remis à zéro. */
-  readonly acclimatations: Readonly<Record<TypeManaId, number>>
-  readonly foi: Decimal
+  readonly souffle: Decimal
   /** Limite le stock de mana, pas la production. Conservée à l'éclosion. */
   readonly contenanceMana: Decimal
   /** Une marque par assise fixée. */
@@ -386,14 +430,21 @@ export interface EtatPermanent {
   readonly succes: Readonly<Record<SuccesId, EntreeDeSucces>>
   readonly nombreEclosions: number
   /**
-   * Espèces ayant DÉJÀ atteint cent individus. Drapeau permanent, conservé à
+   * Espèces ayant DÉJÀ atteint le niveau cent. Drapeau permanent, conservé à
    * l'éclosion — l'unique exception à la reperte du multiplicateur de seuil.
+   * Il tombe désormais à l'ACHAT du centième niveau, jamais pendant un pas.
    */
   readonly especesAyantAtteintCent: readonly EspeceId[]
   /** Le mana expire vers l'ambiant. Il n'est pas détruit (Tier 0 §5). */
   readonly manaAmbiant: Decimal
   /** Compteur Entretien : heures effectivement créditées, jamais écoulées. */
   readonly heuresHorsLigneCreditees: number
+  /**
+   * Rang acheté de chaque bénédiction — noyau v1.0 §4, spec 2026-09-17 [D5].
+   * Permanent : c'est l'écran d'améliorations du jeu. Vide tant que B1 n'a pas
+   * rempli le registre.
+   */
+  readonly benedictions: Readonly<Record<BenedictionId, number>>
 }
 
 export interface MesureDeCycle {
@@ -403,22 +454,46 @@ export interface MesureDeCycle {
    *
    * Ce n'est pas la durée « active » du §11 : le noyau ne sait pas quand le
    * joueur est devant l'écran. Le temps actif est une quantité de POLITIQUE —
-   * la somme des sessions — et il est mesuré par le simulateur, qui est le seul
+   * la somme des relevés — et il est mesuré par le simulateur, qui est le seul
    * à savoir quand son joueur revient. Confondre les deux fait lire ~600 h
    * calendaires comme si c'étaient les ~38 h actives visées.
    */
   readonly dureeEcouleeSecondes: number
-  readonly secondesEnRedescente: number
   readonly paliersOuverts: number
   readonly productionPicParSeconde: Decimal
-  readonly foiGagnee: Decimal
+  readonly souffleGagne: Decimal
 }
 
 export interface EtatTelemetrie {
   readonly cycles: readonly MesureDeCycle[]
-  readonly secondesEnRedescente: number
   readonly secondesDepuisDernierSucces: number
   readonly intervallesEntreSucces: readonly number[]
+}
+
+/**
+ * Les réglages de la COURBE — ce que le calibreur résout, et que le canon fixe.
+ *
+ * Ils vivent dans l'état, et non en constantes de module lues directement par
+ * les fonctions pures, pour une seule raison : le calibreur doit pouvoir
+ * balayer des valeurs sans muter un module, et le §5.1 interdit au noyau tout
+ * état hors du reducer. Même précédent que `limiteDeContenu` juste en dessous —
+ * un seul code, plusieurs mondes.
+ *
+ * Ils ne sont PAS persistés (R41) : un réglage est une propriété de la VERSION
+ * du jeu, pas de la partie. Le persister figerait l'ancienne courbe dans les
+ * saves existantes au moment même où on la recalibre. `serialiser` l'omet,
+ * `deserialiser` le reprend du repli, c'est-à-dire du canon.
+ *
+ * La tâche 13 y ajoutera `θ` et l'échelle de production, qui se lisent
+ * aujourd'hui en constantes de module.
+ */
+export interface Reglage {
+  /**
+   * De combien le temps caractéristique du séjour est multiplié PAR PALIER de
+   * profondeur atteinte (amendement v1.2). 1 = `τ` constant, la loi d'avant le
+   * 2026-09-16.
+   */
+  readonly croissanceDuSejourParPalier: number
 }
 
 export interface EtatJeu {
@@ -437,6 +512,8 @@ export interface EtatJeu {
    * deux mondes.
    */
   readonly limiteDeContenu: number
+  /** Voir `Reglage` : les boutons de la courbe, non persistés. */
+  readonly reglage: Reglage
   readonly cycle: EtatCycle
   readonly permanent: EtatPermanent
   readonly telemetrie: EtatTelemetrie
@@ -451,13 +528,16 @@ export interface EtatJeu {
  * n'apparaîtrait qu'à la capture d'écran.
  */
 export type SourceDeTerme =
-  | { readonly quoi: 'population' }
+  | { readonly quoi: 'niveau'; readonly niveau: number }
   | { readonly quoi: 'palier'; readonly palier: IndexPalier }
-  | { readonly quoi: 'acclimatation'; readonly typeMana: TypeManaId }
-  | { readonly quoi: 'place'; readonly place: number }
   | { readonly quoi: 'drapeaux_permanents'; readonly especes: number }
-  | { readonly quoi: 'eau_murie'; readonly part: number }
-  | { readonly quoi: 'canal_acclimate' }
+  /** Source du multiplicateur de profondeur : combien de paliers sont ouverts. */
+  | { readonly quoi: 'profondeur'; readonly paliersOuverts: number }
+  /** Source du multiplicateur de densité : la densité du séjour (le maximum sur les paliers ouverts). */
+  | { readonly quoi: 'densite'; readonly densite: number }
+  /** Source de `debit_heros` et de `multiplicateur_heros` : son niveau dans cette vie. */
+  | { readonly quoi: 'heros'; readonly niveau: number }
+  | { readonly quoi: 'benediction'; readonly rang: number }
 
 /** Une ligne du détail de captation (§8.2) : chaque terme attribuable. */
 export interface LigneDeCaptation {

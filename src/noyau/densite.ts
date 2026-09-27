@@ -7,14 +7,28 @@
  * s'en assurer.
  *
  * §6.5 : le gain de densité est indexé sur la production de pic du cycle, pas
- * sur la profondeur. Elle a UN SEUL débouché depuis V11 — l'acquis de séjour,
- * via `multiplicateurDensite` : « séjour en mana dense » (Tier 0 §8).
+ * sur la profondeur. Elle n'a plus qu'UN débouché : la production (§10), via
+ * `multiplicateurDensite(densiteDuSejour(etat))`, au même titre que le
+ * multiplicateur de profondeur. Voir le commentaire de `densiteDuSejour` pour
+ * ce qui interdit qu'une autre grandeur porte ce nom.
+ *
+ * Elle a eu deux autres débouchés, retirés tous deux pour la même raison : la
+ * densité vaut `pointe^α` et croît sans borne, donc un temps caractéristique
+ * divisé par elle s'effondre.
+ *   - le repeuplement (V11, 2026-09-08) : `τ` tombait de 300 s à 10⁻⁴ s en
+ *     quinze cycles. `vitesseDeRepeuplement` est ensuite partie avec le modèle
+ *     à population, le 2026-09-09 ;
+ *   - l'acquis de séjour (2026-09-11) : `t₉₀` tombait de 2 h à 0,12 h au
+ *     deuxième cycle et à 0,05 s au troisième, et l'acquis saturait toujours
+ *     avant l'éclosion — la loi
+ *     de contenance lisait un forfait. Son temps est désormais `τ₀`, constant
+ *     (amendement v1.1, §2.B).
  */
 import type Decimal from 'break_infinity.js'
 import type { EtatJeu, IndexPalier } from './types'
 import {
   ALPHA_GAIN_DE_DENSITE,
-  K_TAUX_DE_REPEUPLEMENT,
+  DENSITE_DE_REFERENCE,
   PRODUCTION_DE_REFERENCE,
   densiteExposant,
 } from './constantes'
@@ -25,45 +39,49 @@ export function densiteDuPalier(etat: EtatJeu, palier: IndexPalier): number {
 }
 
 /**
- * Multiplicateur de densité : `densité ^ (θ/α)` (amendement v1.1 §2.A).
+ * Densité du séjour : la plus dense des eaux où le héros se tient — le
+ * maximum sur les paliers OUVERTS, pas une somme.
  *
- * Il ne multiplie pas une production. Il raccourcit le temps caractéristique du
- * séjour (§2.B) : c'est la traduction mécanique de « séjour en mana DENSE ».
+ * [P] — le §2.A écrit `multiplicateurDensite(s)` pour l'état entier, alors que
+ * la densité est portée par palier. Le maximum sur les paliers ouverts est
+ * retenu : c'est celle qu'il peut effectivement habiter. En pratique la
+ * question est peu sensible — l'éclosion porte tous les paliers occupés à la
+ * même valeur —, mais elle le deviendrait si une assise cessait d'être
+ * revisitée à chaque vie.
  *
- * Planché à 1 : une densité nulle ne doit pas ralentir le séjour au-delà de
- * `τ₀`, qui est déjà le cas neutre.
+ * C'EST LA SEULE GRANDEUR NOMMÉE « densité » qui doit nourrir
+ * `multiplicateurDensite` — dans la production, son seul usage, comme dans le
+ * détail de captation qui l'affiche : la
+ * dérivation de `densiteExposant` (`constantes.ts`) suppose que son argument
+ * EST la densité, la grandeur qui vaut `pointe^α` — un scalaire, jamais une
+ * somme. Une SOMME sur les paliers ouverts croît aussi avec leur NOMBRE, et
+ * glisse un `(p_new/p_old)^(θ/α)` non budgété sur le `g^(paliers × θ)` voulu à
+ * chaque éclosion — mesuré : environ ×18 sur une partie complète.
  */
-export function multiplicateurDensite(densite: number): number {
-  return Math.pow(Math.max(1, densite), densiteExposant())
+export function densiteDuSejour(etat: EtatJeu): number {
+  let densite = 0
+  for (let palier = 0; palier < etat.cycle.paliersOuverts; palier += 1) {
+    densite = Math.max(densite, densiteDuPalier(etat, palier))
+  }
+  return densite
 }
 
 /**
- * Vitesse de repeuplement d'un banc, par seconde.
+ * Multiplicateur de densité : `(1 + densité / d₀) ^ (θ/α)` (amendement v1.1
+ * §2.A, forme des contraintes globales du plan).
  *
- * **V11 tranché le 2026-09-08 : la densité est DÉCOUPLÉE du repeuplement.**
+ * Il multiplie la production (§10), au même titre que le multiplicateur de
+ * profondeur : les deux sont des TermeDeFormule nommés dans le détail de
+ * captation, jamais des facteurs flottants (§7.5 règle 3). C'est son SEUL
+ * usage, et c'est par là que passe « séjour en mana DENSE ». Il ne touche plus
+ * au temps du séjour, qui vaut `τ₀`, constant (amendement v1.1, §2.B, amendé
+ * le 2026-09-11).
  *
- * Deux canaux coexistaient dans les documents. Le §6.5 de la v1.0 faisait
- * retourner le gain de densité dans la vitesse de repeuplement ; l'amendement
- * v1.1 §2.B le fait retourner dans l'acquis de séjour. Les cumuler comptait
- * deux fois la même compensation, et le canal de trop était celui-ci :
- *
- *   la densité vaut `pointe^α` (§2.A), donc elle croît avec la production SANS
- *   BORNE. Le §2.B la fait passer par un rapport que la saturation borne — lui
- *   tient. À exposant nu, `k` s'effondrait de 300 s à 10⁻⁴ s en quinze cycles :
- *   la population devenait instantanée dès le deuxième, et avec elle
- *   disparaissait le délai entre l'achat d'une place et son effet, c'est-à-dire
- *   ce qui fait le jeu.
- *
- * La densité travaille donc par l'acquis de séjour, et par rien d'autre.
- *
- * [P] Ce qui reviendra ici un jour n'est pas la densité mais la RÉGÉNÉRATION
- * LOCALE du GDD §7.2 — `croissance/s = k × régénération_locale × (1 − pop/pop_max)`
- * —, et le §5.1 précise qu'elle est « fonction de la biomasse ». Une quantité
- * bornée par la capacité des paliers ouverts, donc, pas une quantité qui monte
- * sans fin. Elle n'est pas inventée ici : aucun document ne lui donne de forme.
+ * À densité nulle il vaut exactement 1 : une eau neutre ne multiplie ni ne
+ * divise la production.
  */
-export function vitesseDeRepeuplement(): number {
-  return K_TAUX_DE_REPEUPLEMENT
+export function multiplicateurDensite(densite: number): number {
+  return Math.pow(1 + densite / DENSITE_DE_REFERENCE, densiteExposant())
 }
 
 /**

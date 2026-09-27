@@ -10,13 +10,13 @@
  */
 import { useState } from 'react'
 import type { EtatJeu } from '../noyau/types'
-import { gainDeFoiPrevu } from '../noyau/eclosion'
+import { gainDeSoufflePrevu } from '../noyau/eclosion'
 import { estBloque } from '../noyau/economie'
 import { montant } from './format'
 
 export function Eclosion({ etat, surEclosion }: { readonly etat: EtatJeu; readonly surEclosion: () => void }) {
   const [ouvert, setOuvert] = useState(false)
-  const gain = gainDeFoiPrevu(etat)
+  const gain = gainDeSoufflePrevu(etat)
   const bloque = estBloque(etat)
 
   if (!ouvert) {
@@ -43,7 +43,7 @@ export function Eclosion({ etat, surEclosion }: { readonly etat: EtatJeu; readon
 
       <dl className="space-y-1 text-sm text-jour-doux">
         <div className="flex justify-between">
-          <dt>Foi que tes fidèles ont émise</dt>
+          <dt>Souffle que le vivant a laissé</dt>
           <dd className="font-chiffre text-foi tabular-nums">{montant(gain)}</dd>
         </div>
         <div className="flex justify-between">
@@ -53,7 +53,7 @@ export function Eclosion({ etat, surEclosion }: { readonly etat: EtatJeu; readon
       </dl>
 
       <p className="text-sm text-jour-tu">
-        Rester plus longtemps fait monter la Foi. Partir maintenant fait descendre plus bas.
+        Rester plus longtemps fait monter le Souffle. Partir maintenant fait descendre plus bas.
       </p>
 
       <div className="flex gap-2">
