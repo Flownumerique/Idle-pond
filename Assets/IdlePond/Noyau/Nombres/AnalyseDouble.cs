@@ -22,6 +22,7 @@ namespace IdlePond.Noyau
         const int EXPOSANT_SOUS_DEBORDEMENT = -330;
         const int EXPOSANT_NORMAL_MIN = -1022;
         const int EXPOSANT_NORMAL_MAX = 1023;
+        const string INFINI = "Infinity";
 
         public static double Lire(string texte)
         {
@@ -42,7 +43,10 @@ namespace IdlePond.Noyau
             var i = 0;
             if (s[0] == '+' || s[0] == '-') { negatif = s[0] == '-'; i = 1; }
 
-            if (string.CompareOrdinal(s, i, "Infinity", 0, s.Length - i) == 0)
+            // `CompareOrdinal` avec une longueur plus courte que "Infinity" (ex. le reste après
+            // le signe de « - » ou « I ») compare quand même, et un préfixe de « Infinity » y
+            // ressemblerait à une égalité : vérifier la longueur d'abord, exactement.
+            if (s.Length - i == INFINI.Length && string.CompareOrdinal(s, i, INFINI, 0, INFINI.Length) == 0)
             {
                 valeur = negatif ? double.NegativeInfinity : double.PositiveInfinity;
                 return true;
@@ -81,10 +85,13 @@ namespace IdlePond.Noyau
                 var expDebut = j;
                 while (j < s.Length && s[j] >= '0' && s[j] <= '9') j++;
                 if (j == expDebut) return false; // « 1e » sans chiffre
-                var expTexte = s.Substring(expDebut, j - expDebut);
+                var expTexte = s.Substring(expDebut, j - expDebut).TrimStart('0');
                 // Une chaîne d'exposant absurdement longue ("1e999999999999") mènerait de toute
                 // façon à ±Infini ou ±0 ; plafonner évite un BigInteger.Pow ou un int.Parse inutiles.
-                if (expTexte.Length > 9) exposantLu = expNeg ? -1_000_000_000 : 1_000_000_000;
+                // Les zéros de tête ("1e0000000001") ne comptent pas dans cette longueur : sans le
+                // TrimStart, "1e0000000001" (dix chiffres écrits, valeur 1) débordait à tort.
+                if (expTexte.Length == 0) exposantLu = 0;
+                else if (expTexte.Length > 9) exposantLu = expNeg ? -1_000_000_000 : 1_000_000_000;
                 else
                 {
                     exposantLu = int.Parse(expTexte, NumberStyles.None, CultureInfo.InvariantCulture);
@@ -94,11 +101,16 @@ namespace IdlePond.Noyau
             if (j != s.Length) return false; // caractères de trop (ex. « 12.5xyz »)
 
             // valeur = D × 10^e, D chiffres purs, jamais passés par un parseur de double.
-            var d = BigInteger.Parse(chiffres.ToString(), NumberStyles.None, CultureInfo.InvariantCulture);
+            var chiffresTexte = chiffres.ToString();
+            var d = BigInteger.Parse(chiffresTexte, NumberStyles.None, CultureInfo.InvariantCulture);
             if (d.IsZero) { valeur = negatif ? -0.0 : 0.0; return true; }
 
             var e = exposantLu - nbApresPoint;
-            var nbChiffresD = d.ToString(CultureInfo.InvariantCulture).Length;
+            // Nombre de chiffres significatifs de `d` (zéros de tête exclus), lu directement sur
+            // la chaîne déjà en main plutôt que par `d.ToString()` (O(n²) pour un grand D).
+            var debutSignificatif = 0;
+            while (chiffresTexte[debutSignificatif] == '0') debutSignificatif++;
+            var nbChiffresD = chiffresTexte.Length - debutSignificatif;
 
             if (e + nbChiffresD > EXPOSANT_DEBORDEMENT)
             {

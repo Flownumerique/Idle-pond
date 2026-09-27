@@ -155,6 +155,11 @@ namespace IdlePond.Tests
             Assert.That(Decimal.Parse("Infinity").Exposant, Is.EqualTo(9e15));
             Assert.That(double.IsNaN(Decimal.Parse("NaN").Mantisse), Is.True);
             Assert.Throws<FormatException>(() => Decimal.Parse("abc"));
+            // Un préfixe de « Infinity » (le reste après le signe de « 1e- »/« 1e+ »/« - ») n'est
+            // pas « Infinity » : voir AnalyseDoubleTests pour la même exigence côté lecteur.
+            Assert.Throws<FormatException>(() => Decimal.Parse("1e-"));
+            Assert.Throws<FormatException>(() => Decimal.Parse("1e+"));
+            Assert.Throws<FormatException>(() => Decimal.Parse("-"));
             // Vérifié contre la bibliothèque non modifiée : Decimal.fromNumber(NaN).add(Decimal.fromNumber(1))
             // rend m=0, e=0 en JS (la garde NaN de Add empêche l'indexation de la table qui lèverait sinon).
             Assert.That(new Decimal(double.NaN).Add(Decimal.Un).Eq(Decimal.Zero), Is.True);

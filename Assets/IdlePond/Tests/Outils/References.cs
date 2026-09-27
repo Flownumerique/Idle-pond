@@ -9,6 +9,10 @@ namespace IdlePond.Tests.Outils
     /// Les fichiers produits par `tests/parite/generer-references.ts` pendant que
     /// le TypeScript était la vérité. Le répertoire courant d'un test EditMode est
     /// la racine du projet Unity.
+    ///
+    /// `Lire` fait ressortir tout littéral non entier comme une chaîne JSON (voir
+    /// `ProtegerLesFlottants`) : ne jamais les lire par `(double)token`, toujours par
+    /// `References.Double(token)`.
     /// </summary>
     public static class References
     {

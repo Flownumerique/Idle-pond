@@ -38,6 +38,9 @@ namespace IdlePond.Tests
             ("0.000001", "3eb0c6f7a0b5ed8d"),
             ("1e21", "444b1ae4d6e2ef50"),
             ("7.450580596923828e-9", "3e40000000000000"),
+            // Les zéros de tête de l'exposant ne comptent pas dans son ampleur : dix chiffres
+            // écrits, valeur 1 (V8 : 10, pas +Infini).
+            ("1e0000000001", "4024000000000000"),
         };
 
         static long BitsAttendus(string hex) => long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
@@ -98,6 +101,15 @@ namespace IdlePond.Tests
             Assert.Throws<FormatException>(() => AnalyseDouble.Lire("abc"));
             Assert.Throws<FormatException>(() => AnalyseDouble.Lire(""));
             Assert.Throws<FormatException>(() => AnalyseDouble.Lire("1e"));
+            // Un préfixe de « Infinity » n'est pas « Infinity » : la comparaison doit porter sur
+            // la longueur exacte du reste après le signe, pas seulement sur ce qui chevauche.
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("-"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("+"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("I"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("Inf"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("-Inf"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("Infin"));
+            Assert.Throws<FormatException>(() => AnalyseDouble.Lire("Infinityx"));
         }
 
         [Test, Description("la culture fr-FR ne change rien : jamais de virgule attendue en entrée")]
@@ -118,6 +130,30 @@ namespace IdlePond.Tests
             {
                 Thread.CurrentThread.CurrentCulture = avant;
             }
+        }
+
+        // Développement décimal exact de 2^-1075 (= 5^1075 × 10^-1075) et de 3×2^-1075, calculés
+        // par `5n ** 1075n` (BigInt) en Node ; le résultat V8 attendu (`Number(str)`) a été vérifié
+        // avant d'écrire le test, pas déduit après coup. 2^-1075 est exactement à mi-chemin entre 0
+        // et le plus petit sous-normal (2^-1074) : pair au plus proche retombe sur 0 (pair). De même
+        // 3×2^-1075 est à mi-chemin entre 2^-1074 (mantisse 1, impair) et 2×2^-1074 (mantisse 2,
+        // pair) : retombe sur 2.
+        const string DEMI_PLUS_PETIT_SOUS_NORMAL =
+            "24703282292062327208828439643411068618252990130716238221279284125033775363510437593264991818081799618989828234772285886546332835517796989819938739800539093906315035659515570226392290858392449105184435931802849936536152500319370457678249219365623669863658480757001585769269903706311928279558551332927834338409351978015531246597263579574622766465272827220056374006485499977096599470454020828166226237857393450736339007967761930577506740176324673600968951340535537458516661134223766678604162159680461914467291840300530057530849048765391711386591646239524912623653881879636239373280423891018672348497668235089863388587925628302755995657524455507255189313690836254779186948667994968324049705821028513185451396213837722826145437693412532098591327667236328125e-1075";
+
+        const string TROIS_FOIS_DEMI_PLUS_PETIT_SOUS_NORMAL =
+            "74109846876186981626485318930233205854758970392148714663837852375101326090531312779794975454245398856969484704316857659638998506553390969459816219401617281718945106978546710679176872575177347315553307795408549809608457500958111373034747658096871009590975442271004757307809711118935784838675653998783503015228055934046593739791790738723868299395818481660169122019456499931289798411362062484498678713572180352209017023903285791732520220528974020802906854021606612375549983402671300035812486479041385743401875520901590172592547146296175134159774938718574737870961645638908718119841271673056017045493004705269590165763776884908267986972573366521765567941072508764337560846003984904972149117463085539556354188641513168478436313080237596295773983001708984375e-1075";
+
+        [Test, Description("l'égalité stricte sous-normale arrondit au pair, pas systématiquement en haut")]
+        public void L_egalite_stricte_sous_normale_arrondit_au_pair()
+        {
+            // 2^-1075, exactement à mi-chemin entre 0 et le plus petit sous-normal : 0 est pair.
+            Assert.That(BitConverter.DoubleToInt64Bits(AnalyseDouble.Lire(DEMI_PLUS_PETIT_SOUS_NORMAL)),
+                Is.EqualTo(0L));
+            // 3×2^-1075, exactement à mi-chemin entre 1 et 2 (unités du plus petit sous-normal) :
+            // 2 est pair.
+            Assert.That(BitConverter.DoubleToInt64Bits(AnalyseDouble.Lire(TROIS_FOIS_DEMI_PLUS_PETIT_SOUS_NORMAL)),
+                Is.EqualTo(2L));
         }
 
         [Test, Description("aller-retour sur 10000 doubles pseudo-aléatoires (sans NaN ni infini)")]
