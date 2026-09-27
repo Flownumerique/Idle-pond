@@ -1,0 +1,14 @@
+{
+    "name": "IdlePond.Simulateur",
+    "rootNamespace": "IdlePond.Simulateur",
+    "references": ["IdlePond.Coeur", "IdlePond.Adaptateurs"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

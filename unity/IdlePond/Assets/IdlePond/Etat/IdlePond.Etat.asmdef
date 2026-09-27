@@ -1,0 +1,14 @@
+{
+    "name": "IdlePond.Etat",
+    "rootNamespace": "IdlePond.Etat",
+    "references": ["IdlePond.Coeur", "IdlePond.Adaptateurs"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

@@ -1,0 +1,14 @@
+{
+    "name": "IdlePond.Adaptateurs",
+    "rootNamespace": "IdlePond.Adaptateurs",
+    "references": ["IdlePond.Coeur"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

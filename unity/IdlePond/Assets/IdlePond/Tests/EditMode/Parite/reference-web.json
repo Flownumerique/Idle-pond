@@ -1,0 +1,6663 @@
+{
+ "avertissement": "Fichier généré par tests/parite/generer-reference-unity.ts — ne pas modifier à la main. `npm run reference:unity`.",
+ "registreDesSucces": [
+  "acte-premiere-conviction",
+  "acte-deuxieme-niveau",
+  "acte-cinquieme-niveau",
+  "acte-premier-banc-de-cinq",
+  "acte-premier-creusement",
+  "acte-deux-bancs",
+  "acte-dixieme-niveau",
+  "acte-trois-bancs",
+  "acte-premier-palier-sature",
+  "seuil-vairon-10",
+  "seuil-vairon-25",
+  "seuil-vairon-50",
+  "seuil-vairon-100",
+  "seuil-loche-10",
+  "seuil-loche-25",
+  "seuil-loche-50",
+  "seuil-loche-100",
+  "seuil-epinoche-10",
+  "seuil-epinoche-25",
+  "seuil-epinoche-50",
+  "seuil-epinoche-100",
+  "seuil-mare-25",
+  "seuil-mare-45",
+  "seuil-mare-70",
+  "seuil-mare-95",
+  "seuil-mare-130",
+  "seuil-mare-200",
+  "seuil-mare-320",
+  "seuil-mare-500",
+  "seuil-profondeur-3",
+  "seuil-profondeur-5",
+  "seuil-palier-sature-1",
+  "seuil-palier-sature-2",
+  "seuil-palier-sature-3",
+  "seuil-palier-sature-4",
+  "seuil-palier-sature-5",
+  "franchissement-premiere-eclosion",
+  "franchissement-deuxieme-eclosion",
+  "franchissement-troisieme-eclosion",
+  "franchissement-densite",
+  "franchissement-fond-de-la-mare"
+ ],
+ "textes": {
+  "acte-premiere-conviction": {
+   "nom": "Un banc te suit",
+   "condition": "Convaincre un premier banc",
+   "rapport": "Ils sont venus sans qu’on les appelle deux fois."
+  },
+  "acte-deuxieme-niveau": {
+   "nom": "Ils reviennent",
+   "condition": "Faire une deuxième place dans un banc",
+   "rapport": "Un de plus s’est joint sans qu’on insiste."
+  },
+  "acte-cinquieme-niveau": {
+   "nom": "Le geste prend",
+   "condition": "Faire cinq places dans un banc",
+   "rapport": "Ça va plus vite qu’au début."
+  },
+  "acte-premier-banc-de-cinq": {
+   "nom": "Cinq à demeure",
+   "condition": "Cinq individus installés dans un même banc",
+   "rapport": "Ils ne repartent plus entre deux passages."
+  },
+  "acte-premier-creusement": {
+   "nom": "La roche cède",
+   "condition": "Creuser une fois plus bas",
+   "rapport": "Le fond s’est ouvert. Il y avait de la place dessous."
+  },
+  "acte-deux-bancs": {
+   "nom": "Ils sont deux",
+   "condition": "Convaincre deux bancs à la fois",
+   "rapport": "Le second n’a pas fui en voyant le premier."
+  },
+  "acte-dixieme-niveau": {
+   "nom": "La main est faite",
+   "condition": "Faire dix places dans un banc",
+   "rapport": "Le geste se répète tout seul, maintenant."
+  },
+  "acte-trois-bancs": {
+   "nom": "La Noue répond",
+   "condition": "Convaincre trois bancs à la fois",
+   "rapport": "On ne peut plus les compter d’un seul regard."
+  },
+  "acte-premier-palier-sature": {
+   "nom": "Plein à ras",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Ce creux ne prend plus personne. Il faudra descendre."
+  },
+  "seuil-vairon-10": {
+   "nom": "Dix vairons",
+   "condition": "Dix individus",
+   "rapport": "Ils tiennent le banc ensemble."
+  },
+  "seuil-vairon-25": {
+   "nom": "Vingt-cinq vairons",
+   "condition": "Vingt-cinq individus",
+   "rapport": "Le banc vire d’un seul tenant."
+  },
+  "seuil-vairon-50": {
+   "nom": "Cinquante vairons",
+   "condition": "Cinquante individus",
+   "rapport": "On entend le courant qu’ils font."
+  },
+  "seuil-vairon-100": {
+   "nom": "Cent vairons",
+   "condition": "Cent individus",
+   "rapport": "Ils ne repartiront plus. Jamais."
+  },
+  "seuil-loche-10": {
+   "nom": "Dix loches",
+   "condition": "Dix individus",
+   "rapport": "Le fond est remué par en dessous."
+  },
+  "seuil-loche-25": {
+   "nom": "Vingt-cinq loches",
+   "condition": "Vingt-cinq individus",
+   "rapport": "Elles ouvrent des passages qu’on n’a pas creusés."
+  },
+  "seuil-loche-50": {
+   "nom": "Cinquante loches",
+   "condition": "Cinquante individus",
+   "rapport": "La vase ne tient plus en place."
+  },
+  "seuil-loche-100": {
+   "nom": "Cent loches",
+   "condition": "Cent individus",
+   "rapport": "Elles ne repartiront plus. Jamais."
+  },
+  "seuil-epinoche-10": {
+   "nom": "Dix épinoches",
+   "condition": "Dix individus",
+   "rapport": "Elles tiennent là où l’eau se charge."
+  },
+  "seuil-epinoche-25": {
+   "nom": "Vingt-cinq épinoches",
+   "condition": "Vingt-cinq individus",
+   "rapport": "Rien ne les déloge du bord."
+  },
+  "seuil-epinoche-50": {
+   "nom": "Cinquante épinoches",
+   "condition": "Cinquante individus",
+   "rapport": "L’eau lourde ne leur fait plus rien."
+  },
+  "seuil-epinoche-100": {
+   "nom": "Cent épinoches",
+   "condition": "Cent individus",
+   "rapport": "Elles ne repartiront plus. Jamais."
+  },
+  "seuil-mare-25": {
+   "nom": "25 dans la Noue",
+   "condition": "25 individus, tous bancs confondus",
+   "rapport": "Il y a du monde jusque dans les recoins."
+  },
+  "seuil-mare-45": {
+   "nom": "45 dans la Noue",
+   "condition": "45 individus, tous bancs confondus",
+   "rapport": "L’eau bouge toute seule, maintenant."
+  },
+  "seuil-mare-70": {
+   "nom": "70 dans la Noue",
+   "condition": "70 individus, tous bancs confondus",
+   "rapport": "Le fond ne se voit plus à travers eux."
+  },
+  "seuil-mare-95": {
+   "nom": "95 dans la Noue",
+   "condition": "95 individus, tous bancs confondus",
+   "rapport": "Ça tient sans qu’on s’en occupe."
+  },
+  "seuil-mare-130": {
+   "nom": "130 dans la Noue",
+   "condition": "130 individus, tous bancs confondus",
+   "rapport": "Il y a du monde jusque dans les recoins."
+  },
+  "seuil-mare-200": {
+   "nom": "200 dans la Noue",
+   "condition": "200 individus, tous bancs confondus",
+   "rapport": "On ne les compte plus d’un seul regard."
+  },
+  "seuil-mare-320": {
+   "nom": "320 dans la Noue",
+   "condition": "320 individus, tous bancs confondus",
+   "rapport": "Il y a du monde jusque dans les recoins."
+  },
+  "seuil-mare-500": {
+   "nom": "500 dans la Noue",
+   "condition": "500 individus, tous bancs confondus",
+   "rapport": "On ne les compte plus d’un seul regard."
+  },
+  "seuil-profondeur-3": {
+   "nom": "3 creusements",
+   "condition": "Ouvrir 3 fois plus bas dans la même vie",
+   "rapport": "Le fond est plus loin qu’à la dernière descente."
+  },
+  "seuil-profondeur-5": {
+   "nom": "5 creusements",
+   "condition": "Ouvrir 5 fois plus bas dans la même vie",
+   "rapport": "L’eau est froide, et plus lourde."
+  },
+  "seuil-palier-sature-1": {
+   "nom": "Un creux de plus est plein",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Celui-là ne prendra plus personne."
+  },
+  "seuil-palier-sature-2": {
+   "nom": "Un creux de plus est plein",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Celui-là ne prendra plus personne."
+  },
+  "seuil-palier-sature-3": {
+   "nom": "Un creux de plus est plein",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Celui-là ne prendra plus personne."
+  },
+  "seuil-palier-sature-4": {
+   "nom": "Un creux de plus est plein",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Celui-là ne prendra plus personne."
+  },
+  "seuil-palier-sature-5": {
+   "nom": "Un creux de plus est plein",
+   "condition": "Remplir un creux jusqu’à sa cible",
+   "rapport": "Celui-là ne prendra plus personne."
+  },
+  "franchissement-premiere-eclosion": {
+   "nom": "Rentrer",
+   "condition": "Éclore une première fois",
+   "rapport": "Tout est resté en bas. Presque tout."
+  },
+  "franchissement-deuxieme-eclosion": {
+   "nom": "Rentrer encore",
+   "condition": "Éclore deux fois",
+   "rapport": "La descente a été plus courte que la première."
+  },
+  "franchissement-troisieme-eclosion": {
+   "nom": "Le chemin se sait",
+   "condition": "Éclore trois fois",
+   "rapport": "Les mêmes fonds, et plus vite."
+  },
+  "franchissement-densite": {
+   "nom": "La Noue est chargée",
+   "condition": "Charger le premier creux",
+   "rapport": "Ce qui a été porté là y est resté."
+  },
+  "franchissement-fond-de-la-mare": {
+   "nom": "Le fond de la Noue",
+   "condition": "Ouvrir la Noue jusqu’au fond",
+   "rapport": "Il n’y a plus de roche à ouvrir ici."
+  }
+ },
+ "prng": [
+  0.9797282677609473,
+  0.3067522644996643,
+  0.484205421525985,
+  0.817934412509203,
+  0.5094283693470061,
+  0.34747186047025025,
+  0.07375754183158278,
+  0.7663964673411101,
+  0.9968264393974096,
+  0.8250224851071835,
+  0.4599348735064268,
+  0.9458441860042512,
+  0.8906230411957949,
+  0.9693436855450273,
+  0.6276605280581862,
+  0.24882567464374006,
+  0.47334283916279674,
+  0.30504514812491834,
+  0.772419034736231,
+  0.8651748767588288
+ ],
+ "grandsNombres": {
+  "binaires": [
+   {
+    "a": "0",
+    "b": "0",
+    "somme": "0",
+    "difference": "0",
+    "produit": "0",
+    "quotient": null,
+    "max": "0",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0",
+    "b": "1",
+    "somme": "1",
+    "difference": "-1",
+    "produit": "0",
+    "quotient": "0",
+    "max": "1",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "0",
+    "quotient": "0",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "0",
+    "quotient": "0",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "0.3333333333333333",
+    "somme": "0.3333333333333333",
+    "difference": "-0.3333333333333333",
+    "produit": "0",
+    "quotient": "0",
+    "max": "0.3333333333333333",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "-7.5",
+    "somme": "-7.5",
+    "difference": "7.5",
+    "produit": "0",
+    "quotient": "0",
+    "max": "0",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0",
+    "b": "9.99e-8",
+    "somme": "9.99e-8",
+    "difference": "-9.99e-8",
+    "produit": "0",
+    "quotient": "0",
+    "max": "9.99e-8",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "0",
+    "quotient": "0",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0",
+    "b": "123456.789",
+    "somme": "123456.789",
+    "difference": "-123456.789",
+    "produit": "0",
+    "quotient": "0",
+    "max": "123456.789",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1",
+    "b": "0",
+    "somme": "1",
+    "difference": "1",
+    "produit": "0",
+    "quotient": null,
+    "max": "1",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1",
+    "b": "1",
+    "somme": "2",
+    "difference": "0",
+    "produit": "1",
+    "quotient": "1",
+    "max": "1",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "1.5591422646938116e+23",
+    "quotient": "6.413782902590884e-24",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "1.2345e+30",
+    "quotient": "8.100445524503849e-31",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1",
+    "b": "0.3333333333333333",
+    "somme": "1.33333333333333",
+    "difference": "0.6666666666666701",
+    "produit": "0.3333333333333333",
+    "quotient": "3",
+    "max": "1",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1",
+    "b": "-7.5",
+    "somme": "-6.5",
+    "difference": "8.5",
+    "produit": "-7.5",
+    "quotient": "-0.13333333333333333",
+    "max": "1",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1",
+    "b": "9.99e-8",
+    "somme": "1.0000000999",
+    "difference": "0.9999999001000002",
+    "produit": "9.99e-8",
+    "quotient": "10010010.010010008",
+    "max": "1",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "1e+21",
+    "quotient": "1e-21",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1",
+    "b": "123456.789",
+    "somme": "123457.78899999999",
+    "difference": "-123455.789",
+    "produit": "123456.789",
+    "quotient": "0.000008100000073709998",
+    "max": "123456.789",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "0",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "0",
+    "quotient": null,
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "1",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "1.5591422646938116e+23",
+    "quotient": "1.5591422646938116e+23",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "1.5591422646938116e+23",
+    "somme": "3.11828452938762e+23",
+    "difference": "0",
+    "produit": "2.4309246015545476e+46",
+    "quotient": "1",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "1.2345e+30",
+    "somme": "1.23450015591423e+30",
+    "difference": "-1.23449984408577e+30",
+    "produit": "1.9247611257645103e+53",
+    "quotient": "1.2629746980103782e-7",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "0.3333333333333333",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "5.197140882312705e+22",
+    "quotient": "4.677426794081436e+23",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "-7.5",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "-1.1693566985203587e+24",
+    "quotient": "-2.078856352925082e+22",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "9.99e-8",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "15575831224291178",
+    "quotient": "1.5607029676614728e+30",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "1e+21",
+    "somme": "1.56914226469381e+23",
+    "difference": "1.54914226469381e+23",
+    "produit": "1.5591422646938116e+44",
+    "quotient": "155.91422646938116",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "b": "123456.789",
+    "somme": "1.5591422646938116e+23",
+    "difference": "1.5591422646938116e+23",
+    "produit": "1.9248669759328607e+28",
+    "quotient": "1262905245894425000",
+    "max": "1.5591422646938116e+23",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "0",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "0",
+    "quotient": null,
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "1",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "1.2345e+30",
+    "quotient": "1.2345e+30",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.23450015591423e+30",
+    "difference": "1.23449984408577e+30",
+    "produit": "1.9247611257645103e+53",
+    "quotient": "7917814.993248446",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "1.2345e+30",
+    "somme": "2.469e+30",
+    "difference": "0",
+    "produit": "1.5239902499999998e+60",
+    "quotient": "1",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "0.3333333333333333",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "4.114999999999999e+29",
+    "quotient": "3.7035000000000005e+30",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "-7.5",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "-9.25875e+30",
+    "quotient": "-1.646e+29",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "9.99e-8",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "1.2332655e+23",
+    "quotient": "1.2357357357357355e+37",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "1e+21",
+    "somme": "1.234500001e+30",
+    "difference": "1.234499999e+30",
+    "produit": "1.2345e+51",
+    "quotient": "1234500000",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1.2345e+30",
+    "b": "123456.789",
+    "somme": "1.2345e+30",
+    "difference": "1.2345e+30",
+    "produit": "1.524074060205e+35",
+    "quotient": "9.999450090994994e+24",
+    "max": "1.2345e+30",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "0",
+    "somme": "0.3333333333333333",
+    "difference": "0.3333333333333333",
+    "produit": "0",
+    "quotient": null,
+    "max": "0.3333333333333333",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "1",
+    "somme": "1.33333333333333",
+    "difference": "-0.6666666666666701",
+    "produit": "0.3333333333333333",
+    "quotient": "0.3333333333333333",
+    "max": "1",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "5.197140882312705e+22",
+    "quotient": "2.137927634196961e-24",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "4.114999999999999e+29",
+    "quotient": "2.7001485081679495e-31",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "0.3333333333333333",
+    "somme": "0.666666666666667",
+    "difference": "0",
+    "produit": "0.1111111111111111",
+    "quotient": "1",
+    "max": "0.3333333333333333",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "-7.5",
+    "somme": "-7.16666666666667",
+    "difference": "7.83333333333333",
+    "produit": "-2.4999999999999996",
+    "quotient": "-0.04444444444444444",
+    "max": "0.3333333333333333",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "9.99e-8",
+    "somme": "0.33333343323333303",
+    "difference": "0.333333233433333",
+    "produit": "3.3299999999999996e-8",
+    "quotient": "3336670.0033366694",
+    "max": "0.3333333333333333",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "333333333333333300000",
+    "quotient": "3.333333333333333e-22",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "0.3333333333333333",
+    "b": "123456.789",
+    "somme": "123457.122333333",
+    "difference": "-123456.45566666701",
+    "produit": "41152.263",
+    "quotient": "0.0000027000000245699995",
+    "max": "123456.789",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "0",
+    "somme": "-7.5",
+    "difference": "-7.5",
+    "produit": "0",
+    "quotient": null,
+    "max": "0",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "1",
+    "somme": "-6.5",
+    "difference": "-8.5",
+    "produit": "-7.5",
+    "quotient": "-7.5",
+    "max": "1",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "-1.1693566985203587e+24",
+    "quotient": "-4.810337176943163e-23",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "-9.25875e+30",
+    "quotient": "-6.075334143377886e-30",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "0.3333333333333333",
+    "somme": "-7.16666666666667",
+    "difference": "-7.83333333333333",
+    "produit": "-2.4999999999999996",
+    "quotient": "-22.500000000000004",
+    "max": "0.3333333333333333",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "-7.5",
+    "somme": "-15",
+    "difference": "0",
+    "produit": "56.25",
+    "quotient": "1",
+    "max": "-7.5",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "-7.5",
+    "b": "9.99e-8",
+    "somme": "-7.4999999001",
+    "difference": "-7.5000000999",
+    "produit": "-7.4925e-7",
+    "quotient": "-75075075.07507506",
+    "max": "9.99e-8",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "-7.5e+21",
+    "quotient": "-7.5e-21",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "-7.5",
+    "b": "123456.789",
+    "somme": "123449.289",
+    "difference": "-123464.28899999999",
+    "produit": "-925925.9175000001",
+    "quotient": "-0.000060750000552825004",
+    "max": "123456.789",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "0",
+    "somme": "9.99e-8",
+    "difference": "9.99e-8",
+    "produit": "0",
+    "quotient": null,
+    "max": "9.99e-8",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "9.99e-8",
+    "b": "1",
+    "somme": "1.0000000999",
+    "difference": "-0.9999999001000002",
+    "produit": "9.99e-8",
+    "quotient": "9.99e-8",
+    "max": "1",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "15575831224291178",
+    "quotient": "6.407369119688293e-31",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "1.2332655e+23",
+    "quotient": "8.092345078979346e-38",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "0.3333333333333333",
+    "somme": "0.33333343323333303",
+    "difference": "-0.333333233433333",
+    "produit": "3.3299999999999996e-8",
+    "quotient": "2.9970000000000008e-7",
+    "max": "0.3333333333333333",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "-7.5",
+    "somme": "-7.4999999001",
+    "difference": "7.5000000999",
+    "produit": "-7.4925e-7",
+    "quotient": "-1.332e-8",
+    "max": "9.99e-8",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "9.99e-8",
+    "b": "9.99e-8",
+    "somme": "1.998e-7",
+    "difference": "0",
+    "produit": "9.98001e-15",
+    "quotient": "0.9999999999999999",
+    "max": "9.99e-8",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "9.99e-8",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "99900000000000",
+    "quotient": "9.99e-29",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "9.99e-8",
+    "b": "123456.789",
+    "somme": "123456.7890001",
+    "difference": "-123456.7889999",
+    "produit": "0.012333333221100003",
+    "quotient": "8.09190007363629e-13",
+    "max": "123456.789",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1e+21",
+    "b": "0",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "0",
+    "quotient": null,
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "1",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "1e+21",
+    "quotient": "1e+21",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.56914226469381e+23",
+    "difference": "-1.54914226469381e+23",
+    "produit": "1.5591422646938116e+44",
+    "quotient": "0.006413782902590885",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1e+21",
+    "b": "1.2345e+30",
+    "somme": "1.234500001e+30",
+    "difference": "-1.234499999e+30",
+    "produit": "1.2345e+51",
+    "quotient": "8.100445524503849e-10",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "1e+21",
+    "b": "0.3333333333333333",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "333333333333333300000",
+    "quotient": "3.0000000000000004e+21",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "-7.5",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "-7.5e+21",
+    "quotient": "-133333333333333330000",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "9.99e-8",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "99900000000000",
+    "quotient": "1.0010010010010009e+28",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "1e+21",
+    "somme": "2e+21",
+    "difference": "0",
+    "produit": "1e+42",
+    "quotient": "1",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "1e+21",
+    "b": "123456.789",
+    "somme": "1e+21",
+    "difference": "1e+21",
+    "produit": "1.2345678900000001e+26",
+    "quotient": "8100000073710000",
+    "max": "1e+21",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "0",
+    "somme": "123456.789",
+    "difference": "123456.789",
+    "produit": "0",
+    "quotient": null,
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "1",
+    "somme": "123457.78899999999",
+    "difference": "123455.789",
+    "produit": "123456.789",
+    "quotient": "123456.789",
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "1.5591422646938116e+23",
+    "somme": "1.5591422646938116e+23",
+    "difference": "-1.5591422646938116e+23",
+    "produit": "1.9248669759328607e+28",
+    "quotient": "7.918250424969704e-19",
+    "max": "1.5591422646938116e+23",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "123456.789",
+    "b": "1.2345e+30",
+    "somme": "1.2345e+30",
+    "difference": "-1.2345e+30",
+    "produit": "1.524074060205e+35",
+    "quotient": "1.0000549939246661e-25",
+    "max": "1.2345e+30",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "123456.789",
+    "b": "0.3333333333333333",
+    "somme": "123457.122333333",
+    "difference": "123456.45566666701",
+    "produit": "41152.263",
+    "quotient": "370370.3670000001",
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "-7.5",
+    "somme": "123449.289",
+    "difference": "123464.28899999999",
+    "produit": "-925925.9175000001",
+    "quotient": "-16460.9052",
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "9.99e-8",
+    "somme": "123456.7890001",
+    "difference": "123456.7889999",
+    "produit": "0.012333333221100003",
+    "quotient": "1235803693693.6936",
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   },
+   {
+    "a": "123456.789",
+    "b": "1e+21",
+    "somme": "1e+21",
+    "difference": "-1e+21",
+    "produit": "1.2345678900000001e+26",
+    "quotient": "1.2345678900000001e-16",
+    "max": "1e+21",
+    "lt": true,
+    "gte": false
+   },
+   {
+    "a": "123456.789",
+    "b": "123456.789",
+    "somme": "246913.57799999998",
+    "difference": "0",
+    "produit": "15241578750.190523",
+    "quotient": "1",
+    "max": "123456.789",
+    "lt": false,
+    "gte": true
+   }
+  ],
+  "unaires": [
+   {
+    "a": "0",
+    "racine": "0",
+    "plancher": "0",
+    "fois115": "0",
+    "exponentielle": "0.00e+0",
+    "nombre": 0
+   },
+   {
+    "a": "1",
+    "racine": "1",
+    "plancher": "1",
+    "fois115": "1.15",
+    "exponentielle": "1.00e+0",
+    "nombre": 1
+   },
+   {
+    "a": "1.5591422646938116e+23",
+    "racine": "394859755444.10846",
+    "plancher": "1.5591422646938116e+23",
+    "fois115": "1.7930136043978833e+23",
+    "exponentielle": "1.56e+23",
+    "nombre": 1.5591422646938115e+23
+   },
+   {
+    "a": "1.2345e+30",
+    "racine": "1111080555135405",
+    "plancher": "1.2345e+30",
+    "fois115": "1.4196749999999998e+30",
+    "exponentielle": "1.23e+30",
+    "nombre": 1.2344999999999999e+30
+   },
+   {
+    "a": "0.3333333333333333",
+    "racine": "0.5773502691896257",
+    "plancher": "0",
+    "fois115": "0.3833333333333333",
+    "exponentielle": "3.33e-1",
+    "nombre": 0.3333333333333333
+   },
+   {
+    "a": "-7.5",
+    "racine": "NaN",
+    "plancher": "-8",
+    "fois115": "-8.625",
+    "exponentielle": "-7.50e+0",
+    "nombre": -7.5
+   },
+   {
+    "a": "9.99e-8",
+    "racine": "0.0003160696125855822",
+    "plancher": "0",
+    "fois115": "1.14885e-7",
+    "exponentielle": "9.99e-8",
+    "nombre": 9.99e-8
+   },
+   {
+    "a": "1e+21",
+    "racine": "31622776601.683796",
+    "plancher": "1e+21",
+    "fois115": "1.15e+21",
+    "exponentielle": "1.00e+21",
+    "nombre": 1e+21
+   },
+   {
+    "a": "123456.789",
+    "racine": "351.3641828644462",
+    "plancher": "123456",
+    "fois115": "141975.30735000002",
+    "exponentielle": "1.23e+5",
+    "nombre": 123456.789
+   }
+  ]
+ },
+ "format": {
+  "montant": [
+   "0",
+   "1",
+   "7.3",
+   "10.0",
+   "10",
+   "999",
+   "1.00 k",
+   "1.23 k",
+   "10.00 k",
+   "12.3 k",
+   "1000.0 k",
+   "1.50 M",
+   "2.40 G",
+   "7.77 T",
+   "3.30 P",
+   "9.90 E",
+   "1.20e+21",
+   "5.00e+24"
+  ],
+  "cout": [
+   "0.4",
+   "1.0",
+   "5.5",
+   "10.0",
+   "11",
+   "59",
+   "1000",
+   "1.00 k",
+   "45.7 k",
+   "320.0 M"
+  ],
+  "duree": [
+   "—",
+   "0 s",
+   "13 s",
+   "89 s",
+   "2 min",
+   "2 min",
+   "60 min",
+   "90 min",
+   "1.5 h",
+   "2.0 h",
+   "24.0 h",
+   "1 j",
+   "5 j"
+  ],
+  "profondeur": [
+   "à fleur d’eau",
+   "1 brasse",
+   "2 brasses",
+   "5 brasses",
+   "11 brasses"
+  ],
+  "toFixed": [
+   [
+    "0.0",
+    "0.000"
+   ],
+   [
+    "0.1",
+    "0.050"
+   ],
+   [
+    "0.3",
+    "0.250"
+   ],
+   [
+    "1.0",
+    "1.005"
+   ],
+   [
+    "2.7",
+    "2.675"
+   ],
+   [
+    "1.4",
+    "1.450"
+   ],
+   [
+    "123.5",
+    "123.456"
+   ],
+   [
+    "10.0",
+    "10.000"
+   ],
+   [
+    "0.0",
+    "0.000"
+   ],
+   [
+    "0.0",
+    "0.000"
+   ]
+  ]
+ },
+ "couts": {
+  "descente": [
+   "60",
+   "60",
+   "144",
+   "345.59999999999997",
+   "829.4399999999999",
+   "1990.6560000000002",
+   "4777.5743999999995",
+   "11466.17856",
+   "27518.828544000004",
+   "66045.1885056",
+   "158508.45241343995",
+   "380420.28579225595",
+   "913008.6859014143",
+   "2191220.846163394",
+   "5258930.030792145",
+   "12621432.073901149",
+   "30291436.977362752",
+   "72699448.74567062",
+   "174478676.98960945",
+   "418748824.7750626",
+   "1004997179.4601505",
+   "2411993230.7043605",
+   "5788783753.690464",
+   "13893081008.857115",
+   "33343394421.257076",
+   "80024146611.01698",
+   "192057951866.44073",
+   "460939084479.4577",
+   "1106253802750.6985",
+   "2655009126601.676",
+   "6372021903844.022",
+   "15292852569225.656",
+   "36702846166141.57",
+   "88086830798739.77",
+   "211408393916975.44",
+   "507380145400741",
+   "1217712348961778.2",
+   "2922509637508268",
+   "7014023130019842",
+   "16833655512047618",
+   "40400773228914296",
+   "96961855749394270",
+   "232708453798546240",
+   "558500289116511000",
+   "1340400693879626200",
+   "3216961665311103000",
+   "7720707996746649000",
+   "18529699192191955000",
+   "44471278061260690000",
+   "106731067347025640000",
+   "256154561632861550000",
+   "614770947918867700000",
+   "1.4754502750052825e+21",
+   "3.5410806600126774e+21",
+   "8.498593584030427e+21",
+   "2.0396624601673023e+22",
+   "4.8951899044015255e+22",
+   "1.1748455770563662e+23",
+   "2.8196293849352787e+23",
+   "6.767110523844669e+23",
+   "1.6241065257227205e+24",
+   "3.8978556617345292e+24",
+   "9.354853588162872e+24"
+  ],
+  "descenteAmenagee": [
+   "15",
+   "15",
+   "36",
+   "86.39999999999999",
+   "207.35999999999999",
+   "497.66400000000004",
+   "1194.3935999999999",
+   "2866.54464",
+   "6879.707136",
+   "16511.2971264",
+   "39627.11310335999",
+   "95105.07144806399",
+   "228252.17147535356",
+   "547805.2115408485",
+   "1314732.5076980363",
+   "3155358.018475287",
+   "7572859.244340688",
+   "18174862.186417654",
+   "43619669.24740236",
+   "104687206.19376566",
+   "251249294.8650376",
+   "602998307.67609",
+   "1447195938.422616",
+   "3473270252.2142787",
+   "8335848605.314268",
+   "20006036652.754246",
+   "48014487966.610176",
+   "115234771119.86443",
+   "276563450687.6746",
+   "663752281650.419",
+   "1593005475961.0056",
+   "3823213142306.414",
+   "9175711541535.39",
+   "22021707699684.94",
+   "52852098479243.86",
+   "126845036350185.25",
+   "304428087240444.56",
+   "730627409377066.9",
+   "1753505782504960.5",
+   "4208413878011904.5",
+   "40400773228914296",
+   "96961855749394270",
+   "232708453798546240",
+   "558500289116511000",
+   "1340400693879626200",
+   "3216961665311103000",
+   "7720707996746649000",
+   "18529699192191955000",
+   "44471278061260690000",
+   "106731067347025640000",
+   "256154561632861550000",
+   "614770947918867700000",
+   "1.4754502750052825e+21",
+   "3.5410806600126774e+21",
+   "8.498593584030427e+21",
+   "2.0396624601673023e+22",
+   "4.8951899044015255e+22",
+   "1.1748455770563662e+23",
+   "2.8196293849352787e+23",
+   "6.767110523844669e+23",
+   "1.6241065257227205e+24",
+   "3.8978556617345292e+24",
+   "9.354853588162872e+24"
+  ],
+  "place": [
+   "110.592",
+   "127.18079999999998",
+   "146.25791999999998",
+   "168.19660799999997",
+   "193.42609919999992",
+   "222.44001407999994",
+   "255.8060161919999",
+   "294.1769186207999",
+   "338.3034564139198",
+   "389.0489748760078",
+   "447.40632110740887",
+   "514.5172692735202",
+   "591.6948596645482",
+   "680.4490886142304",
+   "782.5164519063649",
+   "899.8939196923194",
+   "1034.8780076461674",
+   "1190.1097087930923",
+   "1368.626165112056",
+   "1573.920089878864",
+   "1810.008103360694",
+   "2081.509318864798",
+   "2393.7357166945176",
+   "2752.796074198695",
+   "3165.7154853284987",
+   "3640.5728081277734",
+   "4186.658729346939",
+   "4814.657538748979",
+   "5536.856169561326",
+   "6367.384594995524",
+   "7322.492284244853",
+   "8420.86612688158",
+   "9683.996045913815",
+   "11136.595452800886",
+   "12807.084770721018",
+   "14728.147486329171",
+   "16937.369609278543",
+   "19477.975050670324",
+   "22399.67130827087",
+   "25759.6220045115",
+   "29623.565305188225",
+   "34067.100100966454",
+   "39177.16511611142",
+   "45053.739883528135",
+   "51811.80086605735",
+   "59583.57099596595",
+   "68521.10664536084",
+   "78799.27264216496",
+   "90619.16353848968",
+   "104212.03806926313",
+   "119843.84377965258",
+   "137820.42034660044",
+   "158493.4833985905",
+   "182267.50590837907",
+   "209607.6317946359",
+   "241048.7765638313",
+   "277206.09304840595",
+   "318787.00700566685",
+   "366605.05805651675",
+   "421595.81676499423",
+   "484835.18927974335",
+   "557560.4676717048",
+   "641194.5378224605",
+   "737373.7184958295",
+   "847979.7762702038",
+   "975176.7427107344",
+   "1121453.2541173445",
+   "1289671.2422349462",
+   "1483121.9285701879",
+   "1705590.2178557164",
+   "1961428.7505340734",
+   "2255643.0631141844",
+   "2593989.522581312",
+   "2983087.950968508",
+   "3430551.143613784",
+   "3945133.8151558517",
+   "4536903.887429228",
+   "5217439.470543613",
+   "6000055.391125154",
+   "6900063.6997939255"
+  ],
+  "conviction": [
+   "10",
+   "22.577300841206338",
+   "51.31415844718548",
+   "117.25363763895915",
+   "269.1058710853994",
+   "619.8894376755202",
+   "1432.377363734156",
+   "3318.6542503057703",
+   "7706.813509188942",
+   "17933.758141751485",
+   "41806.951355843055",
+   "97615.89084771258",
+   "228252.17147535356",
+   "534404.3717215959",
+   "1252658.9041486254",
+   "2939392.743429753",
+   "6904059.239462105",
+   "16230750.167102113",
+   "38188193.75761566",
+   "89918458.93089485",
+   "211872008.60927096",
+   "499553101.9427659",
+   "1178565341.0344694",
+   "2782095998.0025673",
+   "6570844551.32891",
+   "15526965133.041712",
+   "36707535650.337585",
+   "86819095164.43434",
+   "205426174011.44052",
+   "486258067891.89667",
+   "1151434429521.688",
+   "2727498375107.31",
+   "6463010834341.857",
+   "15319448834563.434",
+   "36323072280350.17",
+   "86148350897927.75",
+   "204376300603279.4",
+   "484984520400378.2",
+   "1151155419783557.8",
+   "2733028000832084.5",
+   "6490136392014114",
+   "15415551098830878",
+   "36623166624490630",
+   "87024329592122990",
+   "206828317357138750",
+   "491655148411526900",
+   "1168932429665565700",
+   "2779672049191185000",
+   "6611048131813019000",
+   "15725957583455515000",
+   "37413768430444170000",
+   "89024810585100300000",
+   "211862312514965540000",
+   "504263239053172340000",
+   "1.2003830885314826e+21",
+   "2.8578503917586477e+21",
+   "6.804784364095945e+21",
+   "1.620476658008781e+22",
+   "3.859429249619161e+22",
+   "9.192924900182751e+22",
+   "2.1899447925358237e+23",
+   "5.217470653238804e+23"
+  ]
+ },
+ "etats": {
+  "etatDeTravail": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 12345
+    },
+    "tempsJeuSecondes": 137,
+    "limiteDeContenu": 62,
+    "cycle": {
+     "manaCourant": "999999849006.893",
+     "paliersOuverts": 7,
+     "bancs": {
+      "vairon@0": {
+       "place": 13,
+       "effectif": 4.765911340362791
+      },
+      "vairon@1": {
+       "place": 14,
+       "effectif": 5.132519905006083
+      },
+      "loche@2": {
+       "place": 15,
+       "effectif": 5.499128469649374
+      },
+      "loche@3": {
+       "place": 16,
+       "effectif": 5.865737034292666
+      },
+      "epinoche@4": {
+       "place": 17,
+       "effectif": 6.232345598935957
+      },
+      "epinoche@5": {
+       "place": 18,
+       "effectif": 6.598954163579249
+      },
+      "espece-2-1@6": {
+       "place": 19,
+       "effectif": 6.96556272822254
+      }
+     },
+     "productionPicParSeconde": "358.77643800444304",
+     "dureeSecondes": 137,
+     "acquisDeSejour": 2.0372387626228416,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      0,
+      0.13,
+      0.26,
+      0.39,
+      0.52,
+      0.65,
+      0.78,
+      0.91,
+      1.04,
+      1.17,
+      1.3,
+      1.4300000000000002,
+      1.56,
+      1.69,
+      1.82,
+      1.9500000000000002,
+      2.08,
+      2.21,
+      2.34,
+      2.47,
+      2.6,
+      2.73,
+      2.8600000000000003,
+      2.99,
+      3.12,
+      3.25,
+      3.38,
+      3.5100000000000002,
+      3.64,
+      3.77,
+      3.9000000000000004,
+      4.03,
+      4.16,
+      4.29,
+      4.42,
+      4.55,
+      4.68,
+      4.8100000000000005,
+      4.94,
+      5.07,
+      5.2,
+      5.33,
+      5.46,
+      5.59,
+      5.720000000000001,
+      5.8500000000000005,
+      5.98,
+      6.11,
+      6.24,
+      6.37,
+      6.5,
+      6.63,
+      6.76,
+      6.890000000000001,
+      7.0200000000000005,
+      7.15,
+      7.28,
+      7.41,
+      7.54,
+      7.67,
+      7.800000000000001,
+      7.930000000000001
+     ],
+     "partsMures": [
+      0.9964264012811195,
+      0.9963118628606424,
+      0.9962064875138037,
+      0.9961092179628757,
+      0.996019153563868,
+      0.9959355223362183,
+      0.9958576587794409,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "0",
+     "contenanceMana": "100000000000000",
+     "couches": [],
+     "profondeurMaxAtteinte": 9,
+     "compteursTechnique": {
+      "creusement": 2036.8175999999999,
+      "amelioration": 180202.5245600047,
+      "recrutement": 7,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 0
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-fond-de-la-mare": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 0,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "0",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [],
+     "secondesEnRedescente": 137,
+     "secondesDepuisDernierSucces": 137,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "apresHuitHeures": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 12345
+    },
+    "tempsJeuSecondes": 28937,
+    "limiteDeContenu": 62,
+    "cycle": {
+     "manaCourant": "1000056893909.3799",
+     "paliersOuverts": 7,
+     "bancs": {
+      "vairon@0": {
+       "place": 13,
+       "effectif": 13
+      },
+      "vairon@1": {
+       "place": 14,
+       "effectif": 14
+      },
+      "loche@2": {
+       "place": 15,
+       "effectif": 15
+      },
+      "loche@3": {
+       "place": 16,
+       "effectif": 16
+      },
+      "epinoche@4": {
+       "place": 17,
+       "effectif": 17
+      },
+      "epinoche@5": {
+       "place": 18,
+       "effectif": 18
+      },
+      "espece-2-1@6": {
+       "place": 19,
+       "effectif": 19
+      }
+     },
+     "productionPicParSeconde": "1957.2725386464",
+     "dureeSecondes": 28937,
+     "acquisDeSejour": 47.59537515099211,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      0,
+      0.13,
+      0.26,
+      0.39,
+      0.52,
+      0.65,
+      0.78,
+      0.91,
+      1.04,
+      1.17,
+      1.3,
+      1.4300000000000002,
+      1.56,
+      1.69,
+      1.82,
+      1.9500000000000002,
+      2.08,
+      2.21,
+      2.34,
+      2.47,
+      2.6,
+      2.73,
+      2.8600000000000003,
+      2.99,
+      3.12,
+      3.25,
+      3.38,
+      3.5100000000000002,
+      3.64,
+      3.77,
+      3.9000000000000004,
+      4.03,
+      4.16,
+      4.29,
+      4.42,
+      4.55,
+      4.68,
+      4.8100000000000005,
+      4.94,
+      5.07,
+      5.2,
+      5.33,
+      5.46,
+      5.59,
+      5.720000000000001,
+      5.8500000000000005,
+      5.98,
+      6.11,
+      6.24,
+      6.37,
+      6.5,
+      6.63,
+      6.76,
+      6.890000000000001,
+      7.0200000000000005,
+      7.15,
+      7.28,
+      7.41,
+      7.54,
+      7.67,
+      7.800000000000001,
+      7.930000000000001
+     ],
+     "partsMures": [
+      0.5828303050616442,
+      0.5694594815059276,
+      0.5571583238346685,
+      0.5458034090611984,
+      0.5352895990857631,
+      0.5255267755371447,
+      0.5164372501642931,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "0",
+     "contenanceMana": "100000000000000",
+     "couches": [],
+     "profondeurMaxAtteinte": 9,
+     "compteursTechnique": {
+      "creusement": 2036.8175999999999,
+      "amelioration": 180202.5245600047,
+      "recrutement": 7,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 0
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-banc-de-cinq": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-palier-sature": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-45": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-70": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-95": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-1": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-2": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-4": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-fond-de-la-mare": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 0,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "0",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [],
+     "secondesEnRedescente": 28937,
+     "secondesDepuisDernierSucces": 28937,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "apresCentMillisecondes": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 12345
+    },
+    "tempsJeuSecondes": 137.1,
+    "limiteDeContenu": 62,
+    "cycle": {
+     "manaCourant": "999999849048.119",
+     "paliersOuverts": 7,
+     "bancs": {
+      "vairon@0": {
+       "place": 13,
+       "effectif": 4.768655579184124
+      },
+      "vairon@1": {
+       "place": 14,
+       "effectif": 5.135475239121364
+      },
+      "loche@2": {
+       "place": 15,
+       "effectif": 5.5022948990586045
+      },
+      "loche@3": {
+       "place": 16,
+       "effectif": 5.869114558995845
+      },
+      "epinoche@4": {
+       "place": 17,
+       "effectif": 6.2359342189330835
+      },
+      "epinoche@5": {
+       "place": 18,
+       "effectif": 6.602753878870324
+      },
+      "espece-2-1@6": {
+       "place": 19,
+       "effectif": 6.969573538807564
+      }
+     },
+     "productionPicParSeconde": "358.98302351538496",
+     "dureeSecondes": 137.1,
+     "acquisDeSejour": 2.038693489119339,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      0,
+      0.13,
+      0.26,
+      0.39,
+      0.52,
+      0.65,
+      0.78,
+      0.91,
+      1.04,
+      1.17,
+      1.3,
+      1.4300000000000002,
+      1.56,
+      1.69,
+      1.82,
+      1.9500000000000002,
+      2.08,
+      2.21,
+      2.34,
+      2.47,
+      2.6,
+      2.73,
+      2.8600000000000003,
+      2.99,
+      3.12,
+      3.25,
+      3.38,
+      3.5100000000000002,
+      3.64,
+      3.77,
+      3.9000000000000004,
+      4.03,
+      4.16,
+      4.29,
+      4.42,
+      4.55,
+      4.68,
+      4.8100000000000005,
+      4.94,
+      5.07,
+      5.2,
+      5.33,
+      5.46,
+      5.59,
+      5.720000000000001,
+      5.8500000000000005,
+      5.98,
+      6.11,
+      6.24,
+      6.37,
+      6.5,
+      6.63,
+      6.76,
+      6.890000000000001,
+      7.0200000000000005,
+      7.15,
+      7.28,
+      7.41,
+      7.54,
+      7.67,
+      7.800000000000001,
+      7.930000000000001
+     ],
+     "partsMures": [
+      0.996423801084395,
+      0.9963091793242793,
+      0.9962037273049731,
+      0.9961063869794596,
+      0.9960162570484286,
+      0.995932564969614,
+      0.995854644758304,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "0",
+     "contenanceMana": "100000000000000",
+     "couches": [],
+     "profondeurMaxAtteinte": 9,
+     "compteursTechnique": {
+      "creusement": 2036.8175999999999,
+      "amelioration": 180202.5245600047,
+      "recrutement": 7,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 0
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-fond-de-la-mare": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 0,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "0",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [],
+     "secondesEnRedescente": 137.1,
+     "secondesDepuisDernierSucces": 137.1,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "sequenceDeterministe": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 4242
+    },
+    "tempsJeuSecondes": 33504.3,
+    "limiteDeContenu": 62,
+    "cycle": {
+     "manaCourant": "1000065957451.4199",
+     "paliersOuverts": 7,
+     "bancs": {
+      "vairon@0": {
+       "place": 13,
+       "effectif": 13
+      },
+      "vairon@1": {
+       "place": 14,
+       "effectif": 14
+      },
+      "loche@2": {
+       "place": 15,
+       "effectif": 15
+      },
+      "loche@3": {
+       "place": 16,
+       "effectif": 16
+      },
+      "epinoche@4": {
+       "place": 17,
+       "effectif": 17
+      },
+      "epinoche@5": {
+       "place": 18,
+       "effectif": 18
+      },
+      "espece-2-1@6": {
+       "place": 19,
+       "effectif": 19
+      }
+     },
+     "productionPicParSeconde": "1957.2725386464",
+     "dureeSecondes": 33504.3,
+     "acquisDeSejour": 47.59892408200381,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      0,
+      0.13,
+      0.26,
+      0.39,
+      0.52,
+      0.65,
+      0.78,
+      0.91,
+      1.04,
+      1.17,
+      1.3,
+      1.4300000000000002,
+      1.56,
+      1.69,
+      1.82,
+      1.9500000000000002,
+      2.08,
+      2.21,
+      2.34,
+      2.47,
+      2.6,
+      2.73,
+      2.8600000000000003,
+      2.99,
+      3.12,
+      3.25,
+      3.38,
+      3.5100000000000002,
+      3.64,
+      3.77,
+      3.9000000000000004,
+      4.03,
+      4.16,
+      4.29,
+      4.42,
+      4.55,
+      4.68,
+      4.8100000000000005,
+      4.94,
+      5.07,
+      5.2,
+      5.33,
+      5.46,
+      5.59,
+      5.720000000000001,
+      5.8500000000000005,
+      5.98,
+      6.11,
+      6.24,
+      6.37,
+      6.5,
+      6.63,
+      6.76,
+      6.890000000000001,
+      7.0200000000000005,
+      7.15,
+      7.28,
+      7.41,
+      7.54,
+      7.67,
+      7.800000000000001,
+      7.930000000000001
+     ],
+     "partsMures": [
+      0.5546139686324814,
+      0.5403387753194199,
+      0.5272055974714033,
+      0.5150826640732341,
+      0.503857725741596,
+      0.49343456871936064,
+      0.48373025011245196,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "0",
+     "contenanceMana": "100000000000000",
+     "couches": [],
+     "profondeurMaxAtteinte": 9,
+     "compteursTechnique": {
+      "creusement": 2036.8175999999999,
+      "amelioration": 180202.5245600047,
+      "recrutement": 7,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 0
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-banc-de-cinq": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-palier-sature": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-45": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-70": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-95": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-1": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-2": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-4": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-fond-de-la-mare": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 0,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "0",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [],
+     "secondesEnRedescente": 33504.3,
+     "secondesDepuisDernierSucces": 33504.3,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "divergenceNonChoisie": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 12345
+    },
+    "tempsJeuSecondes": 180137,
+    "limiteDeContenu": 62,
+    "cycle": {
+     "manaCourant": "758.074133400987",
+     "paliersOuverts": 1,
+     "bancs": {},
+     "productionPicParSeconde": "0",
+     "dureeSecondes": 7200,
+     "acquisDeSejour": 47.6,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      94.40408379092256,
+      94.40408379092256,
+      94.40408379092256,
+      94.40408379092256,
+      94.40408379092256,
+      94.40408379092256,
+      94.40408379092256,
+      0.91,
+      1.04,
+      1.17,
+      1.3,
+      1.4300000000000002,
+      1.56,
+      1.69,
+      1.82,
+      1.9500000000000002,
+      2.08,
+      2.21,
+      2.34,
+      2.47,
+      2.6,
+      2.73,
+      2.8600000000000003,
+      2.99,
+      3.12,
+      3.25,
+      3.38,
+      3.5100000000000002,
+      3.64,
+      3.77,
+      3.9000000000000004,
+      4.03,
+      4.16,
+      4.29,
+      4.42,
+      4.55,
+      4.68,
+      4.8100000000000005,
+      4.94,
+      5.07,
+      5.2,
+      5.33,
+      5.46,
+      5.59,
+      5.720000000000001,
+      5.8500000000000005,
+      5.98,
+      6.11,
+      6.24,
+      6.37,
+      6.5,
+      6.63,
+      6.76,
+      6.890000000000001,
+      7.0200000000000005,
+      7.15,
+      7.28,
+      7.41,
+      7.54,
+      7.67,
+      7.800000000000001,
+      7.930000000000001
+     ],
+     "partsMures": [
+      0.5951390438739554,
+      0.41686111596743297,
+      0.4002000049950739,
+      0.3848205179436655,
+      0.3705802521553245,
+      0.35735714820900777,
+      0.3450459824658853,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "44",
+     "contenanceMana": "2480000000000000",
+     "couches": [],
+     "profondeurMaxAtteinte": 9,
+     "compteursTechnique": {
+      "creusement": 2036.8175999999999,
+      "amelioration": 180202.5245600047,
+      "recrutement": 7,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 1
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-banc-de-cinq": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-palier-sature": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-45": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-70": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-95": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-1": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-2": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-4": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-premiere-eclosion": {
+       "obtenuAuCycle": 1,
+       "registre": "signes"
+      },
+      "franchissement-densite": {
+       "obtenuAuCycle": 1,
+       "registre": "signes"
+      },
+      "franchissement-fond-de-la-mare": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 1,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "100000341823705.02",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [
+      {
+       "index": 0,
+       "dureeEcouleeSecondes": 172937,
+       "secondesEnRedescente": 172937,
+       "paliersOuverts": 7,
+       "productionPicParSeconde": "1957.2725386464",
+       "foiGagnee": "44"
+      }
+     ],
+     "secondesEnRedescente": 7200,
+     "secondesDepuisDernierSucces": 180137,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "rejoueUneDemiHeure": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 3
+    },
+    "tempsJeuSecondes": 1800,
+    "limiteDeContenu": 6,
+    "cycle": {
+     "manaCourant": "1200",
+     "paliersOuverts": 5,
+     "bancs": {
+      "vairon@0": {
+       "place": 39,
+       "effectif": 36.46928660094183
+      },
+      "vairon@1": {
+       "place": 33,
+       "effectif": 30.282635813460242
+      },
+      "loche@2": {
+       "place": 27,
+       "effectif": 23.68200740784532
+      },
+      "loche@3": {
+       "place": 20,
+       "effectif": 17.2787131758108
+      },
+      "epinoche@4": {
+       "place": 14,
+       "effectif": 10.74748989467111
+      }
+     },
+     "productionPicParSeconde": "343.83447319122797",
+     "dureeSecondes": 1800,
+     "acquisDeSejour": 20.807550371078385,
+     "secondesEnSaturation": 58.49059104418238
+    },
+    "permanent": {
+     "densites": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "partsMures": [
+      0.948090224451313,
+      0.9612104985818388,
+      0.9700390592995625,
+      0.9790831996049854,
+      0.9878125362352779,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "0",
+     "contenanceMana": "1200",
+     "couches": [],
+     "profondeurMaxAtteinte": 5,
+     "compteursTechnique": {
+      "creusement": 1329.6284159999998,
+      "amelioration": 44312.96333823112,
+      "recrutement": 5,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 0
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-banc-de-cinq": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-dixieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-trois-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-vairon-50": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-loche-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-epinoche-10": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-25": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-45": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-70": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-mare-95": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-3": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-profondeur-5": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      }
+     },
+     "nombreEclosions": 0,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "85538.8025223108",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [],
+     "secondesEnRedescente": 0,
+     "secondesDepuisDernierSucces": 62,
+     "intervallesEntreSucces": [
+      1,
+      38,
+      107,
+      149,
+      72,
+      144,
+      10,
+      37,
+      215,
+      6,
+      55,
+      20,
+      222,
+      32,
+      201,
+      11,
+      21,
+      28,
+      134,
+      235
+     ]
+    }
+   }
+  },
+  "partieJouee": {
+   "versionSave": 4,
+   "contenu": {
+    "prng": {
+     "graine": 77
+    },
+    "tempsJeuSecondes": 12930,
+    "limiteDeContenu": 6,
+    "cycle": {
+     "manaCourant": "113.014015985198",
+     "paliersOuverts": 1,
+     "bancs": {},
+     "productionPicParSeconde": "0",
+     "dureeSecondes": 600,
+     "acquisDeSejour": 10.884337702114877,
+     "secondesEnSaturation": 0
+    },
+    "permanent": {
+     "densites": [
+      1.2560825831379485,
+      1.2560825831379485,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "partsMures": [
+      0.8604070019844257,
+      0.9642300599738758,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "acclimatations": {
+      "type-mana-1": 1
+     },
+     "foi": "1",
+     "contenanceMana": "57205.53696178834",
+     "couches": [],
+     "profondeurMaxAtteinte": 2,
+     "compteursTechnique": {
+      "creusement": 60,
+      "amelioration": 39.946999999999996,
+      "recrutement": 2,
+      "entretien": 0,
+      "construction": 0,
+      "eclosion": 1
+     },
+     "noeudsTechnique": [],
+     "succes": {
+      "acte-premiere-conviction": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deuxieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-cinquieme-niveau": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-banc-de-cinq": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-creusement": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-deux-bancs": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "acte-premier-palier-sature": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "seuil-palier-sature-1": {
+       "obtenuAuCycle": 0,
+       "registre": "pente"
+      },
+      "franchissement-premiere-eclosion": {
+       "obtenuAuCycle": 1,
+       "registre": "signes"
+      },
+      "franchissement-densite": {
+       "obtenuAuCycle": 1,
+       "registre": "signes"
+      }
+     },
+     "nombreEclosions": 1,
+     "especesAyantAtteintCent": [],
+     "manaAmbiant": "23739.0010488636",
+     "heuresHorsLigneCreditees": 0
+    },
+    "telemetrie": {
+     "cycles": [
+      {
+       "index": 0,
+       "dureeEcouleeSecondes": 12330,
+       "secondesEnRedescente": 0,
+       "paliersOuverts": 2,
+       "productionPicParSeconde": "1.46227926865461",
+       "foiGagnee": "1"
+      }
+     ],
+     "secondesEnRedescente": 600,
+     "secondesDepuisDernierSucces": 12930,
+     "intervallesEntreSucces": []
+    }
+   }
+  },
+  "declenchesAuPremierTick": [
+   "franchissement-premiere-eclosion"
+  ]
+ },
+ "demiHeure": [
+  {
+   "id": "acte-premiere-conviction",
+   "instantSecondes": 1
+  },
+  {
+   "id": "acte-deuxieme-niveau",
+   "instantSecondes": 39
+  },
+  {
+   "id": "acte-cinquieme-niveau",
+   "instantSecondes": 146
+  },
+  {
+   "id": "acte-dixieme-niveau",
+   "instantSecondes": 295
+  },
+  {
+   "id": "acte-premier-banc-de-cinq",
+   "instantSecondes": 367
+  },
+  {
+   "id": "acte-premier-creusement",
+   "instantSecondes": 511
+  },
+  {
+   "id": "acte-deux-bancs",
+   "instantSecondes": 521
+  },
+  {
+   "id": "seuil-vairon-10",
+   "instantSecondes": 558
+  },
+  {
+   "id": "seuil-profondeur-3",
+   "instantSecondes": 773
+  },
+  {
+   "id": "acte-trois-bancs",
+   "instantSecondes": 779
+  },
+  {
+   "id": "seuil-mare-25",
+   "instantSecondes": 834
+  },
+  {
+   "id": "seuil-vairon-25",
+   "instantSecondes": 854
+  },
+  {
+   "id": "seuil-mare-45",
+   "instantSecondes": 1076
+  },
+  {
+   "id": "seuil-loche-10",
+   "instantSecondes": 1108
+  },
+  {
+   "id": "seuil-mare-70",
+   "instantSecondes": 1309
+  },
+  {
+   "id": "seuil-profondeur-5",
+   "instantSecondes": 1320
+  },
+  {
+   "id": "seuil-vairon-50",
+   "instantSecondes": 1341
+  },
+  {
+   "id": "seuil-loche-25",
+   "instantSecondes": 1369
+  },
+  {
+   "id": "seuil-mare-95",
+   "instantSecondes": 1503
+  },
+  {
+   "id": "seuil-epinoche-10",
+   "instantSecondes": 1738
+  }
+ ],
+ "simulations": {
+  "livree": {
+   "etat": {
+    "versionSave": 4,
+    "contenu": {
+     "prng": {
+      "graine": 1
+     },
+     "tempsJeuSecondes": 14957.647077267475,
+     "limiteDeContenu": 6,
+     "cycle": {
+      "manaCourant": "10",
+      "paliersOuverts": 1,
+      "bancs": {},
+      "productionPicParSeconde": "0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "secondesEnSaturation": 0
+     },
+     "permanent": {
+      "densites": [
+       12.813787178492626,
+       12.813787178492626,
+       12.813787178492626,
+       12.813787178492626,
+       12.813787178492626,
+       6.892216331195547,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "partsMures": [
+       0.6575778961895786,
+       0.6886639584073551,
+       0.732156491778094,
+       0.823173891174571,
+       0.9984523983495683,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ],
+      "acclimatations": {
+       "type-mana-1": 1
+      },
+      "foi": "12",
+      "contenanceMana": "2793185.188237238",
+      "couches": [],
+      "profondeurMaxAtteinte": 6,
+      "compteursTechnique": {
+       "creusement": 3496.85363191296,
+       "amelioration": 8668.930591501548,
+       "recrutement": 10,
+       "entretien": 0,
+       "construction": 0,
+       "eclosion": 2
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       }
+      },
+      "nombreEclosions": 2,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "1058929.81129154",
+      "heuresHorsLigneCreditees": 0
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 14400,
+        "secondesEnRedescente": 0,
+        "paliersOuverts": 5,
+        "productionPicParSeconde": "70.16639721450849",
+        "foiGagnee": "8"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 557.6470772674745,
+        "secondesEnRedescente": 297.6470772674746,
+        "paliersOuverts": 6,
+        "productionPicParSeconde": "24.9611640289316",
+        "foiGagnee": "4"
+       }
+      ],
+      "secondesEnRedescente": 0,
+      "secondesDepuisDernierSucces": 14957.647077267475,
+      "intervallesEntreSucces": []
+     }
+    }
+   },
+   "tempsActifSecondes": 1457.6470772674745,
+   "sessions": 3
+  },
+  "quinze": {
+   "etat": {
+    "versionSave": 4,
+    "contenu": {
+     "prng": {
+      "graine": 1
+     },
+     "tempsJeuSecondes": 693060.0000000001,
+     "limiteDeContenu": 62,
+     "cycle": {
+      "manaCourant": "10",
+      "paliersOuverts": 1,
+      "bancs": {},
+      "productionPicParSeconde": "0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "secondesEnSaturation": 0
+     },
+     "permanent": {
+      "densites": [
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127,
+       4108205176158.0127
+      ],
+      "partsMures": [
+       0.24506843589782695,
+       0.24260641885023862,
+       0.24313164717358746,
+       0.24391811965795007,
+       0.24943966375720242,
+       0.24999477781909402,
+       0.25102942327058353,
+       0.25187727219262296,
+       0.2568148343957342,
+       0.2574560263700582,
+       0.2638995016088969,
+       0.26407984872617374,
+       0.27650760160287974,
+       0.2800249139127477,
+       0.2817868191372965,
+       0.2941912890588752,
+       0.2734071011555021,
+       0.2744633738269186,
+       0.2771779456050059,
+       0.31172598429386134,
+       0.31353756909511965,
+       0.3302995140749007,
+       0.33190168659915503,
+       0.3319802185611133,
+       0.335948667748395,
+       0.3460042890643366,
+       0.35845867735111075,
+       0.3674181893460555,
+       0.377006286630141,
+       0.3409316682095355,
+       0.34915644988650496,
+       0.37306219034322774,
+       0.3771491673725024,
+       0.3824583007406379,
+       0.3889563354561682,
+       0.3990945821966279,
+       0.4080347801405782,
+       0.4246804041577611,
+       0.4329618573936189,
+       0.4696766220439792,
+       0.431616316394973,
+       0.4409284267590259,
+       0.45580337108610663,
+       0.45837656013685335,
+       0.46921024264315325,
+       0.4833721283974412,
+       0.4960267328665702,
+       0.5334963780968405,
+       0.6378680695290762,
+       0.6449710914274367,
+       0.5453058375596512,
+       0.5661233290754302,
+       0.627041409781018,
+       0.6587396653768555,
+       0.7247375999342258,
+       0.781502270114647,
+       0.8208306560492378,
+       0.9343004143771195,
+       0.9576048281134201,
+       1,
+       1,
+       1
+      ],
+      "acclimatations": {
+       "type-mana-1": 1
+      },
+      "foi": "72963522796",
+      "contenanceMana": "2.36820082522272e+28",
+      "couches": [],
+      "profondeurMaxAtteinte": 62,
+      "compteursTechnique": {
+       "creusement": 7.540339304282992e+24,
+       "amelioration": 1.7591895001882996e+25,
+       "recrutement": 512,
+       "entretien": 0,
+       "construction": 0,
+       "eclosion": 15
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 6,
+        "registre": "directives"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-25": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "seuil-loche-50": {
+        "obtenuAuCycle": 6,
+        "registre": "directives"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "seuil-epinoche-25": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "seuil-epinoche-50": {
+        "obtenuAuCycle": 6,
+        "registre": "directives"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 4,
+        "registre": "directives"
+       },
+       "seuil-mare-200": {
+        "obtenuAuCycle": 4,
+        "registre": "directives"
+       },
+       "seuil-mare-320": {
+        "obtenuAuCycle": 4,
+        "registre": "directives"
+       },
+       "seuil-mare-500": {
+        "obtenuAuCycle": 6,
+        "registre": "directives"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-deuxieme-eclosion": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "franchissement-troisieme-eclosion": {
+        "obtenuAuCycle": 3,
+        "registre": "directives"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       }
+      },
+      "nombreEclosions": 15,
+      "especesAyantAtteintCent": [
+       "espece-2-1",
+       "espece-2-2",
+       "espece-2-3",
+       "espece-3-1",
+       "espece-3-2"
+      ],
+      "manaAmbiant": "8.05093432851874e+24",
+      "heuresHorsLigneCreditees": 0
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 14400,
+        "secondesEnRedescente": 0,
+        "paliersOuverts": 5,
+        "productionPicParSeconde": "70.16639721450849",
+        "foiGagnee": "8"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 14400,
+        "secondesEnRedescente": 297.6470772674746,
+        "paliersOuverts": 9,
+        "productionPicParSeconde": "671.617569879058",
+        "foiGagnee": "25"
+       },
+       {
+        "index": 2,
+        "dureeEcouleeSecondes": 14440,
+        "secondesEnRedescente": 581.5686798587448,
+        "paliersOuverts": 14,
+        "productionPicParSeconde": "3165.05451231115",
+        "foiGagnee": "56"
+       },
+       {
+        "index": 3,
+        "dureeEcouleeSecondes": 14400,
+        "secondesEnRedescente": 14400,
+        "paliersOuverts": 18,
+        "productionPicParSeconde": "10706.89428420157",
+        "foiGagnee": "103"
+       },
+       {
+        "index": 4,
+        "dureeEcouleeSecondes": 15295,
+        "secondesEnRedescente": 14400,
+        "paliersOuverts": 23,
+        "productionPicParSeconde": "38321971.1213209",
+        "foiGagnee": "6190"
+       },
+       {
+        "index": 5,
+        "dureeEcouleeSecondes": 28800,
+        "secondesEnRedescente": 14615,
+        "paliersOuverts": 27,
+        "productionPicParSeconde": "930663641.512504",
+        "foiGagnee": "30506"
+       },
+       {
+        "index": 6,
+        "dureeEcouleeSecondes": 29160,
+        "secondesEnRedescente": 15220,
+        "paliersOuverts": 32,
+        "productionPicParSeconde": "89137276928.40251",
+        "foiGagnee": "298558"
+       },
+       {
+        "index": 7,
+        "dureeEcouleeSecondes": 43200,
+        "secondesEnRedescente": 28800,
+        "paliersOuverts": 36,
+        "productionPicParSeconde": "3125928588549.44",
+        "foiGagnee": "1768029"
+       },
+       {
+        "index": 8,
+        "dureeEcouleeSecondes": 57690,
+        "secondesEnRedescente": 43200,
+        "paliersOuverts": 41,
+        "productionPicParSeconde": "101520346093431.39",
+        "foiGagnee": "10075730"
+       },
+       {
+        "index": 9,
+        "dureeEcouleeSecondes": 57600,
+        "secondesEnRedescente": 43200,
+        "paliersOuverts": 45,
+        "productionPicParSeconde": "7107201911996170",
+        "foiGagnee": "84304222"
+       },
+       {
+        "index": 10,
+        "dureeEcouleeSecondes": 72000,
+        "secondesEnRedescente": 57600,
+        "paliersOuverts": 49,
+        "productionPicParSeconde": "76923959830797000",
+        "foiGagnee": "277351689"
+       },
+       {
+        "index": 11,
+        "dureeEcouleeSecondes": 72475,
+        "secondesEnRedescente": 58145,
+        "paliersOuverts": 54,
+        "productionPicParSeconde": "10513096126322950000",
+        "foiGagnee": "3242390495"
+       },
+       {
+        "index": 12,
+        "dureeEcouleeSecondes": 86400,
+        "secondesEnRedescente": 72000,
+        "paliersOuverts": 58,
+        "productionPicParSeconde": "95516816019541590000",
+        "foiGagnee": "9773270487"
+       },
+       {
+        "index": 13,
+        "dureeEcouleeSecondes": 86400,
+        "secondesEnRedescente": 72490,
+        "paliersOuverts": 62,
+        "productionPicParSeconde": "1.053788712558435e+21",
+        "foiGagnee": "32462111954"
+       },
+       {
+        "index": 14,
+        "dureeEcouleeSecondes": 86400,
+        "secondesEnRedescente": 86400,
+        "paliersOuverts": 62,
+        "productionPicParSeconde": "735055921136981000000",
+        "foiGagnee": "27111914744"
+       }
+      ],
+      "secondesEnRedescente": 0,
+      "secondesDepuisDernierSucces": 693060.0000000001,
+      "intervallesEntreSucces": []
+     }
+    }
+   },
+   "tempsActifSecondes": 39702.95450612944,
+   "tempsEcouleSecondes": 693060.0000000001,
+   "sessions": 63,
+   "cycles": [
+    {
+     "index": 0,
+     "dureeEcouleeSecondes": 14400,
+     "fractionEnRedescente": 0,
+     "paliersOuverts": 5,
+     "productionPicParSeconde": 70.16639721450849,
+     "foiGagnee": 8
+    },
+    {
+     "index": 1,
+     "dureeEcouleeSecondes": 14400,
+     "fractionEnRedescente": 0.0206699359213524,
+     "paliersOuverts": 9,
+     "productionPicParSeconde": 671.617569879058,
+     "foiGagnee": 25
+    },
+    {
+     "index": 2,
+     "dureeEcouleeSecondes": 14440,
+     "fractionEnRedescente": 0.04027483932539783,
+     "paliersOuverts": 14,
+     "productionPicParSeconde": 3165.05451231115,
+     "foiGagnee": 56
+    },
+    {
+     "index": 3,
+     "dureeEcouleeSecondes": 14400,
+     "fractionEnRedescente": 1,
+     "paliersOuverts": 18,
+     "productionPicParSeconde": 10706.89428420157,
+     "foiGagnee": 103
+    },
+    {
+     "index": 4,
+     "dureeEcouleeSecondes": 15295,
+     "fractionEnRedescente": 0.9414841451454724,
+     "paliersOuverts": 23,
+     "productionPicParSeconde": 38321971.1213209,
+     "foiGagnee": 6190
+    },
+    {
+     "index": 5,
+     "dureeEcouleeSecondes": 28800,
+     "fractionEnRedescente": 0.5074652777777777,
+     "paliersOuverts": 27,
+     "productionPicParSeconde": 930663641.512504,
+     "foiGagnee": 30506
+    },
+    {
+     "index": 6,
+     "dureeEcouleeSecondes": 29160,
+     "fractionEnRedescente": 0.5219478737997256,
+     "paliersOuverts": 32,
+     "productionPicParSeconde": 89137276928.40251,
+     "foiGagnee": 298558
+    },
+    {
+     "index": 7,
+     "dureeEcouleeSecondes": 43200,
+     "fractionEnRedescente": 0.6666666666666666,
+     "paliersOuverts": 36,
+     "productionPicParSeconde": 3125928588549.44,
+     "foiGagnee": 1768029
+    },
+    {
+     "index": 8,
+     "dureeEcouleeSecondes": 57690,
+     "fractionEnRedescente": 0.748829953198128,
+     "paliersOuverts": 41,
+     "productionPicParSeconde": 101520346093431.39,
+     "foiGagnee": 10075730
+    },
+    {
+     "index": 9,
+     "dureeEcouleeSecondes": 57600,
+     "fractionEnRedescente": 0.75,
+     "paliersOuverts": 45,
+     "productionPicParSeconde": 7107201911996170,
+     "foiGagnee": 84304222
+    },
+    {
+     "index": 10,
+     "dureeEcouleeSecondes": 72000,
+     "fractionEnRedescente": 0.8,
+     "paliersOuverts": 49,
+     "productionPicParSeconde": 76923959830797000,
+     "foiGagnee": 277351689
+    },
+    {
+     "index": 11,
+     "dureeEcouleeSecondes": 72475,
+     "fractionEnRedescente": 0.8022766471196965,
+     "paliersOuverts": 54,
+     "productionPicParSeconde": 10513096126322950000,
+     "foiGagnee": 3242390495
+    },
+    {
+     "index": 12,
+     "dureeEcouleeSecondes": 86400,
+     "fractionEnRedescente": 0.8333333333333334,
+     "paliersOuverts": 58,
+     "productionPicParSeconde": 95516816019541590000,
+     "foiGagnee": 9773270487
+    },
+    {
+     "index": 13,
+     "dureeEcouleeSecondes": 86400,
+     "fractionEnRedescente": 0.8390046296296296,
+     "paliersOuverts": 62,
+     "productionPicParSeconde": 1.0537887125584351e+21,
+     "foiGagnee": 32462111954
+    },
+    {
+     "index": 14,
+     "dureeEcouleeSecondes": 86400,
+     "fractionEnRedescente": 1,
+     "paliersOuverts": 62,
+     "productionPicParSeconde": 735055921136981000000,
+     "foiGagnee": 27111914744
+    }
+   ]
+  }
+ },
+ "ecrans": {
+  "depart": {
+   "enTete": {
+    "foi": "0",
+    "eclosions": "0"
+   },
+   "contenance": {
+    "mana": "10",
+    "plafond": "sur 1.20 k",
+    "part": 0.008333333333333335,
+    "trouble": false,
+    "plein": false,
+    "debit": "+0.2 / s",
+    "bloque": false
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "un banc s’attarde",
+      "profondeur": "à fleur d’eau",
+      "effectif": null,
+      "production": null,
+      "action": "Convaincre",
+      "cout": "10",
+      "payable": true
+     }
+    ],
+    "creusement": {
+     "libelle": "Creuser plus bas",
+     "cout": "60",
+     "possible": false
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "0.000",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "0 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "0",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "1.000",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.200",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.2"
+    }
+   ],
+   "eclosion": {
+    "foi": "0",
+    "bloque": false
+   },
+   "succes": {
+    "acquis": [],
+    "enChemin": [
+     {
+      "id": "acte-premiere-conviction",
+      "progression": 0
+     },
+     {
+      "id": "acte-deuxieme-niveau",
+      "progression": 0
+     },
+     {
+      "id": "acte-cinquieme-niveau",
+      "progression": 0
+     },
+     {
+      "id": "acte-premier-creusement",
+      "progression": 0.5
+     },
+     {
+      "id": "acte-deux-bancs",
+      "progression": 0
+     },
+     {
+      "id": "seuil-vairon-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-loche-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-epinoche-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-mare-25",
+      "progression": 0
+     },
+     {
+      "id": "seuil-profondeur-3",
+      "progression": 0.3333333333333333
+     },
+     {
+      "id": "franchissement-premiere-eclosion",
+      "progression": 0
+     }
+    ],
+    "plusLoin": [
+     "Cinq à demeure",
+     "La main est faite",
+     "La Noue répond",
+     "Vingt-cinq vairons",
+     "Cinquante vairons",
+     "Cent vairons",
+     "Vingt-cinq loches",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "45 dans la Noue",
+     "70 dans la Noue",
+     "95 dans la Noue",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "5 creusements",
+     "Rentrer encore",
+     "Le chemin se sait",
+     "Le fond de la Noue"
+    ],
+    "secrets": 7
+   }
+  },
+  "etatDeTravail": {
+   "enTete": {
+    "foi": "0",
+    "eclosions": "0"
+   },
+   "contenance": {
+    "mana": "1000.0 G",
+    "plafond": "sur 100.0 T",
+    "part": 0.00999999849006893,
+    "trouble": false,
+    "plein": false,
+    "debit": "+412 / s",
+    "bloque": false
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "le vairon",
+      "profondeur": "à fleur d’eau",
+      "effectif": "4.8 / 13",
+      "production": "+1.0 / s",
+      "action": "Faire de la place",
+      "cout": "39",
+      "payable": true
+     },
+     {
+      "bancId": "vairon@1",
+      "nom": "le vairon",
+      "profondeur": "1 brasse",
+      "effectif": "5.1 / 14",
+      "production": "+2.4 / s",
+      "action": "Faire de la place",
+      "cout": "107",
+      "payable": true
+     },
+     {
+      "bancId": "loche@2",
+      "nom": "la loche",
+      "profondeur": "2 brasses",
+      "effectif": "5.5 / 15",
+      "production": "+5.9 / s",
+      "action": "Faire de la place",
+      "cout": "295",
+      "payable": true
+     },
+     {
+      "bancId": "loche@3",
+      "nom": "la loche",
+      "profondeur": "3 brasses",
+      "effectif": "5.9 / 16",
+      "production": "+14 / s",
+      "action": "Faire de la place",
+      "cout": "814",
+      "payable": true
+     },
+     {
+      "bancId": "epinoche@4",
+      "nom": "l’épinoche",
+      "profondeur": "4 brasses",
+      "effectif": "6.2 / 17",
+      "production": "+35 / s",
+      "action": "Faire de la place",
+      "cout": "2.25 k",
+      "payable": true
+     },
+     {
+      "bancId": "epinoche@5",
+      "nom": "l’épinoche",
+      "profondeur": "5 brasses",
+      "effectif": "6.6 / 18",
+      "production": "+87 / s",
+      "action": "Faire de la place",
+      "cout": "6.20 k",
+      "payable": true
+     },
+     {
+      "bancId": "espece-2-1@6",
+      "nom": "un banc sans nom",
+      "profondeur": "6 brasses",
+      "effectif": "7.0 / 19",
+      "production": "+212 / s",
+      "action": "Faire de la place",
+      "cout": "17.1 k",
+      "payable": true
+     }
+    ],
+    "creusement": {
+     "libelle": "Rendre le fond habitable",
+     "cout": "2.75 k",
+     "possible": true
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "4.766",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "13 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "1.0",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.199",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.2"
+    },
+    {
+     "bancId": "vairon@1",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.133",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.462",
+       "source": "1 brasse"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "14 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "2.4",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.461",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.5"
+    },
+    {
+     "bancId": "loche@2",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.499",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "1.069",
+       "source": "2 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "15 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "5.9",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "1.064",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "1.1"
+    },
+    {
+     "bancId": "loche@3",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.866",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "2.470",
+       "source": "3 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "16 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "14",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "2.460",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "2.5"
+    },
+    {
+     "bancId": "epinoche@4",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.232",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "5.709",
+       "source": "4 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "17 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "35",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "5.686",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "5.7"
+    },
+    {
+     "bancId": "epinoche@5",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.599",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "13.2",
+       "source": "5 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "18 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "87",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "13.1",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "13"
+    },
+    {
+     "bancId": "espece-2-1@6",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.966",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "30.5",
+       "source": "6 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "19 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "212",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "30.4",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "30"
+    }
+   ],
+   "eclosion": {
+    "foi": "18",
+    "bloque": false
+   },
+   "succes": {
+    "acquis": [
+     "franchissement-fond-de-la-mare",
+     "seuil-profondeur-5",
+     "seuil-profondeur-3",
+     "seuil-mare-25",
+     "seuil-epinoche-10",
+     "seuil-loche-10",
+     "acte-trois-bancs",
+     "acte-dixieme-niveau",
+     "acte-deux-bancs",
+     "acte-premier-creusement",
+     "acte-cinquieme-niveau",
+     "acte-deuxieme-niveau",
+     "acte-premiere-conviction"
+    ],
+    "enChemin": [
+     {
+      "id": "seuil-vairon-10",
+      "progression": 0.9898431245368874
+     },
+     {
+      "id": "franchissement-premiere-eclosion",
+      "progression": 0
+     }
+    ],
+    "plusLoin": [
+     "Cinq à demeure",
+     "Vingt-cinq vairons",
+     "Cinquante vairons",
+     "Cent vairons",
+     "Vingt-cinq loches",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "45 dans la Noue",
+     "70 dans la Noue",
+     "95 dans la Noue",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "Rentrer encore",
+     "Le chemin se sait"
+    ],
+    "secrets": 7
+   }
+  },
+  "demiHeure": {
+   "enTete": {
+    "foi": "0",
+    "eclosions": "0"
+   },
+   "contenance": {
+    "mana": "1.20 k",
+    "plafond": "sur 1.20 k",
+    "part": 1,
+    "trouble": true,
+    "plein": true,
+    "debit": "+0 / s",
+    "bloque": true
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "le vairon",
+      "profondeur": "à fleur d’eau",
+      "effectif": "36.5 / 39",
+      "production": "+29 / s",
+      "action": "Faire de la place",
+      "cout": "1.27 k",
+      "payable": false
+     },
+     {
+      "bancId": "vairon@1",
+      "nom": "le vairon",
+      "profondeur": "1 brasse",
+      "effectif": "30.3 / 33",
+      "production": "+55 / s",
+      "action": "Faire de la place",
+      "cout": "1.32 k",
+      "payable": false
+     },
+     {
+      "bancId": "loche@2",
+      "nom": "la loche",
+      "profondeur": "2 brasses",
+      "effectif": "23.7 / 27",
+      "production": "+50 / s",
+      "action": "Faire de la place",
+      "cout": "1.37 k",
+      "payable": false
+     },
+     {
+      "bancId": "loche@3",
+      "nom": "la loche",
+      "profondeur": "3 brasses",
+      "effectif": "17.3 / 20",
+      "production": "+85 / s",
+      "action": "Faire de la place",
+      "cout": "1.24 k",
+      "payable": false
+     },
+     {
+      "bancId": "epinoche@4",
+      "nom": "l’épinoche",
+      "profondeur": "4 brasses",
+      "effectif": "10.7 / 14",
+      "production": "+122 / s",
+      "action": "Faire de la place",
+      "cout": "1.28 k",
+      "payable": false
+     }
+    ],
+    "creusement": {
+     "libelle": "Creuser plus bas",
+     "cout": "1.87 k",
+     "possible": false
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "36.5",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "4.000",
+       "source": "39 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "29",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.948",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.190",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.2"
+    },
+    {
+     "bancId": "vairon@1",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "30.3",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.462",
+       "source": "1 brasse"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "4.000",
+       "source": "33 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "55",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.961",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.444",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.4"
+    },
+    {
+     "bancId": "loche@2",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "23.7",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "1.069",
+       "source": "2 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "2.000",
+       "source": "27 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "50",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.970",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "1.036",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "1.0"
+    },
+    {
+     "bancId": "loche@3",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "17.3",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "2.470",
+       "source": "3 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "2.000",
+       "source": "20 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "85",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.979",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "2.418",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "2.4"
+    },
+    {
+     "bancId": "epinoche@4",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "10.7",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "5.709",
+       "source": "4 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "2.000",
+       "source": "14 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "122",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.988",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "5.639",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "5.6"
+    }
+   ],
+   "eclosion": {
+    "foi": "18",
+    "bloque": true
+   },
+   "succes": {
+    "acquis": [
+     "seuil-profondeur-5",
+     "seuil-profondeur-3",
+     "seuil-mare-95",
+     "seuil-mare-70",
+     "seuil-mare-45",
+     "seuil-mare-25",
+     "seuil-epinoche-10",
+     "seuil-loche-25",
+     "seuil-loche-10",
+     "seuil-vairon-50",
+     "seuil-vairon-25",
+     "seuil-vairon-10",
+     "acte-trois-bancs",
+     "acte-dixieme-niveau",
+     "acte-deux-bancs",
+     "acte-premier-creusement",
+     "acte-premier-banc-de-cinq",
+     "acte-cinquieme-niveau",
+     "acte-deuxieme-niveau",
+     "acte-premiere-conviction"
+    ],
+    "enChemin": [
+     {
+      "id": "franchissement-premiere-eclosion",
+      "progression": 0
+     }
+    ],
+    "plusLoin": [
+     "Cent vairons",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "Rentrer encore",
+     "Le chemin se sait",
+     "Le fond de la Noue"
+    ],
+    "secrets": 7
+   }
+  },
+  "partieJouee": {
+   "enTete": {
+    "foi": "1",
+    "eclosions": "1"
+   },
+   "contenance": {
+    "mana": "113",
+    "plafond": "sur 57.2 k",
+    "part": 0.0019755782741920267,
+    "trouble": false,
+    "plein": false,
+    "debit": "+0.2 / s",
+    "bloque": false
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "un banc s’attarde",
+      "profondeur": "à fleur d’eau",
+      "effectif": null,
+      "production": null,
+      "action": "Convaincre",
+      "cout": "6.7",
+      "payable": true
+     }
+    ],
+    "creusement": {
+     "libelle": "Rendre le fond habitable",
+     "cout": "15",
+     "possible": true
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "0.000",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "0 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "0",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.860",
+       "source": "une eau qui se réveille"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.172",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.2"
+    }
+   ],
+   "eclosion": {
+    "foi": "0",
+    "bloque": false
+   },
+   "succes": {
+    "acquis": [
+     "franchissement-densite",
+     "franchissement-premiere-eclosion",
+     "seuil-palier-sature-1",
+     "acte-premier-palier-sature",
+     "acte-deux-bancs",
+     "acte-premier-creusement",
+     "acte-premier-banc-de-cinq",
+     "acte-cinquieme-niveau",
+     "acte-deuxieme-niveau",
+     "acte-premiere-conviction"
+    ],
+    "enChemin": [
+     {
+      "id": "seuil-vairon-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-loche-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-epinoche-10",
+      "progression": 0
+     },
+     {
+      "id": "seuil-mare-25",
+      "progression": 0
+     },
+     {
+      "id": "seuil-profondeur-3",
+      "progression": 0.3333333333333333
+     }
+    ],
+    "plusLoin": [
+     "La main est faite",
+     "La Noue répond",
+     "Vingt-cinq vairons",
+     "Cinquante vairons",
+     "Cent vairons",
+     "Vingt-cinq loches",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "45 dans la Noue",
+     "70 dans la Noue",
+     "95 dans la Noue",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "5 creusements",
+     "Rentrer encore",
+     "Le chemin se sait",
+     "Le fond de la Noue"
+    ],
+    "secrets": 4
+   }
+  },
+  "jaugePleine": {
+   "enTete": {
+    "foi": "0",
+    "eclosions": "0"
+   },
+   "contenance": {
+    "mana": "100.0 T",
+    "plafond": "sur 100.0 T",
+    "part": 1,
+    "trouble": true,
+    "plein": true,
+    "debit": "+0 / s",
+    "bloque": false
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "le vairon",
+      "profondeur": "à fleur d’eau",
+      "effectif": "4.8 / 13",
+      "production": "+1.0 / s",
+      "action": "Faire de la place",
+      "cout": "39",
+      "payable": true
+     },
+     {
+      "bancId": "vairon@1",
+      "nom": "le vairon",
+      "profondeur": "1 brasse",
+      "effectif": "5.1 / 14",
+      "production": "+2.4 / s",
+      "action": "Faire de la place",
+      "cout": "107",
+      "payable": true
+     },
+     {
+      "bancId": "loche@2",
+      "nom": "la loche",
+      "profondeur": "2 brasses",
+      "effectif": "5.5 / 15",
+      "production": "+5.9 / s",
+      "action": "Faire de la place",
+      "cout": "295",
+      "payable": true
+     },
+     {
+      "bancId": "loche@3",
+      "nom": "la loche",
+      "profondeur": "3 brasses",
+      "effectif": "5.9 / 16",
+      "production": "+14 / s",
+      "action": "Faire de la place",
+      "cout": "814",
+      "payable": true
+     },
+     {
+      "bancId": "epinoche@4",
+      "nom": "l’épinoche",
+      "profondeur": "4 brasses",
+      "effectif": "6.2 / 17",
+      "production": "+35 / s",
+      "action": "Faire de la place",
+      "cout": "2.25 k",
+      "payable": true
+     },
+     {
+      "bancId": "epinoche@5",
+      "nom": "l’épinoche",
+      "profondeur": "5 brasses",
+      "effectif": "6.6 / 18",
+      "production": "+87 / s",
+      "action": "Faire de la place",
+      "cout": "6.20 k",
+      "payable": true
+     },
+     {
+      "bancId": "espece-2-1@6",
+      "nom": "un banc sans nom",
+      "profondeur": "6 brasses",
+      "effectif": "7.0 / 19",
+      "production": "+212 / s",
+      "action": "Faire de la place",
+      "cout": "17.1 k",
+      "payable": true
+     }
+    ],
+    "creusement": {
+     "libelle": "Rendre le fond habitable",
+     "cout": "2.75 k",
+     "possible": true
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "4.766",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "13 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "1.0",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.199",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.2"
+    },
+    {
+     "bancId": "vairon@1",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.133",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.462",
+       "source": "1 brasse"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "14 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "2.4",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.461",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.5"
+    },
+    {
+     "bancId": "loche@2",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.499",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "1.069",
+       "source": "2 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "15 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "5.9",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "1.064",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "1.1"
+    },
+    {
+     "bancId": "loche@3",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "5.866",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "2.470",
+       "source": "3 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "16 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "14",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "2.460",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "2.5"
+    },
+    {
+     "bancId": "epinoche@4",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.232",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "5.709",
+       "source": "4 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "17 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "35",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "5.686",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "5.7"
+    },
+    {
+     "bancId": "epinoche@5",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.599",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "13.2",
+       "source": "5 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "18 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "87",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "13.1",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "13"
+    },
+    {
+     "bancId": "espece-2-1@6",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "6.966",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "30.5",
+       "source": "6 brasses"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "19 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "212",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.996",
+       "source": "une eau vieille que rien n’a troublée"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "30.4",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "30"
+    }
+   ],
+   "eclosion": {
+    "foi": "18",
+    "bloque": false
+   },
+   "succes": {
+    "acquis": [
+     "franchissement-fond-de-la-mare",
+     "seuil-profondeur-5",
+     "seuil-profondeur-3",
+     "seuil-mare-25",
+     "seuil-epinoche-10",
+     "seuil-loche-10",
+     "acte-trois-bancs",
+     "acte-dixieme-niveau",
+     "acte-deux-bancs",
+     "acte-premier-creusement",
+     "acte-cinquieme-niveau",
+     "acte-deuxieme-niveau",
+     "acte-premiere-conviction"
+    ],
+    "enChemin": [
+     {
+      "id": "seuil-vairon-10",
+      "progression": 0.9898431245368874
+     },
+     {
+      "id": "franchissement-premiere-eclosion",
+      "progression": 0
+     }
+    ],
+    "plusLoin": [
+     "Cinq à demeure",
+     "Vingt-cinq vairons",
+     "Cinquante vairons",
+     "Cent vairons",
+     "Vingt-cinq loches",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "45 dans la Noue",
+     "70 dans la Noue",
+     "95 dans la Noue",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "Rentrer encore",
+     "Le chemin se sait"
+    ],
+    "secrets": 7
+   }
+  },
+  "simulationLivree": {
+   "enTete": {
+    "foi": "12",
+    "eclosions": "2"
+   },
+   "contenance": {
+    "mana": "10",
+    "plafond": "sur 2.79 M",
+    "part": 0.000003580142140990994,
+    "trouble": false,
+    "plein": false,
+    "debit": "+0.1 / s",
+    "bloque": false
+   },
+   "mare": {
+    "titre": "la Noue",
+    "bancs": [
+     {
+      "bancId": "vairon@0",
+      "nom": "un banc s’attarde",
+      "profondeur": "à fleur d’eau",
+      "effectif": null,
+      "production": null,
+      "action": "Convaincre",
+      "cout": "2.7",
+      "payable": true
+     }
+    ],
+    "creusement": {
+     "libelle": "Rendre le fond habitable",
+     "cout": "15",
+     "possible": false
+    }
+   },
+   "captations": [
+    {
+     "bancId": "vairon@0",
+     "lignes": [
+      {
+       "terme": "effectif",
+       "valeur": "0.000",
+       "source": "ce qui vit là"
+      },
+      {
+       "terme": "taux_base",
+       "valeur": "0.200",
+       "source": "à fleur d’eau"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "multiplicateur_jalon",
+       "valeur": "1.000",
+       "source": "0 places faites"
+      },
+      {
+       "terme": "multiplicateur_drapeau",
+       "valeur": "1.000",
+       "source": "aucune espèce au complet"
+      }
+     ],
+     "natif": "0",
+     "lignesAcclimatees": [
+      {
+       "terme": "part_mure",
+       "valeur": "0.658",
+       "source": "une eau qui se réveille"
+      },
+      {
+       "terme": "rendement_acclimatation",
+       "valeur": "1.000",
+       "source": "ce que tu supportes"
+      },
+      {
+       "terme": "debit_acclimate",
+       "valeur": "0.132",
+       "source": "ce que tu prends à l’eau elle-même"
+      }
+     ],
+     "acclimate": "0.1"
+    }
+   ],
+   "eclosion": {
+    "foi": "0",
+    "bloque": false
+   },
+   "succes": {
+    "acquis": [
+     "franchissement-densite",
+     "franchissement-premiere-eclosion",
+     "seuil-palier-sature-3",
+     "seuil-palier-sature-2",
+     "seuil-palier-sature-1",
+     "seuil-profondeur-5",
+     "seuil-profondeur-3",
+     "seuil-mare-45",
+     "seuil-mare-25",
+     "seuil-loche-10",
+     "seuil-vairon-25",
+     "seuil-vairon-10",
+     "acte-premier-palier-sature",
+     "acte-trois-bancs",
+     "acte-dixieme-niveau",
+     "acte-deux-bancs",
+     "acte-premier-creusement",
+     "acte-premier-banc-de-cinq",
+     "acte-cinquieme-niveau",
+     "acte-deuxieme-niveau",
+     "acte-premiere-conviction"
+    ],
+    "enChemin": [
+     {
+      "id": "seuil-epinoche-10",
+      "progression": 0
+     }
+    ],
+    "plusLoin": [
+     "Cinquante vairons",
+     "Cent vairons",
+     "Vingt-cinq loches",
+     "Cinquante loches",
+     "Cent loches",
+     "Vingt-cinq épinoches",
+     "Cinquante épinoches",
+     "Cent épinoches",
+     "70 dans la Noue",
+     "95 dans la Noue",
+     "130 dans la Noue",
+     "200 dans la Noue",
+     "320 dans la Noue",
+     "500 dans la Noue",
+     "Rentrer encore",
+     "Le chemin se sait",
+     "Le fond de la Noue"
+    ],
+    "secrets": 2
+   }
+  }
+ },
+ "migrations": [
+  {
+   "save": {
+    "versionSave": 1,
+    "contenu": {
+     "permanent": {
+      "succesDebloques": [
+       "seuil-espece-1-1-10",
+       "acte-premiere-conviction",
+       "seuil-espece-1-3-25"
+      ],
+      "couches": [
+       "assise-1"
+      ],
+      "nombreEclosions": 2
+     }
+    }
+   },
+   "reecrite": "{\"versionSave\":4,\"contenu\":{\"prng\":{\"graine\":0},\"tempsJeuSecondes\":0,\"limiteDeContenu\":6,\"cycle\":{\"manaCourant\":\"10\",\"paliersOuverts\":1,\"bancs\":{},\"productionPicParSeconde\":\"0\",\"dureeSecondes\":0,\"acquisDeSejour\":0,\"secondesEnSaturation\":0},\"permanent\":{\"densites\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"partsMures\":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],\"acclimatations\":{\"type-mana-1\":1},\"foi\":\"0\",\"contenanceMana\":\"1200\",\"couches\":[\"noue\"],\"profondeurMaxAtteinte\":0,\"compteursTechnique\":{\"creusement\":0,\"amelioration\":0,\"recrutement\":0,\"entretien\":0,\"construction\":0,\"eclosion\":0},\"noeudsTechnique\":[],\"succes\":{\"acte-premiere-conviction\":{\"obtenuAuCycle\":2,\"registre\":\"signes\"},\"seuil-vairon-10\":{\"obtenuAuCycle\":2,\"registre\":\"signes\"},\"seuil-epinoche-25\":{\"obtenuAuCycle\":2,\"registre\":\"signes\"}},\"nombreEclosions\":2,\"especesAyantAtteintCent\":[],\"manaAmbiant\":\"0\",\"heuresHorsLigneCreditees\":0},\"telemetrie\":{\"cycles\":[],\"secondesEnRedescente\":0,\"secondesDepuisDernierSucces\":0,\"intervallesEntreSucces\":[]}}}"
+  },
+  {
+   "save": {
+    "versionSave": 2,
+    "contenu": {
+     "permanent": {
+      "nombreEclosions": 3,
+      "succesDebloques": [
+       "seuil-vairon-10",
+       "acte-premiere-conviction"
+      ],
+      "benedictions": {
+       "quelque-chose": 2
+      }
+     }
+    }
+   },
+   "reecrite": "{\"versionSave\":4,\"contenu\":{\"prng\":{\"graine\":0},\"tempsJeuSecondes\":0,\"limiteDeContenu\":6,\"cycle\":{\"manaCourant\":\"10\",\"paliersOuverts\":1,\"bancs\":{},\"productionPicParSeconde\":\"0\",\"dureeSecondes\":0,\"acquisDeSejour\":0,\"secondesEnSaturation\":0},\"permanent\":{\"densites\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"partsMures\":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],\"acclimatations\":{\"type-mana-1\":1},\"foi\":\"0\",\"contenanceMana\":\"1200\",\"couches\":[],\"profondeurMaxAtteinte\":0,\"compteursTechnique\":{\"creusement\":0,\"amelioration\":0,\"recrutement\":0,\"entretien\":0,\"construction\":0,\"eclosion\":0},\"noeudsTechnique\":[],\"succes\":{\"acte-premiere-conviction\":{\"obtenuAuCycle\":3,\"registre\":\"directives\"},\"seuil-vairon-10\":{\"obtenuAuCycle\":3,\"registre\":\"directives\"}},\"nombreEclosions\":3,\"especesAyantAtteintCent\":[],\"manaAmbiant\":\"0\",\"heuresHorsLigneCreditees\":0},\"telemetrie\":{\"cycles\":[],\"secondesEnRedescente\":0,\"secondesDepuisDernierSucces\":0,\"intervallesEntreSucces\":[]}}}"
+  },
+  {
+   "save": {
+    "versionSave": 3,
+    "contenu": {
+     "prng": {
+      "graine": 12345
+     },
+     "tempsJeuSecondes": 137,
+     "limiteDeContenu": 62,
+     "cycle": {
+      "manaCourant": "999999849006.893",
+      "paliersOuverts": 7,
+      "bancs": {
+       "vairon@0": {
+        "place": 13,
+        "effectif": 4.765911340362791
+       },
+       "vairon@1": {
+        "place": 14,
+        "effectif": 5.132519905006083
+       },
+       "loche@2": {
+        "place": 15,
+        "effectif": 5.499128469649374
+       },
+       "loche@3": {
+        "place": 16,
+        "effectif": 5.865737034292666
+       },
+       "epinoche@4": {
+        "place": 17,
+        "effectif": 6.232345598935957
+       },
+       "epinoche@5": {
+        "place": 18,
+        "effectif": 6.598954163579249
+       },
+       "espece-2-1@6": {
+        "place": 19,
+        "effectif": 6.96556272822254
+       }
+      },
+      "productionPicParSeconde": "358.77643800444304",
+      "dureeSecondes": 137,
+      "acquisDeSejour": 2.0372387626228416,
+      "secondesEnSaturation": 0
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "partsMures": [
+       0.9964264012811195,
+       0.9963118628606424,
+       0.9962064875138037,
+       0.9961092179628757,
+       0.996019153563868,
+       0.9959355223362183,
+       0.9958576587794409,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ],
+      "acclimatations": {
+       "type-mana-1": 1
+      },
+      "foi": "0",
+      "contenanceMana": "100000000000000",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 2036.8175999999999,
+       "amelioration": 180202.5245600047,
+       "recrutement": 7,
+       "entretien": 0,
+       "construction": 0,
+       "eclosion": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreEclosions": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "0",
+      "heuresHorsLigneCreditees": 0
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesEnRedescente": 137,
+      "secondesDepuisDernierSucces": 137,
+      "intervallesEntreSucces": []
+     }
+    }
+   },
+   "reecrite": "{\"versionSave\":4,\"contenu\":{\"prng\":{\"graine\":12345},\"tempsJeuSecondes\":137,\"limiteDeContenu\":62,\"cycle\":{\"manaCourant\":\"999999849006.893\",\"paliersOuverts\":7,\"bancs\":{\"vairon@0\":{\"place\":13,\"effectif\":4.765911340362791},\"vairon@1\":{\"place\":14,\"effectif\":5.132519905006083},\"loche@2\":{\"place\":15,\"effectif\":5.499128469649374},\"loche@3\":{\"place\":16,\"effectif\":5.865737034292666},\"epinoche@4\":{\"place\":17,\"effectif\":6.232345598935957},\"epinoche@5\":{\"place\":18,\"effectif\":6.598954163579249},\"espece-2-1@6\":{\"place\":19,\"effectif\":6.96556272822254}},\"productionPicParSeconde\":\"358.77643800444304\",\"dureeSecondes\":137,\"acquisDeSejour\":2.0372387626228416,\"secondesEnSaturation\":0},\"permanent\":{\"densites\":[0,0.13,0.26,0.39,0.52,0.65,0.78,0.91,1.04,1.17,1.3,1.4300000000000002,1.56,1.69,1.82,1.9500000000000002,2.08,2.21,2.34,2.47,2.6,2.73,2.8600000000000003,2.99,3.12,3.25,3.38,3.5100000000000002,3.64,3.77,3.9000000000000004,4.03,4.16,4.29,4.42,4.55,4.68,4.8100000000000005,4.94,5.07,5.2,5.33,5.46,5.59,5.720000000000001,5.8500000000000005,5.98,6.11,6.24,6.37,6.5,6.63,6.76,6.890000000000001,7.0200000000000005,7.15,7.28,7.41,7.54,7.67,7.800000000000001,7.930000000000001],\"partsMures\":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],\"acclimatations\":{\"type-mana-1\":1},\"foi\":\"0\",\"contenanceMana\":\"100000000000000\",\"couches\":[],\"profondeurMaxAtteinte\":9,\"compteursTechnique\":{\"creusement\":2036.8175999999999,\"amelioration\":180202.5245600047,\"recrutement\":7,\"entretien\":0,\"construction\":0,\"eclosion\":0},\"noeudsTechnique\":[],\"succes\":{\"acte-premiere-conviction\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-deuxieme-niveau\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-cinquieme-niveau\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-premier-creusement\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-deux-bancs\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-dixieme-niveau\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-trois-bancs\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-loche-10\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-epinoche-10\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-mare-25\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-profondeur-3\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-profondeur-5\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"franchissement-fond-de-la-mare\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"}},\"nombreEclosions\":0,\"especesAyantAtteintCent\":[],\"manaAmbiant\":\"0\",\"heuresHorsLigneCreditees\":0},\"telemetrie\":{\"cycles\":[],\"secondesEnRedescente\":137,\"secondesDepuisDernierSucces\":137,\"intervallesEntreSucces\":[]}}}"
+  }
+ ],
+ "saveDuMagasin": "{\"versionSave\":4,\"contenu\":{\"prng\":{\"graine\":77},\"tempsJeuSecondes\":12930,\"limiteDeContenu\":6,\"cycle\":{\"manaCourant\":\"113.014015985198\",\"paliersOuverts\":1,\"bancs\":{},\"productionPicParSeconde\":\"0\",\"dureeSecondes\":600,\"acquisDeSejour\":10.884337702114877,\"secondesEnSaturation\":0},\"permanent\":{\"densites\":[1.2560825831379485,1.2560825831379485,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"partsMures\":[0.8604070019844257,0.9642300599738758,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],\"acclimatations\":{\"type-mana-1\":1},\"foi\":\"1\",\"contenanceMana\":\"57205.53696178834\",\"couches\":[],\"profondeurMaxAtteinte\":2,\"compteursTechnique\":{\"creusement\":60,\"amelioration\":39.946999999999996,\"recrutement\":2,\"entretien\":0,\"construction\":0,\"eclosion\":1},\"noeudsTechnique\":[],\"succes\":{\"acte-premiere-conviction\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-deuxieme-niveau\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-cinquieme-niveau\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-premier-banc-de-cinq\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-premier-creusement\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-deux-bancs\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"acte-premier-palier-sature\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"seuil-palier-sature-1\":{\"obtenuAuCycle\":0,\"registre\":\"pente\"},\"franchissement-premiere-eclosion\":{\"obtenuAuCycle\":1,\"registre\":\"signes\"},\"franchissement-densite\":{\"obtenuAuCycle\":1,\"registre\":\"signes\"}},\"nombreEclosions\":1,\"especesAyantAtteintCent\":[],\"manaAmbiant\":\"23739.0010488636\",\"heuresHorsLigneCreditees\":0},\"telemetrie\":{\"cycles\":[{\"index\":0,\"dureeEcouleeSecondes\":12330,\"secondesEnRedescente\":0,\"paliersOuverts\":2,\"productionPicParSeconde\":\"1.46227926865461\",\"foiGagnee\":\"1\"}],\"secondesEnRedescente\":600,\"secondesDepuisDernierSucces\":12930,\"intervallesEntreSucces\":[]}},\"dernierInstantMs\":1700000000000}"
+}

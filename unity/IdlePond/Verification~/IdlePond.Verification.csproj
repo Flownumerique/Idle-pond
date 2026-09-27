@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Vérification hors Unity du portage C#.
+
+    Compile les assemblages PURS d'Assets/ (Coeur, Adaptateurs, Etat,
+    Presentation, Simulateur) et les tests EditMode, puis les exécute avec un
+    exécuteur NUnit minimal (NUnitMinimal/). Aucun paquet NuGet : le dossier se
+    construit hors ligne avec le seul SDK .NET 8.
+
+    Le dossier finit par « ~ » : Unity l'ignore à l'import.
+
+      dotnet run -c Release                 # tous les tests
+      dotnet run -c Release Parite          # ceux dont le nom contient « Parite »
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <!-- Unity 6 compile en C# 9 : rien de plus récent ne doit passer ici. -->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>IdlePond.Verification</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS0436</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Assets/IdlePond/Coeur/**/*.cs" />
+    <Compile Include="../Assets/IdlePond/Adaptateurs/**/*.cs" />
+    <Compile Include="../Assets/IdlePond/Etat/**/*.cs" />
+    <Compile Include="../Assets/IdlePond/Presentation/**/*.cs" />
+    <Compile Include="../Assets/IdlePond/Simulateur/**/*.cs" />
+    <Compile Include="../Assets/IdlePond/Tests/EditMode/**/*.cs" />
+    <Compile Include="NUnitMinimal/**/*.cs" />
+    <Compile Include="Programme.cs" />
+  </ItemGroup>
+</Project>

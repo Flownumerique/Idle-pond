@@ -1,0 +1,22 @@
+{
+    "name": "IdlePond.Tests.EditMode",
+    "rootNamespace": "IdlePond.Tests",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "IdlePond.Coeur",
+        "IdlePond.Adaptateurs",
+        "IdlePond.Etat",
+        "IdlePond.Presentation",
+        "IdlePond.Simulateur"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
