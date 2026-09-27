@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compilation à blanc des assemblages qui dépendent d'Unity (Interface, Editeur),
+    contre des signatures minimales de l'API Unity (StubsUnity.cs).
+
+    Ce n'est PAS une vérification de l'API réelle : les signatures sont écrites à
+    la main, d'après la documentation d'Unity 6. Elle attrape ce qu'un éditeur
+    absent laisserait passer — une faute de frappe, un type mal inféré, une
+    construction plus récente que C# 9 — et rien de plus. L'autorité reste la
+    compilation dans l'éditeur.
+
+      dotnet build -c Release
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0436;CS0067;CS0649;CS0169;CS0414</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/IdlePond/Coeur/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Adaptateurs/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Etat/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Presentation/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Simulateur/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Interface/**/*.cs" />
+    <Compile Include="../../Assets/IdlePond/Editeur/**/*.cs" />
+    <Compile Include="StubsUnity.cs" />
+  </ItemGroup>
+</Project>

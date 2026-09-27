@@ -1,0 +1,34 @@
+# Unity — tout ce que l'éditeur régénère.
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Projets et solutions générés par l'éditeur pour l'IDE.
+/*.csproj
+/*.sln
+/*.slnx
+/*.unityproj
+/*.suo
+/*.user
+/*.pidb
+/*.booproj
+/.vs/
+/.idea/
+/.vscode/
+
+# Paquets de builds.
+*.apk
+*.aab
+*.unitypackage
+*.app
+crashlytics-build.properties
+
+# La vérification hors Unity (.NET) : ses sorties de build.
+/Verification~/**/bin/
+/Verification~/**/obj/

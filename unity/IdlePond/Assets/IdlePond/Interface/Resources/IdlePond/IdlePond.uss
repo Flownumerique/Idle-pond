@@ -1,0 +1,525 @@
+/*
+ * IdlePond — jetons visuels. Port de `src/index.css` et des classes Tailwind
+ * des composants de `src/ui/`.
+ *
+ * Aucun art définitif au jalon v0.2 : l'écran est typographique, et c'est
+ * délibéré. Une interface sobre se relit ; une interface décorée trop tôt se
+ * défend, et il faudrait la défendre à chaque assise.
+ *
+ * Les couleurs sont les oklch du web, converties en sRGB. UI Toolkit n'a pas de
+ * `gap` : les espacements passent par des marges, portées par les classes
+ * `pile-*` (l'équivalent des `space-y-*` de Tailwind).
+ */
+
+:root {
+    --eau-abysse: #03111b;
+    --eau-fond: #081d28;
+    --eau-bord: #16323e;
+    --eau-clair: #2d5362;
+    --jour: #e0eaed;
+    --jour-doux: #abbabf;
+    --jour-tu: #748389;
+    --mana: #4fcdcd;
+    --foi: #eac07a;
+    --densite: #7bb587;
+    /* L'eau qui se trouble — GDD §2.4. Même clarté que le mana, chroma cassé :
+       la jauge s'éteint sans s'alarmer. */
+    --trouble: #9d926c;
+}
+
+/* ─── Page ──────────────────────────────────────────────────────────────── */
+
+.ecran {
+    flex-grow: 1;
+    background-color: var(--eau-abysse);
+    color: var(--jour);
+    font-size: 15px;
+}
+
+.ecran .defilement {
+    flex-grow: 1;
+}
+
+.ecran .page {
+    align-self: center;
+    width: 100%;
+    max-width: 1024px;
+    padding: 24px;
+}
+
+.ecran.etroit .page {
+    padding: 16px;
+}
+
+.ecran .pile-6 > * {
+    margin-bottom: 24px;
+}
+
+.ecran .pile-4 > * {
+    margin-bottom: 16px;
+}
+
+.ecran .pile-3 > * {
+    margin-bottom: 12px;
+}
+
+.ecran .pile-2 > * {
+    margin-bottom: 8px;
+}
+
+.ecran .pile-1 > * {
+    margin-bottom: 4px;
+}
+
+.ecran .colonnes {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.ecran .principal {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 24px;
+}
+
+.ecran .cote {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.ecran.etroit .colonnes {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.ecran.etroit .principal {
+    margin-right: 0;
+    margin-bottom: 24px;
+}
+
+.ecran.etroit .cote {
+    width: auto;
+}
+
+/* ─── Texte ─────────────────────────────────────────────────────────────── */
+
+/* Les sélecteurs du thème par défaut sont des classes (`.unity-label`,
+   `.unity-button`) : on les préfixe de `.ecran` pour l'emporter sans `!important`. */
+.ecran .unity-label {
+    white-space: normal;
+    padding: 0;
+    margin: 0;
+}
+
+.ecran .texte {
+    /* Le serif du web (Newsreader) : voir Resources/IdlePond/Polices/LISEZMOI.md. */
+}
+
+.ecran .chiffre {
+    -unity-text-align: middle-left;
+}
+
+.ecran .titre {
+    font-size: 20px;
+}
+
+.ecran .titre-2 {
+    font-size: 18px;
+    color: var(--jour-doux);
+}
+
+.ecran .titre-3 {
+    font-size: 16px;
+}
+
+.ecran .petit {
+    font-size: 13px;
+}
+
+.ecran .tres-petit {
+    font-size: 11px;
+}
+
+.ecran .majuscules {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--jour-tu);
+}
+
+.ecran .italique {
+    -unity-font-style: italic;
+}
+
+.ecran .jour { color: var(--jour); }
+.ecran .jour-doux { color: var(--jour-doux); }
+.ecran .jour-tu { color: var(--jour-tu); }
+.ecran .mana { color: var(--mana); }
+.ecran .foi { color: var(--foi); }
+.ecran .densite { color: var(--densite); }
+.ecran .trouble { color: var(--trouble); }
+
+.ecran .ligne {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.ecran .ligne-gauche {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.ecran .ligne-gauche > * {
+    margin-right: 16px;
+}
+
+/* ─── En-tête ───────────────────────────────────────────────────────────── */
+
+.ecran .en-tete {
+    border-bottom-width: 1px;
+    border-color: var(--eau-bord);
+    padding-bottom: 12px;
+}
+
+.ecran .en-tete .releve {
+    flex-direction: row;
+    align-items: flex-end;
+    margin-left: 20px;
+}
+
+.ecran .en-tete .releve .unity-label {
+    margin-left: 6px;
+}
+
+/* ─── Boutons ───────────────────────────────────────────────────────────── */
+
+.ecran .unity-button {
+    margin: 0;
+    padding: 6px 12px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: var(--eau-clair);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--jour);
+    font-size: 14px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition-property: background-color, border-color, opacity;
+    transition-duration: 0.15s;
+}
+
+.ecran .unity-button:hover {
+    background-color: var(--eau-bord);
+}
+
+.ecran .unity-button:disabled {
+    opacity: 0.4;
+}
+
+.ecran .unity-button:disabled:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ecran .unity-button .cout {
+    margin-left: 8px;
+    color: var(--jour-tu);
+}
+
+.ecran .unity-button.bouton-lien {
+    border-width: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--mana);
+    -unity-text-align: middle-left;
+}
+
+.ecran .unity-button.bouton-lien:hover {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--jour);
+}
+
+.ecran .unity-button.bouton-large {
+    width: 100%;
+}
+
+.ecran .unity-button.bouton-discret {
+    border-color: var(--eau-bord);
+    color: var(--jour-doux);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.ecran .unity-button.bouton-discret:hover {
+    border-color: var(--eau-clair);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ecran .unity-button.bouton-creuser {
+    border-radius: 8px;
+    padding: 12px;
+    border-color: var(--eau-clair);
+}
+
+.ecran .unity-button.bouton-creuser:hover {
+    background-color: var(--eau-fond);
+}
+
+.ecran .unity-button.bouton-foi {
+    border-color: rgba(234, 192, 122, 0.7);
+    color: var(--foi);
+}
+
+.ecran .unity-button.bouton-foi:hover {
+    background-color: rgba(234, 192, 122, 0.1);
+}
+
+.ecran .unity-button.bouton-rester {
+    margin-left: 8px;
+    border-color: var(--eau-bord);
+    color: var(--jour-doux);
+}
+
+.ecran .unity-button.bouton-rester:hover {
+    border-color: var(--eau-clair);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* ─── Panneaux ──────────────────────────────────────────────────────────── */
+
+.ecran .panneau {
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: var(--eau-bord);
+    background-color: rgba(8, 29, 40, 0.6);
+    padding: 16px;
+    transition-property: border-color;
+    transition-duration: 1s;
+}
+
+.ecran .panneau.trouble-bord {
+    border-color: rgba(157, 146, 108, 0.5);
+}
+
+.ecran .panneau-clair {
+    border-color: var(--eau-clair);
+    background-color: var(--eau-fond);
+}
+
+.ecran .panneau-foi {
+    border-color: rgba(234, 192, 122, 0.5);
+}
+
+.ecran .unity-button.retour {
+    border-radius: 8px;
+    border-color: var(--eau-bord);
+    background-color: rgba(8, 29, 40, 0.5);
+    padding: 8px 12px;
+    color: var(--jour-doux);
+    -unity-text-align: middle-left;
+    justify-content: flex-start;
+}
+
+.ecran .unity-button.retour:hover {
+    border-color: var(--eau-clair);
+    background-color: rgba(8, 29, 40, 0.5);
+}
+
+/* ─── La jauge ──────────────────────────────────────────────────────────── */
+
+.ecran .mana-courant {
+    font-size: 24px;
+    color: var(--mana);
+}
+
+.ecran .jauge {
+    margin-top: 8px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: var(--eau-abysse);
+    overflow: hidden;
+}
+
+.ecran .jauge-remplie {
+    height: 100%;
+    border-radius: 3px;
+    background-color: var(--mana);
+    transition-property: width, background-color;
+    transition-duration: 1s;
+}
+
+.ecran .jauge-remplie.trouble-fond {
+    background-color: var(--trouble);
+}
+
+.ecran .bloque {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-color: var(--eau-bord);
+    color: var(--jour-doux);
+    font-size: 14px;
+}
+
+/* ─── La mare ───────────────────────────────────────────────────────────── */
+
+.ecran .banc {
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: var(--eau-bord);
+    background-color: rgba(8, 29, 40, 0.4);
+    padding: 12px;
+    margin-bottom: 8px;
+    transition-property: border-color;
+    transition-duration: 0.15s;
+}
+
+.ecran .banc:hover {
+    border-color: var(--eau-clair);
+}
+
+.ecran .banc .unity-button.action {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.ecran .banc .details {
+    margin-top: 4px;
+}
+
+/* ─── Captation ─────────────────────────────────────────────────────────── */
+
+.ecran .ligne-de-captation {
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom-width: 1px;
+    border-color: rgba(22, 50, 62, 0.6);
+}
+
+.ecran .ligne-de-captation .terme {
+    width: 30%;
+    font-size: 11px;
+    color: var(--jour-tu);
+}
+
+.ecran .ligne-de-captation .valeur {
+    width: 25%;
+    -unity-text-align: middle-right;
+}
+
+.ecran .ligne-de-captation .source {
+    flex-grow: 1;
+    padding-left: 12px;
+    font-size: 11px;
+    color: var(--jour-tu);
+    -unity-text-align: middle-right;
+}
+
+.ecran .total-de-captation {
+    border-bottom-width: 0;
+    padding-top: 8px;
+}
+
+.ecran .total-de-captation .terme {
+    font-size: 11px;
+}
+
+.ecran .intertitre-captation {
+    margin-top: 16px;
+}
+
+/* ─── Succès ────────────────────────────────────────────────────────────── */
+
+.ecran .succes-acquis {
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: var(--eau-clair);
+    background-color: rgba(8, 29, 40, 0.5);
+    padding: 8px 12px;
+    margin-bottom: 4px;
+}
+
+.ecran .succes-en-cours {
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: var(--eau-bord);
+    padding: 8px 12px;
+    margin-bottom: 4px;
+}
+
+.ecran .progression {
+    margin-top: 6px;
+    height: 2px;
+    background-color: var(--eau-abysse);
+    overflow: hidden;
+}
+
+.ecran .progression-remplie {
+    height: 100%;
+    background-color: var(--eau-clair);
+}
+
+.ecran .enveloppe {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.ecran .succes-ferme {
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: var(--eau-bord);
+    padding: 4px 8px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--jour-tu);
+}
+
+.ecran .succes-secret {
+    width: 20px;
+    height: 20px;
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: rgba(22, 50, 62, 0.6);
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+/* ─── Annonces : une ligne qui apparaît et s'efface. Jamais une fenêtre (§8.2). */
+
+.ecran .annonces {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.ecran .annonce {
+    border-width: 1px;
+    border-radius: 999px;
+    border-color: var(--eau-clair);
+    background-color: rgba(8, 29, 40, 0.95);
+    padding: 6px 16px;
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--jour);
+    opacity: 0;
+    translate: 0 6px;
+    transition-property: opacity, translate;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-in-out;
+}
+
+.ecran .annonce.visible {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.ecran .annonce.sortante {
+    opacity: 0;
+    translate: 0 -5px;
+}

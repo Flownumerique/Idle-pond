@@ -1,0 +1,20 @@
+{
+    "name": "IdlePond.Editeur",
+    "rootNamespace": "IdlePond.Editeur",
+    "references": [
+        "IdlePond.Coeur",
+        "IdlePond.Adaptateurs",
+        "IdlePond.Etat",
+        "IdlePond.Simulateur",
+        "IdlePond.Interface"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
