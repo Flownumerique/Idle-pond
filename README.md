@@ -32,6 +32,20 @@ Comptes rendus, mesures et décisions ouvertes :
 > `src/donnees/textes-provisoires.ts` ; aucune n'entre dans un identifiant ni
 > dans une sauvegarde. `[P] P3` reste ouvert pour les assises II à VI.
 
+## Portage Unity
+
+Le jeu est porté en entier vers **Unity 6** dans
+[`unity/IdlePond/`](unity/IdlePond/README.md) : noyau, données, adaptateurs,
+magasin, simulateur, écran en UI Toolkit, et les tests — 178 en C#, dont une
+**parité** avec cette version-ci, établie sur des sorties produites par le
+TypeScript lui-même (états à 1e-9 sur quinze cycles, écrans et saves à l'octet).
+Les saves s'échangent entre les deux versions.
+
+> Tant que la bascule n'est pas faite, **le web reste la référence** : toute
+> modification du noyau, des données ou des textes se fait des deux côtés, puis
+> `npm run reference:unity`. Décisions et plan :
+> [`docs/migration-unity.md`](docs/migration-unity.md).
+
 ## Commandes
 
 ```sh
@@ -42,6 +56,9 @@ npm test          # 78 tests : architecture, déterminisme, équivalence de pas,
 npm run build     # tsc -b && vite build
 npm run lint
 npm run dev       # le jeu
+
+npm run reference:unity     # régénère la référence de parité du portage Unity
+npm run verification:unity  # les tests EditMode du portage, sans Unity (.NET 8)
 ```
 
 ## Le contrat

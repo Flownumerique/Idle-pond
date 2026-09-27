@@ -1,0 +1,61 @@
+# Portage Unity — vérifié sans Unity.
+#
+# Trois garanties, dans l'ordre où elles cassent le plus souvent :
+#   1. la référence de parité est à jour : le TypeScript la régénère, et elle ne
+#      doit pas différer de celle qui est committée ;
+#   2. les tests EditMode passent, exécutés par .NET contre le code d'Assets/ ;
+#   3. les couches qui dépendent d'Unity (Interface, Editeur) compilent en C# 9.
+#
+# Aucune licence Unity n'est nécessaire. Les tests dans l'éditeur lui-même
+# (Test Runner) restent à lancer à la main, ou par game-ci une fois une licence
+# fournie en secret — voir docs/migration-unity.md.
+name: Portage Unity
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'unity/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/unity.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'unity/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/unity.yml'
+
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - run: npm ci
+
+      - name: Tests du web (la référence)
+        run: npm test
+
+      - name: La référence de parité est à jour
+        run: |
+          npm run reference:unity
+          git diff --exit-code -- unity/IdlePond/Assets/IdlePond/Tests/EditMode/Parite/reference-web.json
+
+      - name: Tests EditMode, hors Unity
+        run: npm run verification:unity
+
+      - name: Compilation à blanc des couches Unity
+        run: dotnet build -c Release "unity/IdlePond/Verification~/CompilationUnity/IdlePond.CompilationUnity.csproj"
