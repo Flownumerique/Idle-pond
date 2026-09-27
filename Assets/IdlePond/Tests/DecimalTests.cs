@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using IdlePond.Noyau;
 using IdlePond.Tests.Outils;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -30,11 +31,10 @@ namespace IdlePond.Tests
                     Assert.That(i, Is.EqualTo((int)attendu), contexte);
                     break;
                 case double x:
-                    // « Infinity », « -Infinity », « NaN » arrivent en chaîne (voir le générateur).
-                    var cibleNombre = attendu.Type == JTokenType.String
-                        ? double.Parse((string)attendu, NumberStyles.Float, CultureInfo.InvariantCulture)
-                        : (double)attendu;
-                    ComparerNombres(contexte, cibleNombre, x, exact);
+                    // « Infinity », « -Infinity », « NaN » arrivent en chaîne (voir le générateur) ;
+                    // les entiers restent des nombres JSON. References.Double lit les deux, jamais
+                    // via double.Parse (pas correctement arrondi sur ce runtime).
+                    ComparerNombres(contexte, References.Double(attendu), x, exact);
                     break;
                 case Decimal dec:
                     // Le générateur écrit `r` comme `${x.mantissa}e${x.exponent}`, la mantisse et
@@ -73,18 +73,14 @@ namespace IdlePond.Tests
         }
 
         /// Lit « m e » sans jamais normaliser, contrairement à `Decimal.Parse` — c'est la valeur
-        /// brute que le générateur TypeScript a écrite depuis `x.mantissa`/`x.exponent`.
-        ///
-        /// `double.Parse` n'est pas toujours correctement arrondi à 17 chiffres significatifs sur
-        /// ce runtime (constaté à la fois en trop et en moins selon la chaîne : essayer de
-        /// contourner par `decimal.Parse` puis cast a réglé un cas et cassé un autre — aucune des
-        /// deux voies n'est fiable dans les deux sens). Un cas de `decimal.json` en souffre
-        /// (voir task-3-report.md, section « concerns ») : signalé, pas masqué.
+        /// brute que le générateur TypeScript a écrite depuis `x.mantissa`/`x.exponent`. Lu par
+        /// `AnalyseDouble`, correctement arrondi (round 1 a montré que ni `double.Parse`, ni
+        /// `Convert.ToDouble`, ni `decimal.Parse`+cast ne le sont de façon fiable sur ce runtime).
         static (double m, double e) LireMantisseExposantBrut(string texte)
         {
             var indexE = texte.IndexOf('e');
-            var m = double.Parse(texte.Substring(0, indexE), NumberStyles.Float, CultureInfo.InvariantCulture);
-            var e = double.Parse(texte.Substring(indexE + 1), NumberStyles.Float, CultureInfo.InvariantCulture);
+            var m = AnalyseDouble.Lire(texte.Substring(0, indexE));
+            var e = AnalyseDouble.Lire(texte.Substring(indexE + 1));
             return (m, e);
         }
 
@@ -115,7 +111,7 @@ namespace IdlePond.Tests
                 var exact = !OperationsTranscendantes.Contains(op);
                 var a = cas["a"] != null ? v[(int)cas["a"]] : Decimal.Zero;
                 var b = cas["b"] != null ? v[(int)cas["b"]] : Decimal.Zero;
-                var x = cas["x"] != null ? (double)cas["x"] : 0.0;
+                var x = cas["x"] != null ? References.Double(cas["x"]) : 0.0;
                 object r = op switch
                 {
                     "neg" => a.Neg(), "abs" => a.Abs(), "recip" => a.Recip(),
@@ -125,7 +121,7 @@ namespace IdlePond.Tests
                     "eq" => a.Eq(b), "lt" => a.Lt(b), "gt" => a.Gt(b), "lte" => a.Lte(b), "gte" => a.Gte(b),
                     "max" => a.Max(b), "min" => a.Min(b), "cmp" => a.Cmp(b),
                     "mulNombre" => a.Mul(x), "addNombre" => a.Add(x), "pow" => a.Pow(x),
-                    "powStatique" => Decimal.Pow((double)cas["base"], x),
+                    "powStatique" => Decimal.Pow(References.Double(cas["base"]), x),
                     _ => throw new InvalidOperationException(op),
                 };
                 Verifier($"{op}({cas})", cas["r"], r, exact);

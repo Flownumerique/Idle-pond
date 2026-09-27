@@ -32,9 +32,9 @@ namespace IdlePond.Noyau
         {
             var table = new double[NUMBER_EXP_MAX - NUMBER_EXP_MIN];
             for (var i = NUMBER_EXP_MIN + 1; i <= NUMBER_EXP_MAX; i++)
-                // `i` est un int : sa concaténation directe passerait par la culture courante
-                // (signe négatif, chiffres natifs sur certaines cultures) ; forcer l'invariante.
-                table[i - (NUMBER_EXP_MIN + 1)] = double.Parse("1e" + i.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+                // `double.Parse` n'est pas correctement arrondi sur le Mono de cet éditeur Unity
+                // (constaté, voir task-3-report.md) ; `AnalyseDouble` l'est, par construction.
+                table[i - (NUMBER_EXP_MIN + 1)] = AnalyseDouble.Lire("1e" + i.ToString(CultureInfo.InvariantCulture));
             return table;
         }
 
@@ -101,12 +101,12 @@ namespace IdlePond.Noyau
             var indexE = s.IndexOfAny(new[] { 'e', 'E' });
             if (indexE >= 0 && !s.EndsWith("Infinity", StringComparison.Ordinal))
             {
-                var m = double.Parse(s.Substring(0, indexE), NumberStyles.Float, CultureInfo.InvariantCulture);
-                var e = double.Parse(s.Substring(indexE + 1), NumberStyles.Float, CultureInfo.InvariantCulture);
+                var m = AnalyseDouble.Lire(s.Substring(0, indexE));
+                var e = AnalyseDouble.Lire(s.Substring(indexE + 1));
                 return Normaliser(m, e);
             }
             if (s == "NaN") return new Decimal(double.NaN, double.NaN, true);
-            if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var valeur))
+            if (!AnalyseDouble.EssayerDeLire(s, out var valeur))
                 throw new FormatException("[DecimalError] Invalid argument: " + texte);
             return new Decimal(valeur);
         }
@@ -155,11 +155,14 @@ namespace IdlePond.Noyau
         /// Exacte : « mantisse e exposant », relue telle quelle par `Parse`.
         public string EnMantisseExposant() => FormaterDouble(Mantisse) + "e" + FormaterDouble(Exposant);
 
-        /// Le « R » du Mono d'Unity ne garantit pas l'aller-retour ; G17 si besoin.
+        /// Le « R » du Mono d'Unity ne garantit pas l'aller-retour ; on le vérifie avec un
+        /// lecteur correctement arrondi (`AnalyseDouble`, pas `double.Parse`, lui-même en défaut
+        /// sur ce runtime), sans quoi la vérification pourrait valider un aller-retour qui n'en
+        /// est pas un. G17 si besoin : il est exact, avec un lecteur correct.
         static string FormaterDouble(double x)
         {
             var court = x.ToString("R", CultureInfo.InvariantCulture);
-            return double.Parse(court, NumberStyles.Float, CultureInfo.InvariantCulture).Equals(x)
+            return AnalyseDouble.Lire(court).Equals(x)
                 ? court
                 : x.ToString("G17", CultureInfo.InvariantCulture);
         }
