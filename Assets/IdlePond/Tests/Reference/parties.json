@@ -1,0 +1,4898 @@
+{
+ "scenarios": [
+  {
+   "nom": "sequence",
+   "instants": [
+    {
+     "tempsJeuSecondes": 0,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99189671906449e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "0e0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {},
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 0,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "1e14",
+      "partDeContenance": 0.00999189671906449,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 0.1,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99189673248425e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 0.1,
+      "acquisDeSejour": 0.0012716800322678523,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 0.1,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "1.0012716800322679e14",
+      "partDeContenance": 0.009979206374999283,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 60.1,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99190478434092e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 60.1,
+      "acquisDeSejour": 0.7581867033218543,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 60.1,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "1.7581867033218543e14",
+      "partDeContenance": 0.00568307379726088,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 60.2,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99190479776068e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 60.2,
+      "acquisDeSejour": 0.759438127663131,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 60.2,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "1.759438127663131e14",
+      "partDeContenance": 0.005679031641215957,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 3660.2,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99238790916069e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 3660.2,
+      "acquisDeSejour": 29.697115013293736,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 3660.2,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "3.0697115013293734e15",
+      "partDeContenance": 0.00032551553801825914,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 3667.2,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99238884854397e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 3667.2,
+      "acquisDeSejour": 29.730564674961304,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 3667.2,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "3.0730564674961305e15",
+      "partDeContenance": 0.00032516125083394853,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 32467.2,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99625373974403e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 32467.2,
+      "acquisDeSejour": 47.591861989716435,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 32467.2,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "4.859186198971644e15",
+      "partDeContenance": 0.00020571868066837103,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 32467.3,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99625375316379e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 32467.3,
+      "acquisDeSejour": 47.59186220713125,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 32467.3,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "4.859186220713125e15",
+      "partDeContenance": 0.00020571868002409587,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 33367.3,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 4242
+     },
+     "cycle": {
+      "manaCourant": "9.99637453101379e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "1.34197611113295e4",
+      "dureeSecondes": 33367.3,
+      "acquisDeSejour": 47.59360144565394,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 33367.3,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "4.859360144565394e15",
+      "partDeContenance": 0.000205713802509442,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "1.15e2"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "joueur",
+   "instants": [
+    {
+     "tempsJeuSecondes": 60,
+     "limiteDeContenu": 6,
+     "prng": {
+      "graine": 3
+     },
+     "cycle": {
+      "manaCourant": "1.5e1",
+      "paliersOuverts": 1,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 1
+       }
+      },
+      "productionPicParSeconde": "2.5e-1",
+      "dureeSecondes": 60,
+      "acquisDeSejour": 0.9031984463212268,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "2.82540502950381e3",
+      "couches": [],
+      "profondeurMaxAtteinte": 0,
+      "compteursTechnique": {
+       "creusement": 0,
+       "amelioration": 0,
+       "recrutement": 1,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 59,
+      "intervallesEntreSucces": [
+       1
+      ]
+     },
+     "derives": {
+      "production": "2.5e-1",
+      "contenance": "5.377306462379831e3",
+      "partDeContenance": 0.0027895006737930013,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 600,
+     "limiteDeContenu": 6,
+     "prng": {
+      "graine": 3
+     },
+     "cycle": {
+      "manaCourant": "7.56445832773095e1",
+      "paliersOuverts": 2,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 2
+       }
+      },
+      "productionPicParSeconde": "7.17869932205302e-1",
+      "dureeSecondes": 600,
+      "acquisDeSejour": 8.122723081548614,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "2.82540502950381e3",
+      "couches": [],
+      "profondeurMaxAtteinte": 2,
+      "compteursTechnique": {
+       "creusement": 60,
+       "amelioration": 101.42999999999999,
+       "recrutement": 1,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 104,
+      "intervallesEntreSucces": [
+       1,
+       240,
+       255
+      ]
+     },
+     "derives": {
+      "production": "7.17869932205302e-1",
+      "contenance": "2.577538767737795e4",
+      "partDeContenance": 0.0029347602536236453,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 1800,
+     "limiteDeContenu": 6,
+     "prng": {
+      "graine": 3
+     },
+     "cycle": {
+      "manaCourant": "5.792690980938e2",
+      "paliersOuverts": 6,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 40
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 36
+       }
+      },
+      "productionPicParSeconde": "2.11134811138314e3",
+      "dureeSecondes": 1800,
+      "acquisDeSejour": 20.00288020481392,
+      "niveauDuHeros": 7
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "2.82540502950381e3",
+      "couches": [],
+      "profondeurMaxAtteinte": 6,
+      "compteursTechnique": {
+       "creusement": 3097.4786443051007,
+       "amelioration": 284505.6239805906,
+       "recrutement": 2,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 43,
+      "intervallesEntreSucces": [
+       1,
+       240,
+       255,
+       274,
+       190,
+       57,
+       297,
+       54,
+       114,
+       7,
+       45,
+       84,
+       18,
+       41,
+       80
+      ]
+     },
+     "derives": {
+      "production": "2.14958418357571e3",
+      "contenance": "5.934164336474726e4",
+      "partDeContenance": 0.00976159515053004,
+      "eauTroublee": false,
+      "estBloque": true,
+      "gainDeSoufflePrevu": "4.5e1"
+     }
+    },
+    {
+     "tempsJeuSecondes": 3600,
+     "limiteDeContenu": 6,
+     "prng": {
+      "graine": 3
+     },
+     "cycle": {
+      "manaCourant": "9.050759106913397e4",
+      "paliersOuverts": 6,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 52
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 47
+       }
+      },
+      "productionPicParSeconde": "5.02037536853168e3",
+      "dureeSecondes": 3600,
+      "acquisDeSejour": 31.03349258744282,
+      "niveauDuHeros": 9
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "2.82540502950381e3",
+      "couches": [],
+      "profondeurMaxAtteinte": 6,
+      "compteursTechnique": {
+       "creusement": 3097.4786443051007,
+       "amelioration": 1393869.0249361238,
+       "recrutement": 2,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "7.1311691207385e6",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 1521,
+      "intervallesEntreSucces": [
+       1,
+       240,
+       255,
+       274,
+       190,
+       57,
+       297,
+       54,
+       114,
+       7,
+       45,
+       84,
+       18,
+       41,
+       80,
+       322
+      ]
+     },
+     "derives": {
+      "production": "5.02037536853168e3",
+      "contenance": "9.050759106913397e4",
+      "partDeContenance": 1,
+      "eauTroublee": true,
+      "estBloque": true,
+      "gainDeSoufflePrevu": "7e1"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "renaissances",
+   "instants": [
+    {
+     "tempsJeuSecondes": 0,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "9.99189671906449e11",
+      "paliersOuverts": 7,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 101
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 16
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 19
+       }
+      },
+      "productionPicParSeconde": "0e0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       0,
+       0.13,
+       0.26,
+       0.39,
+       0.52,
+       0.65,
+       0.78,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "1e14",
+      "couches": [],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810316836.3801917,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 0
+      },
+      "noeudsTechnique": [],
+      "succes": {},
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "0e0",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 0,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.34197611113295e4",
+      "contenance": "1e14",
+      "partDeContenance": 0.00999189671906449,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 3600,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "3.6e1",
+      "paliersOuverts": 1,
+      "especes": {},
+      "productionPicParSeconde": "0e0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "1.15e2",
+      "contenanceMana": "3.0406850915029318e15",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810317798.1801916,
+       "recrutement": 3,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 1
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 1,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.9923798208465e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {}
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       }
+      ],
+      "secondesDepuisDernierSucces": 3600,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.037366328588764e2",
+      "contenance": "3.0406850915029318e15",
+      "partDeContenance": 1.1839437138887056e-14,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 4200,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "5.290568275802694e5",
+      "paliersOuverts": 1,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 1
+       }
+      },
+      "productionPicParSeconde": "8.81761379300449e2",
+      "dureeSecondes": 600,
+      "acquisDeSejour": 7.050039048731534,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "1.1e2",
+      "contenanceMana": "3.0406850915029318e15",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810317798.1801916,
+       "recrutement": 4,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 1
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 1,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.9923798208465e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {
+       "insufflation-globale": 1,
+       "insufflation-vairon": 1
+      }
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       }
+      ],
+      "secondesDepuisDernierSucces": 4200,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "8.81761379300449e2",
+      "contenance": "2.447763372149442e16",
+      "partDeContenance": 2.1613887747478276e-11,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "2.9e1"
+     }
+    },
+    {
+     "tempsJeuSecondes": 7800,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "3.6e1",
+      "paliersOuverts": 1,
+      "especes": {},
+      "productionPicParSeconde": "0e0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "1.39e2",
+      "contenanceMana": "1.0065105326428305e17",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810318759.9801916,
+       "recrutement": 4,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 2
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 2,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.99241684520643e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {
+       "insufflation-globale": 1,
+       "insufflation-vairon": 1
+      }
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "8.81761379300449e2",
+        "souffleGagne": "2.9e1"
+       }
+      ],
+      "secondesDepuisDernierSucces": 7800,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.037366328588764e2",
+      "contenance": "1.0065105326428305e17",
+      "partDeContenance": 3.5767136887751705e-16,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 8400,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "9.02508705872226e5",
+      "paliersOuverts": 1,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 1
+       }
+      },
+      "productionPicParSeconde": "1.50418117645371e3",
+      "dureeSecondes": 600,
+      "acquisDeSejour": 7.050039048731534,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "1.19e2",
+      "contenanceMana": "1.0065105326428305e17",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810318759.9801916,
+       "recrutement": 5,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 2
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-deuxieme-eclosion": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 2,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.99241684520643e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {
+       "insufflation-globale": 2,
+       "insufflation-vairon": 2
+      }
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "8.81761379300449e2",
+        "souffleGagne": "2.9e1"
+       }
+      ],
+      "secondesDepuisDernierSucces": 8400,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.50418117645371e3",
+      "contenance": "8.10244909073436e17",
+      "partDeContenance": 1.1138714921446396e-12,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "3.8e1"
+     }
+    },
+    {
+     "tempsJeuSecondes": 12000,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "3.6e1",
+      "paliersOuverts": 1,
+      "especes": {},
+      "productionPicParSeconde": "0e0",
+      "dureeSecondes": 0,
+      "acquisDeSejour": 0,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "1.57e2",
+      "contenanceMana": "3.331694739293846e18",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810319721.7801915,
+       "recrutement": 5,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 3
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-deuxieme-eclosion": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 3,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.99248001119784e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {
+       "insufflation-globale": 2,
+       "insufflation-vairon": 2
+      }
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "8.81761379300449e2",
+        "souffleGagne": "2.9e1"
+       },
+       {
+        "index": 2,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "1.50418117645371e3",
+        "souffleGagne": "3.8e1"
+       }
+      ],
+      "secondesDepuisDernierSucces": 12000,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "1.037366328588764e2",
+      "contenance": "3.331694739293846e18",
+      "partDeContenance": 1.0805311655782193e-17,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "0e0"
+     }
+    },
+    {
+     "tempsJeuSecondes": 12600,
+     "limiteDeContenu": 62,
+     "prng": {
+      "graine": 777
+     },
+     "cycle": {
+      "manaCourant": "1.532708750489898e6",
+      "paliersOuverts": 1,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 1
+       }
+      },
+      "productionPicParSeconde": "2.55451458414983e3",
+      "dureeSecondes": 600,
+      "acquisDeSejour": 7.050039048731534,
+      "niveauDuHeros": 1
+     },
+     "permanent": {
+      "densites": [
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       299.67248620499214,
+       0.91,
+       1.04,
+       1.17,
+       1.3,
+       1.4300000000000002,
+       1.56,
+       1.69,
+       1.82,
+       1.9500000000000002,
+       2.08,
+       2.21,
+       2.34,
+       2.47,
+       2.6,
+       2.73,
+       2.8600000000000003,
+       2.99,
+       3.12,
+       3.25,
+       3.38,
+       3.5100000000000002,
+       3.64,
+       3.77,
+       3.9000000000000004,
+       4.03,
+       4.16,
+       4.29,
+       4.42,
+       4.55,
+       4.68,
+       4.8100000000000005,
+       4.94,
+       5.07,
+       5.2,
+       5.33,
+       5.46,
+       5.59,
+       5.720000000000001,
+       5.8500000000000005,
+       5.98,
+       6.11,
+       6.24,
+       6.37,
+       6.5,
+       6.63,
+       6.76,
+       6.890000000000001,
+       7.0200000000000005,
+       7.15,
+       7.28,
+       7.41,
+       7.54,
+       7.67,
+       7.800000000000001,
+       7.930000000000001
+      ],
+      "souffle": "7.7e1",
+      "contenanceMana": "3.331694739293846e18",
+      "couches": [
+       "noue",
+       "assise-2"
+      ],
+      "profondeurMaxAtteinte": 9,
+      "compteursTechnique": {
+       "creusement": 8147.270399999999,
+       "amelioration": 810319721.7801915,
+       "recrutement": 6,
+       "entretien": 0,
+       "construction": 0,
+       "renaissance": 3
+      },
+      "noeudsTechnique": [],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-palier-sature": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-100": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-premiere-eclosion": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-deuxieme-eclosion": {
+        "obtenuAuCycle": 2,
+        "registre": "signes"
+       },
+       "franchissement-troisieme-eclosion": {
+        "obtenuAuCycle": 3,
+        "registre": "directives"
+       },
+       "franchissement-densite": {
+        "obtenuAuCycle": 1,
+        "registre": "signes"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 3,
+      "especesAyantAtteintCent": [
+       "vairon"
+      ],
+      "manaAmbiant": "9.99248001119784e11",
+      "heuresHorsLigneCreditees": 0,
+      "insufflations": {
+       "insufflation-globale": 3,
+       "insufflation-vairon": 3
+      }
+     },
+     "telemetrie": {
+      "cycles": [
+       {
+        "index": 0,
+        "dureeEcouleeSecondes": 3600,
+        "paliersOuverts": 7,
+        "productionPicParSeconde": "1.34197611113295e4",
+        "souffleGagne": "1.15e2"
+       },
+       {
+        "index": 1,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "8.81761379300449e2",
+        "souffleGagne": "2.9e1"
+       },
+       {
+        "index": 2,
+        "dureeEcouleeSecondes": 4200,
+        "paliersOuverts": 1,
+        "productionPicParSeconde": "1.50418117645371e3",
+        "souffleGagne": "3.8e1"
+       }
+      ],
+      "secondesDepuisDernierSucces": 12600,
+      "intervallesEntreSucces": []
+     },
+     "derives": {
+      "production": "2.55451458414983e3",
+      "contenance": "2.682027274976889e19",
+      "partDeContenance": 5.714739610554875e-14,
+      "eauTroublee": false,
+      "estBloque": false,
+      "gainDeSoufflePrevu": "5e1"
+     }
+    }
+   ]
+  }
+ ],
+ "simulation": {
+  "instant": {
+   "tempsJeuSecondes": 327300,
+   "limiteDeContenu": 62,
+   "prng": {
+    "graine": 7
+   },
+   "cycle": {
+    "manaCourant": "3.6e1",
+    "paliersOuverts": 1,
+    "especes": {},
+    "productionPicParSeconde": "0e0",
+    "dureeSecondes": 0,
+    "acquisDeSejour": 0,
+    "niveauDuHeros": 1
+   },
+   "permanent": {
+    "densites": [
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115,
+     5.351625881409807e+115
+    ],
+    "souffle": "6.4563363503353e94",
+    "contenanceMana": "2.662662428706127e28",
+    "couches": [
+     "noue",
+     "assise-2",
+     "assise-3",
+     "assise-4",
+     "assise-5",
+     "assise-6"
+    ],
+    "profondeurMaxAtteinte": 62,
+    "compteursTechnique": {
+     "creusement": 1.712162630728547e+25,
+     "amelioration": 4.084459395754284e+30,
+     "recrutement": 206,
+     "entretien": 0,
+     "construction": 0,
+     "renaissance": 15
+    },
+    "noeudsTechnique": [],
+    "succes": {
+     "acte-premiere-conviction": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-deuxieme-niveau": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-cinquieme-niveau": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-premier-banc-de-cinq": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-premier-creusement": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-deux-bancs": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-dixieme-niveau": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-trois-bancs": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "acte-premier-palier-sature": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-vairon-10": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-vairon-25": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-vairon-50": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-vairon-100": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-loche-10": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-loche-25": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-loche-50": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-loche-100": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-epinoche-10": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-epinoche-25": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-epinoche-50": {
+      "obtenuAuCycle": 1,
+      "registre": "signes"
+     },
+     "seuil-epinoche-100": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-mare-25": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-mare-45": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-mare-70": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-mare-95": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-mare-130": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-mare-200": {
+      "obtenuAuCycle": 1,
+      "registre": "signes"
+     },
+     "seuil-mare-320": {
+      "obtenuAuCycle": 1,
+      "registre": "signes"
+     },
+     "seuil-mare-500": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-profondeur-3": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-profondeur-5": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-palier-sature-1": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-palier-sature-2": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-palier-sature-3": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "seuil-palier-sature-4": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "seuil-palier-sature-5": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     },
+     "franchissement-premiere-eclosion": {
+      "obtenuAuCycle": 1,
+      "registre": "signes"
+     },
+     "franchissement-deuxieme-eclosion": {
+      "obtenuAuCycle": 2,
+      "registre": "signes"
+     },
+     "franchissement-troisieme-eclosion": {
+      "obtenuAuCycle": 3,
+      "registre": "directives"
+     },
+     "franchissement-densite": {
+      "obtenuAuCycle": 1,
+      "registre": "signes"
+     },
+     "franchissement-fond-de-la-mare": {
+      "obtenuAuCycle": 0,
+      "registre": "pente"
+     }
+    },
+    "nombreDeRenaissances": 15,
+    "especesAyantAtteintCent": [
+     "vairon",
+     "loche",
+     "epinoche",
+     "espece-2-2",
+     "espece-2-3",
+     "espece-2-4",
+     "espece-3-1",
+     "espece-3-2",
+     "espece-3-3",
+     "espece-3-4",
+     "espece-4-1",
+     "espece-4-2",
+     "espece-4-3",
+     "espece-4-4",
+     "espece-5-1",
+     "espece-5-2",
+     "espece-5-3",
+     "espece-5-4",
+     "espece-6-1",
+     "espece-6-2",
+     "espece-6-3"
+    ],
+    "manaAmbiant": "2.26806809259145e197",
+    "heuresHorsLigneCreditees": 0,
+    "insufflations": {
+     "insufflation-globale": 158,
+     "insufflation-vairon": 158,
+     "insufflation-loche": 158,
+     "insufflation-epinoche": 158,
+     "insufflation-espece-2-2": 158,
+     "insufflation-espece-2-3": 158,
+     "insufflation-espece-2-4": 158,
+     "insufflation-espece-3-1": 158,
+     "insufflation-espece-3-2": 158,
+     "insufflation-espece-3-3": 158,
+     "insufflation-espece-3-4": 158,
+     "insufflation-espece-4-1": 158,
+     "insufflation-espece-4-2": 158,
+     "insufflation-espece-4-3": 158,
+     "insufflation-espece-4-4": 158,
+     "insufflation-espece-5-1": 158,
+     "insufflation-espece-5-2": 158,
+     "insufflation-espece-5-3": 158,
+     "insufflation-espece-5-4": 158,
+     "insufflation-espece-6-1": 158,
+     "insufflation-espece-6-2": 157,
+     "insufflation-espece-6-3": 157
+    }
+   },
+   "telemetrie": {
+    "cycles": [
+     {
+      "index": 0,
+      "dureeEcouleeSecondes": 11220,
+      "paliersOuverts": 10,
+      "productionPicParSeconde": "1.52647533131275e5",
+      "souffleGagne": "3.9e2"
+     },
+     {
+      "index": 1,
+      "dureeEcouleeSecondes": 12540,
+      "paliersOuverts": 15,
+      "productionPicParSeconde": "5.06745844325547e11",
+      "souffleGagne": "7.1186e5"
+     },
+     {
+      "index": 2,
+      "dureeEcouleeSecondes": 13620,
+      "paliersOuverts": 19,
+      "productionPicParSeconde": "5.94159324247027e19",
+      "souffleGagne": "7.708173092e9"
+     },
+     {
+      "index": 3,
+      "dureeEcouleeSecondes": 14880,
+      "paliersOuverts": 24,
+      "productionPicParSeconde": "2.42639025406974e29",
+      "souffleGagne": "4.92584028777805e14"
+     },
+     {
+      "index": 4,
+      "dureeEcouleeSecondes": 16200,
+      "paliersOuverts": 28,
+      "productionPicParSeconde": "1.57686264419156e40",
+      "souffleGagne": "1.255731915733434e20"
+     },
+     {
+      "index": 5,
+      "dureeEcouleeSecondes": 17640,
+      "paliersOuverts": 32,
+      "productionPicParSeconde": "8.34870300268385e51",
+      "souffleGagne": "9.137123728331499e25"
+     },
+     {
+      "index": 6,
+      "dureeEcouleeSecondes": 19320,
+      "paliersOuverts": 37,
+      "productionPicParSeconde": "9.45457151435534e64",
+      "souffleGagne": "3.0748286967496807e32"
+     },
+     {
+      "index": 7,
+      "dureeEcouleeSecondes": 21000,
+      "paliersOuverts": 41,
+      "productionPicParSeconde": "4.47355669154194e78",
+      "souffleGagne": "2.115078412622553e39"
+     },
+     {
+      "index": 8,
+      "dureeEcouleeSecondes": 22860,
+      "paliersOuverts": 46,
+      "productionPicParSeconde": "4.18999253270515e93",
+      "souffleGagne": "6.473015165056506e46"
+     },
+     {
+      "index": 9,
+      "dureeEcouleeSecondes": 25020,
+      "paliersOuverts": 50,
+      "productionPicParSeconde": "1.318781296160128e109",
+      "souffleGagne": "3.6315028516581505e54"
+     },
+     {
+      "index": 10,
+      "dureeEcouleeSecondes": 27180,
+      "paliersOuverts": 54,
+      "productionPicParSeconde": "1.629258861506322e125",
+      "souffleGagne": "4.036407885120534e62"
+     },
+     {
+      "index": 11,
+      "dureeEcouleeSecondes": 29760,
+      "paliersOuverts": 59,
+      "productionPicParSeconde": "2.19167232584047e142",
+      "souffleGagne": "1.4804297774094082e71"
+     },
+     {
+      "index": 12,
+      "dureeEcouleeSecondes": 31980,
+      "paliersOuverts": 62,
+      "productionPicParSeconde": "6.32711169298062e159",
+      "souffleGagne": "7.954314359503666e79"
+     },
+     {
+      "index": 13,
+      "dureeEcouleeSecondes": 32040,
+      "paliersOuverts": 62,
+      "productionPicParSeconde": "4.51510110917047e176",
+      "souffleGagne": "2.1248767279939957e88"
+     },
+     {
+      "index": 14,
+      "dureeEcouleeSecondes": 32040,
+      "paliersOuverts": 62,
+      "productionPicParSeconde": "7.59992971086136e192",
+      "souffleGagne": "2.7567970021133874e96"
+     }
+    ],
+    "secondesDepuisDernierSucces": 327300,
+    "intervallesEntreSucces": []
+   },
+   "derives": {
+    "production": "1.643634578382612e153",
+    "contenance": "2.662662428706127e28",
+    "partDeContenance": 1.3520301939849564e-27,
+    "eauTroublee": false,
+    "estBloque": false,
+    "gainDeSoufflePrevu": "0e0"
+   }
+  },
+  "cyclesAcheves": 15,
+  "secondesActives": 327300,
+  "secondesEcoulees": 327300
+ }
+}
