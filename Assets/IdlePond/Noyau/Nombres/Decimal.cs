@@ -32,7 +32,9 @@ namespace IdlePond.Noyau
         {
             var table = new double[NUMBER_EXP_MAX - NUMBER_EXP_MIN];
             for (var i = NUMBER_EXP_MIN + 1; i <= NUMBER_EXP_MAX; i++)
-                table[i - (NUMBER_EXP_MIN + 1)] = double.Parse("1e" + i, CultureInfo.InvariantCulture);
+                // `i` est un int : sa concaténation directe passerait par la culture courante
+                // (signe négatif, chiffres natifs sur certaines cultures) ; forcer l'invariante.
+                table[i - (NUMBER_EXP_MIN + 1)] = double.Parse("1e" + i.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
             return table;
         }
 
@@ -137,8 +139,10 @@ namespace IdlePond.Noyau
             return Math.Abs(arrondi - resultat) < ROUND_TOLERANCE ? arrondi : resultat;
         }
 
-        /// La forme de break_infinity, en culture invariante. Pour l'affichage et le
-        /// débogage ; pour un aller-retour exact, `EnMantisseExposant`.
+        /// La même structure que le ToString() de break_infinity (mantisse seule, ou
+        /// « m e[+|-]exp »), mais mise en texte par le formatage .NET, pas V8 : les deux
+        /// n'écrivent pas forcément le même nombre de chiffres. Pour l'affichage et le
+        /// débogage seulement ; pour un aller-retour exact, `EnMantisseExposant`.
         public override string ToString()
         {
             if (double.IsNaN(Mantisse) || double.IsNaN(Exposant)) return "NaN";
@@ -198,6 +202,10 @@ namespace IdlePond.Noyau
             Decimal grand, petit;
             if (Exposant >= valeur.Exposant) { grand = this; petit = valeur; }
             else { grand = valeur; petit = this; }
+            // Un opérande NaN (mantisse et exposant NaN) rend cette différence NaN ; la source
+            // retombe sur zéro par ME (mantisse non finie), ici l'indexation de la table
+            // lèverait avant d'y arriver. Vérifié : Decimal(NaN).add(Decimal(1)) vaut 0 en JS.
+            if (double.IsNaN(grand.Exposant - petit.Exposant)) return Zero;
             if (grand.Exposant - petit.Exposant > MAX_SIGNIFICANT_DIGITS) return grand;
             // « 299 + 18 » : additionner des mantisses mises à l'échelle perd des entiers.
             var mantisse = JsRound(1e14 * grand.Mantisse + 1e14 * petit.Mantisse * PuissanceDe10(petit.Exposant - grand.Exposant));

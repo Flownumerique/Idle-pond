@@ -37,12 +37,63 @@ namespace IdlePond.Tests
                     ComparerNombres(contexte, cibleNombre, x, exact);
                     break;
                 case Decimal dec:
-                    var cible = Decimal.Parse((string)attendu);
-                    if (exact && dec.Eq(cible)) return;
-                    ComparerNombres(contexte, cible.ToNumber(), dec.ToNumber(), exact: false,
-                        detail: $"{dec.EnMantisseExposant()} vs {cible.EnMantisseExposant()}");
+                    // Le générateur écrit `r` comme `${x.mantissa}e${x.exponent}`, la mantisse et
+                    // l'exposant BRUTS, jamais renormalisés (voir generer-references.ts, fonction
+                    // `d`). `Decimal.Parse` renormaliserait une mantisse hors [1, 10) — ce qui
+                    // arrive légitimement pour certains résultats de `Mul(double)` — et cacherait
+                    // un vrai écart derrière une comparaison qui ne teste plus la même chose.
+                    var (mCible, eCible) = LireMantisseExposantBrut((string)attendu);
+                    var detail = $"{dec.EnMantisseExposant()} vs {mCible}e{eCible}";
+                    // NaN (mantisse et exposant NaN des deux côtés) vaut égal, comme partout ailleurs :
+                    // NaN != NaN empêcherait une comparaison directe de le voir.
+                    if (double.IsNaN(dec.Mantisse) && double.IsNaN(mCible)) return;
+                    if (exact)
+                    {
+                        // Comparer Mantisse/Exposant directement, jamais ToNumber() : au-delà de
+                        // l'intervalle d'un double, ToNumber() écrase deux Decimal différents sur
+                        // le même ±Infini/0 et laisserait passer un vrai écart (ex. 1e500, -3.5e-400).
+                        Assert.That(dec.Mantisse == mCible && dec.Exposant == eCible, Is.True, $"{contexte} : {detail}");
+                        return;
+                    }
+                    // Ops tolérants qui rendent un Decimal (pow, powStatique, exp, div, recip) :
+                    // comparer l'exposant à l'exact près (un écart de 1 n'est permis qu'à la
+                    // frontière 1/10 de la mantisse, où le dernier bit peut faire basculer
+                    // l'exposant après normalisation) et la mantisse, ramenée au même exposant,
+                    // à 1e-12 relatif — toujours sans passer par ToNumber().
+                    var ecartExposant = dec.Exposant - eCible;
+                    var frontiere = EstProcheDeLaFrontiereMantisse(dec.Mantisse) || EstProcheDeLaFrontiereMantisse(mCible);
+                    Assert.That(ecartExposant == 0 || (Math.Abs(ecartExposant) == 1 && frontiere), Is.True,
+                        $"{contexte} exposant : {detail}");
+                    var mantisseDecAEchelleDeCible = dec.Mantisse * Math.Pow(10, ecartExposant);
+                    var echelleMantisse = Math.Max(Math.Max(Math.Abs(mantisseDecAEchelleDeCible), Math.Abs(mCible)), 1e-300);
+                    Assert.That(Math.Abs(mantisseDecAEchelleDeCible - mCible) / echelleMantisse, Is.LessThanOrEqualTo(1e-12),
+                        $"{contexte} mantisse : {detail}");
                     break;
             }
+        }
+
+        /// Lit « m e » sans jamais normaliser, contrairement à `Decimal.Parse` — c'est la valeur
+        /// brute que le générateur TypeScript a écrite depuis `x.mantissa`/`x.exponent`.
+        ///
+        /// `double.Parse` n'est pas toujours correctement arrondi à 17 chiffres significatifs sur
+        /// ce runtime (constaté à la fois en trop et en moins selon la chaîne : essayer de
+        /// contourner par `decimal.Parse` puis cast a réglé un cas et cassé un autre — aucune des
+        /// deux voies n'est fiable dans les deux sens). Un cas de `decimal.json` en souffre
+        /// (voir task-3-report.md, section « concerns ») : signalé, pas masqué.
+        static (double m, double e) LireMantisseExposantBrut(string texte)
+        {
+            var indexE = texte.IndexOf('e');
+            var m = double.Parse(texte.Substring(0, indexE), NumberStyles.Float, CultureInfo.InvariantCulture);
+            var e = double.Parse(texte.Substring(indexE + 1), NumberStyles.Float, CultureInfo.InvariantCulture);
+            return (m, e);
+        }
+
+        /// Vrai si la mantisse, en valeur absolue, est tout près de 1 ou de 10 — la seule zone
+        /// où un dernier bit différent peut faire basculer l'exposant de ±1 après normalisation.
+        static bool EstProcheDeLaFrontiereMantisse(double mantisse)
+        {
+            var m = Math.Abs(mantisse);
+            return Math.Abs(m - 1) < 1e-9 || Math.Abs(m - 10) < 1e-9;
         }
 
         static void ComparerNombres(string contexte, double attendu, double obtenu, bool exact, string detail = "")
@@ -108,6 +159,9 @@ namespace IdlePond.Tests
             Assert.That(Decimal.Parse("Infinity").Exposant, Is.EqualTo(9e15));
             Assert.That(double.IsNaN(Decimal.Parse("NaN").Mantisse), Is.True);
             Assert.Throws<FormatException>(() => Decimal.Parse("abc"));
+            // Vérifié contre la bibliothèque non modifiée : Decimal.fromNumber(NaN).add(Decimal.fromNumber(1))
+            // rend m=0, e=0 en JS (la garde NaN de Add empêche l'indexation de la table qui lèverait sinon).
+            Assert.That(new Decimal(double.NaN).Add(Decimal.Un).Eq(Decimal.Zero), Is.True);
         }
 
         [Test, Description("aller-retour sous la culture fr-FR")]
