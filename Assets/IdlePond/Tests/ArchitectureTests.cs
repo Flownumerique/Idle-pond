@@ -44,10 +44,17 @@ namespace IdlePond.Tests
         public void Aucun_etat_hors_du_reducteur()
         {
             var champModifiable = new Regex(@"^\s*(public|private|internal|protected)?\s*static\s+(?!readonly\b|class\b|partial\b|extern\b)[\w<>,\[\]\s?.()]+?\s+\w+\s*(=[^>]|;)", RegexOptions.Multiline);
+            // Une propriété auto-implémentée statique avec `set` (public ou privé) est un
+            // champ modifiable déguisé — le premier motif ne la voit pas, faute de `=` ou
+            // de `;` juste après le nom : elle se referme sur une accolade. `init` n'est
+            // pas valide sur un membre statique, donc tout `set` suffit à la qualifier.
+            var proprieteModifiable = new Regex(@"^\s*(public|private|internal|protected)?\s*static\s+(?!class\b|partial\b|extern\b)[\w<>,\[\]\s?.()]+?\s+\w+\s*\{[^{}]*\bset\b[^{}]*\}", RegexOptions.Multiline);
+            var motifs = new[] { champModifiable, proprieteModifiable };
             var fautes = (from dossier in Dossiers
                           from fichier in SourceCSharp.Fichiers(dossier)
                           let code = SourceCSharp.SansCommentairesNiChaines(File.ReadAllText(fichier))
-                          from Match m in champModifiable.Matches(code)
+                          from motif in motifs
+                          from Match m in motif.Matches(code)
                           where !m.Value.Contains("(")
                           select $"{Path.GetFileName(fichier)} : {m.Value.Trim()}").ToList();
             Assert.That(fautes, Is.Empty);
