@@ -171,7 +171,14 @@ namespace IdlePond.Noyau
 
         public Decimal Abs() => MENN(Math.Abs(Mantisse), Exposant);
         public Decimal Neg() => MENN(-Mantisse, Exposant);
-        int Signe() => Math.Sign(Mantisse);
+
+        /// Math.sign(mantisse) : `double`, pas `int`, parce que JS le rend NaN sur un
+        /// NaN — `Math.Sign` de .NET lève une `ArithmeticException` à sa place. Les
+        /// deux appelants qui testent un seuil (`Floor`, `Ceil`) ne l'atteignent
+        /// jamais avec un exposant NaN (ils retournent avant, sur l'exposant) ; seul
+        /// le repli de `Pow` ~l.333 le lit sur une base NaN, où `NaN == -1` est
+        /// `false` des deux côtés — la comparaison, pas le signe, doit rester fausse.
+        double Signe() => double.IsNaN(Mantisse) ? double.NaN : Math.Sign(Mantisse);
 
         /* ─── Arrondis ──────────────────────────────────────────────────────── */
 

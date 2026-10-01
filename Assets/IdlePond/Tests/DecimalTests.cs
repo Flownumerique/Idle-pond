@@ -165,6 +165,21 @@ namespace IdlePond.Tests
             Assert.That(new Decimal(double.NaN).Add(Decimal.Un).Eq(Decimal.Zero), Is.True);
         }
 
+        [Test, Description("Pow sur une base NaN rend zéro sans lever, comme break_infinity")]
+        public void Pow_sur_une_base_NaN_rend_zero_sans_lever()
+        {
+            // `Signe()` passait par `Math.Sign`, qui lève `ArithmeticException` sur un
+            // NaN ; le repli de `Pow` (~l.333) l'atteint pour toute base NaN, exposant
+            // pair ou impair, puisque `Pow10(NaN)` rend Zéro avant que le signe ne
+            // soit lu. Vérifié contre la bibliothèque non modifiée (node_modules/break_infinity.js) :
+            // `new Decimal(NaN).sign()` rend `NaN` (`Math.sign`, jamais une exception), et
+            // `new Decimal(NaN).pow(2)` comme `.pow(3)` rendent tous deux `{m: 0, e: 0}` —
+            // `NaN === -1` est `false`, donc la branche de négation ne s'exécute jamais.
+            Assert.That(() => new Decimal(double.NaN).Pow(2.0), Throws.Nothing);
+            Assert.That(new Decimal(double.NaN).Pow(2.0).Eq(Decimal.Zero), Is.True);
+            Assert.That(new Decimal(double.NaN).Pow(3.0).Eq(Decimal.Zero), Is.True);
+        }
+
         [Test, Description("aller-retour sous la culture fr-FR")]
         public void Aller_retour_sous_la_culture_fr_FR()
         {
