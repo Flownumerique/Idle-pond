@@ -3,6 +3,7 @@ using IdlePond.Noyau;
 using IdlePond.Tests.Outils;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using static IdlePond.Simulateur.Simulateur;
 
 namespace IdlePond.Tests
 {
@@ -15,9 +16,6 @@ namespace IdlePond.Tests
     /// le même dt donnent le même résultat, bit pour bit. Aucune tolérance ici,
     /// contrairement à l'équivalence de pas : une divergence, même minuscule, veut
     /// dire qu'un état vit hors du reducer.
-    ///
-    /// Le cas « deux simulations de même graine sont identiques » vient avec le
-    /// simulateur (tâche 8).
     /// </summary>
     public class DeterminismeTests
     {
@@ -34,6 +32,14 @@ namespace IdlePond.Tests
         public void Meme_graine_et_meme_sequence_de_dt_donnent_le_meme_etat_bit_pour_bit()
         {
             Assert.That(Jouer(), Is.EqualTo(Jouer()));
+        }
+
+        [Test, Description("deux simulations de même graine sont identiques")]
+        public void Deux_simulations_de_meme_graine_sont_identiques()
+        {
+            var a = Simuler(3, null, 7);
+            var b = Simuler(3, null, 7);
+            Assert.That(Instantane.De(a.Etat).ToString(Formatting.None), Is.EqualTo(Instantane.De(b.Etat).ToString(Formatting.None)));
         }
 
         [Test, Description("le PRNG est pur : il rend une valeur et un état suivant, sans muter")]
