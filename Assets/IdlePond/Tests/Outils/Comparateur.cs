@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using IdlePond.Noyau;
 using Newtonsoft.Json.Linq;
@@ -27,13 +28,41 @@ namespace IdlePond.Tests.Outils
 
         static bool Proche(double a, double b, double tolerance)
         {
-            if (a.Equals(b)) return true;
+            // `==`, pas `Equals` : en .NET `NaN.Equals(NaN)` est vrai, alors que le `===` du
+            // TypeScript est faux. Un NaN ne doit jamais passer pour égal.
+            if (a == b) return true;
             if (double.IsNaN(a) || double.IsNaN(b) || double.IsInfinity(a) || double.IsInfinity(b)) return false;
             var echelle = Math.Max(Math.Max(Math.Abs(a), Math.Abs(b)), 1e-300);
             return Math.Abs(a - b) / echelle <= tolerance;
         }
 
         static bool EstNombre(JToken t) => t.Type == JTokenType.Integer || t.Type == JTokenType.Float;
+
+        /// Une chaîne qui écrit un NaN (« NaN », ou un Decimal sérialisé à partir de lui,
+        /// « NaNeNaN »…). Elle ne correspond pas à `FormeDecimal` et tomberait sinon dans
+        /// `DeepEquals`, qui la déclarerait égale à elle-même — là où le `===` du
+        /// TypeScript dit faux. Une infinité, elle, reste égale à la même infinité, comme
+        /// en TypeScript (`Infinity === Infinity`) : la comparaison à l'identique suffit.
+        static readonly Regex FormeNumeriqueEtendue = new Regex(
+            @"^[+-]?([0-9.]+|nan|infinity)(e[+-]?([0-9.]+|nan|infinity))?$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        static readonly Regex NaN = new Regex(@"nan", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+        static bool EstChaineNaN(JToken t) =>
+            t.Type == JTokenType.String && FormeNumeriqueEtendue.IsMatch((string)t) && NaN.IsMatch((string)t);
+
+        /// Un entier JSON, exactement : jamais converti en double.
+        static BigInteger Entier(JToken t)
+        {
+            switch (((JValue)t).Value)
+            {
+                case long l: return l;
+                case int i: return i;
+                case ulong u: return u;
+                case uint u: return u;
+                case BigInteger b: return b;
+                default: throw new InvalidOperationException($"entier JSON de type inattendu : {((JValue)t).Value?.GetType()}");
+            }
+        }
 
         static bool EstChaineNumerique(JToken t) => t.Type == JTokenType.String && FormeDecimal.IsMatch((string)t);
 
@@ -50,7 +79,7 @@ namespace IdlePond.Tests.Outils
                 case ulong u: return u;
                 case uint u: return u;
                 case decimal m: return (double)m;
-                case System.Numerics.BigInteger b: return (double)b;
+                case BigInteger b: return (double)b;
                 default: throw new InvalidOperationException($"nombre JSON de type inattendu : {((JValue)t).Value?.GetType()}");
             }
         }
@@ -63,6 +92,15 @@ namespace IdlePond.Tests.Outils
 
         public static void ComparerATolerance(JToken obtenu, JToken attendu, double tolerance = TOLERANCE_RELATIVE, string chemin = "")
         {
+            if (EstChaineNaN(obtenu) || EstChaineNaN(attendu))
+                Assert.Fail($"NaN en {chemin} : {obtenu} vs {attendu}");
+            // Égalité exacte pour les entiers et l'état du PRNG (contraintes globales) :
+            // deux entiers JSON ne passent jamais par la tolérance relative.
+            if (attendu.Type == JTokenType.Integer && obtenu.Type == JTokenType.Integer)
+            {
+                Assert.That(Entier(obtenu) == Entier(attendu), Is.True, $"entier divergent en {chemin} : {obtenu} vs {attendu}");
+                return;
+            }
             if (EstChaineNumerique(attendu) && EstChaineNumerique(obtenu))
             {
                 var a = Decimal.Parse((string)obtenu);

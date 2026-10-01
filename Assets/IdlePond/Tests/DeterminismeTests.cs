@@ -1,3 +1,4 @@
+using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Tests.Outils;
 using Newtonsoft.Json;
@@ -78,6 +79,16 @@ namespace IdlePond.Tests
             for (var i = 0; i < 99; i++) b = Reducteur.Ameliorer(b, "vairon");
             // Même dépense totale, dans un autre ordre : seuls le mana et les compteurs
             // peuvent différer d'arrondi ; l'ORDRE des clefs, jamais.
+            foreach (var etat in new[] { a, b })
+            {
+                Assert.That(etat.Cycle.Especes["vairon"].Niveau, Is.EqualTo(100));
+                Assert.That(etat.Cycle.Especes["loche"].Niveau, Is.EqualTo(100));
+            }
+            // L'ordre propre des tables d'état, pas seulement celui de l'instantané (qui
+            // les réordonne de toute façon par le registre).
+            Assert.That(a.Cycle.Especes.Keys.ToArray(), Is.EqualTo(b.Cycle.Especes.Keys.ToArray()));
+            Assert.That(a.Permanent.EspecesAyantAtteintCent, Is.EqualTo(new[] { "vairon", "loche" }));
+            Assert.That(b.Permanent.EspecesAyantAtteintCent, Is.EqualTo(new[] { "vairon", "loche" }));
             Assert.That(Instantane.De(a)["cycle"]["especes"].ToString(), Is.EqualTo(Instantane.De(b)["cycle"]["especes"].ToString()));
             Assert.That(Instantane.De(a)["permanent"]["especesAyantAtteintCent"].ToString(),
                 Is.EqualTo(Instantane.De(b)["permanent"]["especesAyantAtteintCent"].ToString()));
