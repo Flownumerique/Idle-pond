@@ -1,0 +1,505 @@
+/*
+ * IdlePond — la mise en page de la mare. Les couleurs viennent de Theme.uss.
+ *
+ * Deux dispositions, une seule interface : RacineDeLInterface pose `.paysage` ou
+ * `.portrait` sur #racine selon la forme de l'écran, et tout ce qui change entre les deux
+ * se règle ici, jamais dans le code.
+ *
+ * Unités : le panneau est en « Scale With Screen Size », référence 1080 x 1920. Un pixel
+ * d'ici vaut donc un pixel d'une référence portrait, soit environ 0,4 dp sur un
+ * téléphone : les tailles sont grandes à dessein. Le 48 px du cahier des charges est un
+ * plancher, pas une cible — au doigt, un bouton de 72 px (paysage) ou 96 px (portrait) se
+ * touche encore sans viser. 20 rem de la maquette web (320 px) deviennent 480 px, pour
+ * garder le même rapport avec le texte, agrandi d'autant.
+ *
+ * Propriétés USS volontairement évitées : pas de grille, pas d'espacement entre enfants,
+ * pas de bordure en pointillés — seulement des boîtes flexibles et des marges.
+ *
+ * Tout ce qui n'est pas la scène a un fond plein : la caméra ne dessine que dans le
+ * rectangle de #scene, et un pixel d'interface transparent ailleurs montrerait n'importe
+ * quoi. #scene, lui, reste transparent pour laisser voir la caméra.
+ */
+
+/* ─── Les tailles, par disposition ─────────────────────────────────────────────── */
+
+.racine {
+    flex-grow: 1;
+    font-size: var(--t-base);
+    color: var(--couleur-jour);
+
+    --t-xs: 18px;
+    --t-sm: 21px;
+    --t-base: 24px;
+    --t-lg: 27px;
+    --t-xl: 30px;
+    --t-xxl: 36px;
+    --h-bouton: 72px;
+    --marge: 24px;
+}
+
+.portrait {
+    --t-xs: 24px;
+    --t-sm: 28px;
+    --t-base: 32px;
+    --t-lg: 36px;
+    --t-xl: 40px;
+    --t-xxl: 52px;
+    --h-bouton: 96px;
+    --marge: 32px;
+}
+
+/* ─── Le texte ──────────────────────────────────────────────────────────────────── */
+
+.texte {
+    margin: 0;
+    padding: 0;
+    color: var(--couleur-jour);
+    font-size: var(--t-base);
+    white-space: normal;
+}
+
+/* Le texte de lecture : Newsreader, quand son fichier sera là (voir Theme.uss). */
+.titre {
+    -unity-font-style: normal;
+}
+
+/* Les chiffres : JetBrains Mono, chasse fixe, donc des colonnes qui ne dansent pas. */
+.chiffre {
+    -unity-font: url("../Polices/JetBrainsMono-Regular.ttf");
+}
+
+.italique {
+    -unity-font-style: italic;
+}
+
+.xs { font-size: var(--t-xs); }
+.sm { font-size: var(--t-sm); }
+.base { font-size: var(--t-base); }
+.lg { font-size: var(--t-lg); }
+.xl { font-size: var(--t-xl); }
+.xxl { font-size: var(--t-xxl); }
+
+.doux { color: var(--couleur-jour-doux); }
+.tu { color: var(--couleur-jour-tu); }
+.mana { color: var(--couleur-mana); }
+.souffle { color: var(--couleur-souffle); }
+.densite { color: var(--couleur-densite); }
+.trouble { color: var(--couleur-trouble); }
+
+.sous-titre {
+    margin-top: 18px;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+}
+
+/* ─── Les rangées ───────────────────────────────────────────────────────────────── */
+
+.rangee {
+    flex-direction: row;
+    align-items: center;
+}
+
+.rangee > * {
+    margin-right: 18px;
+}
+
+.rangee.entre {
+    justify-content: space-between;
+}
+
+.rangee.entre > * {
+    margin-right: 0;
+}
+
+.rangee.wrap {
+    flex-wrap: wrap;
+}
+
+/* ─── La disposition d'ensemble ─────────────────────────────────────────────────── */
+
+.entete {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px var(--marge);
+    background-color: var(--couleur-abysse);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--couleur-bord);
+}
+
+.entete-mesures {
+    flex-direction: row;
+}
+
+.mesure {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 30px;
+}
+
+.mesure > .texte {
+    margin-right: 9px;
+}
+
+.retour {
+    padding: 12px var(--marge) 0 var(--marge);
+    background-color: var(--couleur-abysse);
+}
+
+.retour-ligne {
+    padding: 12px 18px;
+    border-width: 1px;
+    border-color: var(--couleur-bord);
+    border-radius: 8px;
+    background-color: var(--fond-50);
+}
+
+.retour-ligne:hover {
+    border-color: var(--couleur-clair);
+}
+
+.corps {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.principale {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+/* 40 % du haut, en paysage comme en portrait. Transparent : la caméra y dessine. */
+.scene {
+    height: 40%;
+    flex-shrink: 0;
+}
+
+.defilement {
+    flex-grow: 1;
+    background-color: var(--couleur-abysse);
+}
+
+.defilement .unity-scroll-view__content-container {
+    padding: 24px var(--marge);
+}
+
+.laterale {
+    width: 480px;
+    flex-shrink: 0;
+    background-color: var(--couleur-abysse);
+    border-left-width: 1px;
+    border-left-color: var(--couleur-bord);
+}
+
+/* En portrait, succès et insufflations ne sont pas une colonne : ce sont des feuilles qui
+   recouvrent le bas de l'écran, au-dessous de la scène, derrière les deux onglets. */
+.portrait .laterale {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40%;
+    bottom: 0;
+    width: auto;
+    border-left-width: 0;
+    border-top-width: 1px;
+    border-top-color: var(--couleur-bord);
+}
+
+.onglets {
+    flex-direction: row;
+    background-color: var(--couleur-abysse);
+    border-top-width: 1px;
+    border-top-color: var(--couleur-bord);
+}
+
+.paysage .onglets {
+    display: none;
+}
+
+.onglet {
+    flex-grow: 1;
+    flex-basis: 0px;
+    min-height: var(--h-bouton);
+    justify-content: center;
+    align-items: center;
+    border-top-width: 4px;
+    border-top-color: var(--transparent);
+}
+
+.onglet.actif {
+    border-top-color: var(--couleur-mana);
+    background-color: var(--couleur-fond);
+}
+
+/* ─── Les cartes et les panneaux ────────────────────────────────────────────────── */
+
+.carte {
+    padding: 18px;
+    margin-bottom: 12px;
+    border-width: 1px;
+    border-color: var(--couleur-bord);
+    border-radius: 12px;
+    background-color: var(--fond-60);
+    transition-property: border-color;
+    transition-duration: 1s;
+}
+
+.carte-souffle {
+    border-color: var(--souffle-40);
+    background-color: var(--fond-40);
+}
+
+.carte-claire {
+    border-color: var(--couleur-clair);
+    background-color: var(--couleur-fond);
+}
+
+/* L'eau trouble : un effet, pas un texte (GDD §2.4). */
+.carte.eau-trouble {
+    border-color: var(--trouble-50);
+}
+
+.panneau {
+    margin-bottom: var(--marge);
+}
+
+.liste > .carte {
+    margin-bottom: 12px;
+}
+
+/* ─── La jauge ──────────────────────────────────────────────────────────────────── */
+
+.jauge {
+    height: 12px;
+    margin: 12px 0 6px 0;
+    border-radius: 6px;
+    background-color: var(--couleur-abysse);
+    overflow: hidden;
+}
+
+.jauge-remplissage {
+    height: 100%;
+    width: 0px;
+    border-radius: 6px;
+    background-color: var(--couleur-mana);
+    transition-property: width, background-color;
+    transition-duration: 1s;
+}
+
+.jauge-remplissage.eau-trouble {
+    background-color: var(--couleur-trouble);
+}
+
+.contenance-ligne {
+    margin-top: 6px;
+}
+
+.contenance-bloque {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top-width: 1px;
+    border-top-color: var(--couleur-bord);
+}
+
+.heros-bonus {
+    margin-left: 6px;
+}
+
+/* ─── Les boutons ───────────────────────────────────────────────────────────────── */
+
+.bouton {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-height: var(--h-bouton);
+    margin-top: 12px;
+    padding: 0 24px;
+    border-width: 1px;
+    border-color: var(--couleur-clair);
+    border-radius: 8px;
+    background-color: var(--transparent);
+}
+
+.bouton:hover {
+    background-color: var(--couleur-bord);
+}
+
+.bouton:active {
+    background-color: var(--couleur-clair);
+}
+
+.bouton-cout {
+    margin-left: 18px;
+}
+
+.bouton-souffle {
+    border-color: var(--souffle-60);
+}
+
+.bouton-souffle:hover {
+    background-color: var(--souffle-10);
+}
+
+/* Un achat impossible reste visible, éteint : voir ce qu'on pourra acheter donne envie d'attendre. */
+.bouton.inactif {
+    opacity: 0.4;
+}
+
+.bouton.inactif:hover {
+    background-color: var(--transparent);
+}
+
+.bouton-creuser {
+    margin-top: 6px;
+}
+
+.bouton-large {
+    flex-grow: 1;
+    margin-right: 12px;
+}
+
+.bouton-renaissance {
+    border-color: var(--couleur-bord);
+}
+
+.bouton-renaissance .texte {
+    color: var(--couleur-jour-doux);
+}
+
+.bouton-renaissance.pressant {
+    border-color: var(--souffle-60);
+}
+
+.bouton-renaissance.pressant .texte {
+    color: var(--couleur-souffle);
+}
+
+.lien {
+    min-height: 48px;
+    justify-content: center;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--couleur-clair);
+}
+
+.lien:hover {
+    border-bottom-color: var(--couleur-jour);
+}
+
+.renaissance-lignes {
+    margin: 12px 0;
+}
+
+/* ─── La table de captation ─────────────────────────────────────────────────────── */
+
+.table-ligne {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--bord-60);
+}
+
+.table-pied {
+    margin-top: 12px;
+    border-bottom-width: 0;
+}
+
+.table-terme {
+    flex-grow: 1;
+    flex-basis: 0px;
+}
+
+.table-valeur {
+    flex-grow: 1;
+    flex-basis: 0px;
+    -unity-text-align: upper-right;
+}
+
+.table-source {
+    flex-grow: 1.4;
+    flex-basis: 0px;
+    padding-left: 12px;
+    -unity-text-align: upper-right;
+}
+
+/* ─── Les succès ────────────────────────────────────────────────────────────────── */
+
+.succes-acquis {
+    padding: 9px 18px;
+    margin-bottom: 6px;
+    border-width: 1px;
+    border-color: var(--couleur-clair);
+    border-radius: 6px;
+    background-color: var(--fond-50);
+}
+
+.succes-en-cours {
+    padding: 9px 18px;
+    margin-bottom: 6px;
+    border-width: 1px;
+    border-color: var(--couleur-bord);
+    border-radius: 6px;
+}
+
+.succes-rail {
+    height: 4px;
+    margin-top: 9px;
+    border-radius: 2px;
+    background-color: var(--couleur-abysse);
+    overflow: hidden;
+}
+
+.succes-barre {
+    height: 100%;
+    width: 0px;
+    background-color: var(--couleur-clair);
+}
+
+.puce {
+    margin: 0 6px 6px 0;
+    padding: 3px 9px;
+    border-width: 1px;
+    border-color: var(--couleur-bord);
+    border-radius: 4px;
+}
+
+/* Un emplacement vide dit qu'il y a quelque chose là, pas quoi. */
+.emplacement-vide {
+    width: 30px;
+    height: 30px;
+    margin: 0 6px 6px 0;
+    border-width: 1px;
+    border-color: var(--bord-60);
+    border-radius: 4px;
+}
+
+/* ─── Les annonces : une ligne qui apparaît et s'efface, jamais une fenêtre ───── */
+
+.annonces {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    align-items: center;
+    padding: 0 var(--marge);
+}
+
+.portrait .annonces {
+    bottom: 140px;
+}
+
+.annonce {
+    margin-top: 6px;
+    padding: 9px 24px;
+    border-width: 1px;
+    border-color: var(--couleur-clair);
+    border-radius: 30px;
+    background-color: var(--fond-95);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.6s;
+}
+
+.annonce-visible {
+    opacity: 1;
+}

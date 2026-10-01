@@ -1,0 +1,77 @@
+/*
+ * IdlePond — jetons visuels, portés de src/index.css.
+ *
+ * Aucun art définitif : l'écran est typographique, et c'est délibéré. Une interface
+ * sobre se relit ; une interface décorée trop tôt se défend, et il faudrait la défendre
+ * à chaque assise.
+ *
+ * Les couleurs sont des `oklch` dans le CSS d'origine. USS ne les connaît pas : elles
+ * sont converties UNE fois ici en sRGB (conversion oklch -> OKLab -> sRGB linéaire ->
+ * encodage sRGB, arrondie à l'entier le plus proche), et la même conversion nourrit
+ * Palette.cs côté scène. Si une couleur change, elle change dans index.css d'abord, puis
+ * on reconvertit — jamais l'inverse, pour qu'un seul fichier soit la source.
+ *
+ *   --couleur-abysse     oklch(0.17 0.03 240)    rgb(3, 17, 27)
+ *   --couleur-fond       oklch(0.22 0.035 235)   rgb(8, 29, 40)
+ *   --couleur-bord       oklch(0.30 0.04 230)    rgb(22, 50, 62)
+ *   --couleur-clair      oklch(0.42 0.05 225)    rgb(45, 83, 98)
+ *   --couleur-jour       oklch(0.93 0.012 220)   rgb(224, 234, 237)
+ *   --couleur-jour-doux  oklch(0.78 0.018 220)   rgb(171, 186, 191)
+ *   --couleur-jour-tu    oklch(0.60 0.02 225)    rgb(116, 131, 137)
+ *   --couleur-mana       oklch(0.78 0.11 195)    rgb(79, 205, 205)
+ *   --couleur-souffle    oklch(0.83 0.10 80)     rgb(234, 192, 122)   (`--color-foi` du CSS, mot mort)
+ *   --couleur-densite    oklch(0.72 0.09 150)    rgb(123, 181, 135)
+ *   --couleur-trouble    oklch(0.66 0.055 95)    rgb(157, 146, 108)
+ *
+ * L'eau qui se trouble — GDD §2.4. Même clarté que le mana, chroma cassé et teinte tirée
+ * vers le limon : la jauge s'éteint sans s'alarmer. Une couleur d'alerte franche ferait
+ * de la seule pénalité douce du jeu un danger.
+ *
+ * Les variantes à opacité remplacent les `/60`, `/50`… de Tailwind : USS ne sait pas
+ * dériver un alpha d'une variable, alors elles sont écrites en clair.
+ *
+ * Polices : voir la fin du fichier et le dossier Jeu/Polices/.
+ */
+.racine {
+    --couleur-abysse: rgb(3, 17, 27);
+    --couleur-fond: rgb(8, 29, 40);
+    --couleur-bord: rgb(22, 50, 62);
+    --couleur-clair: rgb(45, 83, 98);
+
+    --couleur-jour: rgb(224, 234, 237);
+    --couleur-jour-doux: rgb(171, 186, 191);
+    --couleur-jour-tu: rgb(116, 131, 137);
+
+    --couleur-mana: rgb(79, 205, 205);
+    --couleur-souffle: rgb(234, 192, 122);
+    --couleur-densite: rgb(123, 181, 135);
+    --couleur-trouble: rgb(157, 146, 108);
+
+    --fond-40: rgba(8, 29, 40, 0.4);
+    --fond-50: rgba(8, 29, 40, 0.5);
+    --fond-60: rgba(8, 29, 40, 0.6);
+    --fond-95: rgba(8, 29, 40, 0.95);
+    --bord-60: rgba(22, 50, 62, 0.6);
+    --souffle-10: rgba(234, 192, 122, 0.1);
+    --souffle-40: rgba(234, 192, 122, 0.4);
+    --souffle-60: rgba(234, 192, 122, 0.6);
+    --trouble-50: rgba(157, 146, 108, 0.5);
+    --transparent: rgba(0, 0, 0, 0);
+}
+
+/*
+ * Les polices.
+ *
+ * JetBrains Mono (OFL) porte les chiffres : Polices/JetBrainsMono-Regular.ttf, avec sa
+ * licence à côté. Elle est référencée par `.chiffre` dans Mare.uss.
+ *
+ * Newsreader (OFL) porte le texte, mais son fichier n'est pas encore dans le dépôt : tant
+ * qu'il manque, `.titre` retombe sur la police par défaut d'Unity, et rien ne casse. Pour
+ * l'activer, déposer Newsreader (variable ou statique, avec son OFL.txt) dans
+ * Assets/IdlePond/Jeu/Polices/, puis ajouter à `.titre` dans Mare.uss :
+ *
+ *     -unity-font: url("../Polices/Newsreader-Regular.ttf");
+ *
+ * Une référence vers un fichier absent ferait échouer l'import du .uss : c'est pourquoi
+ * la ligne n'y est pas déjà.
+ */
