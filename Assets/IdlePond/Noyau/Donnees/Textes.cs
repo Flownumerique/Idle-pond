@@ -182,6 +182,101 @@ namespace IdlePond.Noyau.Donnees
                 "Celui-là ne prendra plus personne.")),
         };
 
+        /// <summary>
+        /// Les chaînes de l'interface : tout ce que les panneaux écrivent hors des noms, des
+        /// insufflations et des succès ci-dessus. Elles vivent ici, au même endroit que les
+        /// autres, parce que la règle est la même — provisoires, jamais dans un identifiant
+        /// ni dans une sauvegarde, et balayées par `LexiqueTests` contre les mots morts et
+        /// les mots interdits à l'écran (Codex §5).
+        ///
+        /// `{0}`, `{1}` : les trous que `Format` remplit. Une phrase à trous reste une
+        /// phrase entière, qu'on relit d'un bloc ; la couper en morceaux collés par le code
+        /// l'écrirait en dur dans la grammaire.
+        /// </summary>
+        public static class Ecran
+        {
+            /* — En-tête et retour ————————————————————————————————————————————————— */
+            public const string TITRE = "IdlePond";
+            public const string SOUFFLE = "Souffle";
+            public const string RETOURS_DANS_L_OEUF = "retours dans l’œuf";
+            public const string RETOUR_ABSENCE = "{0} a tourné sans toi pendant {1}.";
+
+            /* — Contenance ———————————————————————————————————————————————————————— */
+            public const string DEBIT = "+{0} / s";
+            public const string DONT_DEBIT = "dont +{0} / s";
+            public const string SUR_LA_CONTENANCE = "sur {0}";
+            public const string CAPTATION_ARRETEE = "tu ne captes plus rien";
+            public const string PLUS_DE_QUOI_PORTER = "Il n’y a plus de quoi porter le prochain creusement. Rien n’empêche de continuer à faire venir du monde.";
+
+            /* — Le héros ———————————————————————————————————————————————————————— */
+            public const string HEROS = "toi";
+            public const string ALEVIN = "alevin";
+            public const string GRANDI = "grandi {0} fois";
+            public const string BONUS_DU_HEROS = "et tout ce que tu convaincs donne +{0} %";
+            public const string GRANDIR = "Grandir";
+
+            /* — La captation ———————————————————————————————————————————————————— */
+            public const string FERMER = "fermer";
+            public const string CE_QU_ILS_TE_DONNENT = "ce qu’ils te donnent";
+            public const string PAR_SECONDE = "par seconde";
+
+            /* — La mare ————————————————————————————————————————————————————————— */
+            public const string ESPECE_QUI_S_ATTARDE = "un banc s’attarde";
+            public const string VERBE_DEBLOQUER = "Convaincre";
+            public const string MONTER = "Monter";
+            public const string CREUSER = "Creuser plus bas";
+            public const string PLUS_DE_ROCHE = "Il n’y a plus de roche à ouvrir ici";
+
+            /* — La renaissance ———————————————————————————————————————————————————— */
+            public const string RENTRER_DANS_L_OEUF = "Rentrer dans l’œuf";
+            public const string TOUT_RESTERA_ICI = "Tout ce qui vit ici restera ici. Ce que tu as appris te suivra.";
+            public const string SOUFFLE_LAISSE = "Souffle que le vivant a laissé";
+            public const string CHARGE_GARDEE = "Ce que la mare gardera de ta charge";
+            public const string PLUS_DENSE = "plus dense";
+            public const string RESTER_OU_PARTIR = "Rester plus longtemps fait monter le Souffle. Partir maintenant fait descendre plus bas.";
+            public const string RENTRER = "Rentrer";
+            public const string RESTER = "Rester";
+
+            /* — Les succès ———————————————————————————————————————————————————————— */
+            public const string SUCCES_TITRE = "Ce qui est arrivé — {0}";
+            public const string SUCCES_RIEN_ENCORE = "Rien encore. Ça vient vite.";
+            public const string SUCCES_EN_CHEMIN = "En chemin";
+            public const string SUCCES_PLUS_LOIN = "Plus loin";
+            public const string SUCCES_EMPLACEMENTS_VIDES = "Emplacements vides";
+            public const string SUCCES_MARQUE_DES_VIDES = "·";
+
+            /* — Les insufflations ——————————————————————————————————————————————————— */
+            public const string INSUFFLATIONS_TITRE = "Ce que tu insuffles";
+            public const string SOUFFLE_EN_RESERVE = "{0} de Souffle";
+            public const string INSUFFLER = "Insuffler";
+            public const string INSUFFLER_UNE_ESPECE = "Insuffler {0}";
+            public const string JAMAIS = "jamais";
+            public const string FOIS = "{0} fois";
+
+            /* — Les deux onglets du portrait ——————————————————————————————————————— */
+            public const string ONGLET_SUCCES = "Ce qui est arrivé";
+            public const string ONGLET_INSUFFLATIONS = "Ce que tu insuffles";
+
+            /* — Ce que `Format` met en mots ——————————————————————————————————————————— */
+            public const string PLUS_BAS = "plus bas";
+            public const string ESPECE_SANS_NOM = "un banc sans nom";
+            public const string A_FLEUR_D_EAU = "à fleur d’eau";
+            public const string BRASSE = "{0} brasse";
+            public const string BRASSES = "{0} brasses";
+            public const string PERSONNE_ENCORE = "personne encore";
+            public const string CRANS_TENUS = "{0} crans tenus";
+            public const string AUCUNE_ESPECE_AU_COMPLET = "aucune espèce au complet";
+            public const string ESPECE_AU_COMPLET = "{0} espèce déjà au complet";
+            public const string ESPECES_AU_COMPLET = "{0} espèces déjà au complet";
+            public const string EAU_NEUTRE = "eau neutre";
+            public const string EAU_A_DENSITE = "eau à {0} de densité";
+            public const string TOI_QUI_CAPTES_SEUL = "toi, qui captes seul";
+            public const string TOI_GRANDI = "toi, grandi {0} fois";
+            public const string RIEN_D_INSUFFLE = "rien d’insufflé";
+            public const string INSUFFLE_FOIS = "insufflé {0} fois";
+            public const string DUREE_INCONNUE = "—";
+        }
+
         /// Repli sobre : un succès sans texte reste listable, il ne casse pas l'écran.
         public static readonly TexteDeSucces SUCCES_INCONNU = new("—", "—", "—");
 
@@ -210,6 +305,11 @@ namespace IdlePond.Noyau.Donnees
             yield return ("insufflation insufflation-globale.effet", INSUFFLATION_GLOBALE.Effet);
             if (INSUFFLATION_CIBLEE.Nom != null) yield return ("insufflation insufflation-ciblee.nom", INSUFFLATION_CIBLEE.Nom);
             yield return ("insufflation insufflation-ciblee.effet", INSUFFLATION_CIBLEE.Effet);
+
+            // Les chaînes de l'interface : les constantes de `Ecran`, lues une à une.
+            foreach (var champ in typeof(Ecran).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+                if (champ.IsLiteral && champ.GetRawConstantValue() is string chaine)
+                    yield return ($"ecran {champ.Name}", chaine);
 
             foreach (var succes in RegistreDesSucces.Tous)
             {
