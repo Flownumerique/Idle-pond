@@ -41,8 +41,8 @@ namespace IdlePond.Tests
             }), Reference["paliers"]);
         }
 
-        [Test, Description("les insufflations sont les bénédictions renommées")]
-        public void Les_insufflations_sont_les_benedictions_renommees()
+        [Test, Description("les insufflations sont celles du TypeScript, renommées")]
+        public void Les_insufflations_sont_celles_du_TypeScript_renommees()
         {
             Egal("insufflations", Insufflations.Toutes.Select(i => new JObject
             {

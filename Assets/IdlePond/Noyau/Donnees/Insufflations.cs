@@ -9,7 +9,7 @@ namespace IdlePond.Noyau.Donnees
     ///
     /// Contenu pur, engendré depuis les espèces : une ciblée par espèce, une
     /// globale. Aucune valeur ici — les graines vivent dans `Constantes.cs`, les
-    /// formules dans `Reducteur.cs`. Les identifiants entrent dans les saves : figés.
+    /// formules dans `Economie.cs`. Les identifiants entrent dans les saves : figés.
     /// </summary>
     public static class Insufflations
     {

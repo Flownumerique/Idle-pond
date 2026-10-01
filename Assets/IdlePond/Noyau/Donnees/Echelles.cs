@@ -46,7 +46,7 @@ namespace IdlePond.Noyau.Donnees
         ///
         /// Tabulé, et non calculé par `Tabuler` : les deux suites plus haut se
         /// construisent par multiplications successives, celle-ci par `Decimal.Pow`
-        /// comme l'écrivait `puissanceDuPalier`. Ce n'est pas un détail de forme —
+        /// comme l'écrivait `Economie.MultiplicateurDeProfondeur`. Ce n'est pas un détail de forme —
         /// les deux chemins ne rendent pas le même flottant, et toute mesure déjà
         /// prise bougerait sous nos pieds. La table mémorise l'expression exacte,
         /// elle ne la réécrit pas.
