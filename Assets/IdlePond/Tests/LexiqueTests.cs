@@ -62,6 +62,7 @@ namespace IdlePond.Tests
             Assert.That(ids, Has.Member("franchissement-premiere-eclosion"));
             Assert.That(ids, Has.Member("franchissement-deuxieme-eclosion"));
             Assert.That(ids, Has.Member("franchissement-troisieme-eclosion"));
+            Assert.That(ids, Has.Member("acte-premier-banc-de-cinq"));
         }
 
         /* ─── Portage des autres gardes §3 de canon.test.ts ───────────────────

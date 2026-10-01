@@ -16,14 +16,31 @@ namespace IdlePond.Tests.Outils
         public static IEnumerable<string> Fichiers(string dossier) =>
             Directory.GetFiles(Path.GetFullPath(dossier), "*.cs", SearchOption.AllDirectories).OrderBy(f => f);
 
+        /// Le code reste, la prose part : commentaires blanchis, littéraux réduits à
+        /// `""` et `' '`. Une chaîne interpolée garde le CODE de ses trous —
+        /// `$"a{x.ToString("R")}b"` donne `"{x.ToString("")}"` — parce que ce code
+        /// peut contenir lui-même des chaînes, dont les guillemets ne ferment pas la
+        /// chaîne extérieure.
         public static string SansCommentairesNiChaines(string source)
         {
             var sortie = new StringBuilder(source.Length);
             var i = 0;
+            Code(source, ref i, sortie, false);
+            return sortie.ToString();
+        }
+
+        static char A(string s, int i) => i < s.Length ? s[i] : '\0';
+
+        /// Lit du code jusqu'à la fin du source, ou, dans un trou d'interpolation
+        /// (`dansUnTrou`), jusqu'à son `}` fermant ou à son format (`:F2`), sans le
+        /// consommer.
+        static void Code(string source, ref int i, StringBuilder sortie, bool dansUnTrou)
+        {
+            var profondeur = 0;
             while (i < source.Length)
             {
                 var c = source[i];
-                var suivant = i + 1 < source.Length ? source[i + 1] : '\0';
+                var suivant = A(source, i + 1);
                 if (c == '/' && suivant == '/')
                 {
                     while (i < source.Length && source[i] != '\n') i++;
@@ -36,23 +53,13 @@ namespace IdlePond.Tests.Outils
                     i += 2;
                     continue;
                 }
+                var interpolee = (c == '$' && suivant == '"') || (c == '$' && suivant == '@') || (c == '@' && suivant == '$');
                 var verbatim = (c == '@' && suivant == '"') || (c == '$' && suivant == '@') || (c == '@' && suivant == '$');
-                if (verbatim || c == '"' || (c == '$' && suivant == '"'))
+                if (verbatim || interpolee || c == '"')
                 {
                     while (source[i] != '"') i++;
                     i++;
-                    while (i < source.Length)
-                    {
-                        if (!verbatim && source[i] == '\\') { i += 2; continue; }
-                        if (source[i] == '"')
-                        {
-                            if (verbatim && i + 1 < source.Length && source[i + 1] == '"') { i += 2; continue; }
-                            break;
-                        }
-                        i++;
-                    }
-                    i++;
-                    sortie.Append("\"\"");
+                    Chaine(source, ref i, sortie, verbatim, interpolee);
                     continue;
                 }
                 if (c == '\'')
@@ -60,10 +67,50 @@ namespace IdlePond.Tests.Outils
                     var fin = source.IndexOf('\'', i + (suivant == '\\' ? 3 : 2));
                     if (fin > i && fin - i <= 8) { sortie.Append("' '"); i = fin + 1; continue; }
                 }
+                if (dansUnTrou)
+                {
+                    if (c == '(' || c == '[' || c == '{') profondeur++;
+                    else if (c == ')' || c == ']' || (c == '}' && profondeur > 0)) profondeur--;
+                    else if (c == '}') return;
+                    else if (c == ':' && profondeur == 0 && suivant != ':') return;
+                }
                 sortie.Append(c);
                 i++;
             }
-            return sortie.ToString();
+        }
+
+        /// Lit une chaîne dont le guillemet ouvrant vient d'être consommé ; n'écrit
+        /// que `"`, puis le code de chaque trou entre accolades, puis `"`.
+        static void Chaine(string source, ref int i, StringBuilder sortie, bool verbatim, bool interpolee)
+        {
+            sortie.Append('"');
+            while (i < source.Length)
+            {
+                var c = source[i];
+                var suivant = A(source, i + 1);
+                if (!verbatim && c == '\\') { i += 2; continue; }
+                if (c == '"')
+                {
+                    if (verbatim && suivant == '"') { i += 2; continue; }
+                    i++;
+                    break;
+                }
+                if (interpolee && c == '{')
+                {
+                    if (suivant == '{') { i += 2; continue; }
+                    i++;
+                    sortie.Append('{');
+                    Code(source, ref i, sortie, true);
+                    // Le format (`:F2`, `,5`…) est du texte : on le saute jusqu'au `}`.
+                    while (i < source.Length && source[i] != '}') i++;
+                    i++;
+                    sortie.Append('}');
+                    continue;
+                }
+                if (interpolee && c == '}' && suivant == '}') { i += 2; continue; }
+                i++;
+            }
+            sortie.Append('"');
         }
 
         static readonly Regex Identifiant = new Regex(@"[\p{L}_][\p{L}\p{Nd}_]*", RegexOptions.CultureInvariant);
