@@ -1,0 +1,14 @@
+{
+    "name": "IdlePond.Simulateur",
+    "rootNamespace": "IdlePond.Simulateur",
+    "references": ["IdlePond.Noyau"],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

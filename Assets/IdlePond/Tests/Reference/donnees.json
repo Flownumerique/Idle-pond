@@ -1,0 +1,1217 @@
+{
+ "paliersLivres": 6,
+ "assises": [
+  {
+   "id": "noue",
+   "rang": 1,
+   "typeMana": "type-mana-1",
+   "indexPremierPalier": 0,
+   "nombreDePaliers": 6
+  },
+  {
+   "id": "assise-2",
+   "rang": 2,
+   "typeMana": "type-mana-2",
+   "indexPremierPalier": 6,
+   "nombreDePaliers": 12
+  },
+  {
+   "id": "assise-3",
+   "rang": 3,
+   "typeMana": "type-mana-3",
+   "indexPremierPalier": 18,
+   "nombreDePaliers": 12
+  },
+  {
+   "id": "assise-4",
+   "rang": 4,
+   "typeMana": "type-mana-4",
+   "indexPremierPalier": 30,
+   "nombreDePaliers": 12
+  },
+  {
+   "id": "assise-5",
+   "rang": 5,
+   "typeMana": "type-mana-5",
+   "indexPremierPalier": 42,
+   "nombreDePaliers": 12
+  },
+  {
+   "id": "assise-6",
+   "rang": 6,
+   "typeMana": "type-mana-6",
+   "indexPremierPalier": 54,
+   "nombreDePaliers": 8
+  }
+ ],
+ "especes": [
+  {
+   "id": "vairon",
+   "assise": "noue",
+   "rang": 0,
+   "palier": 0
+  },
+  {
+   "id": "loche",
+   "assise": "noue",
+   "rang": 1,
+   "palier": 3
+  },
+  {
+   "id": "epinoche",
+   "assise": "assise-2",
+   "rang": 2,
+   "palier": 6
+  },
+  {
+   "id": "espece-2-2",
+   "assise": "assise-2",
+   "rang": 3,
+   "palier": 9
+  },
+  {
+   "id": "espece-2-3",
+   "assise": "assise-2",
+   "rang": 4,
+   "palier": 12
+  },
+  {
+   "id": "espece-2-4",
+   "assise": "assise-2",
+   "rang": 5,
+   "palier": 15
+  },
+  {
+   "id": "espece-3-1",
+   "assise": "assise-3",
+   "rang": 6,
+   "palier": 18
+  },
+  {
+   "id": "espece-3-2",
+   "assise": "assise-3",
+   "rang": 7,
+   "palier": 21
+  },
+  {
+   "id": "espece-3-3",
+   "assise": "assise-3",
+   "rang": 8,
+   "palier": 24
+  },
+  {
+   "id": "espece-3-4",
+   "assise": "assise-3",
+   "rang": 9,
+   "palier": 27
+  },
+  {
+   "id": "espece-4-1",
+   "assise": "assise-4",
+   "rang": 10,
+   "palier": 30
+  },
+  {
+   "id": "espece-4-2",
+   "assise": "assise-4",
+   "rang": 11,
+   "palier": 33
+  },
+  {
+   "id": "espece-4-3",
+   "assise": "assise-4",
+   "rang": 12,
+   "palier": 36
+  },
+  {
+   "id": "espece-4-4",
+   "assise": "assise-4",
+   "rang": 13,
+   "palier": 39
+  },
+  {
+   "id": "espece-5-1",
+   "assise": "assise-5",
+   "rang": 14,
+   "palier": 42
+  },
+  {
+   "id": "espece-5-2",
+   "assise": "assise-5",
+   "rang": 15,
+   "palier": 45
+  },
+  {
+   "id": "espece-5-3",
+   "assise": "assise-5",
+   "rang": 16,
+   "palier": 48
+  },
+  {
+   "id": "espece-5-4",
+   "assise": "assise-5",
+   "rang": 17,
+   "palier": 51
+  },
+  {
+   "id": "espece-6-1",
+   "assise": "assise-6",
+   "rang": 18,
+   "palier": 54
+  },
+  {
+   "id": "espece-6-2",
+   "assise": "assise-6",
+   "rang": 19,
+   "palier": 57
+  },
+  {
+   "id": "espece-6-3",
+   "assise": "assise-6",
+   "rang": 20,
+   "palier": 60
+  }
+ ],
+ "paliers": [
+  {
+   "index": 0,
+   "assise": "noue",
+   "espece": "vairon"
+  },
+  {
+   "index": 1,
+   "assise": "noue",
+   "espece": null
+  },
+  {
+   "index": 2,
+   "assise": "noue",
+   "espece": null
+  },
+  {
+   "index": 3,
+   "assise": "noue",
+   "espece": "loche"
+  },
+  {
+   "index": 4,
+   "assise": "noue",
+   "espece": null
+  },
+  {
+   "index": 5,
+   "assise": "noue",
+   "espece": null
+  },
+  {
+   "index": 6,
+   "assise": "assise-2",
+   "espece": "epinoche"
+  },
+  {
+   "index": 7,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 8,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 9,
+   "assise": "assise-2",
+   "espece": "espece-2-2"
+  },
+  {
+   "index": 10,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 11,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 12,
+   "assise": "assise-2",
+   "espece": "espece-2-3"
+  },
+  {
+   "index": 13,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 14,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 15,
+   "assise": "assise-2",
+   "espece": "espece-2-4"
+  },
+  {
+   "index": 16,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 17,
+   "assise": "assise-2",
+   "espece": null
+  },
+  {
+   "index": 18,
+   "assise": "assise-3",
+   "espece": "espece-3-1"
+  },
+  {
+   "index": 19,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 20,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 21,
+   "assise": "assise-3",
+   "espece": "espece-3-2"
+  },
+  {
+   "index": 22,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 23,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 24,
+   "assise": "assise-3",
+   "espece": "espece-3-3"
+  },
+  {
+   "index": 25,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 26,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 27,
+   "assise": "assise-3",
+   "espece": "espece-3-4"
+  },
+  {
+   "index": 28,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 29,
+   "assise": "assise-3",
+   "espece": null
+  },
+  {
+   "index": 30,
+   "assise": "assise-4",
+   "espece": "espece-4-1"
+  },
+  {
+   "index": 31,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 32,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 33,
+   "assise": "assise-4",
+   "espece": "espece-4-2"
+  },
+  {
+   "index": 34,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 35,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 36,
+   "assise": "assise-4",
+   "espece": "espece-4-3"
+  },
+  {
+   "index": 37,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 38,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 39,
+   "assise": "assise-4",
+   "espece": "espece-4-4"
+  },
+  {
+   "index": 40,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 41,
+   "assise": "assise-4",
+   "espece": null
+  },
+  {
+   "index": 42,
+   "assise": "assise-5",
+   "espece": "espece-5-1"
+  },
+  {
+   "index": 43,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 44,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 45,
+   "assise": "assise-5",
+   "espece": "espece-5-2"
+  },
+  {
+   "index": 46,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 47,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 48,
+   "assise": "assise-5",
+   "espece": "espece-5-3"
+  },
+  {
+   "index": 49,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 50,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 51,
+   "assise": "assise-5",
+   "espece": "espece-5-4"
+  },
+  {
+   "index": 52,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 53,
+   "assise": "assise-5",
+   "espece": null
+  },
+  {
+   "index": 54,
+   "assise": "assise-6",
+   "espece": "espece-6-1"
+  },
+  {
+   "index": 55,
+   "assise": "assise-6",
+   "espece": null
+  },
+  {
+   "index": 56,
+   "assise": "assise-6",
+   "espece": null
+  },
+  {
+   "index": 57,
+   "assise": "assise-6",
+   "espece": "espece-6-2"
+  },
+  {
+   "index": 58,
+   "assise": "assise-6",
+   "espece": null
+  },
+  {
+   "index": 59,
+   "assise": "assise-6",
+   "espece": null
+  },
+  {
+   "index": 60,
+   "assise": "assise-6",
+   "espece": "espece-6-3"
+  },
+  {
+   "index": 61,
+   "assise": "assise-6",
+   "espece": null
+  }
+ ],
+ "insufflations": [
+  {
+   "id": "insufflation-globale",
+   "portee": "globale",
+   "espece": null
+  },
+  {
+   "id": "insufflation-vairon",
+   "portee": "ciblee",
+   "espece": "vairon"
+  },
+  {
+   "id": "insufflation-loche",
+   "portee": "ciblee",
+   "espece": "loche"
+  },
+  {
+   "id": "insufflation-epinoche",
+   "portee": "ciblee",
+   "espece": "epinoche"
+  },
+  {
+   "id": "insufflation-espece-2-2",
+   "portee": "ciblee",
+   "espece": "espece-2-2"
+  },
+  {
+   "id": "insufflation-espece-2-3",
+   "portee": "ciblee",
+   "espece": "espece-2-3"
+  },
+  {
+   "id": "insufflation-espece-2-4",
+   "portee": "ciblee",
+   "espece": "espece-2-4"
+  },
+  {
+   "id": "insufflation-espece-3-1",
+   "portee": "ciblee",
+   "espece": "espece-3-1"
+  },
+  {
+   "id": "insufflation-espece-3-2",
+   "portee": "ciblee",
+   "espece": "espece-3-2"
+  },
+  {
+   "id": "insufflation-espece-3-3",
+   "portee": "ciblee",
+   "espece": "espece-3-3"
+  },
+  {
+   "id": "insufflation-espece-3-4",
+   "portee": "ciblee",
+   "espece": "espece-3-4"
+  },
+  {
+   "id": "insufflation-espece-4-1",
+   "portee": "ciblee",
+   "espece": "espece-4-1"
+  },
+  {
+   "id": "insufflation-espece-4-2",
+   "portee": "ciblee",
+   "espece": "espece-4-2"
+  },
+  {
+   "id": "insufflation-espece-4-3",
+   "portee": "ciblee",
+   "espece": "espece-4-3"
+  },
+  {
+   "id": "insufflation-espece-4-4",
+   "portee": "ciblee",
+   "espece": "espece-4-4"
+  },
+  {
+   "id": "insufflation-espece-5-1",
+   "portee": "ciblee",
+   "espece": "espece-5-1"
+  },
+  {
+   "id": "insufflation-espece-5-2",
+   "portee": "ciblee",
+   "espece": "espece-5-2"
+  },
+  {
+   "id": "insufflation-espece-5-3",
+   "portee": "ciblee",
+   "espece": "espece-5-3"
+  },
+  {
+   "id": "insufflation-espece-5-4",
+   "portee": "ciblee",
+   "espece": "espece-5-4"
+  },
+  {
+   "id": "insufflation-espece-6-1",
+   "portee": "ciblee",
+   "espece": "espece-6-1"
+  },
+  {
+   "id": "insufflation-espece-6-2",
+   "portee": "ciblee",
+   "espece": "espece-6-2"
+  },
+  {
+   "id": "insufflation-espece-6-3",
+   "portee": "ciblee",
+   "espece": "espece-6-3"
+  }
+ ],
+ "succes": [
+  {
+   "id": "acte-premiere-conviction",
+   "famille": "acte",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "especes_debloquees",
+    "seuil": 1
+   },
+   "effet": null
+  },
+  {
+   "id": "acte-deuxieme-niveau",
+   "famille": "acte",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 2
+   },
+   "effet": null
+  },
+  {
+   "id": "acte-cinquieme-niveau",
+   "famille": "acte",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 5
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "acte-premier-banc-de-cinq",
+   "famille": "acte",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 3
+   },
+   "effet": null
+  },
+  {
+   "id": "acte-premier-creusement",
+   "famille": "acte",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "paliers_ouverts",
+    "seuil": 2
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "acte-deux-bancs",
+   "famille": "acte",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "especes_debloquees",
+    "seuil": 2
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "acte-dixieme-niveau",
+   "famille": "acte",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 10
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "acte-trois-bancs",
+   "famille": "acte",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "loche",
+    "seuil": 10
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "acte-premier-palier-sature",
+   "famille": "acte",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 0
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-vairon-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 10
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-vairon-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 25
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-vairon-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 50
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-vairon-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "vairon",
+    "seuil": 100
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-loche-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "loche",
+    "seuil": 10
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-loche-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "loche",
+    "seuil": 25
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-loche-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "loche",
+    "seuil": 50
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-loche-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "loche",
+    "seuil": 100
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-epinoche-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "assise-2",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "epinoche",
+    "seuil": 10
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-epinoche-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "assise-2",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "epinoche",
+    "seuil": 25
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-epinoche-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "assise-2",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "epinoche",
+    "seuil": 50
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-epinoche-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "assise-2",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "espece": "epinoche",
+    "seuil": 100
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-25",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 25
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-45",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 45
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-70",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 70
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-95",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 95
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-130",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 130
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-200",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 200
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-320",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 320
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-mare-500",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "niveaux_cumules",
+    "seuil": 500
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-profondeur-3",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "paliers_ouverts",
+    "seuil": 3
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-profondeur-5",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "paliers_ouverts",
+    "seuil": 5
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-palier-sature-1",
+   "famille": "seuil",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 1
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-palier-sature-2",
+   "famille": "seuil",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 2
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-palier-sature-3",
+   "famille": "seuil",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 3
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-palier-sature-4",
+   "famille": "seuil",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 4
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-palier-sature-5",
+   "famille": "seuil",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "palier_au_complet",
+    "palier": 5
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "franchissement-premiere-eclosion",
+   "famille": "franchissement",
+   "visibilite": "ouvert",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "renaissances",
+    "seuil": 1
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "franchissement-deuxieme-eclosion",
+   "famille": "franchissement",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "renaissances",
+    "seuil": 2
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "franchissement-troisieme-eclosion",
+   "famille": "franchissement",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "renaissances",
+    "seuil": 3
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "franchissement-densite",
+   "famille": "franchissement",
+   "visibilite": "secret",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "densite_de_palier",
+    "palier": 0,
+    "seuil": 0.5
+   },
+   "effet": null
+  },
+  {
+   "id": "franchissement-fond-de-la-mare",
+   "famille": "franchissement",
+   "visibilite": "ferme",
+   "assise": "noue",
+   "declencheur": {
+    "quoi": "paliers_ouverts",
+    "seuil": 6
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  }
+ ]
+}
