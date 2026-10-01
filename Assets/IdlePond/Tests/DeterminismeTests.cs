@@ -1,5 +1,6 @@
 using System.Linq;
 using IdlePond.Noyau;
+using IdlePond.Noyau.Donnees;
 using IdlePond.Tests.Outils;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -99,6 +100,56 @@ namespace IdlePond.Tests
             Assert.That(Instantane.De(a)["permanent"]["especesAyantAtteintCent"].ToString(),
                 Is.EqualTo(Instantane.De(b)["permanent"]["especesAyantAtteintCent"].ToString()));
             Assert.That(Instantane.De(a)["permanent"]["succes"].ToString(), Is.EqualTo(Instantane.De(b)["permanent"]["succes"].ToString()));
+        }
+
+        [Test, Description("les clefs des insufflations suivent l'ordre du registre quel que soit l'ordre d'achat")]
+        public void Les_clefs_des_insufflations_suivent_l_ordre_du_registre_quel_que_soit_l_ordre_d_achat()
+        {
+            // L'instantané (Instantane.De) réordonne tout par le registre à l'écriture :
+            // il ne peut donc jamais révéler un désordre du dictionnaire D'ÉTAT lui-même.
+            // Ici on lit directement `Permanent.Insufflations.Keys`, reconstruit à chaque
+            // achat par `Reducteur.Insuffler` (~l.332-337), jamais accumulé dans l'ordre
+            // d'arrivée — sans quoi deux parties qui insufflent les deux mêmes choses dans
+            // un ordre opposé sérialiseraient des chaînes de save différentes.
+            var riche = Reducteur.EtatInitial(5) with { Permanent = Reducteur.EtatInitial(5).Permanent with { Souffle = new Decimal(1e6) } };
+            var ciblee = Insufflations.CibleeDe("loche").Id;
+            var a = Reducteur.Insuffler(Reducteur.Insuffler(riche, ciblee), Insufflations.GLOBALE_ID);
+            var b = Reducteur.Insuffler(Reducteur.Insuffler(riche, Insufflations.GLOBALE_ID), ciblee);
+            var attendu = Insufflations.Toutes.Select(i => i.Id).Where(id => id == ciblee || id == Insufflations.GLOBALE_ID).ToArray();
+            Assert.That(a.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(b.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(a.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(b.Permanent.Insufflations.Keys.ToArray()));
+        }
+
+        [Test, Description("les clefs des succes suivent l'ordre du registre quel que soit l'ordre de declenchement")]
+        public void Les_clefs_des_succes_suivent_l_ordre_du_registre_quel_que_soit_l_ordre_de_declenchement()
+        {
+            // Même lecture directe, côté succès : `Permanent.Succes.Keys`, reconstruit à
+            // chaque tick par `RegleDesSucces.EnOrdreDuRegistre` (~l.159-171). Un pas de 8 h
+            // franchit les deux seuils ensemble ; 480 pas de 60 s les voient l'un après
+            // l'autre — ici on force l'ordre inverse d'un tick à l'autre pour le vérifier.
+            EtatJeu Riche() => Reducteur.EtatInitial(5) with { Cycle = Reducteur.EtatInitial(5).Cycle with { ManaCourant = Decimal.Parse("1e12") } };
+
+            // Ordre 1 : débloquer une espèce (acte-premiere-conviction), puis creuser un
+            // second palier — ce qui franchit DEUX seuils à la fois (acte-premier-creusement,
+            // et seuil-palier-sature-1 : le palier 1 n'ouvre aucune espèce, §6.1, donc il
+            // est « au complet » dès qu'il est ouvert).
+            var a = Riche();
+            a = Reducteur.Tick(Reducteur.Debloquer(a, "vairon"), 0.1);
+            a = Reducteur.Tick(Reducteur.Creuser(a), 0.1);
+
+            // Ordre 2 : les deux mêmes actes, dans l'ordre inverse — les deux succès du
+            // creusement arrivent donc groupés AVANT celui du déblocage, au lieu d'après.
+            var b = Riche();
+            b = Reducteur.Tick(Reducteur.Creuser(b), 0.1);
+            b = Reducteur.Tick(Reducteur.Debloquer(b, "vairon"), 0.1);
+
+            var attendu = RegistreDesSucces.Tous.Select(s => s.Id)
+                .Where(id => id == "acte-premiere-conviction" || id == "acte-premier-creusement" || id == "seuil-palier-sature-1")
+                .ToArray();
+            Assert.That(a.Permanent.Succes.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(b.Permanent.Succes.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(a.Permanent.Succes.Keys.ToArray(), Is.EqualTo(b.Permanent.Succes.Keys.ToArray()));
         }
     }
 }
