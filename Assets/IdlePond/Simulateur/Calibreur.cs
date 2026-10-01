@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using IdlePond.Noyau;
+using Decimal = IdlePond.Noyau.Decimal;
 
 namespace IdlePond.Simulateur
 {

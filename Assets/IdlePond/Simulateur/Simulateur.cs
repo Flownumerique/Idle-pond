@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
@@ -341,9 +342,9 @@ namespace IdlePond.Simulateur
         {
             politique ??= POLITIQUE_PAR_DEFAUT;
             if (!(politique.Pas > 0))
-                throw new InvalidOperationException($"Le pas de la politique doit être positif (reçu {politique.Pas})");
+                throw new InvalidOperationException($"Le pas de la politique doit être positif (reçu {politique.Pas.ToString("R", CultureInfo.InvariantCulture)})");
             if (!(politique.SecondesEntreReleves >= 0))
-                throw new InvalidOperationException($"L'intervalle entre relevés ne peut pas être négatif (reçu {politique.SecondesEntreReleves})");
+                throw new InvalidOperationException($"L'intervalle entre relevés ne peut pas être négatif (reçu {politique.SecondesEntreReleves.ToString("R", CultureInfo.InvariantCulture)})");
             var intervalle = politique.SecondesEntreReleves > 0 ? politique.SecondesEntreReleves : politique.Pas;
 
             var etat = Reducteur.EtatInitial(graine, limiteDeContenu ?? Constantes.NOMBRE_DE_PALIERS, reglage);

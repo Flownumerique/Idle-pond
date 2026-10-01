@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
@@ -173,7 +174,7 @@ namespace IdlePond.Tests
                     {
                         if (densites[palier] < precedentes[palier])
                         {
-                            faute = $"densité du palier {palier} : {precedentes[palier]} → {densites[palier]}";
+                            faute = $"densité du palier {palier} : {precedentes[palier].ToString("R", CultureInfo.InvariantCulture)} → {densites[palier].ToString("R", CultureInfo.InvariantCulture)}";
                             break;
                         }
                     }
@@ -344,7 +345,9 @@ namespace IdlePond.Tests
             // Le niveau du héros se reperd à chaque renaissance, mais `PaliersOuverts`
             // croît cycle après cycle (10 → 15 → 19 sur trois cycles, mesuré) : le pic
             // de `niveauMax` sur plusieurs cycles est donc atteint dans le DERNIER
-            // cycle simulé, jamais dans le premier.
+            // cycle simulé, jamais dans le premier. Comparer contre le premier
+            // sous-estimait la référence et rendait le test infaisable — corrigé,
+            // task A5, sur ruling du contrôleur.
             var niveauMax = 0;
             var resultat = Simuler(3, null, 1, etat => { niveauMax = Math.Max(niveauMax, etat.Cycle.NiveauDuHeros); });
             var paliersDuDernierCycle = resultat.Cycles[resultat.Cycles.Count - 1].PaliersOuverts;
@@ -401,9 +404,11 @@ namespace IdlePond.Tests
                 var suivi = kv.Value;
                 if (index >= 6) continue;
                 var part = suivi.DernierPalier / suivi.Duree;
-                Assert.That(part, Is.GreaterThan(0.1), $"cycle {index + 1} : le dernier palier s’ouvre à {(part * 100):F1} % du cycle");
+                Assert.That(part, Is.GreaterThan(0.1),
+                    $"cycle {index + 1} : le dernier palier s’ouvre à {(part * 100).ToString("F1", CultureInfo.InvariantCulture)} % du cycle");
                 var gagnee = suivi.ProdFin / suivi.ProdAuBlocage;
-                Assert.That(gagnee, Is.GreaterThan(25), $"cycle {index + 1} : la production ne gagne que ×{gagnee:F1} après le blocage");
+                Assert.That(gagnee, Is.GreaterThan(25),
+                    $"cycle {index + 1} : la production ne gagne que ×{gagnee.ToString("F1", CultureInfo.InvariantCulture)} après le blocage");
             }
         }
 
