@@ -40,6 +40,44 @@ namespace IdlePond.Tests
             Assert.That(fautes, Is.Empty);
         }
 
+        [Test, Description("le jeu ne lit l'heure que par HorlogeSysteme, et ne tire aucun hasard hors de l'état")]
+        public void Le_jeu_ne_lit_l_heure_que_par_HorlogeSysteme()
+        {
+            // La pureté du noyau s'arrête à sa frontière : le jeu a des fichiers, un moteur,
+            // une horloge. Mais il n'en a QU'UNE — `HorlogeSysteme` — et aucun hasard qui
+            // ne vienne du PRNG de l'état. Une interface qui tirerait au sort ou lirait
+            // l'heure de son côté ferait diverger l'écran de ce que la partie a calculé.
+            var interdits = new[]
+            {
+                (@"\bDateTime\s*\.\s*(Now|UtcNow|Today)\b", "horloge système"),
+                (@"\bDateTimeOffset\s*\.\s*(Now|UtcNow)\b", "horloge système"),
+                (@"\bEnvironment\s*\.\s*TickCount", "horloge système"),
+                (@"\bStopwatch\b", "horloge système"),
+                (@"\bSystem\s*\.\s*Random\b|\bnew\s+Random\s*\(|\bUnityEngine\s*\.\s*Random\b|\bRandom\s*\.\s*(Range|value|insideUnitCircle)\b", "hasard hors de l'état"),
+                (@"\bGuid\s*\.\s*NewGuid\b", "hasard hors de l'état"),
+            };
+            var fautes = (from fichier in SourceCSharp.Fichiers("Assets/IdlePond/Jeu")
+                          where Path.GetFileName(fichier) != "Horloge.cs"
+                          let code = SourceCSharp.SansCommentairesNiChaines(File.ReadAllText(fichier))
+                          from interdit in interdits
+                          where Regex.IsMatch(code, interdit.Item1)
+                          select $"{Path.GetFileName(fichier)} : {interdit.Item2}").ToList();
+            Assert.That(fautes, Is.Empty);
+        }
+
+        [Test, Description("l'interface ne lit aucune horloge : elle montre l'état, elle ne le date pas")]
+        public void L_interface_ne_lit_aucune_horloge()
+        {
+            // La scène dessinée peut animer sur le temps du moteur (un voile qui monte en
+            // 0,9 s) : c'est du rendu. Les panneaux, eux, ne datent rien — leurs minuteries
+            // passent par le planificateur d'UI Toolkit, jamais par `Time`.
+            var fautes = (from fichier in SourceCSharp.Fichiers("Assets/IdlePond/Jeu/UI")
+                          let code = SourceCSharp.SansCommentairesNiChaines(File.ReadAllText(fichier))
+                          where Regex.IsMatch(code, @"\bTime\s*\.\s*\w+")
+                          select Path.GetFileName(fichier)).ToList();
+            Assert.That(fautes, Is.Empty);
+        }
+
         [Test, Description("aucun état hors du réducteur : pas de champ statique modifiable")]
         public void Aucun_etat_hors_du_reducteur()
         {
