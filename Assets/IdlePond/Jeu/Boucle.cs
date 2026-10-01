@@ -44,6 +44,15 @@ namespace IdlePond.Jeu
         public static Partie ObtenirOuCreerLaPartie() =>
             ServicesDePartie.ObtenirOuCreer(() => Partie.Ouvrir(new HorlogeSysteme(), Application.persistentDataPath));
 
+        /// <summary>
+        /// Le projet active les options d'entrée en Play Mode : si le rechargement du domaine
+        /// est un jour coupé, la partie statique d'une session d'éditeur survivrait à la
+        /// suivante, avec son horloge et son dernier instant. On l'oublie avant chaque
+        /// lancement, pour que chaque Play reparte du disque.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void OublierLaPartieDuLancementPrecedent() => ServicesDePartie.Oublier();
+
         void Awake()
         {
             // `persistentDataPath` ne se lit que sur le fil principal : on le garde ici.
