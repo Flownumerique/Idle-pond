@@ -71,10 +71,6 @@ namespace IdlePond.Noyau
             return NiveauDEspece(etat, espece.Id) >= Constantes.SEUIL_DU_DRAPEAU_PERMANENT;
         }
 
-        /// `densites[palier] ?? 0` : un index hors borne lit zéro, il ne lève pas.
-        static double DensiteDuPalier(EtatJeu etat, int palier) =>
-            palier >= 0 && palier < etat.Permanent.Densites.Count ? etat.Permanent.Densites[palier] : 0;
-
         /// Lecture de seuil sur l'état de fin de tick. Aucun événement consommé au vol.
         public static bool EstAtteint(EtatJeu etat, DeclencheurDeSucces declencheur)
         {
@@ -97,7 +93,7 @@ namespace IdlePond.Noyau
                 case QuoiDeclencheur.Souffle:
                     return etat.Permanent.Souffle.Gte(declencheur.Seuil);
                 case QuoiDeclencheur.DensiteDePalier:
-                    return DensiteDuPalier(etat, declencheur.Palier) >= declencheur.Seuil;
+                    return Densite.DuPalier(etat, declencheur.Palier) >= declencheur.Seuil;
                 case QuoiDeclencheur.PalierAuComplet:
                     return PalierAuComplet(etat, declencheur.Palier);
                 default:
@@ -283,7 +279,7 @@ namespace IdlePond.Noyau
                 case QuoiDeclencheur.Souffle:
                     return etat.Permanent.Souffle.ToNumber();
                 case QuoiDeclencheur.DensiteDePalier:
-                    return DensiteDuPalier(etat, declencheur.Palier);
+                    return Densite.DuPalier(etat, declencheur.Palier);
                 case QuoiDeclencheur.PalierAuComplet:
                     return null;
                 default:
