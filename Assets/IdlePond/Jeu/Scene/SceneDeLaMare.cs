@@ -78,8 +78,8 @@ namespace IdlePond.Jeu.Scene
 
         // Le cadrage de la caméra : on ne le recalcule que si l'un de ses ingrédients a bougé.
         UIDocument document;
-        VisualElement zone;
-        float prochaineRechercheDeLaZone;
+        VisualElement cadreDeScene;
+        float prochaineRechercheDuCadre;
         Rect rectCourant = new Rect(-1, -1, 0, 0);
         Vector2Int ecranCourant;
         int paliersCourants = -1;
@@ -326,7 +326,7 @@ namespace IdlePond.Jeu.Scene
         void Cadrer()
         {
             if (camera_ == null) return;
-            var rect = RectangleDeLaZone();
+            var rect = RectangleDuCadre();
             var ecran = new Vector2Int(Screen.width, Screen.height);
             var nombre = vue != null ? vue.Paliers.Count : 0;
             if (rect == rectCourant && ecran == ecranCourant && nombre == paliersCourants) return;
@@ -357,13 +357,13 @@ namespace IdlePond.Jeu.Scene
         /// Le rectangle de `#scene` en fraction de l'écran, origine en bas à gauche — ce
         /// qu'attend `Camera.rect`. Le panneau couvre tout l'écran, quelle que soit son
         /// échelle : une fraction du panneau est une fraction de l'écran.
-        Rect RectangleDeLaZone()
+        Rect RectangleDuCadre()
         {
             var plein = new Rect(0, 0, 1, 1);
-            if (zone == null || zone.panel == null) TrouverLaZone();
-            if (zone == null || zone.panel == null) return plein;
-            var panneau = zone.panel.visualTree.worldBound;
-            var cadre = zone.worldBound;
+            if (cadreDeScene == null || cadreDeScene.panel == null) TrouverLeCadre();
+            if (cadreDeScene == null || cadreDeScene.panel == null) return plein;
+            var panneau = cadreDeScene.panel.visualTree.worldBound;
+            var cadre = cadreDeScene.worldBound;
             if (!(panneau.width > 0f && panneau.height > 0f && cadre.width > 0f && cadre.height > 0f)) return plein;
             var x = Mathf.Clamp01((cadre.xMin - panneau.xMin) / panneau.width);
             var yHaut = Mathf.Clamp01((cadre.yMin - panneau.yMin) / panneau.height);
@@ -373,14 +373,14 @@ namespace IdlePond.Jeu.Scene
             return new Rect(x, 1f - yBas, largeur, yBas - yHaut);
         }
 
-        void TrouverLaZone()
+        void TrouverLeCadre()
         {
             // Une recherche par demi-seconde : inutile de fouiller la scène à chaque image
             // tant que l'interface n'est pas là.
-            if (Time.unscaledTime < prochaineRechercheDeLaZone) return;
-            prochaineRechercheDeLaZone = Time.unscaledTime + 0.5f;
+            if (Time.unscaledTime < prochaineRechercheDuCadre) return;
+            prochaineRechercheDuCadre = Time.unscaledTime + 0.5f;
             if (document == null) document = FindFirstObjectByType<UIDocument>();
-            zone = document != null && document.rootVisualElement != null
+            cadreDeScene = document != null && document.rootVisualElement != null
                 ? document.rootVisualElement.Q<VisualElement>("scene")
                 : null;
         }
