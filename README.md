@@ -48,6 +48,16 @@ npm run lint
 npm run dev       # le jeu
 ```
 
+### Unity (portage en cours, spec `docs/superpowers/specs/2026-09-27-portage-unity-design.md`)
+
+L'éditeur Unity 6000.6.3f1 doit être **fermé** sur ce projet :
+
+```sh
+outils/unity.sh tests EditMode            # noyau C#, simulateur, parité avec le TypeScript
+outils/unity.sh tests EditMode PariteTests
+npx tsx tests/parite/generer-references.ts # ne se relance pas : les références sont figées
+```
+
 ## Le contrat
 
 Le document de référence est le **prompt de lancement v1.0** (Tier 2). Il n'est
