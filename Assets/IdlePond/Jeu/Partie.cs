@@ -103,10 +103,15 @@ namespace IdlePond.Jeu
         ///
         /// Un `dt` qui n'est pas strictement positif — recul d'horloge, NaN — est ignoré,
         /// jamais rattrapé à l'envers.
+        ///
+        /// Le temps joué est du temps déjà compté : le dernier instant avance avec lui, sans
+        /// quoi un retour de pause créditerait une seconde fois tout ce qui a été joué
+        /// depuis la dernière sauvegarde.
         /// </summary>
         public void Avancer(double dt)
         {
             if (!(dt > 0)) return;
+            DernierInstantMs = Math.Max(DernierInstantMs, horloge.MaintenantMs());
             var resultat = Reducteur.TickDetaille(Etat, dt);
             Etat = RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches);
             EtatChange?.Invoke(Etat);

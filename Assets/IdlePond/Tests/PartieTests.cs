@@ -201,6 +201,24 @@ namespace IdlePond.Tests
             Assert.That(ecoute.Changements, Is.Empty);
         }
 
+        [Test, Description("le temps joué n’est pas crédité une seconde fois au retour de pause")]
+        public void Le_temps_joue_n_est_pas_credite_une_seconde_fois()
+        {
+            var horloge = new HorlogeFigee(DEPART);
+            var partie = new Partie(horloge, EtatDeTravail.Creer());
+            for (var i = 0; i < 120; i++)
+            {
+                horloge.AvancerMs(1000);
+                partie.Avancer(1.0);
+            }
+            Assert.That(partie.DernierInstantMs, Is.EqualTo(DEPART + 120_000));
+
+            var avant = partie.Etat;
+            partie.Reprendre();
+            Assert.That(partie.Etat, Is.SameAs(avant));
+            Assert.That(partie.Retour, Is.Null);
+        }
+
         [Test, Description("reprendre crédite l’absence en un pas et annonce le retour")]
         public void Reprendre_credite_l_absence_en_un_pas_et_annonce_le_retour()
         {
