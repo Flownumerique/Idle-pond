@@ -1,0 +1,71 @@
+# Le jeu Unity — EditMode (noyau, simulateur, parité avec le TypeScript) et
+# PlayMode (la mare se joue), dans l'éditeur réel via game-ci.
+#
+# Il faut une licence Unity en secrets du dépôt : UNITY_LICENSE (contenu du
+# .ulf), UNITY_EMAIL, UNITY_PASSWORD. Sans eux, le job ne lance rien et le dit
+# par un avertissement : il ne passe pas au rouge.
+name: Unity
+
+on:
+  push:
+    branches: [main]
+    paths: &chemins
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+      - '.github/workflows/unity.yml'
+  pull_request:
+    paths: *chemins
+  workflow_dispatch:
+
+concurrency:
+  group: unity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Licence Unity fournie ?
+        id: licence
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          if [ -n "$UNITY_LICENSE" ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Unity non vérifié::secret UNITY_LICENSE absent, tests Unity non lancés (outils/unity.sh en local)."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.licence.outputs.presente == 'true'
+
+      - uses: actions/cache@v4
+        if: steps.licence.outputs.presente == 'true'
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-
+
+      - name: Tests EditMode et PlayMode
+        if: steps.licence.outputs.presente == 'true'
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: all
+          artifactsPath: resultats
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Tests Unity
+
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.licence.outputs.presente == 'true'
+        with:
+          name: resultats-unity
+          path: resultats
