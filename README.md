@@ -37,7 +37,7 @@ outils/unity.sh tests EditMode PariteTests     # un filtre
 outils/unity.sh tests PlayMode                 # la mare se joue
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
-outils/unity.sh captures                                              # PNG de contrôle dans Logs/captures/
+outils/unity.sh captures                                              # 17 PNG de contrôle dans Logs/captures/ (dont portrait-surface.png)
 ```
 
 Les scènes (`Assets/IdlePond/Scenes/`) sont **produites par le générateur**,

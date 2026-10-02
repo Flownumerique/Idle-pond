@@ -49,7 +49,7 @@ complète ou interrompue) : le noyau ne les suit pas encore, une seule est livr�
 
 ## Les espèces — `Especes/{id}-i{0,1}.png`
 
-Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` : 7 px (rang 0) à
+Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division entière) : 7 px (rang 0) à
 12 px (rang 20) ; cadre `(longueur + 2) × (2·⌈0,2·longueur⌉ + 5)`. Livrées : vairon, loche
 (7 px, cadre 9 × 9).
 
@@ -74,3 +74,15 @@ Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` : 7 px (r
 - **Noue** : eau `#4A8070` `#34645C` `#244A48`, vase `#28221A`, racines `#3A2C20` `#5C4630`,
   rayon `#96BE96`.
 - **Eau** : blanc `#FFFFFF`.
+
+## Rendu et contrôle
+
+- Les lumières de bande sont des `Light2D` de type **Sprite** (un sprite blanc de 1 × 1
+  étiré aux dimensions de la bande), pas des lumières Freeform : l'intérieur d'une Freeform
+  exige le paquet `com.unity.2d.common`, absent du projet.
+- La texture du rendu en pixels a un tampon de profondeur de **24 bits** (exigé par URP 2D).
+  Sous `-nographics` (tests en batch), `RenduPixel` calcule les dimensions mais ne crée
+  aucune texture : le vrai chemin de la texture n'est exercé que par `outils/unity.sh captures`.
+- `outils/unity.sh captures` écrit **17 PNG** dans `Logs/captures/` : portrait et paysage ×
+  niveaux 1, 4, 16, 256 × avec et sans voile (16), plus `portrait-surface.png` (2 bandes
+  ouvertes : la berge, les racines et les rayons).
