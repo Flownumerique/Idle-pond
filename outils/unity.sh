@@ -3,6 +3,7 @@
 #
 #   outils/unity.sh tests [EditMode|PlayMode] [filtre]
 #   outils/unity.sh methode Espace.Classe.Methode
+#   outils/unity.sh captures
 #
 # Unity refuse d'ouvrir en batch un projet déjà ouvert : fermer l'éditeur avant.
 set -uo pipefail
@@ -57,8 +58,23 @@ PY
     [ $CODE -ne 0 ] && erreurs_de_compilation
     exit $CODE
     ;;
+  captures)
+    # Les captures de contrôle (spec DA §7) : PlayMode AVEC affichage, pas de -nographics.
+    RESULTATS="$SORTIE/resultats-captures.xml"
+    rm -f "$RESULTATS"
+    IDLEPOND_CAPTURES=1 "$UNITY" -batchmode -projectPath "$PROJET" -runTests -testPlatform PlayMode \
+      -testFilter CapturesDeControle \
+      -testResults "$(cd "$SORTIE" && pwd -W 2>/dev/null || pwd)/resultats-captures.xml" \
+      -logFile "$(cd "$SORTIE" && pwd -W 2>/dev/null || pwd)/unity.log"
+    if [ ! -f "$RESULTATS" ]; then
+      echo "Aucun résultat : la compilation a probablement échoué." >&2
+      erreurs_de_compilation
+      exit 1
+    fi
+    ls -1 "$RACINE/Logs/captures"
+    ;;
   *)
-    echo "usage : outils/unity.sh tests [EditMode|PlayMode] [filtre] | methode Espace.Classe.Methode" >&2
+    echo "usage : outils/unity.sh tests [EditMode|PlayMode] [filtre] | methode Espace.Classe.Methode | captures" >&2
     exit 2
     ;;
 esac

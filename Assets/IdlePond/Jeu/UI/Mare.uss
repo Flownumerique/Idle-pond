@@ -15,9 +15,9 @@
  * Propriétés USS volontairement évitées : pas de grille, pas d'espacement entre enfants,
  * pas de bordure en pointillés — seulement des boîtes flexibles et des marges.
  *
- * Tout ce qui n'est pas la scène a un fond plein : la caméra ne dessine que dans le
- * rectangle de #scene, et un pixel d'interface transparent ailleurs montrerait n'importe
- * quoi. #scene, lui, reste transparent pour laisser voir la caméra.
+ * Tout ce qui n'est pas la scène a un fond plein : un pixel d'interface transparent
+ * montrerait n'importe quoi. #scene a le sien aussi, mais la scène y est une image de fond
+ * (la texture du rendu pixel, posée par SceneDeLaMare) : l'élément n'est plus transparent.
  */
 
 /* ─── Les tailles, par disposition ─────────────────────────────────────────────── */
@@ -172,6 +172,9 @@
 .scene {
     height: 40%;
     flex-shrink: 0;
+    /* La texture du rendu pixel est posée en fond par SceneDeLaMare ; ce fond couvre les
+       moins de k pixels qui restent autour. */
+    background-color: var(--couleur-abysse);
 }
 
 .defilement {

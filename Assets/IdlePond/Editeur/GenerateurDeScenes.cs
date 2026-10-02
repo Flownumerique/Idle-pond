@@ -114,10 +114,15 @@ namespace IdlePond.Editeur
             cam.backgroundColor = Eau();
             cam.transform.position = new Vector3(3.6f, -2f, -10f);
             camera.AddComponent<AudioListener>();
+            // La caméra principale ne fait plus que nettoyer l'écran : la scène a sa propre
+            // caméra, qui dessine dans une texture (spec DA §2).
+            cam.cullingMask = 0;
 
             var racine = new GameObject("SceneDeLaMare").AddComponent<SceneDeLaMare>();
             var serialise = new SerializedObject(racine);
-            serialise.FindProperty("cameraDeScene").objectReferenceValue = cam;
+            var catalogue = AssetDatabase.LoadAssetAtPath<CatalogueDArt>(Chemins.CATALOGUE);
+            if (catalogue == null) Debug.LogWarning("IdlePond : " + Chemins.CATALOGUE + " est absent, la scène se dessinera vide. Lancer « IdlePond ▸ Générer les sprites provisoires ».");
+            serialise.FindProperty("catalogue").objectReferenceValue = catalogue;
             serialise.ApplyModifiedPropertiesWithoutUndo();
 
             new GameObject("Boucle").AddComponent<Boucle>();
