@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-09-18
+**Tenue à jour le** : 2026-10-02
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -9,9 +9,12 @@ chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`
 
 ## Où on en est
 
-**Jalon v0.4.** La Noue est jouable de bout en bout : creuser, convaincre, monter,
-grandir, insuffler, renaître. Une scène dessinée au trait montre le héros, ses marques et
-ses bancs. Les sauvegardes migrent depuis la v4.
+**Le jeu est dans Unity** ; la version web est archivée dans `archive/web/`. La Noue est
+jouable de bout en bout : creuser, convaincre, monter, grandir, insuffler, renaître. Sa
+scène est en **pixel art** (URP 2D, lumières 2D) avec des sprites **provisoires** générés
+par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`. Les chiffres
+du tableau ci-dessous et la section *Tests* datent du 2026-09-18, du temps du web : ils
+n'ont pas été remesurés depuis le portage.
 
 | | Livré | Sur le papier |
 |---|---|---|
@@ -28,6 +31,20 @@ et hors périmètre de tout chantier listé ici (voir *Gelé*).
 ---
 
 ## Les chantiers, dans l'ordre
+
+### 0. La direction artistique, ce qui reste
+
+Le socle est posé (scène en pixel art, gabarits, sprites provisoires). Restent, en tête
+des chantiers :
+
+- **L'habillage hybride de l'UI** : le décor et l'interface partagent une même eau, il
+  faut l'habiller dans le même registre.
+- **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
+  `docs/da/gabarits.md`, sans toucher au code.
+- **Les assises II à VI et leurs milieux** : lave et électricité comprises (GDD §15.2,
+  amendement du 2026-10-02), chacune laissant sa marque sur le héros.
+
+---
 
 ### 1. Le renommage transverse — `souffle` / `insuffler` / `renaissance`
 

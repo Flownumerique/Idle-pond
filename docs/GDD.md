@@ -896,6 +896,12 @@ Pas de combustion sous l'eau. Le registre steampunk passe par la plomberie sous 
 La lumière est la variable de progression la plus lisible. Elle décroît continûment jusqu'à ce que la seule lumière restante soit celle que le mana produit.
 Interface : effets avant chiffres, numérisation progressive au rythme de la voix.
 L'inversion d'échelle est le cœur de la DA. Vue de la berge : une flaque entre les racines.
+Amendement du 2026-10-02 (spec DA pixel art) : les assises profondes peuvent être des milieux
+élémentaires — lave, électricité —, toujours rendus par des phénomènes réels : volcanisme
+sous-marin sans flamme (coulées en coussins, fumeurs, eau qui rougeoie), bioélectricité
+(organes électriques, décharges). « Dominante vitale », « pas magique » et « pas de combustion
+sous l'eau » restent la règle. Chaque milieu laisse son adaptation sur le corps du héros
+(§15.1) : une marque, une teinte, une lumière.
 15.3 À produire, et c'est bloquant
 Anatomie du corps de base et points d'ancrage des couches.
 Silhouette d'un temple par élément, et lisibilité du palier chargé qui en découle.

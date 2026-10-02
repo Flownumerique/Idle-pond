@@ -14,9 +14,8 @@ qui s'adapte au portrait et au paysage.
 
 La Noue est jouable de bout en bout dans Unity : creuser, convaincre, monter,
 grandir, insuffler, renaître, quitter, revenir et recevoir le crédit hors ligne.
-La scène est encore la **coupe au trait** portée du web ; la direction
-artistique (pixel art 2D) est le chantier suivant, et `SceneDeLaMare` est la
-seule classe qu'elle remplace.
+La scène est en **pixel art** (URP 2D, ≈240 px de large, lumières 2D) avec des sprites **provisoires** générés
+par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 
 Le portage depuis le web est fini — spec
 [`docs/superpowers/specs/2026-09-27-portage-unity-design.md`](docs/superpowers/specs/2026-09-27-portage-unity-design.md).
@@ -37,6 +36,8 @@ outils/unity.sh tests EditMode                 # noyau, simulateur, jeu, parité
 outils/unity.sh tests EditMode PariteTests     # un filtre
 outils/unity.sh tests PlayMode                 # la mare se joue
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
+outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
+outils/unity.sh captures                                              # PNG de contrôle dans Logs/captures/
 ```
 
 Les scènes (`Assets/IdlePond/Scenes/`) sont **produites par le générateur**,

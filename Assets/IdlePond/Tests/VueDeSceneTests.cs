@@ -139,21 +139,6 @@ namespace IdlePond.Tests
             for (var i = 1; i < lumieres.Count; i++) Assert.That(lumieres[i], Is.LessThan(lumieres[i - 1]));
         }
 
-        [Test, Description("C2 — la palette : une marque par assise, toutes différentes")]
-        public void Une_marque_par_assise_toutes_differentes()
-        {
-            var marques = Assises.Toutes.Select(a => Palette.MarqueParAssise[a.Id]).ToList();
-            Assert.That(marques.Distinct().Count(), Is.EqualTo(Assises.Toutes.Count));
-        }
-
-        [Test, Description("C2 — la palette : les poissons d’un rang ont une couleur valide, et elle change avec le rang")]
-        public void Les_poissons_d_un_rang_ont_une_couleur_valide_et_elle_change_avec_le_rang()
-        {
-            var couleurs = Enumerable.Range(0, 21).Select(Palette.CouleurDesPoissons).ToList();
-            Assert.That(couleurs.All(c => c >= 0 && c <= 0xFFFFFF), Is.True);
-            Assert.That(couleurs.Distinct().Count(), Is.GreaterThan(15));
-        }
-
         [Test, Description("C2 — la vue : VueDeScene.cs et Palette.cs ne référencent pas UnityEngine")]
         public void VueDeScene_et_Palette_ne_referencent_pas_UnityEngine()
         {

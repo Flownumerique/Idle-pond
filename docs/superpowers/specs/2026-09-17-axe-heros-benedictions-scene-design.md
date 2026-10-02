@@ -63,6 +63,8 @@ Le tout tient dans le contrat existant : noyau pur, un pas pour `dt = 8 h`, dét
 
 **[D12] Échelle du héros : `1 + 0,25 × log₂(niveau)`.** Niveau 1 → ×1, 16 → ×2, 256 → ×3. Lisible à chaque achat au début, bornée à la fin.
 
+> Remplacé le 2026-10-02 par les quatre stades dessinés de la spec DA pixel art (§3) : 21 / 28 / 42 / 63 px aux niveaux 1 / 4 / 16 / 256.
+
 ## 4. Ce que ce chantier ne fait pas
 
 - **Le contenu des assises II à VI.** Le jeu livré reste la Noue et ses six paliers (`PALIERS_LIVRES`). Débloquer « de nouveaux poissons et ainsi de suite » sur la durée est un chantier de contenu, à planifier après celui-ci. La scène est écrite pour 62 paliers et 6 palettes dès maintenant, pour ne pas être réécrite.
