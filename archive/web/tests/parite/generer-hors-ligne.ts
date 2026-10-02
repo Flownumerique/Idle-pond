@@ -17,7 +17,7 @@ import { capHorsLigneCourantHeures, crediterHorsLigne } from '../../src/adaptate
 import { etatDeTravail } from '../etat-de-travail'
 import { instantane } from './instantane'
 
-const FICHIER = fileURLToPath(new URL('../../Assets/IdlePond/Tests/Reference/hors-ligne.json', import.meta.url))
+const FICHIER = fileURLToPath(new URL('../../../../Assets/IdlePond/Tests/Reference/hors-ligne.json', import.meta.url))
 
 const DEPART_MS = 1_700_000_000_000
 const HEURE_MS = 3_600_000

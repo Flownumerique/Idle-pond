@@ -2,108 +2,98 @@
 
 Jeu idle/incrémental narratif. Le joueur **descend** dans des assises
 sous-marines de plus en plus profondes, **convainc** des espèces qui deviennent
-ses générateurs, et accumule de la **Foi** émise par ses fidèles. Quand le
-palier suivant coûte plus que ce que sa contenance peut porter, il retourne dans
-l'œuf : c'est l'**éclosion**.
+ses générateurs, et recueille le **Souffle** qu'exhale le vivant. Quand le
+palier suivant coûte plus que ce que sa contenance peut porter, il rentre et
+revient plus grand : c'est la **renaissance**.
 
-React 19 · TypeScript · Vite · Phaser 3 · Zustand 5 · `break_infinity.js` ·
-Tailwind 4.
+Unity 6 (`6000.6.3f1`) · C# 9 · UI Toolkit · NUnit (Unity Test Framework) ·
+Newtonsoft.Json. Cibles : **mobile (Android, iOS) et PC**, une seule interface
+qui s'adapte au portrait et au paysage.
 
-## État : jalon v0.2 amendé v1.1 — « la Noue est jouable »
+## État
 
-La Noue, ses six paliers, le vairon, la loche et l'épinoche ; la boucle complète
-débloquer → améliorer → éclore ; les succès avec le plancher de cadence du §8.4,
-mesuré et non promis. Depuis le 2026-09-17 : le héros **grandit** (quatrième
-achat, en mana), la Foi achète des **bénédictions** permanentes, et une
-**scène** dessinée au trait montre le héros, ses marques et ses bancs. Sans
-technique : c'est le jalon v0.4.
+La Noue est jouable de bout en bout dans Unity : creuser, convaincre, monter,
+grandir, insuffler, renaître, quitter, revenir et recevoir le crédit hors ligne.
+La scène est encore la **coupe au trait** portée du web ; la direction
+artistique (pixel art 2D) est le chantier suivant, et `SceneDeLaMare` est la
+seule classe qu'elle remplace.
 
-Comptes rendus, mesures et décisions ouvertes :
-[`docs/jalon-v0.1.md`](docs/jalon-v0.1.md) ·
-[`docs/jalon-v0.2.md`](docs/jalon-v0.2.md) ·
-[`docs/amendement-v1.1.md`](docs/amendement-v1.1.md) ·
-[`docs/politique-du-simulateur.md`](docs/politique-du-simulateur.md).
+Le portage depuis le web est fini — spec
+[`docs/superpowers/specs/2026-09-27-portage-unity-design.md`](docs/superpowers/specs/2026-09-27-portage-unity-design.md).
+Le C# est la seule vérité de la mécanique ; l'ancienne version web (React,
+Phaser, Vite) dort dans [`archive/web/`](archive/web/README.md) et ne sert plus
+ni à jouer ni à tester.
 
-> **Temps actif ≠ temps écoulé.** Le noyau ne mesure que l'écoulé — le
-> calendaire du §5.4, cible ~600 h. L'actif est le sous-ensemble où le joueur
-> est là, cible ~38 h, et seul le simulateur peut le connaître : il sait quand
-> son joueur revient. Les jalons v0.1 et v0.2 les ont confondus ; c'est corrigé,
-> et un test l'interdit.
-
-> Les **noms** de la Noue sont du canon (amendement v1.1 §2.E). Les **phrases**
-> restent provisoires et vivent toutes dans
-> `src/donnees/textes-provisoires.ts` ; aucune n'entre dans un identifiant ni
-> dans une sauvegarde. `[P] P3` reste ouvert pour les assises II à VI.
+Ce qui reste à faire, dans l'ordre : [`docs/ROADMAP.md`](docs/ROADMAP.md). Le
+lexique et la fiction : [`docs/CODEX.md`](docs/CODEX.md). Qui fait foi sur quoi :
+[`docs/PRESEANCE.md`](docs/PRESEANCE.md).
 
 ## Commandes
 
+L'éditeur Unity doit être **fermé** sur ce projet pour tout ce qui passe en batch :
+
 ```sh
-npm install
-npm test          # 197 tests : architecture, déterminisme, équivalence de pas,
-                  # seuils, contenance, persistance, canon, horloge, hors
-                  # ligne, plancher de cadence, simulateur, héros,
-                  # bénédictions, scène
-npm run build     # tsc -b && vite build
-npm run lint
-npm run dev       # le jeu
+outils/unity.sh tests EditMode                 # noyau, simulateur, jeu, parité, canon
+outils/unity.sh tests EditMode PariteTests     # un filtre
+outils/unity.sh tests PlayMode                 # la mare se joue
+outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 ```
 
-### Unity (portage en cours, spec `docs/superpowers/specs/2026-09-27-portage-unity-design.md`)
+Les scènes (`Assets/IdlePond/Scenes/`) sont **produites par le générateur**,
+menu « IdlePond ▸ Générer les scènes », et versionnées telles quelles. On ne les
+retouche jamais à la main : on modifie `GenerateurDeScenes.cs` et on relance.
 
-L'éditeur Unity 6000.6.3f1 doit être **fermé** sur ce projet :
+La CI (`.github/workflows/unity.yml`) lance EditMode et PlayMode dans l'éditeur
+via game-ci. Elle a besoin des secrets `UNITY_LICENSE`, `UNITY_EMAIL` et
+`UNITY_PASSWORD` ; sans eux, elle s'arrête sur un avertissement.
 
-```sh
-outils/unity.sh tests EditMode            # noyau C#, simulateur, parité avec le TypeScript
-outils/unity.sh tests EditMode PariteTests
-npx tsx tests/parite/generer-references.ts # ne se relance pas : les références sont figées
+## Découpage
+
+```
+Assets/IdlePond/
+├── Noyau/        PUR (asmdef sans moteur). Reducteur.Tick(etat, dt) -> etat.
+│                 Decimal (break_infinity porté), PRNG, données, constantes.
+├── Simulateur/   Éditeur seulement. Réutilise le noyau tel quel.
+├── Jeu/          Le monde impur : Partie, Persistance, Horloge, HorsLigne,
+│                 Boucle, Amorce ; Scene/ (VueDeScene pure, SceneDeLaMare) ;
+│                 UI/ (UI Toolkit : Mare.uxml, un contrôleur par panneau).
+├── Editeur/      GenerateurDeScenes.
+├── Scenes/       Demarrage.unity, Mare.unity — générées.
+├── Tests/        EditMode. Reference/ : les parties figées produites par le
+│                 TypeScript, que PariteTests et PariteHorsLigneTests rejouent.
+└── TestsDeJeu/   PlayMode.
 ```
 
 ## Le contrat
 
 Le document de référence est le **prompt de lancement v1.0** (Tier 2). Il n'est
-pas dans le dépôt ; il est à relire avant chaque session de build et il remplace
-toute mémoire de session. Quatre règles s'y vérifient en premier, et un test
-existe pour chacune :
+pas dans le dépôt ; il est à relire avant chaque session de build. Ses règles se
+vérifient par des tests :
 
-1. `noyau/` est pur — aucun `Date.now`, aucun `Math.random`, aucun import React
-   ou Phaser (`tests/architecture.test.ts`).
+1. `Noyau/` est pur : aucune horloge, aucun `System.Random`, aucun `UnityEngine`,
+   aucun champ statique modifiable (`ArchitectureTests`, et l'asmdef).
 2. Toute mécanique du cœur se calcule en **un seul pas** pour `dt = 8 h`
-   (`tests/equivalence-de-pas.test.ts`).
-3. La technique baisse les **coûts** et automatise ; la bénédiction monte la
+   (`EquivalenceDePasTests`).
+3. La technique baisse les **coûts** et automatise ; l'insufflation monte la
    **production**, et c'est la seule chose qu'elle fait. Aucun nœud, **aucun
-   succès** ne franchit cette ligne (`tests/canon.test.ts`).
+   succès** ne franchit cette ligne (`CanonTests`).
 4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est
-   calibré contre cette lecture (`tests/seuils.test.ts`).
+   calibré contre cette lecture (`SeuilsTests`).
 5. Le plafond ne monte **que** par séjour prolongé en mana dense : le ×47,1 par
-   éclosion émerge de `A∞` et `τ₀`, il n'est écrit nulle part
-   (`tests/contenance.test.ts`).
+   renaissance émerge de `A∞` et `τ₀`, il n'est écrit nulle part
+   (`ContenanceTests`).
 6. Aucun paramètre « à mesurer » n'est inventé : il est une constante nommée,
-   commentée `// [P] graine`, dans `src/noyau/constantes.ts` — un seul endroit.
+   commentée `// [P] graine`, dans `Noyau/Constantes.cs` — un seul endroit.
+7. **Parité** : les parties de référence du TypeScript se rejouent à 1e-9 près.
+   Une parité rouge ne se corrige ni en relâchant la tolérance, ni en
+   régénérant les références : on cherche l'écart.
 
-Le lexique s'applique **au code, aux identifiants et à l'UI**, pas seulement à
-la prose : *assise*, *palier*, *banc*, *place*, *éclosion*, *densité*, *Foi*,
-*bénédiction*, *technique*, *acclimatation*, *conviction*, *franchissement*.
-Jamais « ponte », ni « prestige », ni « niveau », ni un nom générique de couche à
-l'écran. Deux tests le vérifient — l'un sur le code de `src/`, l'autre sur les
-chaînes réellement affichées.
+Le lexique du Codex §5 s'applique **au code, aux identifiants et à l'écran** ;
+`LexiqueTests` et `CanonTests` balaient le noyau, le jeu, les `.uxml`, les `.uss`
+et `Textes.cs` contre les mots morts et les mots interdits à l'écran.
 
-## Découpage
+## Documents à la racine
 
-```
-src/
-├── noyau/          PUR. tick(state, dt) -> state. Aucune dépendance à React,
-│                   Phaser, DOM ou horloge.
-├── donnees/        Contenu pur, sans logique.
-├── adaptateurs/    Le monde impur vit ici, et nulle part ailleurs.
-├── etat/           Zustand : miroir de l'état, aucune logique métier.
-├── ui/             React + Tailwind.
-├── scene/          Phaser — pas avant que l'assise I soit mesurée.
-└── simulateur/     Réutilise noyau/ tel quel.
-```
-
-## Note sur les documents à la racine
-
-`DOCUMENTATION.md`, `AMELIORATIONS.md`, `BIOMES.md` et `POISSONS.md` décrivent
-l'ancien projet — gemmes, perles, zones, Corail de Prestige — dont le §9 du
-prompt de lancement a supprimé tous les systèmes. Ils sont conservés en l'état
-mais **ne font plus autorité**. À archiver ou réécrire avant la v0.2.
+`Game design.pdf` et `ZONES ET BIOMES v4.docx` sont des sources anciennes. Les
+notes de l'ancien projet (gemmes, perles, zones) sont dans
+`docs/archive/ancien-projet/` et **ne font plus autorité**.

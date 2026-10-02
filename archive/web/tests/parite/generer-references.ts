@@ -24,7 +24,7 @@ import { etatDeTravail } from '../etat-de-travail'
 import { rejoue } from '../joueur'
 import { d, insufflation, instantane } from './instantane'
 
-const DOSSIER = fileURLToPath(new URL('../../Assets/IdlePond/Tests/Reference/', import.meta.url))
+const DOSSIER = fileURLToPath(new URL('../../../../Assets/IdlePond/Tests/Reference/', import.meta.url))
 
 /* ─── Le lexique du Codex ───────────────────────────────────────────────── */
 
