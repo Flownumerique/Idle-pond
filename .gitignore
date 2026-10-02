@@ -39,3 +39,7 @@ dist-ssr
 *.booproj
 *.unityproj
 .vscode/
+
+# Outils de session (compagnon de conception, navigateur de test)
+.superpowers/
+.playwright-mcp/
