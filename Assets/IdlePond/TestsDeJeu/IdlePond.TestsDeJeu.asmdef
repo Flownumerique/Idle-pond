@@ -1,7 +1,7 @@
 {
     "name": "IdlePond.TestsDeJeu",
     "rootNamespace": "IdlePond.TestsDeJeu",
-    "references": ["UnityEngine.TestRunner", "IdlePond.Noyau", "IdlePond.Jeu"],
+    "references": ["UnityEngine.TestRunner", "IdlePond.Noyau", "IdlePond.Jeu", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.2D.Runtime"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

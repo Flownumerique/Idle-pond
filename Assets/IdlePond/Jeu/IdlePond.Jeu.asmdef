@@ -1,7 +1,7 @@
 {
     "name": "IdlePond.Jeu",
     "rootNamespace": "IdlePond.Jeu",
-    "references": ["IdlePond.Noyau"],
+    "references": ["IdlePond.Noyau", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.2D.Runtime"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

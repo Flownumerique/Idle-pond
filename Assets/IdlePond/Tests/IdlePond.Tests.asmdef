@@ -1,7 +1,7 @@
 {
     "name": "IdlePond.Tests",
     "rootNamespace": "IdlePond.Tests",
-    "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner", "IdlePond.Noyau", "IdlePond.Simulateur", "IdlePond.Jeu"],
+    "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner", "IdlePond.Noyau", "IdlePond.Simulateur", "IdlePond.Jeu", "IdlePond.Editeur", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.2D.Runtime"],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

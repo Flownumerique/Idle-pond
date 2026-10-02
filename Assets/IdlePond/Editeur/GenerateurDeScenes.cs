@@ -47,6 +47,7 @@ namespace IdlePond.Editeur
                 Directory.CreateDirectory(DOSSIER_DES_SCENES);
                 Directory.CreateDirectory(Path.GetDirectoryName(REGLAGES_DU_PANNEAU));
                 AssetDatabase.Refresh();
+                ConfigurationURP.Appliquer();
 
                 var reglages = CreerOuMettreAJourLesReglagesDuPanneau();
                 GenererDemarrage();

@@ -1,7 +1,7 @@
 {
     "name": "IdlePond.Editeur",
     "rootNamespace": "IdlePond.Editeur",
-    "references": ["IdlePond.Noyau", "IdlePond.Jeu"],
+    "references": ["IdlePond.Noyau", "IdlePond.Jeu", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.2D.Runtime"],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
