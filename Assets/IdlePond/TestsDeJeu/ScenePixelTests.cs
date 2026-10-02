@@ -154,5 +154,39 @@ namespace IdlePond.TestsDeJeu
             yield return new WaitForSeconds(1.2f);
             Assert.That(scene.Voile.Opacite, Is.EqualTo(Voile.OPACITE).Within(1e-4));
         }
+
+        [UnityTest]
+        public IEnumerator Une_partie_chargee_n_a_pas_mue()
+        {
+            partie.Remplacer(EtatDeLaNoue(16, false));
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.StadeAffiche, Is.EqualTo(2));
+            Assert.That(scene.Heros.MuesJouees, Is.EqualTo(0));
+            Assert.That(scene.Heros.NombreDeMarques, Is.EqualTo(1));
+        }
+
+        [UnityTest]
+        public IEnumerator Le_heros_mue_en_grandissant_jamais_en_renaissant()
+        {
+            partie.Remplacer(EtatDeLaNoue(3, false));
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            yield return null;
+            yield return null;
+            partie.Remplacer(EtatDeLaNoue(4, false));
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.MuesJouees, Is.EqualTo(1), "le passage au niveau 4 est une mue");
+            Assert.That(scene.Heros.StadeAffiche, Is.EqualTo(1));
+            partie.Remplacer(EtatDeLaNoue(1, false));
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.MuesJouees, Is.EqualTo(1), "redevenir petit n'est pas une mue");
+            Assert.That(scene.Heros.StadeAffiche, Is.EqualTo(0));
+            Assert.That(scene.Heros.NombreDeMarques, Is.EqualTo(1), "la marque survit");
+        }
     }
 }

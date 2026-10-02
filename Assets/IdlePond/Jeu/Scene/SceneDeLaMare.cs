@@ -20,6 +20,7 @@ namespace IdlePond.Jeu.Scene
         public Eclairage Eclairage { get; private set; }
         public Nageurs Nageurs { get; private set; }
         public Voile Voile { get; private set; }
+        public HerosEnPixels Heros { get; private set; }
 
         Partie partie;
         bool vueAJour;
@@ -38,6 +39,7 @@ namespace IdlePond.Jeu.Scene
             Eclairage = new Eclairage(transform);
             Nageurs = new Nageurs(transform, catalogue);
             Voile = new Voile(transform, catalogue);
+            Heros = new HerosEnPixels(transform, catalogue);
         }
 
         void OnEnable()
@@ -62,6 +64,7 @@ namespace IdlePond.Jeu.Scene
         {
             Nageurs?.Animer(Time.time);
             Voile?.Animer(Time.deltaTime);
+            Heros?.Animer(Time.time);
         }
 
         void SurEtatChange(EtatJeu _) => vueAJour = false;
@@ -92,8 +95,12 @@ namespace IdlePond.Jeu.Scene
             decor.Dessiner(v);
             Eclairage.Dessiner(v);
             Nageurs.Dessiner(v);
+            Heros.Dessiner(v);
             var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
             Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
+            // Le redessin remet les pièces au départ : on les replace avant que l'image soit rendue.
+            Nageurs.Animer(Time.time);
+            Heros.Animer(Time.time);
         }
 
         void Cadrer()
