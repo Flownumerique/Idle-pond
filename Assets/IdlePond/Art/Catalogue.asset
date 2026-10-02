@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c44c5ff320cdc488c36dc04d8c1c4c, type: 3}
+  m_Name: Catalogue
+  m_EditorClassIdentifier: IdlePond.Jeu::IdlePond.Jeu.Scene.CatalogueDArt
+  Corps:
+  - Sprites:
+    - {fileID: 21300000, guid: 623bdae77cdc76747938e2c775768595, type: 3}
+    - {fileID: 21300000, guid: 5d75af248604ad445a2e59eefc674bf0, type: 3}
+    - {fileID: 21300000, guid: 6686f4aa5f7424a4680c8215d6f3e6d4, type: 3}
+    - {fileID: 21300000, guid: 13ed27a8b5755b74796c0e820390171f, type: 3}
+  - Sprites:
+    - {fileID: 21300000, guid: 9b7e328daefa6844d812ed43ffc06935, type: 3}
+    - {fileID: 21300000, guid: 34f0e55a594e8f444b3e02b0a3b2a460, type: 3}
+    - {fileID: 21300000, guid: fa5db22db28c40a409f725c571ad3a34, type: 3}
+    - {fileID: 21300000, guid: 270b87bc0f21d7f489d89e55f6454dcf, type: 3}
+  - Sprites:
+    - {fileID: 21300000, guid: c8d5a1b81d8734547bee1dbde6d86693, type: 3}
+    - {fileID: 21300000, guid: a75879bded873a241b7b553382f8c5ac, type: 3}
+    - {fileID: 21300000, guid: de43678ddc5a8a14b964814a1e45d41a, type: 3}
+    - {fileID: 21300000, guid: ba1e166cb0a17024a80ee24bbe7d3e49, type: 3}
+  - Sprites:
+    - {fileID: 21300000, guid: 2abbc737ca16a3040880d2514a22d9c5, type: 3}
+    - {fileID: 21300000, guid: 267b5106c06f893479c2e7b6a5e65304, type: 3}
+    - {fileID: 21300000, guid: eee5a6e830cf4af488ef25e5648997f9, type: 3}
+    - {fileID: 21300000, guid: f780632545d59ea40b011f4a1cb98f01, type: 3}
+  Marques:
+  - Assise: noue
+    ParStade:
+    - {fileID: 21300000, guid: 067e09e041ebefa42967e1a83b9436b0, type: 3}
+    - {fileID: 21300000, guid: 01a225904eab34047a23d65c08108b98, type: 3}
+    - {fileID: 21300000, guid: c2caa2667c00d0b42acd77ac68b96452, type: 3}
+    - {fileID: 21300000, guid: 4177eeff528b38e41818188732203101, type: 3}
+  Especes:
+  - Espece: vairon
+    Images:
+    - {fileID: 21300000, guid: 8a0ac850edbf65d47beb478c31c6aee7, type: 3}
+    - {fileID: 21300000, guid: 39574f7f7cbaca145b6a4efa0b2d5f0c, type: 3}
+  - Espece: loche
+    Images:
+    - {fileID: 21300000, guid: 7c4ffb31ebf07fd4286042e55fdafa0c, type: 3}
+    - {fileID: 21300000, guid: de2cf9c4b5c4442409a7326bce818bea, type: 3}
+  Decors:
+  - Assise: noue
+    Fond: {fileID: 21300000, guid: db07656bf8e30cd40911d1d4c53b770a, type: 3}
+    Berge: {fileID: 21300000, guid: 8134562a103dfd34ab558abc833f0815, type: 3}
+    Rayons: {fileID: 21300000, guid: 3183c194ed9c68c46b98c28d52934f54, type: 3}
+  Voile: {fileID: 21300000, guid: ce926a3c1b461854f9a1480b4d7078dc, type: 3}
+  Eclat: {fileID: 21300000, guid: 476a13a1bb0d3334a95ba9f298c2a4b9, type: 3}
