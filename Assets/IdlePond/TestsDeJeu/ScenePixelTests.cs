@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using IdlePond.Jeu;
 using IdlePond.Jeu.Scene;
 using IdlePond.Noyau;
@@ -7,6 +8,7 @@ using IdlePond.Noyau.Donnees;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -108,6 +110,23 @@ namespace IdlePond.TestsDeJeu
             var bandes = 0;
             foreach (Transform enfant in decor) if (enfant.name.StartsWith("Bande ")) bandes++;
             Assert.That(bandes, Is.EqualTo(Assises.PALIERS_LIVRES));
+        }
+
+        [UnityTest]
+        public IEnumerator Seules_les_lumieres_des_bandes_visibles_sont_allumees()
+        {
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            scene.ImposerLaTaille(1080, 768);
+            partie.Remplacer(EtatDeLaNoue(1, false));
+            yield return null;
+            yield return null;
+            Assert.That(scene.Eclairage.Ambiante.lightType, Is.EqualTo(Light2D.LightType.Global));
+            Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(Assises.PALIERS_LIVRES));
+            // Portrait : 153 px de haut, six bandes de 56 → les bandes 3, 4 et 5.
+            var allumees = scene.Eclairage.ParBande.Select((l, i) => (l, i)).Where(x => x.l.enabled).Select(x => x.i).ToList();
+            Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
+            Assert.That(scene.Eclairage.ParBande[5].intensity, Is.LessThan(scene.Eclairage.ParBande[3].intensity));
         }
     }
 }

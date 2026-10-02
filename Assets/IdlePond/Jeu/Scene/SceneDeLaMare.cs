@@ -17,6 +17,7 @@ namespace IdlePond.Jeu.Scene
 
         public RenduPixel Rendu { get; private set; }
         public VueDeScene Vue { get; private set; }
+        public Eclairage Eclairage { get; private set; }
 
         Partie partie;
         bool vueAJour;
@@ -32,6 +33,7 @@ namespace IdlePond.Jeu.Scene
         {
             Rendu = new RenduPixel(transform);
             decor = new Decor(transform, catalogue);
+            Eclairage = new Eclairage(transform);
         }
 
         void OnEnable()
@@ -46,7 +48,11 @@ namespace IdlePond.Jeu.Scene
             if (partie != null) partie.EtatChange -= SurEtatChange;
         }
 
-        void OnDestroy() => Rendu?.Dispose();
+        void OnDestroy()
+        {
+            Rendu?.Dispose();
+            Eclairage?.Dispose();
+        }
 
         void SurEtatChange(EtatJeu _) => vueAJour = false;
 
@@ -74,6 +80,7 @@ namespace IdlePond.Jeu.Scene
         void Redessiner(VueDeScene v)
         {
             decor.Dessiner(v);
+            Eclairage.Dessiner(v);
         }
 
         void Cadrer()
@@ -82,6 +89,8 @@ namespace IdlePond.Jeu.Scene
             if (Rendu.Redimensionner(largeur, hauteur)) affichee = null;
             if (Rendu.Dimensions == null) return;
             Rendu.Cadrer(Vue != null ? Vue.Paliers.Count : 0);
+            var (premiere, derniere) = Cadrage.BandesVisibles(Rendu.Champ, Vue != null ? Vue.Paliers.Count : 0);
+            Eclairage.Activer(premiere, derniere);
             if (Rendu.Texture != null && cadre != null && cadre.panel != null && affichee != Rendu.Dimensions) Afficher();
         }
 

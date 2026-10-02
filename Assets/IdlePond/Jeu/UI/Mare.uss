@@ -168,7 +168,7 @@
     flex-shrink: 1;
 }
 
-/* 40 % du haut, en paysage comme en portrait. Transparent : la caméra y dessine. */
+/* 40 % du haut, en paysage comme en portrait. La texture du rendu pixel y est posée en fond par SceneDeLaMare. */
 .scene {
     height: 40%;
     flex-shrink: 0;

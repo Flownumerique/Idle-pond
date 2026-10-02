@@ -48,6 +48,13 @@ namespace IdlePond.TestsDeJeu
                         Ecrire(scene.Rendu, Path.Combine(dossier, $"{cadre.Nom}-niveau{niveau}{(trouble ? "-trouble" : "")}.png"));
                     }
             }
+
+            // La surface, deux paliers ouverts : la berge, les racines et les rayons, en haut de la section.
+            scene.ImposerLaTaille(1080, 768);
+            var surface = ScenePixelTests.EtatDeLaNoue(1, false);
+            partie.Remplacer(surface with { Cycle = surface.Cycle with { PaliersOuverts = 2 } });
+            yield return new WaitForSeconds(1.2f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-surface.png"));
             ServicesDePartie.Oublier();
         }
 

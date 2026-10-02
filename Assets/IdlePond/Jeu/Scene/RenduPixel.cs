@@ -38,7 +38,8 @@ namespace IdlePond.Jeu.Scene
             // Sans carte graphique (batch -nographics), `RenderTexture.Create` échoue et
             // journalise une erreur : on garde les dimensions, qui se calculent, sans texture.
             if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) return true;
-            Texture = new RenderTexture(d.Largeur, d.Hauteur, 0, RenderTextureFormat.ARGB32)
+            // Profondeur et pochoir exigés par le rendu 2D (graphe de rendu), sans quoi les lumières ne s'appliquent pas.
+            Texture = new RenderTexture(d.Largeur, d.Hauteur, 24, RenderTextureFormat.ARGB32)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
