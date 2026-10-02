@@ -128,5 +128,31 @@ namespace IdlePond.TestsDeJeu
             Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
             Assert.That(scene.Eclairage.ParBande[5].intensity, Is.LessThan(scene.Eclairage.ParBande[3].intensity));
         }
+
+        [UnityTest]
+        public IEnumerator Chaque_espece_nage_avec_l_effectif_de_son_niveau()
+        {
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            partie.Remplacer(EtatDeLaNoue(1, false));
+            yield return null;
+            yield return null;
+            // vairon niveau 40 → 1 + ⌊log₂ 40⌋ = 6 ; loche niveau 12 → 4.
+            Assert.That(scene.Nageurs.Nombre, Is.EqualTo(10));
+        }
+
+        [UnityTest]
+        public IEnumerator Le_voile_monte_quand_l_eau_se_trouble()
+        {
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            scene.ImposerLaTaille(1080, 768);
+            partie.Remplacer(EtatDeLaNoue(1, false));
+            yield return new WaitForSeconds(0.2f);
+            Assert.That(scene.Voile.Opacite, Is.EqualTo(0f));
+            partie.Remplacer(EtatDeLaNoue(1, true));
+            yield return new WaitForSeconds(1.2f);
+            Assert.That(scene.Voile.Opacite, Is.EqualTo(Voile.OPACITE).Within(1e-4));
+        }
     }
 }

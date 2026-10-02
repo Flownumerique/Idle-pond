@@ -18,6 +18,8 @@ namespace IdlePond.Jeu.Scene
         public RenduPixel Rendu { get; private set; }
         public VueDeScene Vue { get; private set; }
         public Eclairage Eclairage { get; private set; }
+        public Nageurs Nageurs { get; private set; }
+        public Voile Voile { get; private set; }
 
         Partie partie;
         bool vueAJour;
@@ -34,6 +36,8 @@ namespace IdlePond.Jeu.Scene
             Rendu = new RenduPixel(transform);
             decor = new Decor(transform, catalogue);
             Eclairage = new Eclairage(transform);
+            Nageurs = new Nageurs(transform, catalogue);
+            Voile = new Voile(transform, catalogue);
         }
 
         void OnEnable()
@@ -52,6 +56,12 @@ namespace IdlePond.Jeu.Scene
         {
             Rendu?.Dispose();
             Eclairage?.Dispose();
+        }
+
+        void Update()
+        {
+            Nageurs?.Animer(Time.time);
+            Voile?.Animer(Time.deltaTime);
         }
 
         void SurEtatChange(EtatJeu _) => vueAJour = false;
@@ -81,6 +91,9 @@ namespace IdlePond.Jeu.Scene
         {
             decor.Dessiner(v);
             Eclairage.Dessiner(v);
+            Nageurs.Dessiner(v);
+            var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
+            Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
         }
 
         void Cadrer()
@@ -91,6 +104,7 @@ namespace IdlePond.Jeu.Scene
             Rendu.Cadrer(Vue != null ? Vue.Paliers.Count : 0);
             var (premiere, derniere) = Cadrage.BandesVisibles(Rendu.Champ, Vue != null ? Vue.Paliers.Count : 0);
             Eclairage.Activer(premiere, derniere);
+            Voile.Couvrir(Rendu.Champ);
             if (Rendu.Texture != null && cadre != null && cadre.panel != null && affichee != Rendu.Dimensions) Afficher();
         }
 
