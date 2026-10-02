@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/IdlePond/Scenes/Demarrage.unity
+    guid: 7dfc71875d0f847429838852ff4110b5
+  - enabled: 1
+    path: Assets/IdlePond/Scenes/Mare.unity
+    guid: 25774246cb9472c478d76892f983f512
   m_configObjects: {}

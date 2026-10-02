@@ -11,10 +11,12 @@ using UnityEngine.UIElements;
 namespace IdlePond.Editeur
 {
     /// <summary>
-    /// IdlePond — le générateur de scènes. Les scènes ne sont jamais retouchées à la main
-    /// ni versionnées : un `.unity` est du YAML qu'on ne relit pas, alors que ce fichier
-    /// dit, en clair, ce qu'elles contiennent. Relancé, il réécrit les mêmes scènes —
-    /// les GUID, eux, ne changent pas, puisque les `.meta` existent déjà.
+    /// IdlePond — le générateur de scènes. Les scènes ne sont jamais retouchées à la main :
+    /// un `.unity` est du YAML qu'on ne relit pas, alors que ce fichier dit, en clair, ce
+    /// qu'elles contiennent. Elles sont pourtant versionnées, avec leurs `.meta`, les
+    /// réglages du panneau et les Build Settings : un clone neuf (et la CI) doit pouvoir
+    /// jouer et lancer les tests PlayMode sans passer par ce menu. Relancé, il réécrit les
+    /// mêmes scènes — les GUID, eux, ne changent pas, puisque les `.meta` existent déjà.
     ///
     /// Menu « IdlePond ▸ Générer les scènes », ou en batch :
     /// `Unity -batchmode -projectPath . -executeMethod IdlePond.Editeur.GenerateurDeScenes.Generer -quit`.
