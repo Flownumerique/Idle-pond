@@ -216,7 +216,7 @@ namespace IdlePond.Jeu.Scene
             // L'échelle s'applique à chaque coordonnée et chaque épaisseur, jamais au
             // transform : un `LineRenderer` n'a pas la même idée qu'un sprite de ce que
             // vaut une échelle héritée, et le héros doit se dessiner pareil des deux façons.
-            var e = (float)v.Heros.Echelle;
+            var e = 1f + 0.5f * v.Heros.Stade; // provisoire : cette scène est réécrite à la Tâche 4
             heros.localPosition = new Vector3(herosX * K, -herosY * K, 0);
 
             Disque(heros, 0, 0, 34, 16, Couleur(Palette.CORPS_DU_HEROS), ORDRE_CORPS, e);

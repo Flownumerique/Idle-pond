@@ -47,8 +47,8 @@ namespace IdlePond.Tests
             Assert.That(premier.Espece, Is.EqualTo(new VueDEspece(Especes.Toutes[0].Id, 0, 2)));
         }
 
-        [Test, Description("C2 — la vue : le héros porte son niveau, son échelle et ses couches")]
-        public void Le_heros_porte_son_niveau_son_echelle_et_ses_couches()
+        [Test, Description("DA §3 — la vue : le héros porte son niveau, son stade et ses couches")]
+        public void Le_heros_porte_son_niveau_son_stade_et_ses_couches()
         {
             var base_ = EtatDeTravail.Creer();
             var etat = base_ with
@@ -58,16 +58,49 @@ namespace IdlePond.Tests
             };
             var heros = VueDeScene.Depuis(etat).Heros;
             Assert.That(heros.Niveau, Is.EqualTo(16));
-            Assert.That(heros.Echelle, Is.EqualTo(2).Within(1e-9));
+            Assert.That(heros.Stade, Is.EqualTo(2));
             Assert.That(heros.Couches, Is.EqualTo(new[] { "noue" }));
         }
 
-        [Test, Description("C2 — la vue : l’échelle vaut 1 + 0,25·log₂(niveau)")]
-        public void L_echelle_vaut_1_plus_un_quart_de_log2_du_niveau()
+        [Test, Description("DA §3 — le stade change aux niveaux 4, 16 et 256")]
+        public void Le_stade_change_aux_niveaux_4_16_et_256()
         {
-            Assert.That(VueDeScene.EchelleDuHeros(1), Is.EqualTo(1));
-            Assert.That(VueDeScene.EchelleDuHeros(2), Is.EqualTo(1.25).Within(1e-9));
-            Assert.That(VueDeScene.EchelleDuHeros(256), Is.EqualTo(3).Within(1e-9));
+            var attendus = new[] { (1, 0), (3, 0), (4, 1), (15, 1), (16, 2), (255, 2), (256, 3), (100000, 3) };
+            foreach (var (niveau, stade) in attendus)
+                Assert.That(Gabarits.StadeDuNiveau(niveau), Is.EqualTo(stade), $"niveau {niveau}");
+        }
+
+        [Test, Description("DA §3 — le stade est borné à 0..3, même pour un niveau absurde")]
+        public void Le_stade_est_borne()
+        {
+            Assert.That(Gabarits.StadeDuNiveau(0), Is.EqualTo(0));
+            Assert.That(Gabarits.StadeDuNiveau(-5), Is.EqualTo(0));
+            Assert.That(Gabarits.StadeDuNiveau(int.MaxValue), Is.EqualTo(3));
+        }
+
+        [Test, Description("DA §3 — après une renaissance : stade 0, et la marque reste")]
+        public void Apres_une_renaissance_le_heros_redevient_petit_et_garde_ses_marques()
+        {
+            var etat = Reducteur.Tick(EtatDeTravail.Creer(777), 3600);
+            etat = etat with
+            {
+                Cycle = etat.Cycle with { NiveauDuHeros = 20 },
+                Permanent = etat.Permanent with { Couches = new[] { "noue" } },
+            };
+            Assert.That(VueDeScene.Depuis(etat).Heros.Stade, Is.EqualTo(2));
+            var apres = VueDeScene.Depuis(Renaissance.Renaitre(etat)).Heros;
+            Assert.That(apres.Stade, Is.EqualTo(0));
+            Assert.That(apres.Couches, Has.Member("noue"));
+        }
+
+        [Test, Description("DA §3 — une mue : le stade monte ; jamais au premier dessin ni en rapetissant")]
+        public void Une_mue_est_un_stade_qui_monte()
+        {
+            Assert.That(VueDeScene.EstUneMue(null, 2), Is.False, "une partie chargée n’a pas mué");
+            Assert.That(VueDeScene.EstUneMue(0, 1), Is.True);
+            Assert.That(VueDeScene.EstUneMue(1, 3), Is.True);
+            Assert.That(VueDeScene.EstUneMue(2, 2), Is.False);
+            Assert.That(VueDeScene.EstUneMue(3, 0), Is.False, "la renaissance n’est pas une mue");
         }
 
         [Test, Description("C2 — la vue : l’eau trouble et la saturation passent dans la vue")]
@@ -124,7 +157,11 @@ namespace IdlePond.Tests
         [Test, Description("C2 — la vue : VueDeScene.cs et Palette.cs ne référencent pas UnityEngine")]
         public void VueDeScene_et_Palette_ne_referencent_pas_UnityEngine()
         {
-            foreach (var f in new[] { "Assets/IdlePond/Jeu/Scene/VueDeScene.cs", "Assets/IdlePond/Jeu/Scene/Palette.cs" })
+            foreach (var f in new[]
+                     {
+                         "Assets/IdlePond/Jeu/Scene/VueDeScene.cs", "Assets/IdlePond/Jeu/Scene/Palette.cs",
+                         "Assets/IdlePond/Jeu/Scene/Gabarits.cs", "Assets/IdlePond/Jeu/Scene/RegistreDArt.cs",
+                     })
                 Assert.That(File.ReadAllText(f), Does.Not.Contain("using UnityEngine"));
         }
     }

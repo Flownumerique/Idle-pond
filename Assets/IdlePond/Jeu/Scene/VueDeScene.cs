@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using IdlePond.Noyau;
@@ -18,8 +17,9 @@ namespace IdlePond.Jeu.Scene
         // L'espèce débloquée que ce palier porte, ou rien.
         VueDEspece Espece);
 
-    /// `Echelle` : facteur de taille du corps — spec [D12].
-    public sealed record VueDuHeros(int Niveau, double Echelle, IReadOnlyList<string> Couches);
+    /// `Stade` : 0 à 3, la taille dessinée du corps (spec DA §3). Il remplace l'échelle
+    /// continue de la spec 2026-09-17 [D12] : le pixel art ne s'agrandit pas.
+    public sealed record VueDuHeros(int Niveau, int Stade, IReadOnlyList<string> Couches);
 
     /// <summary>
     /// IdlePond — la vue de la scène : ce que la scène dessine, sans Unity.
@@ -50,8 +50,14 @@ namespace IdlePond.Jeu.Scene
         public bool EauTroublee { get; }
         public bool Sature { get; }
 
-        /// `1 + 0,25 · log₂(niveau)` : ×1 au niveau 1, ×2 à 16, ×3 à 256.
-        public static double EchelleDuHeros(double niveau) => 1 + 0.25 * Math.Log(Math.Max(1, niveau), 2);
+        /// <summary>
+        /// La mue (spec DA §3) : le corps passe à un stade plus grand. Jamais au premier
+        /// dessin — une partie chargée n'a pas mué —, jamais en rapetissant — la renaissance
+        /// n'est pas une mue. La vue ne connaît qu'un état : c'est la scène qui retient le
+        /// stade qu'elle affiche.
+        /// </summary>
+        public static bool EstUneMue(int? stadeAffiche, int nouveauStade) =>
+            stadeAffiche.HasValue && nouveauStade > stadeAffiche.Value;
 
         /// <summary>
         /// L'effectif dessiné d'un banc : `1 + ⌊log₂ niveau⌋`, plafonné. Un logarithme,
@@ -79,7 +85,7 @@ namespace IdlePond.Jeu.Scene
             }
             return new VueDeScene(
                 paliers,
-                new VueDuHeros(etat.Cycle.NiveauDuHeros, EchelleDuHeros(etat.Cycle.NiveauDuHeros), etat.Permanent.Couches),
+                new VueDuHeros(etat.Cycle.NiveauDuHeros, Gabarits.StadeDuNiveau(etat.Cycle.NiveauDuHeros), etat.Permanent.Couches),
                 Economie.EauTroublee(etat),
                 Economie.EstSature(etat));
         }
@@ -97,7 +103,6 @@ namespace IdlePond.Jeu.Scene
             get
             {
                 if (clef != null) return clef;
-                var c = CultureInfo.InvariantCulture;
                 var sb = new StringBuilder();
                 foreach (var p in Paliers)
                 {
@@ -105,7 +110,7 @@ namespace IdlePond.Jeu.Scene
                     if (p.Espece != null) sb.Append(':').Append(p.Espece.Id).Append(':').Append(p.Espece.Rang).Append(':').Append(p.Espece.Niveau);
                     sb.Append(';');
                 }
-                sb.Append('|').Append(Heros.Niveau).Append(':').Append(Heros.Echelle.ToString("R", c))
+                sb.Append('|').Append(Heros.Niveau).Append(':').Append(Heros.Stade)
                   .Append(':').Append(string.Join(",", Heros.Couches ?? Array.Empty<string>()))
                   .Append('|').Append(EauTroublee ? 1 : 0).Append(Sature ? 1 : 0);
                 return clef = sb.ToString();
