@@ -38,6 +38,8 @@
 | `StadePrecedent` dans la vue (§6) | la scène compare au stade **déjà affiché** (`VueDeScene.EstUneMue`) | une projection pure d'un seul état ne connaît pas le précédent |
 | Étiquette `userData` (§5) | étiquette **et empreinte** SHA-1 du PNG produit | un vrai dessin déposé à la place d'un provisoire garde le `.meta` du provisoire : seule l'empreinte le distingue |
 | Bancs de vairon, loche, épinoche (§1) | vairon et loche | l'épinoche vit au palier 6 (assise II) : hors de la Noue livrée |
+| Texture de ⌈largeur/k⌉ pixels (§2) | **⌊largeur/k⌋** (`Cadrage.Dimensions`) | ⌈⌉ ferait déborder la texture de #scene ; le reste (moins de k pixels d'écran) prend le fond de #scene |
+| Captures de contrôle plein écran, 1080×1920 et 1920×1080 (§7) | captures de la **texture de #scene**, agrandie de k, à 1080×768 et 1600×430 | la scène n'occupe que 40 % de l'écran ; la capture d'écran réelle est vide en batch (essayée : `CaptureScreenshotAsTexture` après `WaitForEndOfFrame`), le contrôle de l'affichage dans #scene reste manuel |
 
 ## Review Focus
 

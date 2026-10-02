@@ -32,13 +32,14 @@ namespace IdlePond.Jeu.Scene
         SpriteRenderer corps;
         Light2D eclair;
         bool muePendante;
-        float debutDeLaMue = -10f;
+        double debutDeLaMue = -10.0;
         int stade;
         int x, y;
 
         public int? StadeAffiche { get; private set; }
         public int MuesJouees { get; private set; }
         public int NombreDeMarques => marques.Count;
+        public bool EclairAllume => eclair != null && eclair.enabled;
 
         public HerosEnPixels(Transform parent, CatalogueDArt catalogue)
         {
@@ -101,18 +102,23 @@ namespace IdlePond.Jeu.Scene
             return lueur;
         }
 
-        public void Animer(float secondes)
+        public void Animer(double horloge)
         {
             if (corps == null) return;
+            // Le calcul d'image et de respiration reste en float, mais sur une valeur bornée :
+            // un float brut perd sa précision après des heures de jeu.
+            var secondes = (float)(horloge % 3600.0);
             var image = (int)(secondes * 6) % Gabarits.IMAGES_DE_NAGE;
             corps.sprite = catalogue != null ? catalogue.CorpsDe(stade, image) : null;
             // Il respire d'un pixel, sur 2,2 s : jamais d'un demi-pixel.
             var monte = Mathf.Repeat(secondes, 2.2f) < 1.1f ? 1 : 0;
             racine.localPosition = new Vector3(x, y + monte, 0f);
-            AnimerLaMue(secondes);
+            AnimerLaMue(horloge);
         }
 
-        void AnimerLaMue(float secondes)
+        // La mue se date sur l'horloge entière (double) : le retour à zéro de la valeur bornée
+        // ne doit pas fausser son âge.
+        void AnimerLaMue(double secondes)
         {
             if (muePendante)
             {
@@ -127,6 +133,7 @@ namespace IdlePond.Jeu.Scene
                     eclair.lightType = Light2D.LightType.Point;
                     eclair.color = Color.white;
                 }
+                eclair.enabled = true;
                 eclair.transform.localPosition = new Vector3(cadre.Largeur / 2f, cadre.Hauteur / 2f, 0f);
                 eclair.pointLightOuterRadius = cadre.Largeur;
                 foreach (var e in eclats) if (e.Rendu != null) Object.Destroy(e.Rendu.gameObject);
@@ -139,7 +146,9 @@ namespace IdlePond.Jeu.Scene
                     eclats.Add(new Eclat { Rendu = rendu, Depart = depart, Sens = i % 2 == 0 ? -1 : 1 });
                 }
             }
-            var age = secondes - debutDeLaMue;
+            var age = (float)(secondes - debutDeLaMue);
+            // L'éclair éteint ne coûte plus rien au rendu ; le prochain réveille la lumière.
+            if (eclair != null) eclair.enabled = age < DUREE_DE_L_ECLAIR;
             if (eclair != null) eclair.intensity = Mathf.Max(0f, INTENSITE_DE_L_ECLAIR * (1f - age / DUREE_DE_L_ECLAIR));
             for (var i = eclats.Count - 1; i >= 0; i--)
             {

@@ -21,7 +21,13 @@ namespace IdlePond.Editeur
                 catalogue = ScriptableObject.CreateInstance<CatalogueDArt>();
                 AssetDatabase.CreateAsset(catalogue, Chemins.CATALOGUE);
             }
-            Sprite S(string relatif) => AssetDatabase.LoadAssetAtPath<Sprite>(Chemins.ART + "/" + relatif);
+            Sprite S(string relatif)
+            {
+                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(Chemins.ART + "/" + relatif);
+                // Un chemin attendu qui ne charge rien : on le dit, sinon la scène reste muette à cet endroit.
+                if (sprite == null) Debug.LogWarning("Catalogue d'art : aucun sprite à " + Chemins.ART + "/" + relatif);
+                return sprite;
+            }
             var stades = Enumerable.Range(0, Gabarits.LONGUEURS_DU_CORPS.Count).ToList();
 
             catalogue.Corps = stades.Select(s => new CatalogueDArt.Images

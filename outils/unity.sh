@@ -62,6 +62,9 @@ PY
     # Les captures de contrôle (spec DA §7) : PlayMode AVEC affichage, pas de -nographics.
     RESULTATS="$SORTIE/resultats-captures.xml"
     rm -f "$RESULTATS"
+    # Le dossier est vidé avant la course : une capture d'une course précédente ne doit pas
+    # passer pour une capture de celle-ci.
+    rm -rf "$RACINE/Logs/captures"
     IDLEPOND_CAPTURES=1 "$UNITY" -batchmode -projectPath "$PROJET" -runTests -testPlatform PlayMode \
       -testFilter CapturesDeControle \
       -testResults "$(cd "$SORTIE" && pwd -W 2>/dev/null || pwd)/resultats-captures.xml" \
@@ -71,7 +74,12 @@ PY
       erreurs_de_compilation
       exit 1
     fi
-    ls -1 "$RACINE/Logs/captures"
+    # Un test en échec (ou en erreur) rend un XML : on ne l'avale pas.
+    if grep -q 'result="Failed' "$RESULTATS" || ! grep -q 'failed="0"' "$RESULTATS"; then
+      echo "Les captures ont échoué : voir $RESULTATS" >&2
+      exit 1
+    fi
+    ls -1 "$RACINE/Logs/captures" 2>/dev/null || echo "(aucune capture produite)"
     ;;
   *)
     echo "usage : outils/unity.sh tests [EditMode|PlayMode] [filtre] | methode Espace.Classe.Methode | captures" >&2

@@ -83,6 +83,9 @@ Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division
 - La texture du rendu en pixels a un tampon de profondeur de **24 bits** (exigé par URP 2D).
   Sous `-nographics` (tests en batch), `RenduPixel` calcule les dimensions mais ne crée
   aucune texture : le vrai chemin de la texture n'est exercé que par `outils/unity.sh captures`.
-- `outils/unity.sh captures` écrit **17 PNG** dans `Logs/captures/` : portrait et paysage ×
-  niveaux 1, 4, 16, 256 × avec et sans voile (16), plus `portrait-surface.png` (2 bandes
-  ouvertes : la berge, les racines et les rayons).
+- `outils/unity.sh captures` écrit **18 PNG** dans `Logs/captures/` (le dossier est vidé avant
+  la course) : portrait et paysage × niveaux 1, 4, 16, 256 × avec et sans voile (16), plus
+  `portrait-surface.png` (2 bandes ouvertes : la berge, les racines et les rayons) et
+  `portrait-mue.png` (0,15 s après le passage du niveau 3 au 4 : l'éclair et les écailles).
+  Aucune capture d'écran : elle est vide en batch, le chemin réel de #scene se contrôle à la
+  main, éditeur ouvert.

@@ -32,6 +32,11 @@ namespace IdlePond.Jeu.Scene
         public Sprite MarqueDe(string assise, int stade) =>
             A(Marques?.FirstOrDefault(m => m != null && m.Assise == assise)?.ParStade, stade);
 
+        /// Les images d'une espèce, cherchées UNE fois : la scène les garde ensuite sur chaque
+        /// nageur, au lieu de refaire la recherche à chaque image.
+        public Sprite[] ImagesDeLEspece(string espece) =>
+            Especes?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images;
+
         public Sprite EspeceDe(string espece, int image) =>
             A(Especes?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images, image);
 

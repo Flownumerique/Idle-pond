@@ -36,6 +36,12 @@ namespace IdlePond.TestsDeJeu
 
             var dossier = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Logs", "captures"));
             Directory.CreateDirectory(dossier);
+
+            // Pas de capture d'écran ici : essayée (CaptureScreenshotAsTexture après
+            // WaitForEndOfFrame, depuis une coroutine d'objet de jeu), elle rend une image vide
+            // en batch. Le chemin réel de #scene (mesure, fond posé par l'interface) se
+            // contrôle donc À LA MAIN, éditeur ouvert.
+
             foreach (var cadre in CADRES)
             {
                 scene.ImposerLaTaille(cadre.Largeur, cadre.Hauteur);
@@ -48,6 +54,15 @@ namespace IdlePond.TestsDeJeu
                         Ecrire(scene.Rendu, Path.Combine(dossier, $"{cadre.Nom}-niveau{niveau}{(trouble ? "-trouble" : "")}.png"));
                     }
             }
+
+            // Une mue en cours : le niveau 3 s'installe, puis le 4 franchit le stade — l'éclair et
+            // les écailles, 0,15 s après.
+            scene.ImposerLaTaille(1080, 768);
+            partie.Remplacer(ScenePixelTests.EtatDeLaNoue(3, false));
+            yield return new WaitForSeconds(1.2f);
+            partie.Remplacer(ScenePixelTests.EtatDeLaNoue(4, false));
+            yield return new WaitForSeconds(0.15f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-mue.png"));
 
             // La surface, deux paliers ouverts : la berge, les racines et les rayons, en haut de la section.
             scene.ImposerLaTaille(1080, 768);

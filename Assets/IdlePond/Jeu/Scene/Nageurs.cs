@@ -16,6 +16,8 @@ namespace IdlePond.Jeu.Scene
             public Trajet Trajet;
             public string Espece;
             public int Largeur;
+            public int Bande;
+            public Sprite[] Images;
         }
 
         readonly Transform racine;
@@ -41,26 +43,33 @@ namespace IdlePond.Jeu.Scene
                 if (p.Espece == null) continue;
                 var longueur = Gabarits.LongueurDEspece(p.Espece.Rang);
                 var largeur = Gabarits.CadreDUnPoisson(longueur).Largeur;
+                var images = catalogue.ImagesDeLEspece(p.Espece.Id);
                 var effectif = VueDeScene.EffectifDesPoissons(p.Espece.Niveau);
                 for (var numero = 0; numero < effectif; numero++)
                 {
                     var trajet = Nage.TrajetDe(p.Index, numero, longueur);
-                    var rendu = Briques.Poser(racine, p.Espece.Id, catalogue.EspeceDe(p.Espece.Id, 0), trajet.X0, trajet.Y, OrdreDeRendu.NAGEURS);
-                    tous.Add(new Nageur { Rendu = rendu, Trajet = trajet, Espece = p.Espece.Id, Largeur = largeur });
+                    var rendu = Briques.Poser(racine, p.Espece.Id, images != null && images.Length > 0 ? images[0] : null, trajet.X0, trajet.Y, OrdreDeRendu.NAGEURS);
+                    tous.Add(new Nageur { Rendu = rendu, Trajet = trajet, Espece = p.Espece.Id, Largeur = largeur, Bande = p.Index, Images = images });
                 }
             }
         }
 
-        public void Animer(float secondes)
+        public int BandeDe(int numero) => tous[numero].Bande;
+        public Vector3 PositionDe(int numero) => tous[numero].Rendu.transform.localPosition;
+
+        /// Seuls les nageurs des bandes visibles bougent : les autres ne se voient pas, les
+        /// animer coûterait pour rien. Le temps est un double, comme dans `Nage.Position` : un
+        /// float perdrait sa précision au fil des heures de jeu.
+        public void Animer(double secondes, int premiere = 0, int derniere = int.MaxValue)
         {
             foreach (var n in tous)
             {
-                if (n.Rendu == null) continue;
+                if (n.Rendu == null || n.Bande < premiere || n.Bande > derniere) continue;
                 var (x, versLaDroite) = Nage.Position(n.Trajet, secondes);
                 n.Rendu.flipX = !versLaDroite;
                 n.Rendu.transform.localPosition = new Vector3(versLaDroite ? x : x + n.Largeur, n.Trajet.Y, 0f);
-                var image = (int)(secondes * 4 + n.Trajet.Phase * 3) % Gabarits.IMAGES_D_ESPECE;
-                var sprite = catalogue.EspeceDe(n.Espece, image);
+                var image = (int)((secondes * 4 + n.Trajet.Phase * 3) % Gabarits.IMAGES_D_ESPECE);
+                var sprite = n.Images != null && image < n.Images.Length ? n.Images[image] : null;
                 if (sprite != null) n.Rendu.sprite = sprite;
             }
         }

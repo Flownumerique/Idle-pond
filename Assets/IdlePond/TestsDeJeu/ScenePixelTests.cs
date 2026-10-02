@@ -188,5 +188,49 @@ namespace IdlePond.TestsDeJeu
             Assert.That(scene.Heros.StadeAffiche, Is.EqualTo(0));
             Assert.That(scene.Heros.NombreDeMarques, Is.EqualTo(1), "la marque survit");
         }
+
+        [UnityTest]
+        public IEnumerator Un_nageur_hors_champ_n_est_pas_anime()
+        {
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            // Portrait : six bandes ne tiennent pas, la première sort du cadre ; les nageurs
+            // vivent dans les bandes 0 et 3, la seconde reste visible.
+            scene.ImposerLaTaille(1080, 768);
+            partie.Remplacer(EtatDeLaNoue(1, false));
+            yield return null;
+            yield return null;
+            var (premiere, derniere) = Cadrage.BandesVisibles(scene.Rendu.Champ, Assises.PALIERS_LIVRES);
+            Assert.That(premiere, Is.GreaterThan(0), "la bande du haut doit être hors champ");
+            int cache = -1, visible = -1;
+            for (var i = 0; i < scene.Nageurs.Nombre; i++)
+            {
+                var b = scene.Nageurs.BandeDe(i);
+                if (b < premiere && cache < 0) cache = i;
+                if (b >= premiere && b <= derniere && visible < 0) visible = i;
+            }
+            Assert.That(cache, Is.GreaterThanOrEqualTo(0), "un nageur hors champ");
+            Assert.That(visible, Is.GreaterThanOrEqualTo(0), "un nageur dans le champ");
+            var avantCache = scene.Nageurs.PositionDe(cache);
+            var avantVisible = scene.Nageurs.PositionDe(visible);
+            yield return new WaitForSeconds(1.5f);
+            Assert.That(scene.Nageurs.PositionDe(cache), Is.EqualTo(avantCache), "hors champ : immobile");
+            Assert.That(scene.Nageurs.PositionDe(visible), Is.Not.EqualTo(avantVisible), "dans le champ : il nage");
+        }
+
+        [UnityTest]
+        public IEnumerator L_eclair_de_la_mue_s_eteint_apres_son_flash()
+        {
+            partie.Remplacer(EtatDeLaNoue(3, false));
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            yield return null;
+            partie.Remplacer(EtatDeLaNoue(4, false));
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.EclairAllume, Is.True, "l'éclair brille pendant la mue");
+            yield return new WaitForSeconds(0.7f);
+            Assert.That(scene.Heros.EclairAllume, Is.False, "puis la lumière est éteinte");
+        }
     }
 }

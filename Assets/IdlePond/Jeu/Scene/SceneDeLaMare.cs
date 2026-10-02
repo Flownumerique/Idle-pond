@@ -29,7 +29,12 @@ namespace IdlePond.Jeu.Scene
         UIDocument document;
         VisualElement cadre;
         float prochaineRecherche;
-        DimensionsDuRendu affichee;
+        (DimensionsDuRendu Dimensions, int Largeur, int Hauteur) affichee;
+        // Le dernier cadrage appliqué : on ne le refait que si la taille ou le nombre de bandes
+        // change, ou si un redessin a recréé les lumières.
+        DimensionsDuRendu cadrageDe;
+        int cadrageBandes = -1;
+        int premiereVisible, derniereVisible = int.MaxValue;
         Vector2Int? tailleImposee;
 
         void Awake()
@@ -62,9 +67,10 @@ namespace IdlePond.Jeu.Scene
 
         void Update()
         {
-            Nageurs?.Animer(Time.time);
+            var horloge = Time.timeAsDouble;
+            Nageurs?.Animer(horloge, premiereVisible, derniereVisible);
             Voile?.Animer(Time.deltaTime);
-            Heros?.Animer(Time.time);
+            Heros?.Animer(horloge);
         }
 
         void SurEtatChange(EtatJeu _) => vueAJour = false;
@@ -99,20 +105,28 @@ namespace IdlePond.Jeu.Scene
             var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
             Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
             // Le redessin remet les pièces au départ : on les replace avant que l'image soit rendue.
-            Nageurs.Animer(Time.time);
-            Heros.Animer(Time.time);
+            Nageurs.Animer(Time.timeAsDouble, premiereVisible, derniereVisible);
+            Heros.Animer(Time.timeAsDouble);
+            // Les lumières viennent d'être recréées : le cadrage doit les rallumer.
+            cadrageBandes = -1;
         }
 
         void Cadrer()
         {
             if (!TailleDuCadre(out var largeur, out var hauteur)) return;
-            if (Rendu.Redimensionner(largeur, hauteur)) affichee = null;
+            if (Rendu.Redimensionner(largeur, hauteur)) affichee = default;
             if (Rendu.Dimensions == null) return;
-            Rendu.Cadrer(Vue != null ? Vue.Paliers.Count : 0);
-            var (premiere, derniere) = Cadrage.BandesVisibles(Rendu.Champ, Vue != null ? Vue.Paliers.Count : 0);
-            Eclairage.Activer(premiere, derniere);
-            Voile.Couvrir(Rendu.Champ);
-            if (Rendu.Texture != null && cadre != null && cadre.panel != null && affichee != Rendu.Dimensions) Afficher();
+            var bandes = Vue != null ? Vue.Paliers.Count : 0;
+            if (cadrageDe != Rendu.Dimensions || cadrageBandes != bandes)
+            {
+                cadrageDe = Rendu.Dimensions;
+                cadrageBandes = bandes;
+                Rendu.Cadrer(bandes);
+                (premiereVisible, derniereVisible) = Cadrage.BandesVisibles(Rendu.Champ, bandes);
+                Eclairage.Activer(premiereVisible, derniereVisible);
+                Voile.Couvrir(Rendu.Champ);
+            }
+            if (Rendu.Texture != null && cadre != null && cadre.panel != null && affichee != (Rendu.Dimensions, largeur, hauteur)) Afficher(largeur, hauteur);
         }
 
         /// La taille de #scene en pixels d'écran. Le panneau couvre tout l'écran, quelle que
@@ -144,14 +158,18 @@ namespace IdlePond.Jeu.Scene
             if (Time.unscaledTime < prochaineRecherche) return;
             prochaineRecherche = Time.unscaledTime + 0.5f;
             if (document == null) document = FindFirstObjectByType<UIDocument>();
-            cadre = document != null && document.rootVisualElement != null
+            var trouve = document != null && document.rootVisualElement != null
                 ? document.rootVisualElement.Q<VisualElement>("scene")
                 : null;
+            // Un #scene reconstruit est un autre élément, sans fond : il faut le lui reposer.
+            if (trouve != cadre) affichee = default;
+            cadre = trouve;
         }
 
-        /// La texture en fond de #scene, à sa taille exacte de k × texture, centrée : chaque
-        /// pixel du dessin couvre k × k pixels d'écran.
-        void Afficher()
+        /// La texture en fond de #scene, à sa taille exacte de k × texture : chaque pixel du
+        /// dessin couvre k × k pixels d'écran. Centrée à un nombre ENTIER de pixels d'écran :
+        /// `Center` pourrait tomber sur un demi-pixel et brouiller le pixel art.
+        void Afficher(int largeurPx, int hauteurPx)
         {
             var d = Rendu.Dimensions;
             var parPixel = cadre.panel.visualTree.worldBound.width / Screen.width;
@@ -159,9 +177,11 @@ namespace IdlePond.Jeu.Scene
             cadre.style.backgroundSize = new StyleBackgroundSize(new BackgroundSize(
                 new Length(d.Largeur * d.Facteur * parPixel), new Length(d.Hauteur * d.Facteur * parPixel)));
             cadre.style.backgroundRepeat = new StyleBackgroundRepeat(new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat));
-            cadre.style.backgroundPositionX = new StyleBackgroundPosition(new BackgroundPosition(BackgroundPositionKeyword.Center));
-            cadre.style.backgroundPositionY = new StyleBackgroundPosition(new BackgroundPosition(BackgroundPositionKeyword.Center));
-            affichee = d;
+            var decalageX = (largeurPx - d.Largeur * d.Facteur) / 2;
+            var decalageY = (hauteurPx - d.Hauteur * d.Facteur) / 2;
+            cadre.style.backgroundPositionX = new StyleBackgroundPosition(new BackgroundPosition(BackgroundPositionKeyword.Left, new Length(decalageX * parPixel)));
+            cadre.style.backgroundPositionY = new StyleBackgroundPosition(new BackgroundPosition(BackgroundPositionKeyword.Top, new Length(decalageY * parPixel)));
+            affichee = (d, largeurPx, hauteurPx);
         }
     }
 }

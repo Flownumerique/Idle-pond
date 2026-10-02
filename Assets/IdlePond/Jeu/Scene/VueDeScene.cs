@@ -32,7 +32,7 @@ namespace IdlePond.Jeu.Scene
     /// </summary>
     public sealed class VueDeScene
     {
-        /// Au-delà, le banc ne grossit plus : il resterait illisible dans une bande de 72.
+        /// Au-delà, le banc ne grossit plus : il resterait illisible dans une bande de 56.
         public const int POISSONS_MAX_PAR_GROUPE = 14;
 
         string clef;
@@ -95,8 +95,8 @@ namespace IdlePond.Jeu.Scene
         /// <summary>
         /// Une clé de comparaison : deux vues qui dessinent la même chose ont la même clé.
         /// En C#, les `record` ne comparent pas leurs listes ; le TypeScript comparait le
-        /// JSON de la vue, et une chaîne coûte moins qu'un redessin. Les flottants sont
-        /// écrits en « R » avec la culture invariante : jamais d'écart de locale.
+        /// JSON de la vue, et une chaîne coûte moins qu'un redessin. Il n'y a que des entiers,
+        /// des identifiants et des booléens dans la clé : aucune écriture de flottant.
         /// </summary>
         public string Clef
         {
