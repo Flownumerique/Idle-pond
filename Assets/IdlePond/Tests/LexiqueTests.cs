@@ -12,6 +12,12 @@ namespace IdlePond.Tests
     {
         static readonly string[] Dossiers = { "Assets/IdlePond/Noyau", "Assets/IdlePond/Simulateur" };
 
+        /// Le code que le joueur ne lit pas mais qui nomme ce qu'il lit : le jeu (interface
+        /// et scène) obéit au lexique comme le noyau. Les gardes de MODÈLE MORT plus bas
+        /// restent sur `Dossiers` : `Partie.Convaincre` est un geste du joueur, pas un
+        /// vestige de l'ancien modèle de bancs.
+        static readonly string[] DossiersDeCode = { "Assets/IdlePond/Noyau", "Assets/IdlePond/Simulateur", "Assets/IdlePond/Jeu" };
+
         /// Codex §5, « Les mots morts » : ni en identifiant, ni à l'écran.
         static readonly string[] MotsMorts =
         {
@@ -32,10 +38,10 @@ namespace IdlePond.Tests
         /// Codex §7 : « bénédiction » survit une fois, comme terme de fiction.
         const string ExceptionDeFiction = "la bénédiction de l’esprit";
 
-        [Test, Description("aucun mot mort dans un identifiant du noyau ou du simulateur")]
+        [Test, Description("aucun mot mort dans un identifiant du noyau, du simulateur ou du jeu")]
         public void Aucun_mot_mort_dans_un_identifiant()
         {
-            var fautes = (from dossier in Dossiers
+            var fautes = (from dossier in DossiersDeCode
                           from fichier in SourceCSharp.Fichiers(dossier)
                           let code = SourceCSharp.SansCommentairesNiChaines(File.ReadAllText(fichier))
                           from mot in SourceCSharp.Mots(code).Distinct()
@@ -52,6 +58,69 @@ namespace IdlePond.Tests
                 .Where(t => InterditsALEcran.IsMatch(t.Texte)
                             || MotsMortsALEcran.IsMatch(t.Texte.Replace(ExceptionDeFiction, "")))
                 .Select(t => $"{t.Ou} : « {t.Texte} »").ToList();
+            Assert.That(fautes, Is.Empty);
+        }
+
+        /* ─── L'interface : ce que le joueur lit, et ce qui le nomme ────────────────
+         * `TousLesTextesAffiches` ne voit que les chaînes de `Textes.cs`. Or le jeu
+         * écrit aussi des chaînes de son cru (une classe de style, un nom d'élément)
+         * et les `.uxml` posent des attributs : tout cela est relu ici, avec les
+         * exceptions du Codex §7. */
+
+        static IEnumerable<string> FichiersDeLInterface(string extension) =>
+            Directory.GetFiles(Path.GetFullPath("Assets/IdlePond/Jeu"), "*" + extension, SearchOption.AllDirectories).OrderBy(f => f);
+
+        static bool Fautif(string texte) =>
+            InterditsALEcran.IsMatch(texte) || MotsMortsALEcran.IsMatch(texte.Replace(ExceptionDeFiction, ""));
+
+        /// La clef de sauvegarde `couches` est un IDENTIFIANT du Codex (§5, « le code »), écrit
+        /// dans les saves : elle n'est jamais affichée. Seule `Persistance.cs` la porte.
+        static bool ClefDeSauvegarde(string fichier, string litterale) =>
+            Path.GetFileName(fichier) == "Persistance.cs" && litterale == "couches";
+
+        [Test, Description("aucune chaîne du jeu ne porte un terme de couche ni un mot mort")]
+        public void Aucune_chaine_du_jeu_ne_porte_un_terme_de_couche_ni_un_mot_mort()
+        {
+            var fautes = (from fichier in SourceCSharp.Fichiers("Assets/IdlePond/Jeu")
+                          from litterale in SourceCSharp.Litterales(File.ReadAllText(fichier))
+                          where Fautif(litterale) && !ClefDeSauvegarde(fichier, litterale)
+                          select $"{Path.GetFileName(fichier)} : « {litterale} »").ToList();
+            Assert.That(fautes, Is.Empty);
+        }
+
+        [Test, Description("les .uxml ne portent ni terme de couche ni mot mort, et ne contiennent aucun texte en dur")]
+        public void Les_uxml_ne_portent_ni_terme_de_couche_ni_mot_mort()
+        {
+            var fichiers = FichiersDeLInterface(".uxml").ToList();
+            Assert.That(fichiers, Is.Not.Empty);
+            var fautes = fichiers.Where(f => Fautif(File.ReadAllText(f))).Select(Path.GetFileName).ToList();
+            Assert.That(fautes, Is.Empty);
+
+            // « Aucun texte en dur dans le .uxml » : pas d'attribut `text`, `label` ni `tooltip`.
+            var enDur = fichiers.Where(f => Regex.IsMatch(File.ReadAllText(f), @"\b(text|label|tooltip)\s*="))
+                .Select(Path.GetFileName).ToList();
+            Assert.That(enDur, Is.Empty, "un texte posé dans un .uxml échappe à Textes.cs");
+        }
+
+        [Test, Description("les noms et les classes des .uxml et des .uss ne contiennent aucun mot mort")]
+        public void Les_noms_et_les_classes_de_l_interface_ne_contiennent_aucun_mot_mort()
+        {
+            var jetons = new List<(string Fichier, string Jeton)>();
+            foreach (var fichier in FichiersDeLInterface(".uxml"))
+                foreach (Match m in Regex.Matches(File.ReadAllText(fichier), @"\b(?:name|class)=""([^""]*)"""))
+                    foreach (var jeton in m.Groups[1].Value.Split(' ', System.StringSplitOptions.RemoveEmptyEntries))
+                        jetons.Add((Path.GetFileName(fichier), jeton));
+            foreach (var fichier in FichiersDeLInterface(".uss"))
+            {
+                // Les commentaires sont de la prose ; on ne lit que les sélecteurs et les variables.
+                var sansCommentaires = Regex.Replace(File.ReadAllText(fichier), @"/\*.*?\*/", "", RegexOptions.Singleline);
+                foreach (Match m in Regex.Matches(sansCommentaires, @"(?:\.|--)([A-Za-z][\w-]*)"))
+                    jetons.Add((Path.GetFileName(fichier), m.Groups[1].Value));
+            }
+            Assert.That(jetons, Is.Not.Empty);
+            var fautes = jetons
+                .Where(j => SourceCSharp.Mots(j.Jeton.Replace('-', '_')).Any(MotsMorts.Contains))
+                .Select(j => $"{j.Fichier} : {j.Jeton}").Distinct().ToList();
             Assert.That(fautes, Is.Empty);
         }
 

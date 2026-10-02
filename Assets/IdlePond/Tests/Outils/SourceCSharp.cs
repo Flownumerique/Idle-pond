@@ -113,6 +113,59 @@ namespace IdlePond.Tests.Outils
             sortie.Append('"');
         }
 
+        /// <summary>
+        /// Le contenu des littéraux de chaîne d'un source, commentaires écartés : ce que
+        /// `SansCommentairesNiChaines` jette, et qu'il faut précisément relire pour savoir ce
+        /// que le joueur lira. Une chaîne interpolée est lue comme une chaîne ordinaire ;
+        /// les guillemets d'un trou en feraient des fragments en trop, sans conséquence
+        /// pour une recherche de mots.
+        /// </summary>
+        public static IEnumerable<string> Litterales(string source)
+        {
+            var i = 0;
+            while (i < source.Length)
+            {
+                var c = source[i];
+                var suivant = A(source, i + 1);
+                if (c == '/' && suivant == '/') { while (i < source.Length && source[i] != '\n') i++; continue; }
+                if (c == '/' && suivant == '*')
+                {
+                    i += 2;
+                    while (i + 1 < source.Length && !(source[i] == '*' && source[i + 1] == '/')) i++;
+                    i += 2;
+                    continue;
+                }
+                if (c == '\'')
+                {
+                    var fin = source.IndexOf('\'', i + (suivant == '\\' ? 3 : 2));
+                    if (fin > i && fin - i <= 8) { i = fin + 1; continue; }
+                }
+                var verbatim = c == '@' || (c == '$' && suivant == '@');
+                if (c == '"' || ((c == '$' || c == '@') && (suivant == '"' || suivant == '@' || suivant == '$')))
+                {
+                    while (i < source.Length && source[i] != '"') i++;
+                    i++;
+                    var texte = new StringBuilder();
+                    while (i < source.Length)
+                    {
+                        var d = source[i];
+                        if (!verbatim && d == '\\') { if (A(source, i + 1) != '\0') texte.Append(source[i + 1]); i += 2; continue; }
+                        if (d == '"')
+                        {
+                            if (verbatim && A(source, i + 1) == '"') { texte.Append('"'); i += 2; continue; }
+                            i++;
+                            break;
+                        }
+                        texte.Append(d);
+                        i++;
+                    }
+                    yield return texte.ToString();
+                    continue;
+                }
+                i++;
+            }
+        }
+
         static readonly Regex Identifiant = new Regex(@"[\p{L}_][\p{L}\p{Nd}_]*", RegexOptions.CultureInvariant);
 
         /// Chaque identifiant découpé en mots : `CoutDInsufflation` → cout, d, insufflation ;
