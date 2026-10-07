@@ -49,7 +49,8 @@ namespace IdlePond.Editeur
                 Assise = a,
                 Fond = S(Chemins.Fond(a)),
                 Roche = S(Chemins.Roche(a)),
-                Berge = S(Chemins.Berge(a)),
+                // Seulement là où il y en a une : sous terre, pas de berge.
+                Berge = RegistreDArt.DecorDe(a).Berge ? S(Chemins.Berge(a)) : null,
                 Rayons = S(Chemins.Rayons(a)),
             }).ToArray();
             catalogue.Voile = S(Chemins.VOILE);

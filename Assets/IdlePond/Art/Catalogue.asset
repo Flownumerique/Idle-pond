@@ -40,6 +40,12 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 01a225904eab34047a23d65c08108b98, type: 3}
     - {fileID: 21300000, guid: c2caa2667c00d0b42acd77ac68b96452, type: 3}
     - {fileID: 21300000, guid: 4177eeff528b38e41818188732203101, type: 3}
+  - Assise: gour
+    ParStade:
+    - {fileID: 21300000, guid: 471a2979472944c41ba726079b5b4434, type: 3}
+    - {fileID: 21300000, guid: 79f7071985de82844a3f0903a06cfeec, type: 3}
+    - {fileID: 21300000, guid: 81bcf98da2fe3924d8fe7ae41c36e465, type: 3}
+    - {fileID: 21300000, guid: 8499b91e096cc7647ba0166a62085675, type: 3}
   Especes:
   - Espece: vairon
     Images:
@@ -49,11 +55,32 @@ MonoBehaviour:
     Images:
     - {fileID: 21300000, guid: 7c4ffb31ebf07fd4286042e55fdafa0c, type: 3}
     - {fileID: 21300000, guid: de2cf9c4b5c4442409a7326bce818bea, type: 3}
+  - Espece: epinoche
+    Images:
+    - {fileID: 21300000, guid: 17cec05c6ce8e384395a887ac7ee18fa, type: 3}
+    - {fileID: 21300000, guid: 414774e6e5cf8084a88a50330094dddc, type: 3}
+  - Espece: chabot
+    Images:
+    - {fileID: 21300000, guid: 7ea992148e72cc24f952f7e19dd38547, type: 3}
+    - {fileID: 21300000, guid: b55fc9774659c26448b1b659f5ba2737, type: 3}
+  - Espece: lamproie
+    Images:
+    - {fileID: 21300000, guid: f4344e7696ec8f1479ce4638fd957c48, type: 3}
+    - {fileID: 21300000, guid: eb5c6a6f6f5fc824385f60d0b1fc8d60, type: 3}
+  - Espece: ombre
+    Images:
+    - {fileID: 21300000, guid: 58a59aa6a13f2b343b17a1b68e46d000, type: 3}
+    - {fileID: 21300000, guid: b271dc00eda549f4a96ae61d71847a5a, type: 3}
   Decors:
   - Assise: noue
     Fond: {fileID: 21300000, guid: db07656bf8e30cd40911d1d4c53b770a, type: 3}
     Roche: {fileID: 21300000, guid: c8a400f0f77ebb64ea565c261fb538d3, type: 3}
     Berge: {fileID: 21300000, guid: 8134562a103dfd34ab558abc833f0815, type: 3}
     Rayons: {fileID: 21300000, guid: 3183c194ed9c68c46b98c28d52934f54, type: 3}
+  - Assise: gour
+    Fond: {fileID: 21300000, guid: b7ead7d258583904487b42405ec41cca, type: 3}
+    Roche: {fileID: 21300000, guid: 733d72c29ed39844e8148f9949ad9fa0, type: 3}
+    Berge: {fileID: 0}
+    Rayons: {fileID: 21300000, guid: 1553b41af361d0c49a211f38dcc6ab81, type: 3}
   Voile: {fileID: 21300000, guid: ce926a3c1b461854f9a1480b4d7078dc, type: 3}
   Eclat: {fileID: 21300000, guid: 476a13a1bb0d3334a95ba9f298c2a4b9, type: 3}

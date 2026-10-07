@@ -3,7 +3,7 @@
   {
    "etape": "depart",
    "instant": {
-    "tempsJeuSecondes": 1200,
+    "tempsJeuSecondes": 1200.0,
     "limiteDeContenu": 62,
     "prng": {
      "graine": 9001
@@ -26,13 +26,13 @@
       }
      },
      "productionPicParSeconde": "2.55714267240567e4",
-     "dureeSecondes": 1200,
+     "dureeSecondes": 1200.0,
      "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -76,7 +76,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -85,15 +85,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -102,10 +102,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -223,18 +223,18 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 0,
+     "heuresHorsLigneCreditees": 0.0,
      "insufflations": {}
     },
     "telemetrie": {
      "cycles": [],
-     "secondesDepuisDernierSucces": 1200,
+     "secondesDepuisDernierSucces": 1200.0,
      "intervallesEntreSucces": []
     },
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "1.4055896362407623e15",
-     "partDeContenance": 0.0007096649087759164,
+     "partDeContenance": 0.00070966490877591643,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -245,10 +245,10 @@
    "etape": "absence",
    "dernierInstantMs": 1700000000000,
    "maintenantMs": 1700007200000,
-   "capHeures": 6,
-   "secondesCreditees": 7200,
+   "capHeures": 6.0,
+   "secondesCreditees": 7200.0,
    "instant": {
-    "tempsJeuSecondes": 8400,
+    "tempsJeuSecondes": 8400.0,
     "limiteDeContenu": 62,
     "prng": {
      "graine": 9001
@@ -271,13 +271,13 @@
       }
      },
      "productionPicParSeconde": "2.55714267240567e4",
-     "dureeSecondes": 8400,
+     "dureeSecondes": 8400.0,
      "acquisDeSejour": 42.553668467586554,
      "niveauDuHeros": 1
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -321,7 +321,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -330,15 +330,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -347,10 +347,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -468,17 +468,17 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 2,
+     "heuresHorsLigneCreditees": 2.0,
      "insufflations": {}
     },
     "telemetrie": {
      "cycles": [],
-     "secondesDepuisDernierSucces": 8400,
+     "secondesDepuisDernierSucces": 8400.0,
      "intervallesEntreSucces": []
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.355366846758655e15",
+     "contenance": "4.3553668467586553e15",
      "partDeContenance": 0.00022906951133039004,
      "eauTroublee": false,
      "estBloque": false,
@@ -490,7 +490,7 @@
    "etape": "absence",
    "dernierInstantMs": 1700007200000,
    "maintenantMs": 1700008434567,
-   "capHeures": 6,
+   "capHeures": 6.0,
    "secondesCreditees": 1234.567,
    "instant": {
     "tempsJeuSecondes": 9634.567,
@@ -517,12 +517,12 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 9634.567,
-     "acquisDeSejour": 43.97145902912724,
+     "acquisDeSejour": 43.971459029127239,
      "niveauDuHeros": 1
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -566,7 +566,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -575,15 +575,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -592,10 +592,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -713,7 +713,7 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 2.342935277777778,
+     "heuresHorsLigneCreditees": 2.3429352777777779,
      "insufflations": {}
     },
     "telemetrie": {
@@ -723,7 +723,7 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.497145902912724e15",
+     "contenance": "4.4971459029127239e15",
      "partDeContenance": 0.00022185478221753094,
      "eauTroublee": false,
      "estBloque": false,
@@ -735,8 +735,8 @@
    "etape": "absence",
    "dernierInstantMs": 1700008434567,
    "maintenantMs": 1700116434567,
-   "capHeures": 6,
-   "secondesCreditees": 21600,
+   "capHeures": 6.0,
+   "secondesCreditees": 21600.0,
    "instant": {
     "tempsJeuSecondes": 31234.567,
     "limiteDeContenu": 62,
@@ -767,7 +767,7 @@
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -811,7 +811,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -820,15 +820,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -837,10 +837,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -958,7 +958,7 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 8.342935277777778,
+     "heuresHorsLigneCreditees": 8.3429352777777783,
      "insufflations": {}
     },
     "telemetrie": {
@@ -968,7 +968,7 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.858868804717805e15",
+     "contenance": "4.8588688047178046e15",
      "partDeContenance": 0.00020545227867422975,
      "eauTroublee": false,
      "estBloque": false,
@@ -980,8 +980,8 @@
    "etape": "absence",
    "dernierInstantMs": 1700116434567,
    "maintenantMs": 1700116134567,
-   "capHeures": 6,
-   "secondesCreditees": 0,
+   "capHeures": 6.0,
+   "secondesCreditees": 0.0,
    "instant": {
     "tempsJeuSecondes": 31234.567,
     "limiteDeContenu": 62,
@@ -1012,7 +1012,7 @@
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -1056,7 +1056,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -1065,15 +1065,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -1082,10 +1082,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -1203,7 +1203,7 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 8.342935277777778,
+     "heuresHorsLigneCreditees": 8.3429352777777783,
      "insufflations": {}
     },
     "telemetrie": {
@@ -1213,7 +1213,7 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.858868804717805e15",
+     "contenance": "4.8588688047178046e15",
      "partDeContenance": 0.00020545227867422975,
      "eauTroublee": false,
      "estBloque": false,
@@ -1225,8 +1225,8 @@
    "etape": "absence",
    "dernierInstantMs": 1700116134567,
    "maintenantMs": 1700116134567,
-   "capHeures": 6,
-   "secondesCreditees": 0,
+   "capHeures": 6.0,
+   "secondesCreditees": 0.0,
    "instant": {
     "tempsJeuSecondes": 31234.567,
     "limiteDeContenu": 62,
@@ -1257,7 +1257,7 @@
     },
     "permanent": {
      "densites": [
-      0,
+      0.0,
       0.13,
       0.26,
       0.39,
@@ -1301,7 +1301,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -1310,15 +1310,15 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "0e0",
      "contenanceMana": "1e14",
@@ -1327,10 +1327,10 @@
      "compteursTechnique": {
       "creusement": 18304.497315002147,
       "amelioration": 2525732319.130044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 0
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 0.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -1448,7 +1448,7 @@
       "vairon"
      ],
      "manaAmbiant": "0e0",
-     "heuresHorsLigneCreditees": 8.342935277777778,
+     "heuresHorsLigneCreditees": 8.3429352777777783,
      "insufflations": {}
     },
     "telemetrie": {
@@ -1458,7 +1458,7 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.858868804717805e15",
+     "contenance": "4.8588688047178046e15",
      "partDeContenance": 0.00020545227867422975,
      "eauTroublee": false,
      "estBloque": false,
@@ -1479,8 +1479,8 @@
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "0e0",
-     "dureeSecondes": 0,
-     "acquisDeSejour": 0,
+     "dureeSecondes": 0.0,
+     "acquisDeSejour": 0.0,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1529,7 +1529,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -1538,30 +1538,30 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.859567646966109e15",
+     "contenanceMana": "4.8595676469661093e15",
      "couches": [
       "noue",
-      "assise-2"
+      "gour"
      ],
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 18304.497315002147,
-      "amelioration": 2525733280.930044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 1
+      "amelioration": 2525733280.9300442,
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 1.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -1679,7 +1679,7 @@
       "vairon"
      ],
      "manaAmbiant": "9.98357723882811e11",
-     "heuresHorsLigneCreditees": 8.342935277777778,
+     "heuresHorsLigneCreditees": 8.3429352777777783,
      "insufflations": {}
     },
     "telemetrie": {
@@ -1697,8 +1697,8 @@
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "4.859567646966109e15",
-     "partDeContenance": 7.408066440329371e-15,
+     "contenance": "4.8595676469661093e15",
+     "partDeContenance": 7.4080664403293711E-15,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "0e0"
@@ -1709,8 +1709,8 @@
    "etape": "absence",
    "dernierInstantMs": 1700116134567,
    "maintenantMs": 1700126934567,
-   "capHeures": 6,
-   "secondesCreditees": 10800,
+   "capHeures": 6.0,
+   "secondesCreditees": 10800.0,
    "instant": {
     "tempsJeuSecondes": 45634.566999999995,
     "limiteDeContenu": 62,
@@ -1722,8 +1722,8 @@
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
-     "dureeSecondes": 10800,
-     "acquisDeSejour": 44.94227690883036,
+     "dureeSecondes": 10800.0,
+     "acquisDeSejour": 44.942276908830358,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1772,7 +1772,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -1781,30 +1781,30 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.859567646966109e15",
+     "contenanceMana": "4.8595676469661093e15",
      "couches": [
       "noue",
-      "assise-2"
+      "gour"
      ],
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 18304.497315002147,
-      "amelioration": 2525733280.930044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 1
+      "amelioration": 2525733280.9300442,
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 1.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -1949,7 +1949,7 @@
     "derives": {
      "production": "1.7350904656218495e2",
      "contenance": "2.2325960249411017e17",
-     "partDeContenance": 8.393518943585132e-12,
+     "partDeContenance": 8.3935189435851321E-12,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"
@@ -1960,8 +1960,8 @@
    "etape": "absence",
    "dernierInstantMs": 1700126934567,
    "maintenantMs": 1700486934567,
-   "capHeures": 6,
-   "secondesCreditees": 21600,
+   "capHeures": 6.0,
+   "secondesCreditees": 21600.0,
    "instant": {
     "tempsJeuSecondes": 67234.567,
     "limiteDeContenu": 62,
@@ -1973,8 +1973,8 @@
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
-     "dureeSecondes": 32400,
-     "acquisDeSejour": 47.59171456558918,
+     "dureeSecondes": 32400.0,
+     "acquisDeSejour": 47.591714565589179,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -2023,7 +2023,7 @@
       5.33,
       5.46,
       5.59,
-      5.720000000000001,
+      5.7200000000000006,
       5.8500000000000005,
       5.98,
       6.11,
@@ -2032,30 +2032,30 @@
       6.5,
       6.63,
       6.76,
-      6.890000000000001,
+      6.8900000000000006,
       7.0200000000000005,
       7.15,
       7.28,
       7.41,
       7.54,
       7.67,
-      7.800000000000001,
-      7.930000000000001
+      7.8000000000000007,
+      7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.859567646966109e15",
+     "contenanceMana": "4.8595676469661093e15",
      "couches": [
       "noue",
-      "assise-2"
+      "gour"
      ],
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 18304.497315002147,
-      "amelioration": 2525733280.930044,
-      "recrutement": 3,
-      "entretien": 0,
-      "construction": 0,
-      "renaissance": 1
+      "amelioration": 2525733280.9300442,
+      "recrutement": 3.0,
+      "entretien": 0.0,
+      "construction": 0.0,
+      "renaissance": 1.0
      },
      "noeudsTechnique": [],
      "succes": {
@@ -2200,7 +2200,7 @@
     "derives": {
      "production": "1.7350904656218495e2",
      "contenance": "2.3613472401354905e17",
-     "partDeContenance": 2.3807295314568908e-11,
+     "partDeContenance": 2.3807295314568908E-11,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"

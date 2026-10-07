@@ -46,11 +46,11 @@ namespace IdlePond.Noyau.Donnees
         }
 
         /// <summary>
-        /// L'épinoche, nommée au canon (§2.E), a suivi la répartition en tête de
-        /// l'assise II. Ses seuils la suivent : un identifiant entré au registre n'en
-        /// sort plus.
+        /// Le Gour (spec du 2026-10-07) : l'épinoche, nommée au canon (§2.E), y était
+        /// déjà passée avec ses seuils ; le chabot, la lamproie et l'ombre la rejoignent
+        /// par le même gabarit. Un identifiant entré au registre n'en sort plus.
         /// </summary>
-        static readonly IReadOnlyList<Espece> EPINOCHE = Especes.Toutes.Where(e => e.Id == "epinoche").ToList();
+        static readonly IReadOnlyList<Espece> DU_GOUR = Especes.DeLAssise("gour");
 
         /// <summary>
         /// Ce que la mare porte en tout. Le gabarit par espèce se tait dès que le joueur
@@ -67,7 +67,7 @@ namespace IdlePond.Noyau.Donnees
         {
             var liste = new List<Succes>();
 
-            foreach (var espece in Especes.DeLAssise(ASSISE).Concat(EPINOCHE))
+            foreach (var espece in Especes.DeLAssise(ASSISE).Concat(DU_GOUR))
                 liste.AddRange(Gabarit(espece));
 
             for (var rang = 0; rang < SEUILS_DE_LA_MARE.Count; rang += 1)

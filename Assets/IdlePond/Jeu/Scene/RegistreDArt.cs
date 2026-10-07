@@ -23,7 +23,9 @@ namespace IdlePond.Jeu.Scene
         bool Berge,
         int Voile,
         // La roche à creuser : le fond, la pierre, son arête claire, les fissures.
-        IReadOnlyList<int> Roche);
+        IReadOnlyList<int> Roche,
+        // L'eau file : des stries horizontales dans le fond (le Gour, sa contrainte).
+        bool Courant = false);
 
     public sealed record CouleursDePoisson(int Corps, int Dos, int Ventre);
 
@@ -47,16 +49,21 @@ namespace IdlePond.Jeu.Scene
 
         public static readonly CouleursDePoisson HEROS = new CouleursDePoisson(0xC49C5C, 0x8C683A, 0xE2CE96);
 
+        /// Une couleur par espèce, dans l'ordre des rangs ; au-delà, on reprend du début.
         static readonly CouleursDePoisson[] ESPECES_PAR_RANG =
         {
-            new CouleursDePoisson(0x96AAA0, 0x566C64, 0xC8D4CC),
-            new CouleursDePoisson(0xA08A5E, 0x6A5A3A, 0xCCB88A),
+            new CouleursDePoisson(0x96AAA0, 0x566C64, 0xC8D4CC), // le vairon
+            new CouleursDePoisson(0xA08A5E, 0x6A5A3A, 0xCCB88A), // la loche
+            new CouleursDePoisson(0x7E9A6A, 0x4A6040, 0xC8D0A0), // l'épinoche, vert argent
+            new CouleursDePoisson(0x7A6A4E, 0x4E4232, 0xA8987A), // le chabot, brun marbré
+            new CouleursDePoisson(0x5E5E50, 0x3A3A30, 0x8A8A78), // la lamproie, olive sombre
+            new CouleursDePoisson(0x8A8AA0, 0x585870, 0xC0C0D0), // l'ombre, gris violacé
         };
 
         public static CouleursDePoisson CouleursDEspece(int rang) => ESPECES_PAR_RANG[Math.Max(0, rang) % ESPECES_PAR_RANG.Length];
 
         /// Les assises qui ont leurs dessins, dans l'ordre. Les autres empruntent la Noue.
-        public static readonly IReadOnlyList<string> ASSISES_DESSINEES = new[] { "noue" };
+        public static readonly IReadOnlyList<string> ASSISES_DESSINEES = new[] { "noue", "gour" };
 
         static readonly Dictionary<string, DecorDArt> DECORS = new Dictionary<string, DecorDArt>
         {
@@ -73,12 +80,30 @@ namespace IdlePond.Jeu.Scene
                 true,
                 0x8A7A3A,
                 new[] { 0x1E2422, 0x2A322F, 0x3A4440, 0x121614 }),
+
+            // Le Gour (spec du 2026-10-07) : des galeries noyées, plus de jour. Une eau froide,
+            // bleu-gris, qui file ; la lumière part sous la dernière de la Noue et descend
+            // encore ; un calcaire plus froid et plus sombre ; ni berge, ni racines.
+            ["gour"] = new DecorDArt(
+                "gour",
+                new[] { 0.42, 0.40, 0.38, 0.36, 0.34, 0.32, 0.30, 0.28, 0.26, 0.24, 0.22, 0.20 },
+                0xB8D8E0,
+                new[] { 0x2E5866, 0x22444F, 0x17323A },
+                0x3A3A34,
+                new[] { 0x2A3236, 0x3C464A },
+                0x7FA8B0,
+                false,
+                0x5A6A5A,
+                new[] { 0x1A1E22, 0x262C31, 0x353D43, 0x101316 },
+                Courant: true),
         };
 
         static readonly Dictionary<string, MarqueDArt> MARQUES = new Dictionary<string, MarqueDArt>
         {
             // Les branchies : la première adaptation, sans teinte ni lumière.
             ["noue"] = new MarqueDArt(AncrageId.Branchies, new[] { 0x5E4426 }, null, null),
+            // Les membranes (GDD §15.1) : une crête sur le dos, pour tenir dans le courant.
+            ["gour"] = new MarqueDArt(AncrageId.Dos, new[] { 0x7A9AA2, 0x4E6870 }, null, null),
         };
 
         public static DecorDArt DecorDe(string assise)

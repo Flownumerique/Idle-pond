@@ -11,7 +11,10 @@ namespace IdlePond.Noyau.Donnees
     ///
     /// L'assise I est nommée par l'amendement v1.1 §2.E : `la Noue`, /nu/,
     /// hydronyme réel désignant une dépression humide, monosyllabe. Identifiant
-    /// `noue`. Les cinq autres attendent encore la charte phonétique — leur
+    /// `noue`. L'assise II est `le Gour`, /guʁ/ (spec du 2026-10-07) : la vasque que
+    /// l'eau creuse dans la roche des grottes, et d'où elle déborde vers la suivante —
+    /// monosyllabe comme la Noue, voyelle plus sourde : la charte descend. Identifiant
+    /// `gour`. Les quatre autres attendent encore la charte phonétique — leur
     /// identifiant reste neutre, et rien de générique ne s'affiche à l'écran (§3).
     ///
     /// [P] — répartition des paliers. Le §5.1 fixe 62 paliers en « distribution
@@ -24,7 +27,7 @@ namespace IdlePond.Noyau.Donnees
     public static class Assises
     {
         /// Nommées au fur et à mesure que la charte phonétique descend (§2.E).
-        static readonly IReadOnlyList<string> IDENTIFIANTS_D_ASSISE = new[] { "noue" };
+        static readonly IReadOnlyList<string> IDENTIFIANTS_D_ASSISE = new[] { "noue", "gour" };
 
         /// <summary>
         /// 6 / 12 / 12 / 12 / 12 / 8 — la géométrie du spec §3, et elle n'est pas
@@ -75,7 +78,11 @@ namespace IdlePond.Noyau.Donnees
         /// ait été mesurée. On coupe au milieu, jamais à la fin » (§12). Les 62 paliers
         /// existent dans la donnée parce que c'est l'économie que le simulateur mesure ;
         /// le jeu, lui, s'arrête où le contenu s'arrête.
+        ///
+        /// La Noue et le Gour depuis le 2026-10-07 (spec « assise II, le Gour »). La
+        /// règle d'engagement a été levée par l'utilisateur pour le Gour : la Noue n'est
+        /// mesurée qu'au simulateur, et la mesure en jeu reste à faire pour les deux.
         /// </summary>
-        public static readonly int PALIERS_LIVRES = Toutes[0].NombreDePaliers;
+        public static readonly int PALIERS_LIVRES = Toutes[0].NombreDePaliers + Toutes[1].NombreDePaliers;
     }
 }

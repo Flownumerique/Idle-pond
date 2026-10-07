@@ -356,7 +356,9 @@ namespace IdlePond.Jeu
                 TempsJeuSecondes: Nombre(brut["tempsJeuSecondes"], repli.TempsJeuSecondes),
                 // Une save d'un jalon antérieur reprend la limite du jalon courant : une
                 // assise livrée depuis ne doit pas rester fermée à qui jouait déjà.
-                LimiteDeContenu: Entier(brut["limiteDeContenu"], repli.LimiteDeContenu),
+                // Le plus grand des deux : une limite plus haute lue (une partie d'essai sur
+                // tout le contenu) n'est pas rabotée pour autant.
+                LimiteDeContenu: Math.Max(Entier(brut["limiteDeContenu"], repli.LimiteDeContenu), repli.LimiteDeContenu),
                 // JAMAIS lu de la save (R41) : un réglage appartient à la version du jeu,
                 // pas à la partie. `Serialiser` ne l'écrit pas ; s'il traînait dans un
                 // vieux fichier, on l'ignorerait quand même.

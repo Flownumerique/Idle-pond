@@ -34,6 +34,10 @@ namespace IdlePond.TestsDeJeu
         [TearDown]
         public void Ranger() => ServicesDePartie.Oublier();
 
+        /// La Noue seule, ouverte jusqu'au fond : depuis le Gour (2026-10-07), les paliers
+        /// livrés vont plus bas que ce que ces tests regardent.
+        internal static readonly int PALIERS_DE_LA_NOUE = Assises.Toutes[0].NombreDePaliers;
+
         internal static EtatJeu EtatDeLaNoue(int niveauDuHeros, bool trouble)
         {
             var e = Reducteur.EtatInitial(1);
@@ -44,7 +48,7 @@ namespace IdlePond.TestsDeJeu
             };
             e = e with
             {
-                Cycle = e.Cycle with { PaliersOuverts = Assises.PALIERS_LIVRES, NiveauDuHeros = niveauDuHeros, Especes = especes },
+                Cycle = e.Cycle with { PaliersOuverts = PALIERS_DE_LA_NOUE, NiveauDuHeros = niveauDuHeros, Especes = especes },
                 Permanent = e.Permanent with { Couches = new[] { "noue" } },
             };
             return e with { Cycle = e.Cycle with { ManaCourant = Economie.Contenance(e).Mul(trouble ? 0.95 : 0.1) } };
@@ -110,7 +114,7 @@ namespace IdlePond.TestsDeJeu
             Assert.That(decor, Is.Not.Null);
             var bandes = 0;
             foreach (Transform enfant in decor) if (enfant.name.StartsWith("Bande ")) bandes++;
-            Assert.That(bandes, Is.EqualTo(Assises.PALIERS_LIVRES));
+            Assert.That(bandes, Is.EqualTo(PALIERS_DE_LA_NOUE));
         }
 
         [UnityTest]
@@ -123,7 +127,7 @@ namespace IdlePond.TestsDeJeu
             yield return null;
             yield return null;
             Assert.That(scene.Eclairage.Ambiante.lightType, Is.EqualTo(Light2D.LightType.Global));
-            Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(Assises.PALIERS_LIVRES));
+            Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(PALIERS_DE_LA_NOUE));
             // Portrait : 153 px de haut, six bandes de 56 → les bandes 3, 4 et 5.
             var allumees = scene.Eclairage.ParBande.Select((l, i) => (l, i)).Where(x => x.l.enabled).Select(x => x.i).ToList();
             Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
@@ -201,7 +205,7 @@ namespace IdlePond.TestsDeJeu
             partie.Remplacer(EtatDeLaNoue(1, false));
             yield return null;
             yield return null;
-            var (premiere, derniere) = Cadrage.BandesVisibles(scene.Rendu.Champ, Assises.PALIERS_LIVRES);
+            var (premiere, derniere) = Cadrage.BandesVisibles(scene.Rendu.Champ, PALIERS_DE_LA_NOUE);
             Assert.That(premiere, Is.GreaterThan(0), "la bande du haut doit être hors champ");
             int cache = -1, visible = -1;
             for (var i = 0; i < scene.Nageurs.Nombre; i++)

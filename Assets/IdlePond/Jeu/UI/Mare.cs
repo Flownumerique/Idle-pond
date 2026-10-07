@@ -49,10 +49,20 @@ namespace IdlePond.Jeu.UI
         readonly Action<string> surDeblocage;
         readonly Action<string> surNiveau;
         readonly Action<string> surCaptation;
+        sealed class Groupe
+        {
+            public Assise Lieu;
+            public VisualElement Tete;
+            public VisualElement Liste;
+            public Icone Ouvert;
+            public Icone Ferme;
+            public Label SousTitre;
+            public Label Compte;
+            public readonly List<Carte> Cartes = new List<Carte>();
+        }
+
         readonly List<Carte> cartes = new List<Carte>();
-        readonly Label sousTitre;
-        readonly Label compte;
-        readonly Assise lieu = Assises.Toutes[0];
+        readonly List<Groupe> groupes = new List<Groupe>();
 
         // Le clic lit l'état d'AU MOMENT du clic : le niveau de l'espèce décide si l'on
         // débloque ou si l'on monte, et il a pu changer depuis le dernier tick.
@@ -68,28 +78,17 @@ namespace IdlePond.Jeu.UI
             this.surCaptation = surCaptation;
             racine.AddToClassList("panneau");
 
-            var (tete, sous, nombre) = EnTeteDeLieu(Format.NomDeLAssiseCapitale(lieu.Id), false);
-            sousTitre = sous;
-            compte = nombre;
-            racine.Add(tete);
-            var liste = Elements.Conteneur("liste");
-            foreach (var espece in Especes.DeLAssise(lieu.Id)) liste.Add(Creer(espece));
-            racine.Add(liste);
-
-            // Le lieu suivant, verrouillé : son nom s'il en a un, ses espèces en « ??? ».
-            if (Assises.Toutes.Count > 1)
+            // Un groupe par lieu que le jeu livre. Seuls les lieux atteints, et le premier
+            // qu'on n'atteint pas encore, se montrent ; au-delà de ce qui est livré, « ??? ».
+            foreach (var lieu in Assises.Toutes.Where(a => a.IndexPremierPalier < Assises.PALIERS_LIVRES))
             {
-                var suivant = Assises.Toutes[1];
-                var especes = Especes.DeLAssise(suivant.Id);
-                var (teteSuivante, sousSuivant, nombreSuivant) = EnTeteDeLieu(Format.NomDeLAssiseCapitale(suivant.Id), true);
-                Elements.Poser(sousSuivant, Format.Remplir(E.PLUS_BAS_QUE, Format.NomDeLAssise(lieu.Id)));
-                Elements.Poser(nombreSuivant, Format.Remplir(E.CONVAINCUS_SUR, 0, especes.Count));
-                racine.Add(teteSuivante);
-                var inconnues = Elements.Conteneur("liste");
-                foreach (var _ in especes) inconnues.Add(Inconnue());
-                racine.Add(inconnues);
+                var groupe = EnTeteDeLieu(lieu);
+                racine.Add(groupe.Tete);
+                foreach (var espece in Especes.DeLAssise(lieu.Id)) groupe.Liste.Add(Creer(espece, groupe));
+                racine.Add(groupe.Liste);
+                groupes.Add(groupe);
             }
-            if (Assises.Toutes.Count > 2)
+            if (Assises.Toutes.Any(a => a.IndexPremierPalier >= Assises.PALIERS_LIVRES))
             {
                 var plusLoin = Elements.Conteneur("lieu-a-venir");
                 plusLoin.Add(new Icone(Icones.CADENAS));
@@ -98,28 +97,23 @@ namespace IdlePond.Jeu.UI
             }
         }
 
-        static (VisualElement Tete, Label SousTitre, Label Compte) EnTeteDeLieu(string nom, bool verrouille)
+        static Groupe EnTeteDeLieu(Assise lieu)
         {
-            var tete = Elements.Conteneur("entete-de-lieu" + (verrouille ? " verrouillee" : ""));
-            tete.Add(new Icone(verrouille ? Icones.CADENAS : Icones.ESPECES));
+            var groupe = new Groupe { Lieu = lieu };
+            groupe.Tete = Elements.Conteneur("entete-de-lieu");
+            groupe.Ouvert = new Icone(Icones.ESPECES);
+            groupe.Ferme = new Icone(Icones.CADENAS);
+            groupe.Tete.Add(groupe.Ouvert);
+            groupe.Tete.Add(groupe.Ferme);
             var noms = Elements.Conteneur("entete-de-lieu-noms");
-            noms.Add(Elements.Texte("titre base", nom));
-            var sous = Elements.Texte("doux xs");
-            noms.Add(sous);
-            tete.Add(noms);
-            var compte = Elements.Texte("chiffre sm");
-            tete.Add(compte);
-            return (tete, sous, compte);
-        }
-
-        static VisualElement Inconnue()
-        {
-            var carte = Elements.Conteneur("rangee-espece verrouillee");
-            var vignette = Elements.Conteneur("vignette");
-            vignette.Add(new Icone(Icones.CADENAS));
-            carte.Add(vignette);
-            carte.Add(Elements.Texte("doux base", E.INCONNU));
-            return carte;
+            noms.Add(Elements.Texte("titre base", Format.NomDeLAssiseCapitale(lieu.Id)));
+            groupe.SousTitre = Elements.Texte("doux xs");
+            noms.Add(groupe.SousTitre);
+            groupe.Tete.Add(noms);
+            groupe.Compte = Elements.Texte("chiffre sm");
+            groupe.Tete.Add(groupe.Compte);
+            groupe.Liste = Elements.Conteneur("liste");
+            return groupe;
         }
 
         public void Rafraichir(EtatJeu etat)
@@ -127,14 +121,12 @@ namespace IdlePond.Jeu.UI
             dernier = etat;
             var mana = etat.Cycle.ManaCourant;
             var limite = Economie.Contenance(etat);
-            var convaincues = 0;
 
             foreach (var carte in cartes)
             {
                 var espece = carte.Espece;
                 var atteinte = espece.Palier < etat.Cycle.PaliersOuverts;
                 var niveau = NiveauDe(etat, espece.Id);
-                if (niveau > 0) convaincues++;
 
                 Elements.Marquer(carte.Racine, "verrouillee", !atteinte);
                 // Inatteinte, sa vignette est grise (celle du .uss) : sa couleur la trahirait.
@@ -170,18 +162,41 @@ namespace IdlePond.Jeu.UI
                 carte.Achat.Regler(mana.Gte(cout) && cout.Lte(limite));
             }
 
-            var finDuLieu = lieu.IndexPremierPalier + lieu.NombreDePaliers;
-            var plusBas = Math.Max(0, Math.Min(etat.Cycle.PaliersOuverts, finDuLieu) - 1);
-            Elements.Poser(sousTitre, Format.Remplir(E.JUSQU_A, Format.Profondeur(plusBas)));
-            Elements.Poser(compte, Format.Remplir(E.CONVAINCUS_SUR, convaincues, cartes.Count));
+            var premierFerme = true;
+            Assise precedent = null;
+            foreach (var groupe in groupes)
+            {
+                var lieu = groupe.Lieu;
+                var atteint = lieu.IndexPremierPalier < etat.Cycle.PaliersOuverts;
+                // Le premier lieu qu'on n'atteint pas se montre, verrouillé ; les suivants non.
+                var visible = atteint || premierFerme;
+                if (!atteint) premierFerme = false;
+                Elements.Montrer(groupe.Tete, visible);
+                Elements.Montrer(groupe.Liste, visible);
+                Elements.Marquer(groupe.Tete, "verrouillee", !atteint);
+                Elements.Montrer(groupe.Ouvert, atteint);
+                Elements.Montrer(groupe.Ferme, !atteint);
+                var convaincues = groupe.Cartes.Count(c => NiveauDe(etat, c.Espece.Id) > 0);
+                Elements.Poser(groupe.Compte, Format.Remplir(E.CONVAINCUS_SUR, convaincues, groupe.Cartes.Count));
+                if (atteint)
+                {
+                    var finDuLieu = lieu.IndexPremierPalier + lieu.NombreDePaliers;
+                    var plusBas = Math.Max(0, Math.Min(etat.Cycle.PaliersOuverts, finDuLieu) - 1);
+                    Elements.Poser(groupe.SousTitre, Format.Remplir(E.JUSQU_A, Format.Profondeur(plusBas)));
+                }
+                else if (precedent != null)
+                    Elements.Poser(groupe.SousTitre, Format.Remplir(E.PLUS_BAS_QUE, Format.NomDeLAssise(precedent.Id)));
+                precedent = lieu;
+            }
         }
 
         static int NiveauDe(EtatJeu etat, string espece) =>
             etat.Cycle.Especes.TryGetValue(espece, out var vivante) && vivante.Debloquee ? vivante.Niveau : 0;
 
-        VisualElement Creer(Espece espece)
+        VisualElement Creer(Espece espece, Groupe groupe)
         {
             var carte = new Carte { Espece = espece };
+            groupe.Cartes.Add(carte);
             carte.Racine = Elements.Conteneur("rangee-espece", "espece-" + espece.Id);
 
             // La vignette porte la couleur de l'espèce, celle de ses nageurs dans la scène.

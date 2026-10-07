@@ -51,7 +51,9 @@ namespace IdlePond.Noyau.Donnees
         static readonly IReadOnlyList<IReadOnlyList<string>> ESPECES_NOMMEES = new IReadOnlyList<string>[]
         {
             new[] { "vairon", "loche" },
-            new[] { "epinoche" },
+            // Le Gour (spec du 2026-10-07) : trois façons de tenir dans le courant — sous
+            // les pierres, accrochée à la roche, en le remontant.
+            new[] { "epinoche", "chabot", "lamproie", "ombre" },
         };
 
         static IReadOnlyList<Espece> Construire()

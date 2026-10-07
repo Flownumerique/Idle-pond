@@ -91,6 +91,19 @@ sur la forme de la courbe.
 
 ---
 
+## Journal des références de parité
+
+Les références de parité (`Assets/IdlePond/Tests/Reference/`) venaient du TypeScript
+archivé. Depuis le **2026-10-07**, elles sont régénérées depuis le C#
+(`GenerateurDeReferences`, menu « IdlePond ▸ Parité »), sur décision de l'utilisateur. Une
+régénération n'a lieu que pour un changement voulu, noté ici.
+
+| Date | Raison | Ce qui a bougé |
+|---|---|---|
+| 2026-10-07 | L'assise II, le Gour, livrée jouable (spec `2026-10-07-assise-ii-le-gour-design.md`) | Identifiants `assise-2` → `gour`, `espece-2-2/3/4` → `chabot`, `lamproie`, `ombre` ; `paliersLivres` 6 → 18 ; registre des succès 41 → 54 (seuils des trois espèces, fond du Gour). Les nouvelles remises de coût changent l'économie simulée : sur quinze cycles, densités ×1,09 (5,35e115 → 5,85e115), pics de production et Souffle gagnés en hausse. Aucun autre écart : le reste est identique au TypeScript, à un dernier chiffre de flottant près |
+
+---
+
 ## Ce qu'il reste à décider
 
 Le contenu — 62 paliers, 21 espèces, 15 chapitres — porte **38 h de jeu

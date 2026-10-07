@@ -166,6 +166,25 @@ namespace IdlePond.Editeur
                             if (t.Contient(x, y)) toile.Poser(x, y, marque.Couleurs[0]);
                     }
                     break;
+                case AncrageId.Dos:
+                    // Les membranes du Gour : une crête membraneuse le long du dos, plus longue
+                    // et plus épaisse à chaque stade. Elle reste DANS la silhouette (une marque
+                    // reste sur le corps, spec DA §3) : elle descend du haut du dos, en dents.
+                    var demiLongueur = (int)Math.Round((0.18 + 0.05 * stade) * longueur);
+                    var hauteur = 1 + (stade + 1) / 2;
+                    for (var x = a.X - demiLongueur; x <= a.X + demiLongueur; x++)
+                    {
+                        var dessus = -1;
+                        for (var y = toile.Hauteur - 1; y >= 0; y--)
+                            if (t.Contient(x, y)) { dessus = y; break; }
+                        if (dessus < 0) continue;
+                        // Une crête en dents : plus haute au milieu, une dent sur deux.
+                        var milieu = 1 - Math.Abs(x - a.X) / (double)(demiLongueur + 1);
+                        var haut = (int)Math.Round(hauteur * milieu) + ((x & 1) == 0 ? 1 : 0);
+                        for (var y = dessus; y >= dessus - haut && t.Contient(x, y); y--)
+                            toile.Poser(x, y, y == dessus - haut ? marque.Couleurs[1] : marque.Couleurs[0]);
+                    }
+                    break;
                 default:
                     throw new NotSupportedException($"aucun provisoire pour une marque à l'ancrage {marque.Ancrage} ({assise})");
             }
@@ -187,6 +206,9 @@ namespace IdlePond.Editeur
                     if (t < 0.35 && Toile.Seuil(x, y) < (0.35 - t) / 0.35) couleur = d.Eau[1];
                     if (t < 0.12 && Toile.Seuil(x, y) < (0.12 - t) / 0.12) couleur = d.Eau[2];
                     if (y <= 1 || (y == 2 && x % 2 == 0)) couleur = d.Vase;
+                    // Le courant du Gour : des traits d'eau qui file, en tirets décalés d'une
+                    // rangée à l'autre ; la période (16) divise la largeur (32), la tuile se raccorde.
+                    if (d.Courant && y > 4 && y % 9 == 4 && (x + y * 3) % 16 < 6) couleur = d.Rayon;
                     toile.Poser(x, y, couleur);
                 }
             return toile;

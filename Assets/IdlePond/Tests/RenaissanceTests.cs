@@ -147,16 +147,16 @@ namespace IdlePond.Tests
                 Permanent = uneFois.Permanent with { Couches = new[] { "noue" } },
                 Cycle = uneFois.Cycle with { PaliersOuverts = 8 },
             };
-            Assert.That(Renaissance.Renaitre(plusBas).Permanent.Couches, Is.EqualTo(new[] { "noue", "assise-2" }));
+            Assert.That(Renaissance.Renaitre(plusBas).Permanent.Couches, Is.EqualTo(new[] { "noue", "gour" }));
 
             // L'ordre est celui des assises, pas celui de l'obtention.
             var autre = EtatDeTravail.Creer();
             var desordre = autre with
             {
-                Permanent = autre.Permanent with { Couches = new[] { "assise-2" } },
+                Permanent = autre.Permanent with { Couches = new[] { "gour" } },
                 Cycle = autre.Cycle with { PaliersOuverts = 2 },
             };
-            Assert.That(Renaissance.Renaitre(desordre).Permanent.Couches, Is.EqualTo(new[] { "noue", "assise-2" }));
+            Assert.That(Renaissance.Renaitre(desordre).Permanent.Couches, Is.EqualTo(new[] { "noue", "gour" }));
         }
 
         /* ─── §6.5 — la densité se pose par max, et son gain vaut pointe^α ────── */

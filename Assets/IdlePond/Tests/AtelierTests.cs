@@ -44,10 +44,10 @@ namespace IdlePond.Tests
         }
 
         [Test]
-        public void La_Noue_ouvre_les_paliers_livres_et_porte_la_marque_de_l_assise()
+        public void La_Noue_ouvre_ses_six_paliers_et_porte_la_marque_de_l_assise()
         {
             var e = EtatsDEssai.Noue(Neuf());
-            Assert.That(e.Cycle.PaliersOuverts, Is.EqualTo(Assises.PALIERS_LIVRES));
+            Assert.That(e.Cycle.PaliersOuverts, Is.EqualTo(Assises.Toutes[0].NombreDePaliers));
             Assert.That(e.Permanent.Couches, Does.Contain(Assises.Toutes[0].Id));
         }
 

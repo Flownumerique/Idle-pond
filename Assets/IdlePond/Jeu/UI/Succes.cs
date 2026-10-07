@@ -45,7 +45,7 @@ namespace IdlePond.Jeu.UI
         readonly List<(SuccesAffichable Entree, VisualElement Barre)> enCours =
             new List<(SuccesAffichable, VisualElement)>();
         readonly Dictionary<VisualElement, float> largeurs = new Dictionary<VisualElement, float>();
-        readonly string lieu = Assises.Toutes[0].Id;
+        readonly Label nomDuLieu;
 
         object signature;
         int filtre;
@@ -57,7 +57,8 @@ namespace IdlePond.Jeu.UI
 
             var resume = Elements.Conteneur("carte carte-souffle journal-resume");
             var gauche = Elements.Conteneur("journal-resume-texte");
-            gauche.Add(Elements.Texte("souffle-doux xs", Format.NomDeLAssiseCapitale(lieu)));
+            nomDuLieu = Elements.Texte("souffle-doux xs");
+            gauche.Add(nomDuLieu);
             compte = Elements.Texte("chiffre souffle xl", "", "journal-compte");
             gauche.Add(compte);
             gauche.Add(Elements.Texte("souffle-doux xs", E.JOURNAL_ARRIVES));
@@ -123,7 +124,10 @@ namespace IdlePond.Jeu.UI
             enCours.Clear();
             largeurs.Clear();
 
-            var tous = RegleDesSucces.SuccesListables(etat, lieu);
+            // Tous les lieux atteints : `SuccesListables` ne rend rien d'un lieu qu'on n'a pas
+            // atteint (§14.6). Le nom en tête est celui du lieu où l'on est.
+            var tous = Assises.Toutes.SelectMany(a => RegleDesSucces.SuccesListables(etat, a.Id)).ToList();
+            Elements.Poser(nomDuLieu, Format.NomDeLAssiseCapitale(Assises.DuPalier(System.Math.Max(0, etat.Cycle.PaliersOuverts - 1)).Id));
             var arrives = tous.Count(e => e.Acquis);
             Elements.Poser(compte, Format.Remplir(E.JOURNAL_COMPTE, arrives, tous.Count));
             Elements.RegleLaLargeur(remplissageDuCompte, tous.Count == 0 ? 0 : arrives / (double)tous.Count);

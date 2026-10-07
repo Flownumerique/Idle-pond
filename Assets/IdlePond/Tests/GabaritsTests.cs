@@ -74,7 +74,7 @@ namespace IdlePond.Tests
         [Test, Description("chaque assise dessinée a sa marque et sa courbe de lumière")]
         public void Chaque_assise_dessinee_a_sa_marque_et_sa_lumiere()
         {
-            Assert.That(RegistreDArt.ASSISES_DESSINEES, Is.EqualTo(new[] { "noue" }));
+            Assert.That(RegistreDArt.ASSISES_DESSINEES, Is.EqualTo(new[] { "noue", "gour" }));
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 Assert.That(RegistreDArt.MarqueDe(assise), Is.Not.Null, assise);
@@ -150,7 +150,7 @@ namespace IdlePond.Tests
         public void Chaque_espece_livree_a_ses_images()
         {
             var livrees = Chemins.EspecesLivrees().ToList();
-            Assert.That(livrees.Select(e => e.Id), Is.EqualTo(new[] { "vairon", "loche" }));
+            Assert.That(livrees.Select(e => e.Id), Is.EqualTo(new[] { "vairon", "loche", "epinoche", "chabot", "lamproie", "ombre" }));
             foreach (var espece in livrees)
                 for (var image = 0; image < Gabarits.IMAGES_D_ESPECE; image++)
                 {

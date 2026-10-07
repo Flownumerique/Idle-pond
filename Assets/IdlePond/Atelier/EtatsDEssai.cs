@@ -16,18 +16,19 @@ namespace IdlePond.Atelier
     /// </summary>
     public static class EtatsDEssai
     {
-        /// Les espèces que le jeu livre : celles de l'assise I.
-        public static readonly IReadOnlyList<Espece> EspecesLivrees = Especes.DeLAssise(Assises.Toutes[0].Id);
+        /// Les espèces que le jeu livre : celles des paliers livrés (la Noue et le Gour).
+        public static readonly IReadOnlyList<Espece> EspecesLivrees =
+            Especes.Toutes.Where(e => e.Palier < Assises.PALIERS_LIVRES).ToList();
 
         /* ─── Les briques ───────────────────────────────────────────────────────────*/
 
-        /// Les paliers livrés ouverts, et la marque de l'assise sur le héros.
+        /// La Noue ouverte jusqu'au fond, et sa marque sur le héros.
         public static EtatJeu Noue(EtatJeu e)
         {
             var couches = e.Permanent.Couches.Contains(Assises.Toutes[0].Id)
                 ? e.Permanent.Couches
                 : e.Permanent.Couches.Append(Assises.Toutes[0].Id).ToArray();
-            return AvecPaliersOuverts(e, Assises.PALIERS_LIVRES) with { Permanent = e.Permanent with { Couches = couches } };
+            return AvecPaliersOuverts(e, Assises.Toutes[0].NombreDePaliers) with { Permanent = e.Permanent with { Couches = couches } };
         }
 
         public static EtatJeu AvecNiveauDuHeros(EtatJeu e, int niveau) =>

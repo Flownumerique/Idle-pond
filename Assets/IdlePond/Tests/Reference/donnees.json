@@ -1,5 +1,5 @@
 {
- "paliersLivres": 6,
+ "paliersLivres": 18,
  "assises": [
   {
    "id": "noue",
@@ -9,7 +9,7 @@
    "nombreDePaliers": 6
   },
   {
-   "id": "assise-2",
+   "id": "gour",
    "rang": 2,
    "typeMana": "type-mana-2",
    "indexPremierPalier": 6,
@@ -59,25 +59,25 @@
   },
   {
    "id": "epinoche",
-   "assise": "assise-2",
+   "assise": "gour",
    "rang": 2,
    "palier": 6
   },
   {
-   "id": "espece-2-2",
-   "assise": "assise-2",
+   "id": "chabot",
+   "assise": "gour",
    "rang": 3,
    "palier": 9
   },
   {
-   "id": "espece-2-3",
-   "assise": "assise-2",
+   "id": "lamproie",
+   "assise": "gour",
    "rang": 4,
    "palier": 12
   },
   {
-   "id": "espece-2-4",
-   "assise": "assise-2",
+   "id": "ombre",
+   "assise": "gour",
    "rang": 5,
    "palier": 15
   },
@@ -205,62 +205,62 @@
   },
   {
    "index": 6,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": "epinoche"
   },
   {
    "index": 7,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 8,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 9,
-   "assise": "assise-2",
-   "espece": "espece-2-2"
+   "assise": "gour",
+   "espece": "chabot"
   },
   {
    "index": 10,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 11,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 12,
-   "assise": "assise-2",
-   "espece": "espece-2-3"
+   "assise": "gour",
+   "espece": "lamproie"
   },
   {
    "index": 13,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 14,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 15,
-   "assise": "assise-2",
-   "espece": "espece-2-4"
+   "assise": "gour",
+   "espece": "ombre"
   },
   {
    "index": 16,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
    "index": 17,
-   "assise": "assise-2",
+   "assise": "gour",
    "espece": null
   },
   {
@@ -506,19 +506,19 @@
    "espece": "epinoche"
   },
   {
-   "id": "insufflation-espece-2-2",
+   "id": "insufflation-chabot",
    "portee": "ciblee",
-   "espece": "espece-2-2"
+   "espece": "chabot"
   },
   {
-   "id": "insufflation-espece-2-3",
+   "id": "insufflation-lamproie",
    "portee": "ciblee",
-   "espece": "espece-2-3"
+   "espece": "lamproie"
   },
   {
-   "id": "insufflation-espece-2-4",
+   "id": "insufflation-ombre",
    "portee": "ciblee",
-   "espece": "espece-2-4"
+   "espece": "ombre"
   },
   {
    "id": "insufflation-espece-3-1",
@@ -604,7 +604,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "especes_debloquees",
-    "seuil": 1
+    "seuil": 1.0
    },
    "effet": null
   },
@@ -615,8 +615,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 2
+    "seuil": 2.0,
+    "espece": "vairon"
    },
    "effet": null
   },
@@ -627,8 +627,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 5
+    "seuil": 5.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -643,7 +643,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 3
+    "seuil": 3.0
    },
    "effet": null
   },
@@ -654,7 +654,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "paliers_ouverts",
-    "seuil": 2
+    "seuil": 2.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -669,7 +669,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "especes_debloquees",
-    "seuil": 2
+    "seuil": 2.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -684,8 +684,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 10
+    "seuil": 10.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -700,8 +700,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "loche",
-    "seuil": 10
+    "seuil": 10.0,
+    "espece": "loche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -731,8 +731,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 10
+    "seuil": 10.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -747,8 +747,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 25
+    "seuil": 25.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -763,8 +763,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 50
+    "seuil": 50.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -779,8 +779,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "vairon",
-    "seuil": 100
+    "seuil": 100.0,
+    "espece": "vairon"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -795,8 +795,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "loche",
-    "seuil": 10
+    "seuil": 10.0,
+    "espece": "loche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -811,8 +811,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "loche",
-    "seuil": 25
+    "seuil": 25.0,
+    "espece": "loche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -827,8 +827,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "loche",
-    "seuil": 50
+    "seuil": 50.0,
+    "espece": "loche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -843,8 +843,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "loche",
-    "seuil": 100
+    "seuil": 100.0,
+    "espece": "loche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -856,11 +856,11 @@
    "id": "seuil-epinoche-10",
    "famille": "seuil",
    "visibilite": "ouvert",
-   "assise": "assise-2",
+   "assise": "gour",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "epinoche",
-    "seuil": 10
+    "seuil": 10.0,
+    "espece": "epinoche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -872,11 +872,11 @@
    "id": "seuil-epinoche-25",
    "famille": "seuil",
    "visibilite": "ferme",
-   "assise": "assise-2",
+   "assise": "gour",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "epinoche",
-    "seuil": 25
+    "seuil": 25.0,
+    "espece": "epinoche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -888,11 +888,11 @@
    "id": "seuil-epinoche-50",
    "famille": "seuil",
    "visibilite": "ferme",
-   "assise": "assise-2",
+   "assise": "gour",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "epinoche",
-    "seuil": 50
+    "seuil": 50.0,
+    "espece": "epinoche"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -904,11 +904,203 @@
    "id": "seuil-epinoche-100",
    "famille": "seuil",
    "visibilite": "ferme",
-   "assise": "assise-2",
+   "assise": "gour",
    "declencheur": {
     "quoi": "niveau_d_espece",
-    "espece": "epinoche",
-    "seuil": 100
+    "seuil": 100.0,
+    "espece": "epinoche"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-chabot-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 10.0,
+    "espece": "chabot"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-chabot-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 25.0,
+    "espece": "chabot"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-chabot-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 50.0,
+    "espece": "chabot"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-chabot-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 100.0,
+    "espece": "chabot"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-lamproie-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 10.0,
+    "espece": "lamproie"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-lamproie-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 25.0,
+    "espece": "lamproie"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-lamproie-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 50.0,
+    "espece": "lamproie"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-lamproie-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 100.0,
+    "espece": "lamproie"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-ombre-10",
+   "famille": "seuil",
+   "visibilite": "ouvert",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 10.0,
+    "espece": "ombre"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-ombre-25",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 25.0,
+    "espece": "ombre"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-ombre-50",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 50.0,
+    "espece": "ombre"
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_niveau",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "seuil-ombre-100",
+   "famille": "seuil",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "niveau_d_espece",
+    "seuil": 100.0,
+    "espece": "ombre"
    },
    "effet": {
     "genre": "reduction_cout",
@@ -923,7 +1115,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 25
+    "seuil": 25.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -938,7 +1130,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 45
+    "seuil": 45.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -953,7 +1145,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 70
+    "seuil": 70.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -968,7 +1160,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 95
+    "seuil": 95.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -983,7 +1175,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 130
+    "seuil": 130.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -998,7 +1190,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 200
+    "seuil": 200.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1013,7 +1205,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 320
+    "seuil": 320.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1028,7 +1220,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "niveaux_cumules",
-    "seuil": 500
+    "seuil": 500.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1043,7 +1235,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "paliers_ouverts",
-    "seuil": 3
+    "seuil": 3.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1058,7 +1250,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "paliers_ouverts",
-    "seuil": 5
+    "seuil": 5.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1148,7 +1340,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "renaissances",
-    "seuil": 1
+    "seuil": 1.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1163,7 +1355,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "renaissances",
-    "seuil": 2
+    "seuil": 2.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1178,7 +1370,7 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "renaissances",
-    "seuil": 3
+    "seuil": 3.0
    },
    "effet": {
     "genre": "reduction_cout",
@@ -1193,8 +1385,8 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "densite_de_palier",
-    "palier": 0,
-    "seuil": 0.5
+    "seuil": 0.5,
+    "palier": 0
    },
    "effet": null
   },
@@ -1205,7 +1397,22 @@
    "assise": "noue",
    "declencheur": {
     "quoi": "paliers_ouverts",
-    "seuil": 6
+    "seuil": 6.0
+   },
+   "effet": {
+    "genre": "reduction_cout",
+    "terme": "cout_creuser",
+    "part": 0.02
+   }
+  },
+  {
+   "id": "franchissement-fond-du-gour",
+   "famille": "franchissement",
+   "visibilite": "ferme",
+   "assise": "gour",
+   "declencheur": {
+    "quoi": "paliers_ouverts",
+    "seuil": 18.0
    },
    "effet": {
     "genre": "reduction_cout",

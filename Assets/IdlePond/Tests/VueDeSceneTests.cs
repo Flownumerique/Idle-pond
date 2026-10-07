@@ -30,7 +30,9 @@ namespace IdlePond.Tests
         {
             var e = Reducteur.EtatInitial(1, Assises.PALIERS_LIVRES);
             var vue = VueDeScene.Depuis(e);
-            Assert.That(vue.Roches.Select(r => r.Index), Is.EqualTo(Enumerable.Range(e.Cycle.PaliersOuverts, Assises.PALIERS_LIVRES - e.Cycle.PaliersOuverts)));
+            // Jusqu'au bas de l'assise où l'on creuse : la Noue, pas le Gour en dessous.
+            var finDeLaNoue = Assises.Toutes[0].NombreDePaliers;
+            Assert.That(vue.Roches.Select(r => r.Index), Is.EqualTo(Enumerable.Range(e.Cycle.PaliersOuverts, finDeLaNoue - e.Cycle.PaliersOuverts)));
             Assert.That(vue.Roches.All(r => r.Assise == Assises.Toutes[0].Id), Is.True);
             var creuse = e with { Cycle = e.Cycle with { PaliersOuverts = e.Cycle.PaliersOuverts + 1 } };
             Assert.That(VueDeScene.Depuis(creuse).Clef, Is.Not.EqualTo(vue.Clef));

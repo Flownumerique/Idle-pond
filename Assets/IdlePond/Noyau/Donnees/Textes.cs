@@ -43,6 +43,7 @@ namespace IdlePond.Noyau.Donnees
         public static readonly IReadOnlyDictionary<string, string> NOM_DES_ASSISES = new Dictionary<string, string>
         {
             ["noue"] = "la Noue",
+            ["gour"] = "le Gour",
         };
 
         public static readonly IReadOnlyDictionary<string, string> NOM_DES_ESPECES = new Dictionary<string, string>
@@ -50,6 +51,9 @@ namespace IdlePond.Noyau.Donnees
             ["vairon"] = "le vairon",
             ["loche"] = "la loche",
             ["epinoche"] = "l’épinoche",
+            ["chabot"] = "le chabot",
+            ["lamproie"] = "la lamproie",
+            ["ombre"] = "l’ombre",
         };
 
         /// <summary>
@@ -113,6 +117,18 @@ namespace IdlePond.Noyau.Donnees
             ["seuil-epinoche-25"] = new("Vingt-cinq épinoches", "Vingt-cinquième cran", "Rien ne les déloge du bord."),
             ["seuil-epinoche-50"] = new("Cinquante épinoches", "Cinquantième cran", "L’eau lourde ne leur fait plus rien."),
             ["seuil-epinoche-100"] = new("Cent épinoches", "Centième cran", "Elles ne repartiront plus. Jamais."),
+            ["seuil-chabot-10"] = new("Dix chabots", "Dixième cran", "Chaque pierre a le sien."),
+            ["seuil-chabot-25"] = new("Vingt-cinq chabots", "Vingt-cinquième cran", "Le courant passe au-dessus d’eux sans les prendre."),
+            ["seuil-chabot-50"] = new("Cinquante chabots", "Cinquantième cran", "Le fond des galeries est tenu, pierre à pierre."),
+            ["seuil-chabot-100"] = new("Cent chabots", "Centième cran", "Ils ne repartiront plus. Jamais."),
+            ["seuil-lamproie-10"] = new("Dix lamproies", "Dixième cran", "Elles s’accrochent à la roche, et elles attendent."),
+            ["seuil-lamproie-25"] = new("Vingt-cinq lamproies", "Vingt-cinquième cran", "Le courant tire. Elles ne lâchent rien."),
+            ["seuil-lamproie-50"] = new("Cinquante lamproies", "Cinquantième cran", "Les parois portent leurs marques."),
+            ["seuil-lamproie-100"] = new("Cent lamproies", "Centième cran", "Elles ne repartiront plus. Jamais."),
+            ["seuil-ombre-10"] = new("Dix ombres", "Dixième cran", "On les voit passer, jamais arriver."),
+            ["seuil-ombre-25"] = new("Vingt-cinq ombres", "Vingt-cinquième cran", "Elles remontent le courant sans effort."),
+            ["seuil-ombre-50"] = new("Cinquante ombres", "Cinquantième cran", "Le noir des galeries a pris leur couleur."),
+            ["seuil-ombre-100"] = new("Cent ombres", "Centième cran", "Elles ne repartiront plus. Jamais."),
 
             /* — Franchissements ————————————————————————————————————————————————————— */
             ["franchissement-premiere-eclosion"] = new(
@@ -134,7 +150,12 @@ namespace IdlePond.Noyau.Donnees
             ["franchissement-fond-de-la-mare"] = new(
                 "Le fond de la Noue",
                 "Ouvrir la Noue jusqu’au fond",
-                "Il n’y a plus de roche à ouvrir ici."),
+                // Réécrit le 2026-10-07 : sous la Noue, il y a le Gour.
+                "La Noue s’arrête là. En dessous, l’eau court."),
+            ["franchissement-fond-du-gour"] = new(
+                "Le fond du Gour",
+                "Ouvrir le Gour jusqu’au fond",
+                "Le courant ne mène plus nulle part."),
         };
 
         /// <summary>
@@ -298,7 +319,7 @@ namespace IdlePond.Noyau.Donnees
 
             /* — Le tiroir « Journal » ————————————————————————————————————————————————— */
             public const string JOURNAL_COMPTE = "{0} sur {1}";
-            public const string JOURNAL_ARRIVES = "arrivés dans ce lieu";
+            public const string JOURNAL_ARRIVES = "arrivés jusqu’ici";
             public const string FAMILLE_TOUS = "Tous";
             public const string FAMILLE_FRANCHISSEMENT = "Profondeur";
             public const string FAMILLE_SEUIL = "Seuils";

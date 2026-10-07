@@ -55,6 +55,13 @@ namespace IdlePond.Noyau.Donnees
                 // Fin d'assise : tous les paliers de la mare ouverts dans la même vie.
                 new DeclencheurDeSucces(QuoiDeclencheur.PaliersOuverts, Assises.Toutes[0].NombreDePaliers),
                 EffetDeSucces.ReductionCout(TermeDeFormule.CoutCreuser, Constantes.PART_REMISE_D_UN_SUCCES)),
+
+            // Fin de l'assise II, le Gour (spec du 2026-10-07) : la Noue et le Gour ouverts
+            // dans la même vie.
+            new Succes(
+                "franchissement-fond-du-gour", FamilleDeSucces.Franchissement, VisibiliteDeSucces.Ferme, "gour",
+                new DeclencheurDeSucces(QuoiDeclencheur.PaliersOuverts, Assises.Toutes[0].NombreDePaliers + Assises.Toutes[1].NombreDePaliers),
+                EffetDeSucces.ReductionCout(TermeDeFormule.CoutCreuser, Constantes.PART_REMISE_D_UN_SUCCES)),
         };
     }
 }

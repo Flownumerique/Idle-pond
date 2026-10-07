@@ -8,9 +8,13 @@ using static IdlePond.Simulateur.Simulateur;
 namespace IdlePond.Tests
 {
     /// <summary>
-    /// La parité avec le TypeScript — spec 2026-09-27 §3. Tant qu'elle est verte, le
-    /// portage n'a rien changé à la mécanique. Une parité rouge ne se corrige ni en
-    /// relâchant la tolérance, ni en régénérant les références : on cherche l'écart.
+    /// La parité — spec 2026-09-27 §3. Les références venaient du TypeScript archivé et
+    /// gardaient le portage honnête ; depuis le 2026-10-07 (l'assise II, le Gour), elles
+    /// sont régénérées depuis le C# (`GenerateurDeReferences`), sur décision de
+    /// l'utilisateur. Tant qu'elle est verte, rien n'a changé à la mécanique sans qu'on
+    /// l'ait voulu. Une parité rouge ne se corrige ni en relâchant la tolérance, ni en
+    /// régénérant par réflexe : on cherche l'écart, et on ne régénère que pour un
+    /// changement voulu, nommé dans le commit et dans `docs/RESULTATS.md`.
     /// </summary>
     public class PariteTests
     {
