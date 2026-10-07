@@ -16,6 +16,26 @@ namespace IdlePond.Tests
     /// </summary>
     public class VueDeSceneTests
     {
+        [TestCase(1, 6, new[] { 1, 2, 3, 4, 5 })]
+        [TestCase(3, 62, new[] { 3, 4, 5 })]
+        [TestCase(6, 6, new int[0])]
+        [TestCase(6, 62, new[] { 6 })]
+        public void La_roche_va_jusqu_au_bas_de_l_assise_en_cours(int ouverts, int limite, int[] attendus)
+        {
+            Assert.That(VueDeScene.IndicesDeRoche(ouverts, limite), Is.EqualTo(attendus));
+        }
+
+        [Test, Description("la vue porte la roche à creuser, avec son assise, et la clé change quand on creuse")]
+        public void La_vue_porte_la_roche_a_creuser()
+        {
+            var e = Reducteur.EtatInitial(1, Assises.PALIERS_LIVRES);
+            var vue = VueDeScene.Depuis(e);
+            Assert.That(vue.Roches.Select(r => r.Index), Is.EqualTo(Enumerable.Range(e.Cycle.PaliersOuverts, Assises.PALIERS_LIVRES - e.Cycle.PaliersOuverts)));
+            Assert.That(vue.Roches.All(r => r.Assise == Assises.Toutes[0].Id), Is.True);
+            var creuse = e with { Cycle = e.Cycle with { PaliersOuverts = e.Cycle.PaliersOuverts + 1 } };
+            Assert.That(VueDeScene.Depuis(creuse).Clef, Is.Not.EqualTo(vue.Clef));
+        }
+
         [Test, Description("C2 — la vue : liste exactement les paliers ouverts, avec leur assise et leur espèce")]
         public void La_vue_liste_exactement_les_paliers_ouverts_avec_leur_assise_et_leur_espece()
         {

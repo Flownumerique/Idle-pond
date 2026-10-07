@@ -41,6 +41,7 @@ namespace IdlePond.TestsDeJeu
         public void Preparer()
         {
             ServicesDePartie.Oublier();
+            SauvegardeDeTest.Rediriger();
             dossier = Path.Combine(Application.temporaryCachePath, "idlepond-test-" + System.Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(dossier);
             horloge = new HorlogeFigee(DEPART_MS);

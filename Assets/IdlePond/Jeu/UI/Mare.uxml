@@ -1,35 +1,45 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <!--
-        La mare, en squelette. Tous les textes sont posés par les contrôleurs, depuis
-        Textes.cs : ce fichier ne dit que la emplacement des panneaux, jamais ce qu'ils disent.
+        La mare, en squelette (spec du 2026-10-07 : l'écran mobile). Une barre fine en haut,
+        la mare au centre, le dock en bas ; les panneaux vivent dans des tiroirs qui montent
+        par-dessus la mare. Tous les textes sont posés par les contrôleurs, depuis Textes.cs :
+        ce fichier ne dit que l'emplacement des panneaux, jamais ce qu'ils disent.
         L'adaptation (paysage ou portrait) est une classe posée sur #racine par
         RacineDeLInterface ; la mise en page est dans Mare.uss.
     -->
     <Style src="Theme.uss" />
     <Style src="Mare.uss" />
     <ui:VisualElement name="racine" class="racine">
-        <ui:VisualElement name="entete" class="entete" />
-        <ui:VisualElement name="retour" />
-        <ui:VisualElement name="corps" class="corps">
-            <ui:VisualElement name="principale" class="principale">
-                <!-- Réservé à la scène dessinée : transparent, la caméra voit à travers. -->
-                <ui:VisualElement name="scene" class="scene" picking-mode="Ignore" />
+        <ui:VisualElement name="barre" class="barre" />
+        <ui:VisualElement name="centre" class="centre">
+            <!-- La texture du rendu pixel y est posée en fond par SceneDeLaMare. -->
+            <ui:VisualElement name="scene" class="scene" picking-mode="Ignore" />
+            <ui:VisualElement name="lieu" class="lieu" picking-mode="Ignore" />
+            <ui:VisualElement name="retour" class="retour" />
+            <ui:VisualElement name="annonces" picking-mode="Ignore" />
+            <ui:VisualElement name="creuser" class="creuser" />
+            <ui:VisualElement name="voile-du-tiroir" class="voile-du-tiroir" />
+            <ui:VisualElement name="tiroir" class="tiroir">
+                <ui:VisualElement name="tiroir-tete" class="tiroir-tete" />
                 <ui:ScrollView name="defilement" class="defilement">
-                    <ui:VisualElement name="contenance" class="panneau" />
-                    <ui:VisualElement name="heros" class="panneau" />
-                    <ui:VisualElement name="captation" class="panneau" />
-                    <ui:VisualElement name="mare" />
-                    <ui:VisualElement name="renaissance" />
-                </ui:ScrollView>
-            </ui:VisualElement>
-            <ui:VisualElement name="laterale" class="laterale">
-                <ui:ScrollView name="defilement-lateral" class="defilement">
-                    <ui:VisualElement name="succes" />
-                    <ui:VisualElement name="insufflations" />
+                    <ui:VisualElement name="tiroir-toi" class="tiroir-contenu">
+                        <ui:VisualElement name="fiche-du-heros" class="panneau" />
+                        <ui:VisualElement name="heros" class="panneau" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="tiroir-especes" class="tiroir-contenu">
+                        <ui:VisualElement name="captation" class="panneau" />
+                        <ui:VisualElement name="mare" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="tiroir-oeuf" class="tiroir-contenu">
+                        <ui:VisualElement name="renaissance" />
+                        <ui:VisualElement name="insufflations" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="tiroir-journal" class="tiroir-contenu">
+                        <ui:VisualElement name="succes" />
+                    </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="onglets" />
-        <ui:VisualElement name="annonces" picking-mode="Ignore" />
+        <ui:VisualElement name="dock" class="dock" />
     </ui:VisualElement>
 </ui:UXML>

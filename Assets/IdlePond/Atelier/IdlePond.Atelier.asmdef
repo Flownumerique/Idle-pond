@@ -1,0 +1,14 @@
+{
+    "name": "IdlePond.Atelier",
+    "rootNamespace": "IdlePond.Atelier",
+    "references": ["IdlePond.Noyau", "IdlePond.Jeu"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_EDITOR"],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

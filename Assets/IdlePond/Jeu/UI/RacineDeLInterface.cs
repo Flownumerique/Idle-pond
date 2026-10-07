@@ -2,6 +2,7 @@ using System;
 using IdlePond.Noyau;
 using UnityEngine;
 using UnityEngine.UIElements;
+using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 
 namespace IdlePond.Jeu.UI
 {
@@ -25,14 +26,21 @@ namespace IdlePond.Jeu.UI
         UIDocument document;
         Partie partie;
         VisualElement racine;
-        VisualElement laterale;
-        VisualElement panneauDesSucces;
-        VisualElement panneauDesInsufflations;
+        VisualElement voile;
+        VisualElement tiroir;
+        ScrollView defilement;
+        Label titreDuTiroir;
+        Label sousTitreDuTiroir;
+        readonly System.Collections.Generic.Dictionary<Tiroir, VisualElement> contenus =
+            new System.Collections.Generic.Dictionary<Tiroir, VisualElement>();
         bool paysage;
 
-        EnTete enTete;
+        Barre barre;
+        Lieu lieu;
+        Creusement creusement;
+        Dock dock;
         Retour retour;
-        Contenance contenance;
+        FicheDuHeros fiche;
         Heros heros;
         Captation captation;
         Mare mare;
@@ -40,7 +48,6 @@ namespace IdlePond.Jeu.UI
         Succes succes;
         Insufflations insufflations;
         Annonces annonces;
-        Onglets onglets;
         Action<EtatJeu>[] rafraichisseurs = Array.Empty<Action<EtatJeu>>();
 
         /// <summary>
@@ -121,16 +128,21 @@ namespace IdlePond.Jeu.UI
         {
             var p = partie;
 
-            var defilement = racine.Q<ScrollView>("defilement");
+            defilement = racine.Q<ScrollView>("defilement");
             ConfigurerLeDefilement(defilement);
-            ConfigurerLeDefilement(racine.Q<ScrollView>("defilement-lateral"));
-            laterale = racine.Q<VisualElement>("laterale");
-            panneauDesSucces = racine.Q<VisualElement>("succes");
-            panneauDesInsufflations = racine.Q<VisualElement>("insufflations");
+            voile = racine.Q<VisualElement>("voile-du-tiroir");
+            tiroir = racine.Q<VisualElement>("tiroir");
+            contenus.Clear();
+            contenus[Tiroir.Toi] = racine.Q<VisualElement>("tiroir-toi");
+            contenus[Tiroir.Especes] = racine.Q<VisualElement>("tiroir-especes");
+            contenus[Tiroir.Journal] = racine.Q<VisualElement>("tiroir-journal");
+            contenus[Tiroir.Oeuf] = racine.Q<VisualElement>("tiroir-oeuf");
 
-            enTete = new EnTete(racine.Q<VisualElement>("entete"));
+            barre = new Barre(racine.Q<VisualElement>("barre"));
+            lieu = new Lieu(racine.Q<VisualElement>("lieu"));
+            creusement = new Creusement(racine.Q<VisualElement>("creuser"), () => p.Creuser());
             retour = new Retour(racine.Q<VisualElement>("retour"), () => p.OublierRetour());
-            contenance = new Contenance(racine.Q<VisualElement>("contenance"));
+            fiche = new FicheDuHeros(racine.Q<VisualElement>("fiche-du-heros"));
             heros = new Heros(racine.Q<VisualElement>("heros"), () => p.Grandir());
             captation = new Captation(racine.Q<VisualElement>("captation"), () =>
             {
@@ -139,29 +151,55 @@ namespace IdlePond.Jeu.UI
             mare = new Mare(racine.Q<VisualElement>("mare"),
                 id => p.Convaincre(id),
                 id => p.Monter(id),
-                () => p.Creuser(),
                 id =>
                 {
                     captation.Ouvrir(id);
                     captation.Rafraichir(p.Etat);
+                    // La table s'ouvre en haut du tiroir : on y remonte pour la voir.
+                    defilement.scrollOffset = Vector2.zero;
                 });
-            renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre());
-            succes = new Succes(panneauDesSucces);
-            insufflations = new Insufflations(panneauDesInsufflations, id => p.Insuffler(id));
+            // Le gain prévu ne se calcule que tiroir de l'œuf ouvert : voir `Renaissance`.
+            renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre(),
+                () => dock != null && dock.Actif == Tiroir.Oeuf);
+            succes = new Succes(racine.Q<VisualElement>("succes"));
+            insufflations = new Insufflations(racine.Q<VisualElement>("insufflations"), id => p.Insuffler(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));
-            onglets = new Onglets(racine.Q<VisualElement>("onglets"), AppliquerLesOnglets);
+            dock = new Dock(racine.Q<VisualElement>("dock"), AppliquerLeTiroir);
+            ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));
+            // Toucher la mare voilée referme le tiroir : on revient à la vue sans viser.
+            voile.AddManipulator(new Clickable(() => dock.Fermer()));
 
             rafraichisseurs = new Action<EtatJeu>[]
             {
-                enTete.Rafraichir, contenance.Rafraichir, heros.Rafraichir, captation.Rafraichir,
-                mare.Rafraichir, renaissance.Rafraichir, succes.Rafraichir, insufflations.Rafraichir,
+                barre.Rafraichir, lieu.Rafraichir, creusement.Rafraichir, fiche.Rafraichir,
+                heros.Rafraichir, captation.Rafraichir, mare.Rafraichir, renaissance.Rafraichir,
+                succes.Rafraichir, insufflations.Rafraichir, dock.Rafraichir,
             };
+            AppliquerLeTiroir();
+        }
+
+        /// La poignée, et un bouton fermer à droite : au doigt, la croix se touche sans viser.
+        void ConstruireLaTeteDuTiroir(VisualElement tete)
+        {
+            tete.Add(Elements.Conteneur("tiroir-poignee"));
+            var titres = Elements.Conteneur("tiroir-titres");
+            titreDuTiroir = Elements.Texte("titre xl", "", "tiroir-titre");
+            sousTitreDuTiroir = Elements.Texte("doux sm", "", "tiroir-sous-titre");
+            titres.Add(titreDuTiroir);
+            titres.Add(sousTitreDuTiroir);
+            tete.Add(titres);
+            var fermer = Elements.Conteneur("tiroir-fermer", "tiroir-fermer");
+            fermer.Add(new Icone(Icones.CROIX));
+            fermer.AddManipulator(new Clickable(() => dock.Fermer()));
+            tete.Add(fermer);
         }
 
         static void ConfigurerLeDefilement(ScrollView defilement)
         {
             if (defilement == null) return;
             defilement.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            // Au doigt, on fait défiler sans viser une barre : elle ne mangerait que la largeur.
+            defilement.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             // Au doigt, la liste glisse et revient ; à la souris, la molette suffit.
             defilement.touchScrollBehavior = ScrollView.TouchScrollBehavior.Elastic;
         }
@@ -205,26 +243,100 @@ namespace IdlePond.Jeu.UI
         void Adapter(float largeur, float hauteur)
         {
             if (!(largeur > 0 && hauteur > 0)) return;
+            EviterLesBordsCaches();
             var estPaysage = Adaptation.EstPaysage(largeur, hauteur);
             if (estPaysage == paysage && racine.ClassListContains(estPaysage ? Adaptation.CLASSE_PAYSAGE : Adaptation.CLASSE_PORTRAIT))
                 return;
             paysage = estPaysage;
             racine.EnableInClassList(Adaptation.CLASSE_PAYSAGE, estPaysage);
             racine.EnableInClassList(Adaptation.CLASSE_PORTRAIT, !estPaysage);
-            AppliquerLesOnglets();
         }
 
         /// <summary>
-        /// En paysage la colonne de droite montre les deux panneaux ; en portrait elle
-        /// n'existe que derrière un onglet, et ne montre que celui-là.
+        /// L'encoche, les coins arrondis, la barre de geste : `Screen.safeArea` dit où l'écran
+        /// est vraiment libre. La racine s'en écarte d'autant ; son fond, lui, va jusqu'au bord.
         /// </summary>
-        void AppliquerLesOnglets()
+        void EviterLesBordsCaches()
+        {
+            var largeurDuPanneau = racine.panel != null ? racine.panel.visualTree.worldBound.width : 0f;
+            if (!(largeurDuPanneau > 0) || Screen.width <= 0) return;
+            var parPixel = largeurDuPanneau / Screen.width;
+            var sure = Screen.safeArea;
+            racine.style.paddingTop = (Screen.height - sure.yMax) * parPixel;
+            racine.style.paddingBottom = sure.yMin * parPixel;
+            racine.style.paddingLeft = sure.xMin * parPixel;
+            racine.style.paddingRight = (Screen.width - sure.xMax) * parPixel;
+        }
+
+        /// La durée du glissement, la même que celle du .uss (`.tiroir`, `.voile-du-tiroir`).
+        const long DUREE_DU_TIROIR_MS = 260;
+
+        /// <summary>
+        /// Un seul tiroir à la fois. Fermé, la mare est entière ; ouvert, elle reste visible
+        /// derrière le voile. Changer de tiroir remet le défilement en haut : on ouvre un
+        /// panneau par son titre, pas au milieu de la liste du précédent.
+        ///
+        /// Le tiroir glisse : la classe `ouvert` porte la position, le .uss la transition. Il
+        /// n'est montré qu'une image avant de recevoir la classe, sans quoi il apparaîtrait
+        /// déjà arrivé ; et il n'est caché qu'une fois redescendu, sans quoi il disparaîtrait
+        /// d'un coup.
+        /// </summary>
+        void AppliquerLeTiroir()
         {
             if (racine == null) return;
-            var actif = onglets.Actif;
-            Elements.Montrer(laterale, paysage || actif != OngletActif.Aucun);
-            Elements.Montrer(panneauDesSucces, paysage || actif == OngletActif.Succes);
-            Elements.Montrer(panneauDesInsufflations, paysage || actif == OngletActif.Insufflations);
+            var actif = dock.Actif;
+            if (actif != Tiroir.Aucun)
+            {
+                var (titre, sousTitre) = TitresDu(actif);
+                Elements.Poser(titreDuTiroir, titre);
+                Elements.Poser(sousTitreDuTiroir, sousTitre);
+                foreach (var paire in contenus) Elements.Montrer(paire.Value, paire.Key == actif);
+                defilement.scrollOffset = Vector2.zero;
+                Elements.Montrer(voile, true);
+                Elements.Montrer(tiroir, true);
+                voile.pickingMode = PickingMode.Position;
+                tiroir.schedule.Execute(() =>
+                {
+                    if (dock.Actif == Tiroir.Aucun) return;
+                    tiroir.AddToClassList("ouvert");
+                    voile.AddToClassList("ouvert");
+                });
+                return;
+            }
+
+            var etaitOuvert = tiroir.ClassListContains("ouvert");
+            tiroir.RemoveFromClassList("ouvert");
+            voile.RemoveFromClassList("ouvert");
+            voile.pickingMode = PickingMode.Ignore;
+            if (!etaitOuvert)
+            {
+                Elements.Montrer(voile, false);
+                Elements.Montrer(tiroir, false);
+                return;
+            }
+            tiroir.schedule.Execute(() =>
+            {
+                if (dock.Actif != Tiroir.Aucun) return;
+                Elements.Montrer(voile, false);
+                Elements.Montrer(tiroir, false);
+            }).StartingIn(DUREE_DU_TIROIR_MS);
         }
+
+        static (string Titre, string SousTitre) TitresDu(Tiroir tiroir)
+        {
+            switch (tiroir)
+            {
+                case Tiroir.Toi: return (E.DOCK_TOI, E.SOUS_TITRE_TOI);
+                case Tiroir.Especes: return (E.DOCK_ESPECES, E.SOUS_TITRE_ESPECES);
+                case Tiroir.Oeuf: return (E.DOCK_OEUF, E.SOUS_TITRE_OEUF);
+                case Tiroir.Journal: return (E.DOCK_JOURNAL, E.SOUS_TITRE_JOURNAL);
+                default: return ("", "");
+            }
+        }
+
+        /// Le tiroir ouvert, pour les tests et les ateliers.
+        public Tiroir TiroirOuvert => dock != null ? dock.Actif : Tiroir.Aucun;
+
+        public void Ouvrir(Tiroir quel) => dock?.Choisir(quel);
     }
 }

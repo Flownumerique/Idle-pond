@@ -15,7 +15,6 @@ namespace IdlePond.Jeu.UI
     /// </summary>
     public sealed class Heros
     {
-        readonly Label niveau;
         readonly Label production;
         readonly Label bonus;
         readonly BoutonDAchat grandir;
@@ -25,12 +24,8 @@ namespace IdlePond.Jeu.UI
             racine.AddToClassList("carte");
             racine.AddToClassList("carte-souffle");
 
-            var haut = Elements.Conteneur("rangee entre");
-            haut.Add(Elements.Texte("titre lg", E.HEROS));
-            niveau = Elements.Texte("chiffre tu sm", "", "heros-niveau");
-            haut.Add(niveau);
-            racine.Add(haut);
-
+            // Le nom et la taille du héros sont dans la fiche, juste au-dessus : la carte ne
+            // porte que ce qu'il capte et de quoi grandir.
             var milieu = Elements.Conteneur("rangee wrap");
             production = Elements.Texte("chiffre mana base");
             bonus = Elements.Texte("chiffre tu sm heros-bonus");
@@ -49,11 +44,11 @@ namespace IdlePond.Jeu.UI
             var payable = etat.Cycle.ManaCourant.Gte(prix) && prix.Lte(Economie.Contenance(etat));
             var pourcentage = (int)Decimal.JsRound((Economie.MultiplicateurDuHeros(etat) - 1) * 100);
 
-            Elements.Poser(niveau, Format.LibelleDuHeros(niveauDuHeros));
             Elements.Poser(production, Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionDuHeros(etat))));
             Elements.Montrer(bonus, pourcentage > 0);
             if (pourcentage > 0) Elements.Poser(bonus, Format.Remplir(E.BONUS_DU_HEROS, pourcentage));
             Elements.Poser(grandir.Cout, Format.Cout(prix));
+            grandir.Progresser(etat.Cycle.ManaCourant, prix);
             grandir.Regler(payable);
         }
     }

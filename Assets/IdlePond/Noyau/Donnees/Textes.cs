@@ -253,9 +253,57 @@ namespace IdlePond.Noyau.Donnees
             public const string JAMAIS = "jamais";
             public const string FOIS = "{0} fois";
 
-            /* — Les deux onglets du portrait ——————————————————————————————————————— */
-            public const string ONGLET_SUCCES = "Ce qui est arrivé";
-            public const string ONGLET_INSUFFLATIONS = "Ce que tu insuffles";
+            /* — Le dock : un mot sous chaque icône, qui tient sous le pouce ————————— */
+            public const string DOCK_TOI = "Toi";
+            public const string DOCK_ESPECES = "Espèces";
+            public const string DOCK_JOURNAL = "Journal";
+            public const string DOCK_OEUF = "L’œuf";
+
+            /* — Ce qu'un tiroir dit sous son titre ————————————————————————————————— */
+            public const string SOUS_TITRE_TOI = "Ce que tu captes, et ce que rester t’a déjà gagné";
+            public const string SOUS_TITRE_ESPECES = "Ceux qui vivent ici, lieu par lieu";
+            public const string SOUS_TITRE_OEUF = "Ce que tu emportes, ce que tu laisses";
+            public const string SOUS_TITRE_JOURNAL = "Ce qui est arrivé, et ce qui vient";
+
+            /* — Le tiroir « Toi » ——————————————————————————————————————————————————— */
+            public const string GAIN_DU_SEJOUR = "Rester t’a gagné";
+            public const string POURCENT_DE_CONTENANCE = "+{0} % de ce que tu peux porter";
+            public const string FICHE_CAPTATION = "Ce que tu captes";
+            public const string FICHE_CONTENANCE = "Ce que tu peux porter";
+            public const string FICHE_DEBIT_PROPRE = "Toi seul";
+            public const string FICHE_RETOURS = "Retours dans l’œuf";
+
+            /* — Le tiroir « Espèces » ———————————————————————————————————————————————— */
+            public const string CRANS_ET_DEBIT = "{0} crans · ";
+            public const string PROCHAIN_SEUIL = "×{0} au cran {1}";
+            public const string TOUS_LES_SEUILS = "tous les seuils franchis";
+            public const string CONVAINCUS_SUR = "{0} / {1}";
+            public const string JUSQU_A = "jusqu’à {0}";
+            public const string A_PROFONDEUR = "à {0}";
+            public const string INCONNU = "???";
+            public const string PLUS_BAS_QUE = "plus bas que {0}";
+
+            /* — Le tiroir « L'œuf » ——————————————————————————————————————————————————— */
+            public const string CONTENANCE_GARDEE = "Ce que tu pourras porter";
+            public const string POURCENT = "+{0} %";
+            public const string TU_EMPORTES = "Tu emportes";
+            public const string TU_LAISSES = "Tu laisses";
+            public const string EMPORTE_SOUFFLE = "le Souffle, et ce que tu as insufflé";
+            public const string EMPORTE_JOURNAL = "ce qui est arrivé";
+            public const string EMPORTE_MARQUES = "les marques sur ton corps";
+            public const string LAISSE_MANA = "le mana";
+            public const string LAISSE_ESPECES = "les espèces convaincues";
+            public const string LAISSE_PROFONDEUR = "la profondeur creusée";
+            public const string LAISSE_TAILLE = "ta taille";
+
+            /* — Le tiroir « Journal » ————————————————————————————————————————————————— */
+            public const string JOURNAL_COMPTE = "{0} sur {1}";
+            public const string JOURNAL_ARRIVES = "arrivés dans ce lieu";
+            public const string FAMILLE_TOUS = "Tous";
+            public const string FAMILLE_FRANCHISSEMENT = "Profondeur";
+            public const string FAMILLE_SEUIL = "Seuils";
+            public const string FAMILLE_ACTE = "Gestes";
+            public const string ARRIVE = "arrivé";
 
             /* — Ce que `Format` met en mots ——————————————————————————————————————————— */
             public const string PLUS_BAS = "plus bas";

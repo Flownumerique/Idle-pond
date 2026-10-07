@@ -26,7 +26,17 @@ namespace IdlePond.Editeur
         const string DOSSIER_DES_SCENES = "Assets/IdlePond/Scenes";
         const string SCENE_DE_DEMARRAGE = DOSSIER_DES_SCENES + "/Demarrage.unity";
         const string SCENE_DE_LA_MARE = DOSSIER_DES_SCENES + "/Mare.unity";
-        const string MISE_EN_PAGE = "Assets/IdlePond/Jeu/UI/Mare.uxml";
+        const string DOSSIER_DES_ATELIERS = DOSSIER_DES_SCENES + "/Ateliers";
+
+        static readonly (string Nom, IdlePond.Atelier.Atelier.Section Section, IdlePond.Atelier.Atelier.Depart Depart)[] ATELIERS =
+        {
+            ("Heros", IdlePond.Atelier.Atelier.Section.Heros, IdlePond.Atelier.Atelier.Depart.Noue),
+            ("Especes", IdlePond.Atelier.Atelier.Section.Especes, IdlePond.Atelier.Atelier.Depart.NoueDeuxEspeces),
+            ("Economie", IdlePond.Atelier.Atelier.Section.Economie, IdlePond.Atelier.Atelier.Depart.PartieNeuve),
+            ("Interface", IdlePond.Atelier.Atelier.Section.Interface, IdlePond.Atelier.Atelier.Depart.MiPartie),
+        };
+
+        const string MISE_EN_PAGE ="Assets/IdlePond/Jeu/UI/Mare.uxml";
         const string REGLAGES_DU_PANNEAU = "Assets/IdlePond/Jeu/UI/PanelSettings.asset";
         /// Le thème d'exécution par défaut, s'il a été créé (« UI Toolkit ▸ Default Runtime Theme »).
         const string THEME_PAR_DEFAUT = "Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss";
@@ -49,13 +59,19 @@ namespace IdlePond.Editeur
                 AssetDatabase.Refresh();
                 ConfigurationURP.Appliquer();
 
-                var reglages = CreerOuMettreAJourLesReglagesDuPanneau();
+                CreerOuMettreAJourLesReglagesDuPanneau();
+                // Écrits AVANT les scènes : `NewScene` décharge les assets que rien ne tient,
+                // et une référence prise avant lui est morte après — c'est ainsi que la Mare
+                // s'est enregistrée sans panneau du 2026-10-02 au 2026-10-07. Chaque scène
+                // recharge donc ses assets par leur chemin, une fois créée.
+                AssetDatabase.SaveAssets();
                 GenererDemarrage();
-                GenererLaMare(reglages);
+                GenererLaMare();
+                GenererLesAteliers();
                 InscrireDansLesBuildSettings();
 
                 AssetDatabase.SaveAssets();
-                Debug.Log("IdlePond : scènes générées (Demarrage, Mare).");
+                Debug.Log("IdlePond : scènes générées (Demarrage, Mare, " + ATELIERS.Length + " ateliers).");
             }
             catch (Exception e)
             {
@@ -73,7 +89,7 @@ namespace IdlePond.Editeur
         /// L'asset existant est modifié en place, pas recréé : son GUID, que la scène
         /// référence, ne change pas.
         /// </summary>
-        static PanelSettings CreerOuMettreAJourLesReglagesDuPanneau()
+        static void CreerOuMettreAJourLesReglagesDuPanneau()
         {
             var reglages = AssetDatabase.LoadAssetAtPath<PanelSettings>(REGLAGES_DU_PANNEAU);
             if (reglages == null)
@@ -88,7 +104,6 @@ namespace IdlePond.Editeur
             if (reglages.themeStyleSheet == null)
                 reglages.themeStyleSheet = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(THEME_PAR_DEFAUT);
             EditorUtility.SetDirty(reglages);
-            return reglages;
         }
 
         /// `Demarrage.unity` : un objet `Amorce`, et rien d'autre.
@@ -101,10 +116,42 @@ namespace IdlePond.Editeur
                 throw new InvalidOperationException("Impossible d'écrire " + SCENE_DE_DEMARRAGE);
         }
 
-        static void GenererLaMare(PanelSettings reglages)
+        static void GenererLaMare()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            PeuplerLaMare();
+            EditorSceneManager.MarkSceneDirty(scene);
+            if (!EditorSceneManager.SaveScene(scene, SCENE_DE_LA_MARE))
+                throw new InvalidOperationException("Impossible d'écrire " + SCENE_DE_LA_MARE);
+        }
 
+        /// <summary>
+        /// Les ateliers (spec du 2026-10-07) : la Mare, plus un objet `Atelier` réglé sur sa
+        /// section et son état de départ. Hors des Build Settings : on les ouvre dans
+        /// l'éditeur, on appuie sur Play. L'atelier redirige la sauvegarde — la partie du
+        /// joueur n'est pas touchée.
+        /// </summary>
+        static void GenererLesAteliers()
+        {
+            Directory.CreateDirectory(DOSSIER_DES_ATELIERS);
+            foreach (var (nom, section, depart) in ATELIERS)
+            {
+                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                PeuplerLaMare();
+                var atelier = new GameObject("Atelier").AddComponent<IdlePond.Atelier.Atelier>();
+                var serialise = new SerializedObject(atelier);
+                serialise.FindProperty("section").enumValueIndex = (int)section;
+                serialise.FindProperty("depart").enumValueIndex = (int)depart;
+                serialise.ApplyModifiedPropertiesWithoutUndo();
+                EditorSceneManager.MarkSceneDirty(scene);
+                var chemin = $"{DOSSIER_DES_ATELIERS}/Atelier-{nom}.unity";
+                if (!EditorSceneManager.SaveScene(scene, chemin))
+                    throw new InvalidOperationException("Impossible d'écrire " + chemin);
+            }
+        }
+
+        static void PeuplerLaMare()
+        {
             // Fond eau-abysse : ce qu'on voit là où l'eau n'a pas encore de bande.
             var camera = new GameObject("Main Camera") { tag = "MainCamera" };
             var cam = camera.AddComponent<Camera>();
@@ -129,7 +176,7 @@ namespace IdlePond.Editeur
 
             var interfaceGo = new GameObject("Interface");
             var document = interfaceGo.AddComponent<UIDocument>();
-            document.panelSettings = reglages;
+            document.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(REGLAGES_DU_PANNEAU);
             var miseEnPage = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(MISE_EN_PAGE);
             if (miseEnPage != null) document.visualTreeAsset = miseEnPage;
             else Debug.LogWarning("IdlePond : " + MISE_EN_PAGE + " est absent, l'objet Interface est créé sans mise en page. Relancez le générateur une fois l'interface livrée.");
@@ -137,10 +184,6 @@ namespace IdlePond.Editeur
             var typeDeLInterface = Type.GetType(TYPE_DE_L_INTERFACE);
             if (typeDeLInterface != null) interfaceGo.AddComponent(typeDeLInterface);
             else Debug.LogWarning("IdlePond : " + TYPE_DE_L_INTERFACE + " est introuvable, la scène se jouera sans le contrôleur de l'interface.");
-
-            EditorSceneManager.MarkSceneDirty(scene);
-            if (!EditorSceneManager.SaveScene(scene, SCENE_DE_LA_MARE))
-                throw new InvalidOperationException("Impossible d'écrire " + SCENE_DE_LA_MARE);
         }
 
         /// Demarrage en index 0 : c'est la scène qu'un build lance. Les scènes que le

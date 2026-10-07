@@ -85,6 +85,7 @@ namespace IdlePond.Jeu.UI
                 var prix = Economie.CoutDInsufflation(etat, carte.Insufflation);
                 Elements.Poser(carte.Rang, rang == 0 ? E.JAMAIS : Format.Remplir(E.FOIS, rang.ToString(CultureInfo.InvariantCulture)));
                 Elements.Poser(carte.Achat.Cout, Format.Remplir(E.SOUFFLE_EN_RESERVE, Format.Cout(prix)));
+                carte.Achat.Progresser(reserve, prix);
                 carte.Achat.Regler(reserve.Gte(prix));
             }
         }

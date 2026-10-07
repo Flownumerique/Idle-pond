@@ -166,6 +166,8 @@ namespace IdlePond.Tests
             {
                 LirePng(Art(Chemins.Fond(assise)), out var l, out var h);
                 Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE)));
+                LirePng(Art(Chemins.Roche(assise)), out l, out h);
+                Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE)), "la roche pave comme le fond");
                 LirePng(Art(Chemins.Rayons(assise)), out l, out h);
                 Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DES_RAYONS)));
                 if (RegistreDArt.DecorDe(assise).Berge)
@@ -217,6 +219,7 @@ namespace IdlePond.Tests
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 Assert.That(catalogue.DecorDe(assise).Fond, Is.Not.Null);
+                Assert.That(catalogue.DecorDe(assise).Roche, Is.Not.Null);
                 Assert.That(catalogue.DecorDe(assise).Rayons, Is.Not.Null);
             }
             Assert.That(catalogue.Voile, Is.Not.Null);

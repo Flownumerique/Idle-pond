@@ -26,6 +26,7 @@ namespace IdlePond.TestsDeJeu
         public void Preparer()
         {
             ServicesDePartie.Oublier();
+            SauvegardeDeTest.Rediriger();
             partie = new Partie(new HorlogeFigee(1_700_000_000_000L));
             ServicesDePartie.Installer(partie);
         }

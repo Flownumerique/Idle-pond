@@ -34,6 +34,18 @@ namespace IdlePond.Tests
             Assert.That(six.Bas, Is.EqualTo(-336));
         }
 
+        [Test, Description("la roche sous l'eau : la coupe part de la surface tant que l'eau creusée tient dans le cadre")]
+        public void La_roche_remplit_le_dessous_sans_cacher_l_eau_creusee()
+        {
+            var portrait = new DimensionsDuRendu(5, 216, 153);
+            // Une bande d'eau, cinq de roche : 336 px, plus que le cadre ; l'eau tient, on part du haut.
+            Assert.That(Cadrage.Cadrer(portrait, 1, 6), Is.EqualTo(new ChampDeCamera(12, 0, 216, 153)));
+            // Trois bandes d'eau (168 px) ne tiennent plus : le bas de l'eau creusée reste en bas.
+            Assert.That(Cadrage.Cadrer(portrait, 3, 6), Is.EqualTo(new ChampDeCamera(12, 153 - 168, 216, 153)));
+            // Sans roche, le cadrage d'avant.
+            Assert.That(Cadrage.Cadrer(portrait, 6, 6), Is.EqualTo(Cadrage.Cadrer(portrait, 6)));
+        }
+
         [Test, Description("les bandes visibles : celles que le champ touche, et aucune s'il n'y en a pas")]
         public void Les_bandes_visibles()
         {

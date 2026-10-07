@@ -28,11 +28,21 @@ namespace IdlePond.Jeu.Scene
 
         /// Tout tient : le haut de la coupe en haut du cadre. Sinon, le bas de la coupe en bas
         /// du cadre — c'est là que vit le héros. Le champ est centré sur la largeur visée.
-        public static ChampDeCamera Cadrer(DimensionsDuRendu d, int nombreDeBandes)
+        public static ChampDeCamera Cadrer(DimensionsDuRendu d, int nombreDeBandes) =>
+            Cadrer(d, nombreDeBandes, nombreDeBandes);
+
+        /// <summary>
+        /// Avec la roche à creuser dessinée sous l'eau : la coupe part de la surface tant que
+        /// l'eau CREUSÉE tient dans le cadre — la roche remplit alors le dessous au lieu du
+        /// vide. Sinon, le bas de l'eau creusée reste en bas du cadre, comme avant : la roche
+        /// ne pousse jamais le héros hors de l'écran.
+        /// </summary>
+        public static ChampDeCamera Cadrer(DimensionsDuRendu d, int bandesOuvertes, int bandesDessinees)
         {
             var gauche = Gabarits.LARGEUR_VISEE / 2 - d.Largeur / 2;
-            var total = Math.Max(0, nombreDeBandes) * Gabarits.HAUTEUR_DE_BANDE;
-            var haut = total <= d.Hauteur ? 0 : d.Hauteur - total;
+            var eau = Math.Max(0, bandesOuvertes) * Gabarits.HAUTEUR_DE_BANDE;
+            var tout = Math.Max(eau, Math.Max(0, bandesDessinees) * Gabarits.HAUTEUR_DE_BANDE);
+            var haut = tout <= d.Hauteur || eau <= d.Hauteur ? 0 : d.Hauteur - eau;
             return new ChampDeCamera(gauche, haut, d.Largeur, d.Hauteur);
         }
 

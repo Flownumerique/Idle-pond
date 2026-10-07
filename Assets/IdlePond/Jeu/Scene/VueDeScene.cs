@@ -17,6 +17,9 @@ namespace IdlePond.Jeu.Scene
         // L'espèce débloquée que ce palier porte, ou rien.
         VueDEspece Espece);
 
+    /// Un palier pas encore creusé : de la roche, dans l'obscurité, jusqu'au bas de l'assise.
+    public sealed record VueDeRoche(int Index, string Assise);
+
     /// `Stade` : 0 à 3, la taille dessinée du corps (spec DA §3). Il remplace l'échelle
     /// continue de la spec 2026-09-17 [D12] : le pixel art ne s'agrandit pas.
     public sealed record VueDuHeros(int Niveau, int Stade, IReadOnlyList<string> Couches);
@@ -37,15 +40,20 @@ namespace IdlePond.Jeu.Scene
 
         string clef;
 
-        public VueDeScene(IReadOnlyList<VueDePalier> paliers, VueDuHeros heros, bool eauTroublee, bool sature)
+        public VueDeScene(IReadOnlyList<VueDePalier> paliers, VueDuHeros heros, bool eauTroublee, bool sature,
+            IReadOnlyList<VueDeRoche> roches = null)
         {
             Paliers = paliers;
+            Roches = roches ?? Array.Empty<VueDeRoche>();
             Heros = heros;
             EauTroublee = eauTroublee;
             Sature = sature;
         }
 
         public IReadOnlyList<VueDePalier> Paliers { get; }
+
+        /// La roche à creuser, sous l'eau : vide quand tout le contenu livré est creusé.
+        public IReadOnlyList<VueDeRoche> Roches { get; }
         public VueDuHeros Heros { get; }
         public bool EauTroublee { get; }
         public bool Sature { get; }
@@ -67,6 +75,20 @@ namespace IdlePond.Jeu.Scene
         public static int EffectifDesPoissons(int niveau) =>
             Math.Min(POISSONS_MAX_PAR_GROUPE, 1 + (int)Math.Floor(Math.Log(Math.Max(1, niveau), 2)));
 
+        /// <summary>
+        /// Les paliers à dessiner en roche : du premier fermé jusqu'au bas de l'assise où l'on
+        /// creuse — on voit ce qui reste de la Noue, pas les soixante paliers de la suite. Une
+        /// assise entièrement creusée laisse voir la seule bande suivante, s'il y en a une.
+        /// </summary>
+        public static IReadOnlyList<int> IndicesDeRoche(int paliersOuverts, int limiteDeContenu)
+        {
+            if (paliersOuverts >= limiteDeContenu) return Array.Empty<int>();
+            var assise = Assises.DuPalier(Math.Max(0, paliersOuverts - 1));
+            var finDeLAssise = assise.IndexPremierPalier + assise.NombreDePaliers;
+            var jusqua = Math.Min(limiteDeContenu, finDeLAssise > paliersOuverts ? finDeLAssise : paliersOuverts + 1);
+            return Enumerable.Range(paliersOuverts, jusqua - paliersOuverts).ToArray();
+        }
+
         public static VueDeScene Depuis(EtatJeu etat)
         {
             var paliers = new List<VueDePalier>();
@@ -87,7 +109,9 @@ namespace IdlePond.Jeu.Scene
                 paliers,
                 new VueDuHeros(etat.Cycle.NiveauDuHeros, Gabarits.StadeDuNiveau(etat.Cycle.NiveauDuHeros), etat.Permanent.Couches),
                 Economie.EauTroublee(etat),
-                Economie.EstSature(etat));
+                Economie.EstSature(etat),
+                IndicesDeRoche(etat.Cycle.PaliersOuverts, etat.LimiteDeContenu)
+                    .Select(i => new VueDeRoche(i, Assises.DuPalier(i).Id)).ToArray());
         }
 
         static Palier DuPalier(int index) => IdlePond.Noyau.Donnees.Paliers.Tous[index];
@@ -110,6 +134,7 @@ namespace IdlePond.Jeu.Scene
                     if (p.Espece != null) sb.Append(':').Append(p.Espece.Id).Append(':').Append(p.Espece.Rang).Append(':').Append(p.Espece.Niveau);
                     sb.Append(';');
                 }
+                sb.Append('#').Append(Roches.Count);
                 sb.Append('|').Append(Heros.Niveau).Append(':').Append(Heros.Stade)
                   .Append(':').Append(string.Join(",", Heros.Couches ?? Array.Empty<string>()))
                   .Append('|').Append(EauTroublee ? 1 : 0).Append(Sature ? 1 : 0);

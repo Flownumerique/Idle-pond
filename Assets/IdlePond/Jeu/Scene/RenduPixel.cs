@@ -54,10 +54,10 @@ namespace IdlePond.Jeu.Scene
 
         /// La position de la caméra suit le champ : des demi-pixels seulement quand une
         /// dimension est impaire, ce qui laisse les bords du champ sur la grille.
-        public void Cadrer(int nombreDeBandes)
+        public void Cadrer(int bandesOuvertes, int bandesDessinees)
         {
             if (Dimensions == null) return;
-            Champ = Cadrage.Cadrer(Dimensions, nombreDeBandes);
+            Champ = Cadrage.Cadrer(Dimensions, bandesOuvertes, bandesDessinees);
             Camera.transform.position = new Vector3(Champ.Gauche + Champ.Largeur / 2f, Champ.Haut - Champ.Hauteur / 2f, -10f);
         }
 

@@ -6,6 +6,9 @@ namespace IdlePond.Jeu.Scene
     {
         public const int FOND = 0;
         public const int RAYONS = 10;
+        /// La roche à creuser passe devant les rayons, qui débordent sur deux bandes : le jour
+        /// n'entre pas dans la pierre.
+        public const int ROCHE = 15;
         public const int BORD = 20;
         public const int NAGEURS = 30;
         public const int CORPS = 40;

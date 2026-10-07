@@ -39,6 +39,15 @@ namespace IdlePond.Jeu.Scene
                     Briques.Poser(racine, "Rayons", art.Rayons, (Gabarits.LARGEUR_VISEE - Gabarits.LARGEUR_DE_BERGE) / 2,
                         -Gabarits.HAUTEUR_DES_RAYONS, OrdreDeRendu.RAYONS);
             }
+            // La roche à creuser, sous l'eau. Aucune lumière de palier ne l'atteint : seule
+            // l'ambiante la touche, et elle reste dans l'obscurité jusqu'à ce qu'on la creuse.
+            foreach (var r in vue.Roches)
+            {
+                var roche = catalogue.DecorDe(r.Assise)?.Roche;
+                if (roche == null) continue;
+                Briques.Paver(racine, "Roche " + r.Index, roche, Gabarits.GAUCHE_DU_DECOR, -(r.Index + 1) * Gabarits.HAUTEUR_DE_BANDE,
+                    Gabarits.LARGEUR_DU_DECOR, Gabarits.HAUTEUR_DE_BANDE, OrdreDeRendu.ROCHE);
+            }
         }
     }
 }

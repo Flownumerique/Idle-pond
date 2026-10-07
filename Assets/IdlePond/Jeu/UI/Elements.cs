@@ -1,5 +1,6 @@
 using System;
 using UnityEngine.UIElements;
+using Decimal = IdlePond.Noyau.Decimal;
 
 namespace IdlePond.Jeu.UI
 {
@@ -65,6 +66,20 @@ namespace IdlePond.Jeu.UI
     }
 
     /// <summary>
+    /// La part d'un prix déjà réunie, de 0 à 1. Le rapport se calcule en `Decimal` : une
+    /// réserve et un prix de 10⁴⁰⁰ ne tiennent pas dans un double, leur rapport si.
+    /// </summary>
+    public static class Progression
+    {
+        public static double Part(Decimal reserve, Decimal prix)
+        {
+            if (prix.Lte(0)) return 1;
+            var part = reserve.Div(prix).ToNumber();
+            return double.IsNaN(part) ? 0 : Math.Max(0, Math.Min(1, part));
+        }
+    }
+
+    /// <summary>
     /// Un bouton d'achat : un libellé et, à droite, ce qu'il coûte. C'est un simple
     /// `VisualElement` à `Clickable`, pas un `Button` : le `Button` d'Unity arrive avec le
     /// style du thème par défaut (fond gris, survol, marges), qu'il faudrait défaire
@@ -78,12 +93,17 @@ namespace IdlePond.Jeu.UI
         public readonly VisualElement Racine;
         public readonly Label Libelle;
         public readonly Label Cout;
+        readonly VisualElement remplissage;
 
         bool actif = true;
 
         public BoutonDAchat(string classes, string libelle, Action surClic)
         {
             Racine = Elements.Conteneur("bouton " + classes);
+            // Derrière le libellé : la part du prix déjà réunie, tant qu'on ne peut pas payer.
+            remplissage = Elements.Conteneur("bouton-remplissage");
+            remplissage.pickingMode = PickingMode.Ignore;
+            Racine.Add(remplissage);
             Libelle = Elements.Texte("base", libelle);
             Cout = Elements.Texte("chiffre tu sm bouton-cout");
             Racine.Add(Libelle);
@@ -93,6 +113,10 @@ namespace IdlePond.Jeu.UI
 
         /// `SetEnabled(false)` coupe aussi les événements de pointeur ; la garde du clic
         /// reste là pour qu'un clic déjà parti dans le même tick ne passe pas.
+        /// L'achat approche : le fond se remplit à mesure que la réserve rejoint le prix.
+        public void Progresser(Decimal reserve, Decimal prix) =>
+            Elements.RegleLaLargeur(remplissage, Progression.Part(reserve, prix));
+
         public void Regler(bool payable)
         {
             if (actif == payable) return;

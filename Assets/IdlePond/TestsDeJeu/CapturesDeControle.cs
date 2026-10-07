@@ -29,6 +29,7 @@ namespace IdlePond.TestsDeJeu
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) Assert.Ignore("captures : il faut un affichage (pas -nographics)");
 
             ServicesDePartie.Oublier();
+            SauvegardeDeTest.Rediriger();
             var partie = new Partie(new HorlogeFigee(1_700_000_000_000L));
             ServicesDePartie.Installer(partie);
             SceneDeLaMare scene = null;

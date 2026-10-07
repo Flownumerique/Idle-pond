@@ -26,6 +26,22 @@ namespace IdlePond.Jeu
             return courante;
         }
 
-        public static void Oublier() => courante = null;
+        /// <summary>
+        /// Le dossier où la `Boucle` sauvegarde à la place de `persistentDataPath`, s'il est
+        /// posé. Seuls les ateliers le posent : un bac à sable qui donne du mana ne doit
+        /// jamais écrire dans la partie du joueur. Oublié avec la partie.
+        /// </summary>
+        public static string DossierDeSauvegardeRedirige => redirige;
+
+        static string redirige;
+
+        public static void RedirigerLaSauvegarde(string dossier) =>
+            redirige = string.IsNullOrEmpty(dossier) ? throw new ArgumentException("Dossier vide.", nameof(dossier)) : dossier;
+
+        public static void Oublier()
+        {
+            courante = null;
+            redirige = null;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
 using UnityEngine.UIElements;
@@ -7,51 +8,98 @@ using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 namespace IdlePond.Jeu.UI
 {
     /// <summary>
-    /// L'écran des succès (§8.3), `Succes.tsx`.
+    /// Le Journal : l'écran des succès (§8.3), en grille (maquette du 2026-10-07, révision 2).
     ///
     /// | État    | Ce que le joueur voit                    |
     /// |---------|------------------------------------------|
+    /// | Arrivé  | Nom + ce qui s'est passé, en or          |
     /// | Ouvert  | Nom + condition + barre de progression   |
     /// | Fermé   | Nom seul, condition masquée              |
     /// | Secret  | Emplacement vide, rien d'autre           |
     ///
-    /// Verrouillage par assise : un succès n'est listé, quel que soit son état, que lorsque
-    /// son assise est atteinte. PAS de compteur global de secrets — des emplacements vides
-    /// par assise, ce qui dit qu'il y a quelque chose là sans dire combien il en reste
-    /// ailleurs.
+    /// Écran seulement : un succès n'a ni rang ni geste à faire pour le toucher, son effet
+    /// s'applique quand il tombe (choix de l'utilisateur, 2026-10-07). Le haut dit combien
+    /// sont arrivés dans ce lieu ; les filtres trient par famille.
     ///
-    /// Les trois états sont groupés plutôt qu'entrelacés, et ce n'est pas cosmétique :
-    /// égrenés dans l'ordre du registre, neuf emplacements secrets consécutifs se lisent
-    /// comme un défaut d'affichage, et quarante lignes de conditions écrasent la mare qui,
-    /// elle, en fait quatre. Ce qui est ARRIVÉ passe donc devant : la narration est une
-    /// récompense distribuée à la cadence idle (§4.2), pas une liste de courses.
+    /// Verrouillage par lieu : un succès n'est listé, quel que soit son état, que lorsque son
+    /// lieu est atteint. Ce qui est ARRIVÉ passe devant : la narration est une récompense
+    /// distribuée à la cadence idle (§4.2), pas une liste de courses.
     ///
-    /// La liste ne se reconstruit que lorsqu'un succès tombe : le dictionnaire des succès
-    /// obtenus est remplacé à ce moment-là et jamais autrement, donc sa référence suffit à
-    /// savoir si la liste a changé. Entre deux, seules les barres de progression bougent.
+    /// La grille ne se reconstruit que lorsqu'un succès tombe ou qu'on change de filtre ; entre
+    /// deux, seules les barres de progression bougent.
     /// </summary>
     public sealed class Succes
     {
-        readonly VisualElement contenu;
-        readonly Label titre;
+        static readonly (FamilleDeSucces? Famille, string Libelle)[] FILTRES =
+        {
+            (null, E.FAMILLE_TOUS),
+            (FamilleDeSucces.Franchissement, E.FAMILLE_FRANCHISSEMENT),
+            (FamilleDeSucces.Seuil, E.FAMILLE_SEUIL),
+            (FamilleDeSucces.Acte, E.FAMILLE_ACTE),
+        };
+
+        readonly VisualElement grille;
+        readonly Label compte;
+        readonly VisualElement remplissageDuCompte;
+        readonly List<VisualElement> puces = new List<VisualElement>();
         readonly List<(SuccesAffichable Entree, VisualElement Barre)> enCours =
             new List<(SuccesAffichable, VisualElement)>();
         readonly Dictionary<VisualElement, float> largeurs = new Dictionary<VisualElement, float>();
+        readonly string lieu = Assises.Toutes[0].Id;
 
         object signature;
-        readonly string assise = Assises.Toutes[0].Id;
+        int filtre;
+        EtatJeu dernier;
 
         public Succes(VisualElement racine)
         {
             racine.AddToClassList("panneau");
-            titre = Elements.Texte("titre doux lg", Format.Remplir(E.SUCCES_TITRE, Format.NomDeLAssise(assise)));
-            racine.Add(titre);
-            contenu = Elements.Conteneur("succes-contenu");
-            racine.Add(contenu);
+
+            var resume = Elements.Conteneur("carte carte-souffle journal-resume");
+            var gauche = Elements.Conteneur("journal-resume-texte");
+            gauche.Add(Elements.Texte("souffle-doux xs", Format.NomDeLAssiseCapitale(lieu)));
+            compte = Elements.Texte("chiffre souffle xl", "", "journal-compte");
+            gauche.Add(compte);
+            gauche.Add(Elements.Texte("souffle-doux xs", E.JOURNAL_ARRIVES));
+            resume.Add(gauche);
+            var rail = Elements.Conteneur("rail-de-seuil journal-rail");
+            remplissageDuCompte = Elements.Conteneur("rail-de-seuil-remplissage journal-rail-remplissage");
+            rail.Add(remplissageDuCompte);
+            resume.Add(rail);
+            racine.Add(resume);
+
+            var filtres = Elements.Conteneur("filtres");
+            for (var i = 0; i < FILTRES.Length; i++)
+            {
+                var indice = i;
+                var puce = Elements.Conteneur("filtre");
+                puce.Add(Elements.Texte("sm", FILTRES[i].Libelle));
+                puce.AddManipulator(new Clickable(() => Filtrer(indice)));
+                filtres.Add(puce);
+                puces.Add(puce);
+            }
+            racine.Add(filtres);
+
+            grille = Elements.Conteneur("grille-de-succes");
+            racine.Add(grille);
+            MarquerLeFiltre();
+        }
+
+        void Filtrer(int indice)
+        {
+            filtre = indice;
+            MarquerLeFiltre();
+            if (dernier != null) Reconstruire(dernier);
+        }
+
+        void MarquerLeFiltre()
+        {
+            for (var i = 0; i < puces.Count; i++) Elements.Marquer(puces[i], "actif", i == filtre);
         }
 
         public void Rafraichir(EtatJeu etat)
         {
+            dernier = etat;
             if (!ReferenceEquals(signature, etat.Permanent.Succes))
             {
                 signature = etat.Permanent.Succes;
@@ -71,83 +119,52 @@ namespace IdlePond.Jeu.UI
 
         void Reconstruire(EtatJeu etat)
         {
-            contenu.Clear();
+            grille.Clear();
             enCours.Clear();
             largeurs.Clear();
 
-            var liste = RegleDesSucces.SuccesListables(etat, assise);
-            var acquis = new List<SuccesAffichable>();
-            var ouverts = new List<SuccesAffichable>();
-            var fermes = new List<SuccesAffichable>();
-            var secrets = 0;
-            foreach (var entree in liste)
-            {
-                if (entree.Acquis) acquis.Add(entree);
-                else if (entree.Visibilite == VisibiliteDeSucces.Ouvert) ouverts.Add(entree);
-                else if (entree.Visibilite == VisibiliteDeSucces.Ferme) fermes.Add(entree);
-                else secrets++;
-            }
+            var tous = RegleDesSucces.SuccesListables(etat, lieu);
+            var arrives = tous.Count(e => e.Acquis);
+            Elements.Poser(compte, Format.Remplir(E.JOURNAL_COMPTE, arrives, tous.Count));
+            Elements.RegleLaLargeur(remplissageDuCompte, tous.Count == 0 ? 0 : arrives / (double)tous.Count);
 
-            if (acquis.Count > 0)
+            var famille = FILTRES[filtre].Famille;
+            var liste = tous.Where(e => famille == null || e.Succes.Famille == famille).ToList();
+            if (liste.Count == 0)
             {
-                var groupe = Elements.Conteneur("liste");
-                // Le plus récent d'abord : la dernière chose arrivée est celle qu'on cherche.
-                for (var i = acquis.Count - 1; i >= 0; i--) groupe.Add(Acquis(acquis[i]));
-                contenu.Add(groupe);
+                grille.Add(Elements.Texte("tu sm", E.SUCCES_RIEN_ENCORE));
+                return;
             }
-            else
-            {
-                contenu.Add(Elements.Texte("tu sm", E.SUCCES_RIEN_ENCORE));
-            }
-
-            if (ouverts.Count > 0)
-            {
-                contenu.Add(Elements.Texte("tu xs sous-titre", E.SUCCES_EN_CHEMIN));
-                var groupe = Elements.Conteneur("liste");
-                foreach (var entree in ouverts) groupe.Add(EnCours(etat, entree));
-                contenu.Add(groupe);
-            }
-
-            if (fermes.Count > 0)
-            {
-                contenu.Add(Elements.Texte("tu xs sous-titre", E.SUCCES_PLUS_LOIN));
-                var groupe = Elements.Conteneur("rangee wrap");
-                foreach (var entree in fermes)
-                {
-                    var puce = Elements.Conteneur("puce");
-                    puce.Add(Elements.Texte("tu xs titre", Textes.DuSucces(entree.Succes.Id).Nom));
-                    groupe.Add(puce);
-                }
-                contenu.Add(groupe);
-            }
-
-            if (secrets > 0)
-            {
-                // Rien d'écrit : un emplacement vide dit qu'il y a quelque chose, pas quoi.
-                // Le seul libellé, en infobulle, est « Emplacements vides ».
-                var marque = Elements.Texte("tu xs sous-titre", E.SUCCES_MARQUE_DES_VIDES);
-                marque.tooltip = E.SUCCES_EMPLACEMENTS_VIDES;
-                contenu.Add(marque);
-                var groupe = Elements.Conteneur("rangee wrap");
-                for (var i = 0; i < secrets; i++) groupe.Add(Elements.Conteneur("emplacement-vide"));
-                contenu.Add(groupe);
-            }
+            // Le plus récent des arrivés d'abord, puis ce qui est en chemin, puis le reste.
+            foreach (var entree in liste.Where(e => e.Acquis).Reverse()) grille.Add(Arrive(entree));
+            foreach (var entree in liste.Where(e => !e.Acquis && e.Visibilite == VisibiliteDeSucces.Ouvert)) grille.Add(EnChemin(etat, entree));
+            foreach (var entree in liste.Where(e => !e.Acquis && e.Visibilite == VisibiliteDeSucces.Ferme)) grille.Add(Ferme(entree));
+            // Un emplacement vide dit qu'il y a quelque chose là, pas quoi.
+            foreach (var _ in liste.Where(e => !e.Acquis && e.Visibilite == VisibiliteDeSucces.Secret)) grille.Add(Secret());
         }
 
-        static VisualElement Acquis(SuccesAffichable entree)
+        static VisualElement Carte(string classe, string[] icone)
         {
-            var texte = Textes.DuSucces(entree.Succes.Id);
-            var carte = Elements.Conteneur("succes-acquis");
-            carte.Add(Elements.Texte("titre base", texte.Nom));
-            carte.Add(Elements.Texte("titre tu sm italique", texte.Rapport));
+            var carte = Elements.Conteneur("carte-de-succes " + classe);
+            carte.Add(new Icone(icone));
             return carte;
         }
 
-        VisualElement EnCours(EtatJeu etat, SuccesAffichable entree)
+        static VisualElement Arrive(SuccesAffichable entree)
         {
             var texte = Textes.DuSucces(entree.Succes.Id);
-            var carte = Elements.Conteneur("succes-en-cours");
-            carte.Add(Elements.Texte("titre doux base", texte.Nom));
+            var carte = Carte("arrive", Icones.JOURNAL);
+            carte.Add(Elements.Texte("titre sm", texte.Nom));
+            carte.Add(Elements.Texte("tu xs italique", texte.Rapport));
+            carte.Add(Elements.Texte("souffle-doux xs", E.ARRIVE));
+            return carte;
+        }
+
+        VisualElement EnChemin(EtatJeu etat, SuccesAffichable entree)
+        {
+            var texte = Textes.DuSucces(entree.Succes.Id);
+            var carte = Carte("en-chemin", Icones.JOURNAL);
+            carte.Add(Elements.Texte("titre sm", texte.Nom));
             carte.Add(Elements.Texte("tu xs", texte.Condition));
             // Sans seuil mesurable (creux au complet), pas de barre : une barre fixe à zéro
             // dirait une progression qui n'existe pas.
@@ -159,6 +176,20 @@ namespace IdlePond.Jeu.UI
                 carte.Add(rail);
                 enCours.Add((entree, barre));
             }
+            return carte;
+        }
+
+        static VisualElement Ferme(SuccesAffichable entree)
+        {
+            var carte = Carte("ferme", Icones.CADENAS);
+            carte.Add(Elements.Texte("titre tu sm", Textes.DuSucces(entree.Succes.Id).Nom));
+            return carte;
+        }
+
+        static VisualElement Secret()
+        {
+            var carte = Carte("secret", Icones.CADENAS);
+            carte.Add(Elements.Texte("tu sm", E.INCONNU));
             return carte;
         }
     }

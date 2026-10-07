@@ -15,7 +15,7 @@ namespace IdlePond.Jeu.Scene
         [Serializable] public sealed class Images { public Sprite[] Sprites = Array.Empty<Sprite>(); }
         [Serializable] public sealed class MarqueDAssise { public string Assise; public Sprite[] ParStade = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDEspece { public string Espece; public Sprite[] Images = Array.Empty<Sprite>(); }
-        [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Berge; public Sprite Rayons; }
+        [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; }
 
         public Images[] Corps = Array.Empty<Images>();
         public MarqueDAssise[] Marques = Array.Empty<MarqueDAssise>();

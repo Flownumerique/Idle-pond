@@ -48,6 +48,7 @@ namespace IdlePond.Editeur
             {
                 Assise = a,
                 Fond = S(Chemins.Fond(a)),
+                Roche = S(Chemins.Roche(a)),
                 Berge = S(Chemins.Berge(a)),
                 Rayons = S(Chemins.Rayons(a)),
             }).ToArray();

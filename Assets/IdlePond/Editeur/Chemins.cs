@@ -18,6 +18,7 @@ namespace IdlePond.Editeur
         public static string MarqueDAssise(string assise, int stade) => $"Heros/marques/{assise}-s{stade}.png";
         public static string ImageDEspece(string espece, int image) => $"Especes/{espece}-i{image}.png";
         public static string Fond(string assise) => $"Fonds/{assise}/fond.png";
+        public static string Roche(string assise) => $"Fonds/{assise}/roche.png";
         public static string Rayons(string assise) => $"Fonds/{assise}/rayons.png";
         public static string Berge(string assise) => $"Fonds/{assise}/berge.png";
 

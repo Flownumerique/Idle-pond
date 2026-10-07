@@ -69,6 +69,7 @@ namespace IdlePond.Editeur
             {
                 var decor = RegistreDArt.DecorDe(assise);
                 sortie[Chemins.Fond(assise)] = DessinerFond(decor).EnPng();
+                sortie[Chemins.Roche(assise)] = DessinerRoche(decor).EnPng();
                 sortie[Chemins.Rayons(assise)] = DessinerRayons(decor).EnPng();
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
             }
@@ -186,6 +187,70 @@ namespace IdlePond.Editeur
                     if (t < 0.35 && Toile.Seuil(x, y) < (0.35 - t) / 0.35) couleur = d.Eau[1];
                     if (t < 0.12 && Toile.Seuil(x, y) < (0.12 - t) / 0.12) couleur = d.Eau[2];
                     if (y <= 1 || (y == 2 && x % 2 == 0)) couleur = d.Vase;
+                    toile.Poser(x, y, couleur);
+                }
+            return toile;
+        }
+
+        /// <summary>
+        /// La roche d'un palier pas encore creusé : des pierres irrégulières (une cellule de
+        /// Voronoï chacune, autour d'un germe tiré au hasard dans une grille de 8 × 8), jointes
+        /// par des fissures, éclairées d'une arête claire sur leur bord haut ; en haut de la
+        /// bande, le seuil, la ligne sombre où l'eau creusée s'arrête. Les distances se
+        /// mesurent en tournant sur la largeur : la tuile se raccorde à elle-même quand elle
+        /// pave. Dessinée dans ses couleurs ; c'est l'absence de lumière qui la plonge dans
+        /// l'obscurité.
+        /// </summary>
+        static Toile DessinerRoche(DecorDArt d)
+        {
+            const int CASE = 8;
+            var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
+            var colonnes = toile.Largeur / CASE;
+            var rangees = (toile.Hauteur + CASE - 1) / CASE;
+            uint Hacher(int a, int b)
+            {
+                var h = (uint)(a * 73856093) ^ (uint)(b * 19349663) ^ 0x9E3779B9u;
+                h ^= h >> 13; h *= 0x5bd1e995; h ^= h >> 15;
+                return h;
+            }
+            var germes = new List<(double X, double Y, bool Claire)>();
+            for (var r = 0; r < rangees; r++)
+                for (var c = 0; c < colonnes; c++)
+                {
+                    var h = Hacher(c, r);
+                    germes.Add((c * CASE + 1 + (h & 0xFF) / 255.0 * (CASE - 2),
+                        r * CASE + 1 + ((h >> 8) & 0xFF) / 255.0 * (CASE - 2), (h >> 16 & 3) != 0));
+                }
+            (int Plus, double Ecart) Pierre(int x, int y)
+            {
+                double premiere = double.MaxValue, seconde = double.MaxValue;
+                var plus = 0;
+                for (var g = 0; g < germes.Count; g++)
+                {
+                    var dx = Math.Abs(x - germes[g].X);
+                    dx = Math.Min(dx, toile.Largeur - dx) * 0.8;
+                    var dy = y - germes[g].Y;
+                    var distance = Math.Sqrt(dx * dx + dy * dy);
+                    if (distance < premiere) { seconde = premiere; premiere = distance; plus = g; }
+                    else if (distance < seconde) seconde = distance;
+                }
+                return (plus, seconde - premiere);
+            }
+            for (var y = 0; y < toile.Hauteur; y++)
+                for (var x = 0; x < toile.Largeur; x++)
+                {
+                    var (pierre, ecart) = Pierre(x, y);
+                    int couleur;
+                    if (ecart < 0.9) couleur = d.Roche[3];
+                    else
+                    {
+                        couleur = germes[pierre].Claire ? d.Roche[1] : d.Roche[0];
+                        // L'arête claire : le bord haut de la pierre, juste sous la fissure.
+                        if (Pierre(x, y + 1).Ecart < 0.9 && Toile.Seuil(x, y) < 0.7) couleur = d.Roche[2];
+                        // Le grain, tramé, pour que la pierre ne soit pas lisse.
+                        else if (couleur == d.Roche[1] && Toile.Seuil(x, y) < 0.1) couleur = d.Roche[0];
+                    }
+                    if (y >= toile.Hauteur - 2) couleur = d.Roche[3];
                     toile.Poser(x, y, couleur);
                 }
             return toile;

@@ -34,6 +34,7 @@ namespace IdlePond.Jeu.Scene
         // change, ou si un redessin a recréé les lumières.
         DimensionsDuRendu cadrageDe;
         int cadrageBandes = -1;
+        int cadrageRoches = -1;
         int premiereVisible, derniereVisible = int.MaxValue;
         Vector2Int? tailleImposee;
 
@@ -117,11 +118,15 @@ namespace IdlePond.Jeu.Scene
             if (Rendu.Redimensionner(largeur, hauteur)) affichee = default;
             if (Rendu.Dimensions == null) return;
             var bandes = Vue != null ? Vue.Paliers.Count : 0;
-            if (cadrageDe != Rendu.Dimensions || cadrageBandes != bandes)
+            var roches = Vue != null ? Vue.Roches.Count : 0;
+            if (cadrageDe != Rendu.Dimensions || cadrageBandes != bandes || cadrageRoches != roches)
             {
                 cadrageDe = Rendu.Dimensions;
                 cadrageBandes = bandes;
-                Rendu.Cadrer(bandes);
+                cadrageRoches = roches;
+                // La roche est dessinée, mais n'a ni lumière ni nageur : seules les bandes
+                // d'eau comptent pour ce qui s'allume.
+                Rendu.Cadrer(bandes, bandes + roches);
                 (premiereVisible, derniereVisible) = Cadrage.BandesVisibles(Rendu.Champ, bandes);
                 Eclairage.Activer(premiereVisible, derniereVisible);
                 Voile.Couvrir(Rendu.Champ);

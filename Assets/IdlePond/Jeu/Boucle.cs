@@ -42,7 +42,10 @@ namespace IdlePond.Jeu
         /// scène : la boucle, la scène dessinée et l'interface la demandent ici.
         /// </summary>
         public static Partie ObtenirOuCreerLaPartie() =>
-            ServicesDePartie.ObtenirOuCreer(() => Partie.Ouvrir(new HorlogeSysteme(), Application.persistentDataPath));
+            ServicesDePartie.ObtenirOuCreer(() => Partie.Ouvrir(new HorlogeSysteme(), DossierDeSauvegarde()));
+
+        /// Le dossier de la partie : celui du joueur, sauf si un atelier l'a redirigé.
+        static string DossierDeSauvegarde() => ServicesDePartie.DossierDeSauvegardeRedirige ?? Application.persistentDataPath;
 
         /// <summary>
         /// Le projet active les options d'entrée en Play Mode : si le rechargement du domaine
@@ -56,7 +59,7 @@ namespace IdlePond.Jeu
         void Awake()
         {
             // `persistentDataPath` ne se lit que sur le fil principal : on le garde ici.
-            dossier = Application.persistentDataPath;
+            dossier = DossierDeSauvegarde();
             partie = ObtenirOuCreerLaPartie();
         }
 

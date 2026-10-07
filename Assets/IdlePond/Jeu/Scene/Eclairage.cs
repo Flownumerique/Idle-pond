@@ -15,6 +15,10 @@ namespace IdlePond.Jeu.Scene
     {
         readonly Transform racine;
         readonly List<Light2D> parBande = new List<Light2D>();
+        Light2D surLaRoche;
+        // Le dégradé de la roche, du haut (clair) vers le bas (éteint) : voir `EclairerLaRoche`.
+        readonly Texture2D degrade;
+        readonly Sprite rectangleDegrade;
         // Un pixel blanc, étiré au rectangle de la bande : voir `Dessiner`.
         readonly Texture2D blanc;
         readonly Sprite rectangle;
@@ -28,6 +32,17 @@ namespace IdlePond.Jeu.Scene
             blanc.SetPixel(0, 0, Color.white);
             blanc.Apply();
             rectangle = Sprite.Create(blanc, new Rect(0, 0, 1, 1), Vector2.zero, 1f);
+            const int MARCHES = 16;
+            degrade = new Texture2D(1, MARCHES, TextureFormat.RGBA32, false) { name = "Lumiere de roche", wrapMode = TextureWrapMode.Clamp };
+            for (var y = 0; y < MARCHES; y++)
+            {
+                // y = 0 en bas : le bas de la roche, le plus loin de l'eau.
+                var t = y / (float)(MARCHES - 1);
+                var force = Mathf.Lerp((float)RegistreDArt.LUMIERE_DE_ROCHE_EN_BAS, (float)RegistreDArt.LUMIERE_DE_ROCHE_EN_HAUT, t * t);
+                degrade.SetPixel(0, y, new Color(force, force, force, 1f));
+            }
+            degrade.Apply();
+            rectangleDegrade = Sprite.Create(degrade, new Rect(0, 0, 1, MARCHES), Vector2.zero, 1f);
             racine = new GameObject("Eclairage").transform;
             racine.SetParent(parent, false);
             var go = new GameObject("Ambiante");
@@ -61,12 +76,41 @@ namespace IdlePond.Jeu.Scene
                 lumiere.color = Briques.Couleur(RegistreDArt.DecorDe(p.Assise).TeinteDeLumiere);
                 parBande.Add(lumiere);
             }
+            EclairerLaRoche(vue);
+        }
+
+        /// <summary>
+        /// Une seule lumière pour toute la roche, quel que soit le nombre de bandes : le budget
+        /// d'un téléphone compte les lumières, pas leur taille. Son cookie est un dégradé —
+        /// la lumière de l'eau déborde sur la première pierre, puis s'éteint en descendant.
+        /// </summary>
+        void EclairerLaRoche(VueDeScene vue)
+        {
+            if (surLaRoche != null) UnityEngine.Object.Destroy(surLaRoche.gameObject);
+            surLaRoche = null;
+            if (vue.Roches.Count == 0) return;
+            var h = Gabarits.HAUTEUR_DE_BANDE;
+            var premiere = vue.Roches[0].Index;
+            var derniere = vue.Roches[vue.Roches.Count - 1].Index;
+            var go = new GameObject("Lumiere de roche");
+            go.transform.SetParent(racine, false);
+            go.transform.localPosition = new Vector3(Gabarits.GAUCHE_DU_DECOR, -(derniere + 1) * h, 0f);
+            // Le sprite fait 1 × 16 unités : l'échelle l'étire à la largeur du décor et à la
+            // hauteur de toute la roche.
+            go.transform.localScale = new Vector3(Gabarits.LARGEUR_DU_DECOR, (derniere - premiere + 1) * h / (float)degrade.height, 1f);
+            surLaRoche = go.AddComponent<Light2D>();
+            surLaRoche.lightType = Light2D.LightType.Sprite;
+            surLaRoche.lightCookieSprite = rectangleDegrade;
+            surLaRoche.intensity = 1f;
+            surLaRoche.color = Briques.Couleur(RegistreDArt.TEINTE_DE_ROCHE);
         }
 
         public void Dispose()
         {
             UnityEngine.Object.Destroy(rectangle);
             UnityEngine.Object.Destroy(blanc);
+            UnityEngine.Object.Destroy(rectangleDegrade);
+            UnityEngine.Object.Destroy(degrade);
         }
 
         public void Activer(int premiere, int derniere)

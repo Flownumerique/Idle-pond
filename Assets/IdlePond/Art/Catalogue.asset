@@ -52,6 +52,7 @@ MonoBehaviour:
   Decors:
   - Assise: noue
     Fond: {fileID: 21300000, guid: db07656bf8e30cd40911d1d4c53b770a, type: 3}
+    Roche: {fileID: 21300000, guid: c8a400f0f77ebb64ea565c261fb538d3, type: 3}
     Berge: {fileID: 21300000, guid: 8134562a103dfd34ab558abc833f0815, type: 3}
     Rayons: {fileID: 21300000, guid: 3183c194ed9c68c46b98c28d52934f54, type: 3}
   Voile: {fileID: 21300000, guid: ce926a3c1b461854f9a1480b4d7078dc, type: 3}

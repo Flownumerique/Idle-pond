@@ -21,7 +21,9 @@ namespace IdlePond.Jeu.Scene
         IReadOnlyList<int> Racines,
         int Rayon,
         bool Berge,
-        int Voile);
+        int Voile,
+        // La roche à creuser : le fond, la pierre, son arête claire, les fissures.
+        IReadOnlyList<int> Roche);
 
     public sealed record CouleursDePoisson(int Corps, int Dos, int Ventre);
 
@@ -37,6 +39,11 @@ namespace IdlePond.Jeu.Scene
         public const int BLANC = 0xFFFFFF;
         /// Ce qui éclaire encore là où aucune lumière de palier n'arrive.
         public const double LUMIERE_AMBIANTE = 0.15;
+        /// La roche à creuser : ce qui descend de l'eau creusée s'y éteint, du haut vers le bas.
+        /// Assez pour lire la pierre, jamais assez pour qu'elle ressemble à de l'eau.
+        public const double LUMIERE_DE_ROCHE_EN_HAUT = 0.55;
+        public const double LUMIERE_DE_ROCHE_EN_BAS = 0.12;
+        public const int TEINTE_DE_ROCHE = 0xB8C8C4;
 
         public static readonly CouleursDePoisson HEROS = new CouleursDePoisson(0xC49C5C, 0x8C683A, 0xE2CE96);
 
@@ -64,7 +71,8 @@ namespace IdlePond.Jeu.Scene
                 new[] { 0x3A2C20, 0x5C4630 },
                 0x96BE96,
                 true,
-                0x8A7A3A),
+                0x8A7A3A,
+                new[] { 0x1E2422, 0x2A322F, 0x3A4440, 0x121614 }),
         };
 
         static readonly Dictionary<string, MarqueDArt> MARQUES = new Dictionary<string, MarqueDArt>
@@ -107,7 +115,7 @@ namespace IdlePond.Jeu.Scene
         public static IReadOnlyList<int> PaletteDuDecor(string assise)
         {
             var d = DecorDe(assise);
-            return d.Eau.Concat(d.Racines).Append(d.Vase).Append(d.Rayon).Distinct().ToList();
+            return d.Eau.Concat(d.Racines).Concat(d.Roche).Append(d.Vase).Append(d.Rayon).Distinct().ToList();
         }
     }
 }
