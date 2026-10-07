@@ -51,11 +51,17 @@ namespace IdlePond.Simulateur
     ///     déclaré non convergent, et la simulation s'arrête là. Le calibrage balaie
     ///     des réglages dont certains ne convergent pas : sans lui, il bouclerait.
     /// </summary>
+    /// <summary>
+    /// `Insuffler` : ce que le joueur fait de son Souffle à la renaissance. Null, c'est la
+    /// politique historique, `InsufflerAuMieux` — celle que la parité fige. Les autres
+    /// existent pour la MESURE du chantier 2 de la roadmap, pas pour le jeu.
+    /// </summary>
     public sealed record Politique(
         double SecondesEntreReleves,
         double Pas,
         double FractionDeSaturationPourRenaitre,
-        double DureeMaxParCycleSecondes);
+        double DureeMaxParCycleSecondes,
+        Func<EtatJeu, EtatJeu> Insuffler = null);
 
     /// Les quatre achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute.
     public enum TypeDAchat { Creuser, Grandir, Debloquer, Niveau }
@@ -329,6 +335,53 @@ namespace IdlePond.Simulateur
             throw new InvalidOperationException("La politique d'insufflation ne termine pas");
         }
 
+        /* ─── Les politiques d'insufflation mesurées (roadmap, chantier 2) ─────────── */
+
+        /// <summary>
+        /// La moins chère d'abord, mais en gardant la moitié du Souffle disponible à la
+        /// renaissance : un joueur prudent, qui ne vide pas sa réserve.
+        /// </summary>
+        public static EtatJeu InsufflerALaMoitie(EtatJeu etat)
+        {
+            var plancher = etat.Permanent.Souffle.Mul(0.5);
+            return InsufflerTantQue(etat, (courant, _, cout) => courant.Permanent.Souffle.Sub(cout).Gte(plancher));
+        }
+
+        /// La globale seule : le joueur qui ne choisit pas d'espèce.
+        public static EtatJeu InsufflerLaGlobaleSeule(EtatJeu etat) =>
+            InsufflerTantQue(etat, (_, insufflation, __) => insufflation.Id == Insufflations.GLOBALE_ID);
+
+        /// <summary>
+        /// La globale et la ciblée de l'espèce la plus profonde que la vie précédente a
+        /// convaincue : le joueur qui mise sur ce qu'il vient de découvrir.
+        /// </summary>
+        public static EtatJeu InsufflerLaPlusProfonde(EtatJeu etat)
+        {
+            var profondeur = etat.Permanent.ProfondeurMaxAtteinte;
+            var visee = Especes.Toutes.Where(e => e.Palier < Math.Max(1, profondeur)).OrderByDescending(e => e.Palier).FirstOrDefault();
+            return InsufflerTantQue(etat, (_, insufflation, __) =>
+                insufflation.Id == Insufflations.GLOBALE_ID || (visee != null && insufflation.Espece == visee.Id));
+        }
+
+        /// La moins chère d'abord parmi celles que `permise` accepte, tant qu'elle accepte.
+        static EtatJeu InsufflerTantQue(EtatJeu etat, Func<EtatJeu, Insufflation, Decimal, bool> permise)
+        {
+            var courant = etat;
+            for (var garde = 0; garde < 10_000; garde += 1)
+            {
+                (Insufflation Insufflation, Decimal Cout)? choix = null;
+                foreach (var insufflation in Insufflations.Toutes)
+                {
+                    var cout = Economie.CoutDInsufflation(courant, insufflation);
+                    if (cout.Gt(courant.Permanent.Souffle) || !permise(courant, insufflation, cout)) continue;
+                    if (choix == null || cout.Lt(choix.Value.Cout)) choix = (insufflation, cout);
+                }
+                if (choix == null) return courant;
+                courant = Reducteur.Insuffler(courant, choix.Value.Insufflation.Id);
+            }
+            throw new InvalidOperationException("La politique d'insufflation ne termine pas");
+        }
+
         // `reglage` : le réglage de la courbe, pour le calibreur — il balaie des
         // valeurs, et le §5.1 lui interdit de muter un module pour le faire. Par
         // défaut : le canon. La tâche 13 y ajoutera `θ` et l'échelle.
@@ -387,7 +440,7 @@ namespace IdlePond.Simulateur
                 }
 
                 if (cycleNonConvergent != null) break;
-                etat = InsufflerAuMieux(Renaissance.Renaitre(etat));
+                etat = (politique.Insuffler ?? InsufflerAuMieux)(Renaissance.Renaitre(etat));
                 acheves += 1;
                 observer?.Invoke(etat);
             }

@@ -91,6 +91,37 @@ sur la forme de la courbe.
 
 ---
 
+## Finding 6 — le Souffle ne change pas le rythme (2026-10-07)
+
+Mesuré par `MesurePolitiquesDInsufflationTests` (à la demande, `Explicit`) : quinze cycles,
+graine 7, quatre façons de dépenser le Souffle.
+
+| Politique | Rangs achetés | Ciblée max | Cycle 1 | Cycle 5 | Cycle 10 | Cycle 15 | Fond atteint | Pic du cycle 15 |
+|---|---|---|---|---|---|---|---|---|
+| la moins chère d'abord (actuelle) | 3476 | 158 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 8,8e192 /s |
+| la moitié en réserve | 3446 | 157 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 1,2e192 /s |
+| la globale seule | 90 | 0 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 8,5e108 /s |
+| la plus profonde + la globale | 924 | 157 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 3,4e189 /s |
+
+**Les insufflations changent l'échelle des nombres de 84 ordres de grandeur, et le rythme de
+zéro.** Durées de cycle, jeu actif (90,9 h) et cycle du fond sont identiques au dixième
+d'heure. La raison : le joueur simulé rentre dans l'œuf quand l'acquis de séjour atteint
+95 % de son maximum, et l'acquis monte avec le **temps** (`τ₀`), pas avec la production.
+C'est le Finding 1 vu de l'autre côté : la boucle est invariante d'échelle, et le Souffle est
+une échelle.
+
+**Ce que ça défait.** La roadmap (chantier 2) tenait que « tant que la politique de dépense
+n'est pas actionnée, toute mesure d'équilibrage en aval est suspecte ». Pour le rythme,
+non : la politique ne le touche pas.
+
+**Ce que ça ouvre — une question de design, pas de calibrage.** Dans cette économie, le
+Souffle ne fait rien gagner de perceptible **en temps** : il grossit les chiffres. Si le
+joueur doit sentir qu'il progresse (consigne « idle incrémental avant tout »), il faut
+qu'une dépense de Souffle raccourcisse quelque chose — par exemple que l'acquis de séjour
+monte plus vite, ou que la renaissance devienne rentable plus tôt. À trancher avec l'auteur.
+
+---
+
 ## Journal des références de parité
 
 Les références de parité (`Assets/IdlePond/Tests/Reference/`) venaient du TypeScript
