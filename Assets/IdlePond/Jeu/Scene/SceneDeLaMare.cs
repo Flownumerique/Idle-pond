@@ -162,7 +162,7 @@ namespace IdlePond.Jeu.Scene
             // UIDocument, qui peut venir après la nôtre.
             if (Time.unscaledTime < prochaineRecherche) return;
             prochaineRecherche = Time.unscaledTime + 0.5f;
-            if (document == null) document = FindFirstObjectByType<UIDocument>();
+            if (document == null) document = FindAnyObjectByType<UIDocument>();
             var trouve = document != null && document.rootVisualElement != null
                 ? document.rootVisualElement.Q<VisualElement>("scene")
                 : null;

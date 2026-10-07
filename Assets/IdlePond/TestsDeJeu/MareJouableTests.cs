@@ -71,7 +71,7 @@ namespace IdlePond.TestsDeJeu
             for (var i = 0; i < 120 && souffle == null; i++)
             {
                 yield return null;
-                document = Object.FindFirstObjectByType<UIDocument>();
+                document = Object.FindAnyObjectByType<UIDocument>();
                 if (document != null && document.rootVisualElement != null)
                     souffle = document.rootVisualElement.Q<Label>("souffle-valeur");
             }

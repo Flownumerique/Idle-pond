@@ -58,7 +58,7 @@ namespace IdlePond.TestsDeJeu
             for (var i = 0; i < 60 && scene == null; i++)
             {
                 yield return null;
-                scene = Object.FindFirstObjectByType<SceneDeLaMare>();
+                scene = Object.FindAnyObjectByType<SceneDeLaMare>();
             }
             Assert.That(scene, Is.Not.Null, "Mare n'a pas de SceneDeLaMare");
             recevoir(scene);
