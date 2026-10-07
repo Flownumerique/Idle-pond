@@ -31,6 +31,9 @@
     --h-bouton: 72px;
     --marge: 24px;
     --icone: 48px;
+    --h-dock: 96px;
+    --bas-du-dock: 14px;
+    --haut-de-barre: 12px;
 }
 
 .portrait {
@@ -43,6 +46,9 @@
     --h-bouton: 122px;
     --marge: 44px;
     --icone: 66px;
+    --h-dock: 166px;
+    --bas-du-dock: 48px;
+    --haut-de-barre: 20px;
 }
 
 /* ─── Le texte ──────────────────────────────────────────────────────────────────── */
@@ -128,7 +134,7 @@
 
 .barre {
     flex-shrink: 0;
-    padding: 20px var(--marge) 24px var(--marge);
+    padding: var(--haut-de-barre) var(--marge) var(--haut-de-barre) var(--marge);
     background-color: var(--couleur-abysse);
     border-bottom-width: 2px;
     border-bottom-color: var(--couleur-bord);
@@ -321,7 +327,8 @@
 .paysage .tiroir {
     left: auto;
     top: 0;
-    width: 40%;
+    width: 46%;
+    min-width: 640px;
     height: auto;
     border-top-width: 0;
     border-left-width: 2px;
@@ -386,7 +393,7 @@
 .dock {
     flex-shrink: 0;
     flex-direction: row;
-    padding: 20px 20px 48px 20px;
+    padding: 12px 20px var(--bas-du-dock) 20px;
     background-color: var(--couleur-abysse);
     border-top-width: 2px;
     border-top-color: var(--couleur-bord);
@@ -395,7 +402,7 @@
 .dock-bouton {
     flex-grow: 1;
     flex-basis: 0px;
-    min-height: 166px;
+    min-height: var(--h-dock);
     justify-content: center;
     align-items: center;
     margin: 0 6px;
@@ -1090,4 +1097,23 @@
 
 .renaissance-conseil {
     margin: 20px 0 30px 0;
+}
+
+/* En paysage, le libellé du dock passe à côté de l'icône : le dock garde une seule ligne,
+   et la mare la hauteur qu'il ne prend plus. */
+.paysage .dock-bouton {
+    flex-direction: row;
+}
+
+.paysage .dock-libelle {
+    margin-top: 0;
+    margin-left: 14px;
+}
+
+/* En paysage, la pastille suit le libellé au lieu de flotter sur l'icône. */
+.paysage .dock-pastille {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-left: 14px;
 }
