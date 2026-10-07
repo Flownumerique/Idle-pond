@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-10-02
+**Tenue à jour le** : 2026-10-07
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -9,24 +9,28 @@ chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`
 
 ## Où on en est
 
-**Le jeu est dans Unity** ; la version web est archivée dans `archive/web/`. La Noue est
-jouable de bout en bout : creuser, convaincre, monter, grandir, insuffler, renaître. Sa
-scène est en **pixel art** (URP 2D, lumières 2D) avec des sprites **provisoires** générés
-par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`. Les chiffres
-du tableau ci-dessous et la section *Tests* datent du 2026-09-18, du temps du web : ils
-n'ont pas été remesurés depuis le portage.
+**Le jeu est dans Unity** ; la version web est archivée dans `archive/web/`. **La Noue et
+le Gour** sont jouables de bout en bout : creuser, convaincre, monter, grandir, insuffler,
+renaître. La scène est en **pixel art** (URP 2D, lumières 2D), sprites **provisoires**
+générés par script (cahier des charges : `docs/da/gabarits.md`). L'écran est celui du
+téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en paysage.
 
 | | Livré | Sur le papier |
 |---|---|---|
-| Assises | 1 (la Noue) | 6 |
-| Paliers | 6 | 62 |
-| Espèces | 3 | 21 |
+| Assises | 2 (la Noue, le Gour) | 6 |
+| Paliers | 18 | 62 |
+| Espèces | 6 | 21 |
+| Succès | 54 | — |
 | Axes permanents | insufflations, densité, succès | + technique |
 
-**Tests** : 196 verts sur 197. Le rouge est `plancher-de-cadence.test.ts`, parqué au canon
-et hors périmètre de tout chantier listé ici (voir *Gelé*).
+**Tests** : 340 EditMode et 16 PlayMode, tous verts (2026-10-07). Les références de
+parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
+références).
 
 **Ce que le README dit encore** : « Sans technique ». C'est le chantier n°3 qui lève ça.
+
+**Outillage** : MCP for Unity (l'éditeur se pilote depuis Claude Code) et les
+**ateliers**, des bacs à sable à sauvegarde redirigée — voir le README.
 
 ---
 
@@ -34,62 +38,36 @@ et hors périmètre de tout chantier listé ici (voir *Gelé*).
 
 ### 0. La direction artistique, ce qui reste
 
-Le socle est posé (scène en pixel art, gabarits, sprites provisoires). Restent, en tête
-des chantiers :
+Le socle est posé (scène en pixel art, gabarits, sprites provisoires), l'écran mobile
+aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 
-- **L'habillage hybride de l'UI** : le décor et l'interface partagent une même eau, il
-  faut l'habiller dans le même registre.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
-  `docs/da/gabarits.md`, sans toucher au code.
-- **Les assises II à VI et leurs milieux** : lave et électricité comprises (GDD §15.2,
-  amendement du 2026-10-02), chacune laissant sa marque sur le héros.
+  `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
+  réguliers, sont les premiers à reprendre.
+- **Le budget de lumières** : la spec DA vise quatre lumières à l'écran au plus ; quand
+  toute la Noue est ouverte en portrait, six bandes sont visibles, donc six lumières.
+  À mesurer sur un vrai téléphone avant de trancher.
+- **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub.
 
 ---
 
-### 1. Le renommage transverse — `souffle` / `insuffler` / `renaissance`
+### 2. Ce que le Souffle doit faire gagner
 
-**Ce que c'est.** Appliquer le lexique du Codex §5 au code : identifiants, types, termes
-de formule, textes affichés, et migration de sauvegarde **v7 → v8**.
+**Mesuré le 2026-10-07** (`RESULTATS.md`, Finding 6). Quatre politiques de dépense du
+Souffle — la moins chère d'abord, la moitié en réserve, la globale seule, la plus profonde —
+donnent **exactement le même rythme** : mêmes durées de cycle, même fond au cycle 13, même
+jeu actif. Elles ne changent que l'échelle des nombres (de 1e108 à 1e193 /s au cycle 15).
+La politique de dépense n'était donc pas le levier : l'ancienne inquiétude (« toute mesure
+d'équilibrage en aval est suspecte ») ne tient pas pour le rythme.
 
-**Pourquoi il passe devant tout le reste.** Deux raisons, et la seconde est la vraie :
+**Ce qui reste, et c'est une décision de design.** Le joueur rentre dans l'œuf quand
+l'acquis de séjour plafonne, et l'acquis monte avec le temps seul. Le Souffle ne raccourcit
+donc rien. Pour qu'une insufflation se sente, il faut qu'elle touche le temps : l'acquis,
+le seuil de renaissance, ou le coût de la descente. À trancher avec l'auteur avant le
+chantier 3, qui calibre contre ce rythme.
 
-- Chaque texte écrit avant lui devra être réécrit après lui. Écrire les 18 espèces
-  restantes dans l'ancien vocabulaire, c'est signer pour les réécrire deux fois.
-- Le code est encore petit. Ce ne sera **jamais** moins cher qu'aujourd'hui, et le dépôt
-  s'était déjà noté la dette : `src/noyau/types.ts` porte depuis le 2026-09-08 la mention
-  « *en attendant le renommage transverse qui touche les identifiants et les
-  sauvegardes* ».
-
-**Périmètre mesuré.** 18 fichiers portent `foi`, 13 portent `benediction`, 3 portent
-`ponte`. Plus une migration et le balayage lexical de `canon.test.ts` à retourner (les
-anciens mots deviennent des mots morts).
-
-**Exception figée** : les trois identifiants de succès en `eclosion` ne bougent pas
-(Codex §7).
-
-**Taille** : moyenne. Beaucoup de fichiers, peu de jugement — sauf la migration.
-**Ce que ça lève** : la contradiction entre ce que le jeu dit et ce que le code nomme.
-
----
-
-### 2. La politique de dépense du Souffle
-
-**Ce que c'est.** `insufflerAuMieux` (ex-`benirAuMieux`) achète au moins cher d'abord, tant
-qu'il peut payer. Résultat mesuré : **684 rangs achetés au cycle 5**, une insufflation
-ciblée atteignant le rang ≈31 — soit un multiplicateur d'environ ×5,6·10⁵ sur une seule
-espèce.
-
-**Pourquoi c'est ici et pas plus tard.** La tâche B4 a prouvé par la mesure que le ratio de
-coût **ne peut pas** brider ça (4→684, 6→511, 8→435, 10→391, 12→357 : décroissant, jamais
-convergent) sans rendre la première insufflation impayable au premier cycle. Le vrai levier
-est la politique elle-même. Tant qu'il n'est pas actionné, **toute mesure d'équilibrage
-faite en aval est suspecte** — ce qui inclut les six couples (A, B) du chantier suivant.
-
-La conclusion et la table sont déjà consignées dans le commentaire de
-`RATIO_COUT_DE_BENEDICTION`, dans `constantes.ts`.
-
-**Taille** : petite. Une politique de simulateur, pas une mécanique de noyau.
-**Ce que ça lève** : la confiance dans les chiffres d'équilibrage.
+**L'outil est en place** : `Politique.Insuffler` dans le simulateur, et la mesure
+`MesurePolitiquesDInsufflationTests` à relancer après toute décision.
 
 ---
 
@@ -121,8 +99,8 @@ profondeur est épuisée et que rien ne monte plus. L'amendement v1.2 le dit :
 « *passé la treizième, la partie tient sur d'AUTRES axes* ». Aujourd'hui, un seul des deux
 existe.
 
-**Dépend de** : le chantier 2, pour que les couples (A, B) soient résolus contre des
-chiffres fiables.
+**Dépend de** : la décision du chantier 2 — les couples (A, B) se calibrent contre le
+rythme des cycles, et c'est ce rythme que cette décision peut changer.
 
 **Taille** : grande. Mécanique neuve, arbre de données, écran, et six paramètres à
 résoudre par la mesure.
@@ -130,42 +108,32 @@ résoudre par la mesure.
 
 ---
 
-### 4. Le contenu des assises II à VI
+### 4. Le contenu des assises III à VI
 
-**Ce que c'est.** 56 paliers et 18 espèces à écrire, sur cinq assises qui n'existent que
-comme nombres.
+**Où on en est.** L'assise II, **le Gour**, est livrée (spec
+`2026-10-07-assise-ii-le-gour-design.md`) : nom, quatre espèces (épinoche, chabot,
+lamproie, ombre), la marque des membranes, son décor, ses succès. **Elle l'a été en
+dérogation à la règle d'engagement** : la Noue n'avait été mesurée qu'au simulateur.
+Mesurer la Noue et le Gour en vraie partie est donc la condition de l'assise III.
 
-**Ce qui est déjà prêt — davantage qu'il n'y paraît.** Les six assises **existent déjà
-dans la donnée**, avec leur géométrie complète : `6 / 12 / 12 / 12 / 12 / 8 = 62 paliers`,
-et cette répartition n'est pas arbitraire — c'est la seule à 62 paliers où une espèce
-s'ancre exactement sur `3 × rang`, condition pour que son débit suive `D` palier par
-palier. C'est cette économie-là que le simulateur mesure depuis le début. La scène, les six
-palettes et les six marques du corps sont construites pour les 62 paliers (tâches C2–C3).
-
-Ce chantier est donc du **contenu**, pas de la structure : nommer, écrire, peupler.
+**Ce qui est déjà prêt.** Les six assises **existent dans la donnée**, avec leur géométrie
+complète : `6 / 12 / 12 / 12 / 12 / 8 = 62 paliers` — la seule répartition à 62 paliers
+où une espèce s'ancre exactement sur `3 × rang`. Le registre d'art, la roche, les marques
+et l'interface (un groupe par lieu livré) suivent `PALIERS_LIVRES` sans changement de code.
 
 **Ce qui manque vraiment** :
 
-- **Les noms.** `IDENTIFIANTS_D_ASSISE` ne contient que `noue` ; les cinq autres tombent
-  sur un repli neutre (`assise-2`…). Il faut descendre la charte phonétique du Codex §6.
-  `[P] P3` reste ouvert.
-- **La typologie du mana.** Chaque assise a son type propre, et les identifiants sont
-  provisoires (`type-mana-2`…) parce que `mana-typologie.md` (Tier 1) **n'est pas dans le
-  dépôt**. À retrouver ou à réécrire avant de peupler l'assise II.
-- **18 espèces** et leurs succès.
+- **Les noms** des assises III à VI, par la charte phonétique du Codex §6 (de plus en plus
+  sombre). `[P] P3` reste ouvert pour elles.
+- **La typologie du mana.** `mana-typologie.md` (Tier 1) **n'est toujours pas dans le
+  dépôt** ; les types restent provisoires (`type-mana-2`…), y compris pour le Gour.
+- **Quatorze espèces** et leurs succès ; les marques luminescence, minéralisation,
+  épaississement (GDD §15.1).
 
-**La règle d'engagement, qui impose le découpage** : « *aucune assise n'est produite avant
-que la précédente ait été mesurée. On coupe au milieu, jamais à la fin* » (§12). Ce
-chantier se fait donc **assise par assise**, chacune mesurée avant la suivante — jamais en
-un bloc.
+**La règle d'engagement** : « *aucune assise n'est produite avant que la précédente ait
+été mesurée* » (§12). Assise par assise, jamais en bloc.
 
-`PALIERS_LIVRES` (dérivé de la première assise) est le verrou qui décide de ce que le jeu
-livre ; les 62 paliers, eux, existent déjà pour le simulateur.
-
-**Dépend de** : le chantier 1 (ne pas écrire 18 espèces dans le vocabulaire mort) et,
-pour l'équilibrage, du 3.
-
-**Taille** : la plus grande du lot, mais fractionnable assise par assise.
+**Dépend de** : la mesure du Gour, et pour l'équilibrage, du chantier 3.
 
 ---
 
@@ -185,8 +153,9 @@ Conçus, jamais construits. Le GDD les porte ; aucun n'est bloquant.
 
 ## La dette courante
 
-Cinq broutilles laissées par la revue finale du 2026-09-18. Aucune ne mérite un chantier :
-**elles montent dans celui qui touche le fichier concerné.**
+Cinq broutilles laissées par la revue finale du 2026-09-18, du temps du TypeScript — les
+noms de fichiers sont ceux du web ; chacune est à revérifier dans le C# avant d'agir.
+Aucune ne mérite un chantier : **elles montent dans celui qui touche le fichier concerné.**
 
 | Où | Quoi |
 |---|---|

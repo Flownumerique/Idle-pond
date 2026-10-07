@@ -12,10 +12,17 @@ qui s'adapte au portrait et au paysage.
 
 ## État
 
-La Noue est jouable de bout en bout dans Unity : creuser, convaincre, monter,
-grandir, insuffler, renaître, quitter, revenir et recevoir le crédit hors ligne.
-La scène est en **pixel art** (URP 2D, ≈240 px de large, lumières 2D) avec des sprites **provisoires** générés
-par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
+**La Noue et le Gour** (assises I et II, 18 paliers, 6 espèces) sont jouables de bout
+en bout dans Unity : creuser, convaincre, monter, grandir, insuffler, renaître, quitter,
+revenir et recevoir le crédit hors ligne. La scène est en **pixel art** (URP 2D,
+≈240 px de large, lumières 2D) : l'eau des paliers ouverts, la roche obscure de ceux
+qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires**,
+générés par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
+
+L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
+jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de quatre boutons
+(Toi, Espèces, L'œuf, Journal) qui ouvrent des tiroirs. En paysage, le tiroir s'ouvre
+à droite. Police : Nunito. Specs : `docs/superpowers/specs/2026-10-07-*.md`.
 
 Le portage depuis le web est fini — spec
 [`docs/superpowers/specs/2026-09-27-portage-unity-design.md`](docs/superpowers/specs/2026-09-27-portage-unity-design.md).
@@ -29,7 +36,14 @@ lexique et la fiction : [`docs/CODEX.md`](docs/CODEX.md). Qui fait foi sur quoi 
 
 ## Commandes
 
-L'éditeur Unity doit être **fermé** sur ce projet pour tout ce qui passe en batch :
+**Éditeur ouvert** — le projet embarque MCP for Unity (`com.coplaydev.unity-mcp`,
+v10.3.0) : Claude Code compile, lance les tests, génère, joue et capture dans l'éditeur
+ouvert. Les **ateliers** (`Assets/IdlePond/Scenes/Ateliers/`) sont des bacs à sable :
+on ouvre `Atelier-Heros`, `-Especes`, `-Economie` ou `-Interface`, on appuie sur Play,
+et un panneau change l'état (stades, espèces, mana, vitesse, absence de 8 h…). Leur
+sauvegarde va dans un dossier temporaire : la vraie partie n'est jamais touchée.
+
+**Éditeur fermé** — tout ce qui passe en batch :
 
 ```sh
 outils/unity.sh tests EditMode                 # noyau, simulateur, jeu, parité, canon
@@ -39,6 +53,9 @@ outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
 outils/unity.sh captures                                              # 18 PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
 ```
+
+Menus de l'éditeur : « IdlePond ▸ Générer les scènes », « Générer les sprites
+provisoires », « Parité ▸ Régénérer les références » (changement voulu seulement).
 
 Les scènes (`Assets/IdlePond/Scenes/`) sont **produites par le générateur**,
 menu « IdlePond ▸ Générer les scènes », et versionnées telles quelles. On ne les
@@ -58,10 +75,13 @@ Assets/IdlePond/
 ├── Jeu/          Le monde impur : Partie, Persistance, Horloge, HorsLigne,
 │                 Boucle, Amorce ; Scene/ (VueDeScene pure, SceneDeLaMare) ;
 │                 UI/ (UI Toolkit : Mare.uxml, un contrôleur par panneau).
-├── Editeur/      GenerateurDeScenes.
-├── Scenes/       Demarrage.unity, Mare.unity — générées.
-├── Tests/        EditMode. Reference/ : les parties figées produites par le
-│                 TypeScript, que PariteTests et PariteHorsLigneTests rejouent.
+├── Atelier/      Les bacs à sable — éditeur seulement (contrainte UNITY_EDITOR).
+├── Editeur/      Générateurs : scènes, sprites provisoires, catalogue d'art.
+├── Scenes/       Demarrage.unity, Mare.unity, Ateliers/ — générées.
+├── Art/          Sprites provisoires générés, remplaçables fichier par fichier.
+├── Tests/        EditMode. Reference/ : les parties figées que PariteTests et
+│                 PariteHorsLigneTests rejouent — produites par le C# depuis le
+│                 2026-10-07 (GenerateurDeReferences), par le TypeScript avant.
 └── TestsDeJeu/   PlayMode.
 ```
 
@@ -85,9 +105,14 @@ vérifient par des tests :
    (`ContenanceTests`).
 6. Aucun paramètre « à mesurer » n'est inventé : il est une constante nommée,
    commentée `// [P] graine`, dans `Noyau/Constantes.cs` — un seul endroit.
-7. **Parité** : les parties de référence du TypeScript se rejouent à 1e-9 près.
-   Une parité rouge ne se corrige ni en relâchant la tolérance, ni en
-   régénérant les références : on cherche l'écart.
+7. **Parité** : les parties de référence se rejouent à 1e-9 près. Elles venaient
+   du TypeScript ; depuis le 2026-10-07 (le Gour), elles sont régénérées depuis le
+   C#. Une parité rouge ne se corrige ni en relâchant la tolérance, ni en
+   régénérant par réflexe : on cherche l'écart, et on ne régénère que pour un
+   changement voulu, consigné dans `docs/RESULTATS.md`.
+8. **Sauvegarde** : rien d'autre que le jeu n'écrit dans `persistentDataPath`. Les
+   ateliers et les tests qui font vivre une `Boucle` redirigent leur sauvegarde
+   (`ServicesDePartie.RedirigerLaSauvegarde`).
 
 Le lexique du Codex §5 s'applique **au code, aux identifiants et à l'écran** ;
 `LexiqueTests` et `CanonTests` balaient le noyau, le jeu, les `.uxml`, les `.uss`
