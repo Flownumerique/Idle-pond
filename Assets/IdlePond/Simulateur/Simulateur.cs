@@ -377,7 +377,12 @@ namespace IdlePond.Simulateur
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (insufflation, cout);
                 }
                 if (choix == null) return courant;
-                courant = Reducteur.Insuffler(courant, choix.Value.Insufflation.Id);
+                // La même garde que `InsufflerAuMieux` : un refus du noyau est une
+                // divergence entre la politique et la règle, pas une boucle à épuiser.
+                var suivant = Reducteur.Insuffler(courant, choix.Value.Insufflation.Id);
+                if (ReferenceEquals(suivant, courant))
+                    throw new InvalidOperationException($"Le noyau refuse une insufflation que la politique croyait payable : {choix.Value.Insufflation.Id}");
+                courant = suivant;
             }
             throw new InvalidOperationException("La politique d'insufflation ne termine pas");
         }
