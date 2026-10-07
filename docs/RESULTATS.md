@@ -110,6 +110,12 @@ d'heure. La raison : le joueur simulé rentre dans l'œuf quand l'acquis de séj
 C'est le Finding 1 vu de l'autre côté : la boucle est invariante d'échelle, et le Souffle est
 une échelle.
 
+**Contre-épreuve : renaître dès qu'on est bloqué.** Même mesure, `FractionDeSaturationPourRenaitre
+= 0`. Les cycles dégénèrent (≈ 0 h chacun après le premier, le fond n'est jamais atteint,
+1,0 h de jeu actif en quinze cycles) : le blocage tombe presque aussitôt après chaque retour
+dans l'œuf. C'est donc bien l'acquis de séjour, borné par le temps, qui donne sa longueur au
+cycle — et aucune politique d'insufflation n'y touche.
+
 **Ce que ça défait.** La roadmap (chantier 2) tenait que « tant que la politique de dépense
 n'est pas actionnée, toute mesure d'équilibrage en aval est suspecte ». Pour le rythme,
 non : la politique ne le touche pas.

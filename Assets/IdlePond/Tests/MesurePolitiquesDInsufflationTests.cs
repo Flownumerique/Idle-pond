@@ -35,13 +35,17 @@ namespace IdlePond.Tests
         {
             var texte = new StringBuilder();
             texte.AppendLine($"# Politiques d'insufflation — {CYCLES} cycles, graine {GRAINE}");
+            foreach (var (titre, fraction) in new[] { ("Renaître quand l'acquis atteint 95 % (défaut)", POLITIQUE_PAR_DEFAUT.FractionDeSaturationPourRenaitre), ("Renaître dès qu'on est bloqué", 0.0) })
+            {
+            texte.AppendLine();
+            texte.AppendLine("## " + titre);
             texte.AppendLine();
             texte.AppendLine("| Politique | Cycles | Rangs achetés | Ciblée max | Globale | Jeu actif (h) | Cycle 1 (h) | Cycle 5 (h) | Cycle 10 (h) | Cycle 15 (h) | Fond atteint au cycle | Pic du cycle 15 (/s) | Souffle gagné au cycle 15 |");
             texte.AppendLine("|---|---|---|---|---|---|---|---|---|---|---|---|---|");
 
             foreach (var (nom, insuffler) in POLITIQUES)
             {
-                var politique = POLITIQUE_PAR_DEFAUT with { Insuffler = insuffler };
+                var politique = POLITIQUE_PAR_DEFAUT with { Insuffler = insuffler, FractionDeSaturationPourRenaitre = fraction };
                 var resultat = Simuler(CYCLES, politique, GRAINE);
                 var rangs = resultat.Etat.Permanent.Insufflations;
                 var total = rangs.Values.Sum();
@@ -57,6 +61,7 @@ namespace IdlePond.Tests
                                  $"{Heures(1)} | {Heures(5)} | {Heures(10)} | {Heures(15)} | {auFond} | " +
                                  $"{(cycles.Count > 0 ? cycles[cycles.Count - 1].ProductionPicParSeconde.ToString() : "—")} | " +
                                  $"{(cycles.Count > 0 ? cycles[cycles.Count - 1].SouffleGagne.ToString() : "—")} |");
+            }
             }
 
             var dossier = Path.GetFullPath(Path.Combine("Logs", "mesures"));
