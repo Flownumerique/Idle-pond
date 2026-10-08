@@ -18,6 +18,7 @@ namespace IdlePond.Jeu.UI
 
         readonly VisualElement racine;
         readonly Func<bool> mouvementReduit;
+        readonly Action surEntree;
         readonly Label principal;
         readonly VisualElement resume;
         readonly Label lieu;
@@ -28,11 +29,14 @@ namespace IdlePond.Jeu.UI
         /// Vrai tant que le joueur n'est pas entré dans la mare.
         public bool Ouvert { get; private set; }
 
+        /// `surEntree` : appelé quand le joueur entre dans la mare (ce qui attendait, comme
+        /// les annonces de succès, peut alors se montrer).
         public Accueil(VisualElement racine, Action nouvellePartie, Action reglages,
-            bool quitterDisponible, Action quitter, string version, Func<bool> mouvementReduit)
+            bool quitterDisponible, Action quitter, string version, Func<bool> mouvementReduit, Action surEntree)
         {
             this.racine = racine;
             this.mouvementReduit = mouvementReduit;
+            this.surEntree = surEntree;
             racine.AddToClassList("accueil");
 
             var colonne = Elements.Conteneur("accueil-colonne");
@@ -118,6 +122,7 @@ namespace IdlePond.Jeu.UI
             nouvelle.Desarmer();
             racine.AddToClassList("accueil-sortant");
             CacherLeJeu(false);
+            surEntree();
             var duree = mouvementReduit() ? 0 : DUREE_DU_FONDU_MS;
             racine.schedule.Execute(() =>
             {

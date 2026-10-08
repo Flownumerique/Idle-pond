@@ -206,12 +206,16 @@ namespace IdlePond.Jeu.UI
                 () =>
                 {
                     EffacerLaPartie();
+                    // Effacée depuis les réglages ouverts sur l'accueil : l'accueil qui revient
+                    // parle de la nouvelle partie, pas de celle qui vient de partir.
+                    if (accueil.Ouvert) accueil.Ouvrir(ResumeDeLaPartie.De(partie.Etat, null, premiereFois: true));
                     dock.Fermer();
                 });
             accueil = new Accueil(racine.Q<VisualElement>("accueil"), EffacerLaPartie,
                 () => dock.Choisir(Tiroir.Reglages),
                 !AffichageDeLApplication.Mobile, Application.Quit, Application.version,
-                () => reglages != null && reglages.Courants.MouvementReduit);
+                () => reglages != null && reglages.Courants.MouvementReduit,
+                AfficherLesAnnonces);
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));
             // Toucher la mare voilée referme le tiroir : on revient à la vue sans viser.
             voile.AddManipulator(new Clickable(() => dock.Fermer()));
@@ -280,6 +284,10 @@ namespace IdlePond.Jeu.UI
         /// </summary>
         void AfficherLesAnnonces()
         {
+            // Sous l'accueil, rien ne s'annonce ni ne s'arme : les annonces attendent l'entrée
+            // dans la mare, sans quoi elles expireraient avant que le joueur ne les voie.
+            // L'accueil demandé mais pas encore ouvert (pendant le branchement) compte aussi.
+            if (ServicesDePartie.AccueilDemande || (accueil != null && accueil.Ouvert)) return;
             if (!reglages.Courants.AnnoncesAffichees)
                 foreach (var id in partie.AAnnoncer.ToArray()) partie.OublierAnnonce(id);
             annonces.Afficher(partie.AAnnoncer);

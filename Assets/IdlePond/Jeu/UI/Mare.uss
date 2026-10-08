@@ -1397,7 +1397,8 @@
 .accueil-ouvert .dock,
 .accueil-ouvert .lieu,
 .accueil-ouvert .creuser,
-.accueil-ouvert .retour {
+.accueil-ouvert .retour,
+.accueil-ouvert .annonces {
     opacity: 0;
 }
 

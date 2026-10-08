@@ -130,5 +130,42 @@ namespace IdlePond.TestsDeJeu
             Assert.That(racine.Q<VisualElement>("accueil-nouvelle").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
             Assert.That(racine.Q<VisualElement>("accueil-resume").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
         }
+    
+        [UnityTest]
+        public IEnumerator Un_succes_arrive_pendant_l_accueil_s_annonce_apres_l_entree()
+        {
+            yield return Charger(accueil: true);
+            ServicesDePartie.Partie.Convaincre("vairon");
+            yield return new WaitForSeconds(0.5f);
+            Assert.That(ServicesDePartie.Partie.AAnnoncer, Is.Not.Empty, "le succès est bien tombé");
+            Assert.That(racine.Q<VisualElement>("annonces").childCount, Is.EqualTo(0), "rien ne s'annonce sous l'accueil");
+
+            yield return new WaitForSeconds(6.5f);
+            Assert.That(ServicesDePartie.Partie.AAnnoncer, Is.Not.Empty, "l'annonce attend l'entrée, elle n'expire pas");
+
+            yield return Doigt.Toucher(racine.Q<VisualElement>("accueil-principal"));
+            yield return new WaitForSeconds(0.3f);
+            Assert.That(racine.Q<VisualElement>("annonces").childCount, Is.GreaterThan(0));
+        }
+
+        [UnityTest]
+        public IEnumerator Effacer_depuis_les_reglages_de_l_accueil_rend_un_accueil_de_premiere_partie()
+        {
+            yield return Charger(accueil: true);
+            yield return Doigt.Toucher(racine.Q<VisualElement>("accueil-reglages"));
+            yield return new WaitForSeconds(0.5f);
+            yield return Doigt.Toucher(racine.Q<VisualElement>("onglet-jeu"));
+            var effacer = racine.Q<VisualElement>("reinitialiser");
+            yield return Doigt.Toucher(effacer);
+            yield return Doigt.Toucher(effacer);
+            yield return new WaitForSeconds(0.5f);
+
+            Assert.That(Mana, Is.LessThan(1e3));
+            Assert.That(AccueilVisible, Is.True);
+            Assert.That(racine.Q<Label>("accueil-principal-libelle").text, Is.EqualTo(E.COMMENCER));
+            Assert.That(racine.Q<VisualElement>("accueil-nouvelle").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
+            foreach (var copie in Directory.GetFiles(Boucle.DossierDeSauvegarde(), "idlepond.avant-reinitialisation-*.json"))
+                File.Delete(copie);
+        }
     }
 }
