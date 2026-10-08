@@ -60,30 +60,30 @@ namespace IdlePond.Noyau
         /// </summary>
         public static Decimal DebitBaseDeLEspece(Espece espece) => Echelles.DebitBaseDuRang(espece.Rang);
 
-        /* ─── Insufflations — noyau v1.0 §4.2 ───────────────────────────────────────*/
+        /* ─── Améliorations — noyau v1.0 §4.2 ───────────────────────────────────────*/
 
-        public static int RangDInsufflation(EtatJeu etat, string id) =>
-            etat.Permanent.Insufflations.TryGetValue(id, out var rang) ? rang : 0;
+        public static int RangDAmelioration(EtatJeu etat, string id) =>
+            etat.Permanent.AmeliorationsDeRenaissance.TryGetValue(id, out var rang) ? rang : 0;
 
         /// <summary>
-        /// Le débit de base d'une espèce, augmenté de l'insufflation GLOBALE : additif,
+        /// Le débit de base d'une espèce, augmenté de l'amélioration GLOBALE : additif,
         /// « sur le débit de base de toutes les espèces, présentes et futures ». Il
         /// domine quand les débits sont minuscules et s'efface une fois les
         /// multiplicateurs décollés — aucun ratio à régler.
         ///
-        /// Le coût d'un niveau ne le lit PAS : il lit `DebitBaseDeLEspece`. Insuffler ne
+        /// Le coût d'un niveau ne le lit PAS : il lit `DebitBaseDeLEspece`. Améliorer ne
         /// renchérit rien.
         /// </summary>
-        public static Decimal DebitInsuffle(EtatJeu etat, Espece espece)
+        public static Decimal DebitAmeliore(EtatJeu etat, Espece espece)
         {
-            var rang = RangDInsufflation(etat, Insufflations.GLOBALE_ID);
+            var rang = RangDAmelioration(etat, AmeliorationsDeRenaissance.GLOBALE_ID);
             if (rang == 0) return DebitBaseDeLEspece(espece);
-            return DebitBaseDeLEspece(espece).Add(Constantes.INSUFFLATION_GLOBALE_PAR_RANG * rang);
+            return DebitBaseDeLEspece(espece).Add(Constantes.AMELIORATION_GLOBALE_PAR_RANG * rang);
         }
 
-        /// L'insufflation CIBLÉE de l'espèce : `(1 + c) ^ rang`, empilable, 1 à rang 0.
-        public static double MultiplicateurDInsufflation(EtatJeu etat, Espece espece) =>
-            Math.Pow(1 + Constantes.INSUFFLATION_CIBLEE_PAR_RANG, RangDInsufflation(etat, Insufflations.CibleeDe(espece.Id).Id));
+        /// L'amélioration CIBLÉE de l'espèce : `(1 + c) ^ rang`, empilable, 1 à rang 0.
+        public static double MultiplicateurDAmelioration(EtatJeu etat, Espece espece) =>
+            Math.Pow(1 + Constantes.AMELIORATION_CIBLEE_PAR_RANG, RangDAmelioration(etat, AmeliorationsDeRenaissance.CibleeDe(espece.Id).Id));
 
         /// <summary>
         /// Multiplicateur global accordé par la profondeur ouverte.
@@ -131,10 +131,10 @@ namespace IdlePond.Noyau
         {
             if (!etat.Cycle.Especes.TryGetValue(espece.Id, out var vivante) || !vivante.Debloquee || vivante.Niveau == 0)
                 return new Decimal(0);
-            return DebitInsuffle(etat, espece)
+            return DebitAmeliore(etat, espece)
                 .Mul(vivante.Niveau)
                 .Mul(MultiplicateurDeSeuil(vivante.Niveau))
-                .Mul(MultiplicateurDInsufflation(etat, espece));
+                .Mul(MultiplicateurDAmelioration(etat, espece));
         }
 
         /// Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués.
@@ -206,21 +206,21 @@ namespace IdlePond.Noyau
         {
             var niveau = etat.Cycle.Especes.TryGetValue(espece.Id, out var vivante) ? vivante.Niveau : 0;
             var densite = Densite.DuSejour(etat);
-            var insuffleRang = RangDInsufflation(etat, Insufflations.GLOBALE_ID);
-            var insuffleCibleeRang = RangDInsufflation(etat, Insufflations.CibleeDe(espece.Id).Id);
+            var rangDeLaGlobale = RangDAmelioration(etat, AmeliorationsDeRenaissance.GLOBALE_ID);
+            var rangDeLaCiblee = RangDAmelioration(etat, AmeliorationsDeRenaissance.CibleeDe(espece.Id).Id);
             var lignes = new List<LigneDeCaptation>
             {
                 new LigneDeCaptation(TermeDeFormule.Niveau, niveau, new SourceDeTerme(QuoiSource.Niveau, niveau)),
                 new LigneDeCaptation(
                     TermeDeFormule.TauxBase, DebitBaseDeLEspece(espece).ToNumber(), new SourceDeTerme(QuoiSource.Palier, espece.Palier)),
                 new LigneDeCaptation(
-                    TermeDeFormule.InsufflationGlobale,
-                    DebitInsuffle(etat, espece).Div(DebitBaseDeLEspece(espece)).ToNumber(),
-                    new SourceDeTerme(QuoiSource.Insufflation, insuffleRang)),
+                    TermeDeFormule.AmeliorationGlobale,
+                    DebitAmeliore(etat, espece).Div(DebitBaseDeLEspece(espece)).ToNumber(),
+                    new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, rangDeLaGlobale)),
             };
             lignes.Add(new LigneDeCaptation(TermeDeFormule.MultiplicateurJalon, MultiplicateurDeSeuil(niveau), new SourceDeTerme(QuoiSource.Niveau, niveau)));
             lignes.Add(new LigneDeCaptation(
-                TermeDeFormule.MultiplicateurInsufflation, MultiplicateurDInsufflation(etat, espece), new SourceDeTerme(QuoiSource.Insufflation, insuffleCibleeRang)));
+                TermeDeFormule.MultiplicateurAmelioration, MultiplicateurDAmelioration(etat, espece), new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, rangDeLaCiblee)));
             lignes.Add(new LigneDeCaptation(
                 TermeDeFormule.MultiplicateurDrapeau, MultiplicateurDesDrapeaux(etat),
                 new SourceDeTerme(QuoiSource.DrapeauxPermanents, etat.Permanent.EspecesAyantAtteintCent.Count)));
@@ -326,18 +326,18 @@ namespace IdlePond.Noyau
                 .Mul(FacteurDeCout(etat, TermeDeFormule.CoutCroissance));
 
         /// <summary>
-        /// Ce que coûte le rang suivant d'une insufflation, EN SOUFFLE — spec 2026-09-17
-        /// [D6]. Géométrique : `base × ratio ^ rang`. `CoutInsufflation` est un terme
+        /// Ce que coûte le rang suivant d'une amélioration, EN SOUFFLE — spec 2026-09-17
+        /// [D6]. Géométrique : `base × ratio ^ rang`. `CoutAmelioration` est un terme
         /// de coût nommé, donc la technique et les succès pourront le viser.
         /// </summary>
-        public static Decimal CoutDInsufflation(EtatJeu etat, Insufflation insufflation)
+        public static Decimal CoutDAmelioration(EtatJeu etat, AmeliorationDeRenaissance amelioration)
         {
-            var @base = insufflation.Portee == PorteeDInsufflation.Globale
-                ? Constantes.SOUFFLE_COUT_D_INSUFFLATION_GLOBALE
-                : Constantes.SOUFFLE_COUT_D_INSUFFLATION_CIBLEE;
+            var @base = amelioration.Portee == PorteeDAmelioration.Globale
+                ? Constantes.SOUFFLE_COUT_D_AMELIORATION_GLOBALE
+                : Constantes.SOUFFLE_COUT_D_AMELIORATION_CIBLEE;
             return new Decimal(@base)
-                .Mul(Decimal.Pow(Constantes.RATIO_COUT_D_INSUFFLATION, RangDInsufflation(etat, insufflation.Id)))
-                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutInsufflation));
+                .Mul(Decimal.Pow(Constantes.RATIO_COUT_D_AMELIORATION, RangDAmelioration(etat, amelioration.Id)))
+                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutAmelioration));
         }
 
         /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/

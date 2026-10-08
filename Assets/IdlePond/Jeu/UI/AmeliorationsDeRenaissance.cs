@@ -5,12 +5,12 @@ using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
 using UnityEngine.UIElements;
 using E = IdlePond.Noyau.Donnees.Textes.Ecran;
-using Registre = IdlePond.Noyau.Donnees.Insufflations;
+using Registre = IdlePond.Noyau.Donnees.AmeliorationsDeRenaissance;
 
 namespace IdlePond.Jeu.UI
 {
     /// <summary>
-    /// Ce que tu insuffles — noyau v1.0 §4.1 : « l'écran d'améliorations du jeu, comme le
+    /// Les améliorations de renaissance — noyau v1.0 §4.1 : « l'écran d'améliorations du jeu, comme le
     /// veut la convention du genre ». Permanent, payé en Souffle. `Benedictions.tsx`.
     ///
     /// Spec 2026-09-17 [D7] : ouvert tout le temps. Le Souffle n'est crédité qu'à la
@@ -18,15 +18,15 @@ namespace IdlePond.Jeu.UI
     /// un joueur qui revient d'une absence ne doit pas trouver une porte fermée.
     ///
     /// Le registre entier est toujours affiché, sans filtre — comme le simulateur, qui
-    /// considère lui aussi toutes les insufflations sans distinction. La donnée est petite
+    /// considère lui aussi toutes les améliorations sans distinction. La donnée est petite
     /// (une entrée par espèce, plus une globale) : ce n'est pas un enjeu d'affichage ou de
     /// performance, et les cartes sont créées une fois.
     /// </summary>
-    public sealed class Insufflations
+    public sealed class AmeliorationsDeRenaissance
     {
         sealed class Carte
         {
-            public Insufflation Insufflation;
+            public AmeliorationDeRenaissance AmeliorationDeRenaissance;
             public Label Rang;
             public BoutonDAchat Achat;
         }
@@ -37,35 +37,35 @@ namespace IdlePond.Jeu.UI
         // Le clic lit l'état d'au moment du clic, comme `Mare` : le prix a pu bouger.
         EtatJeu dernier;
 
-        public Insufflations(VisualElement racine, Action<string> surInsufflation)
+        public AmeliorationsDeRenaissance(VisualElement racine, Action<string> surAmelioration)
         {
             racine.AddToClassList("panneau");
 
             var haut = Elements.Conteneur("rangee entre");
-            haut.Add(Elements.Texte("titre doux lg", E.INSUFFLATIONS_TITRE));
-            souffle = Elements.Texte("chiffre souffle sm", "", "insufflations-souffle");
+            haut.Add(Elements.Texte("titre doux lg", E.AMELIORATIONS_TITRE));
+            souffle = Elements.Texte("chiffre souffle sm", "", "ameliorations-souffle");
             haut.Add(souffle);
             racine.Add(haut);
 
             var liste = Elements.Conteneur("liste");
-            foreach (var insufflation in Registre.Toutes)
+            foreach (var amelioration in Registre.Toutes)
             {
-                var carte = new Carte { Insufflation = insufflation };
+                var carte = new Carte { AmeliorationDeRenaissance = amelioration };
                 var racineDeCarte = Elements.Conteneur("carte");
                 var entete = Elements.Conteneur("rangee entre");
-                var estGlobale = insufflation.Id == Registre.GLOBALE_ID;
+                var estGlobale = amelioration.Id == Registre.GLOBALE_ID;
                 var nom = estGlobale
-                    ? Textes.INSUFFLATION_GLOBALE.Nom
-                    : Format.Remplir(E.INSUFFLER_UNE_ESPECE, Format.NomDeLEspece(insufflation.Espece));
-                var effet = estGlobale ? Textes.INSUFFLATION_GLOBALE.Effet : Textes.INSUFFLATION_CIBLEE.Effet;
+                    ? Textes.AMELIORATION_GLOBALE.Nom
+                    : Format.Remplir(E.AMELIORER_UNE_ESPECE, Format.NomDeLEspece(amelioration.Espece));
+                var effet = estGlobale ? Textes.AMELIORATION_GLOBALE.Effet : Textes.AMELIORATION_CIBLEE.Effet;
                 entete.Add(Elements.Texte("titre base", nom));
                 carte.Rang = Elements.Texte("chiffre tu xs");
                 entete.Add(carte.Rang);
                 racineDeCarte.Add(entete);
                 racineDeCarte.Add(Elements.Texte("tu xs", effet));
 
-                var id = insufflation.Id;
-                carte.Achat = new BoutonDAchat("bouton-souffle", E.INSUFFLER, () => surInsufflation(id));
+                var id = amelioration.Id;
+                carte.Achat = new BoutonDAchat("bouton-souffle", E.AMELIORER, () => surAmelioration(id));
                 racineDeCarte.Add(carte.Achat.Racine);
                 liste.Add(racineDeCarte);
                 cartes.Add(carte);
@@ -81,8 +81,8 @@ namespace IdlePond.Jeu.UI
 
             foreach (var carte in cartes)
             {
-                var rang = Economie.RangDInsufflation(etat, carte.Insufflation.Id);
-                var prix = Economie.CoutDInsufflation(etat, carte.Insufflation);
+                var rang = Economie.RangDAmelioration(etat, carte.AmeliorationDeRenaissance.Id);
+                var prix = Economie.CoutDAmelioration(etat, carte.AmeliorationDeRenaissance);
                 Elements.Poser(carte.Rang, rang == 0 ? E.JAMAIS : Format.Remplir(E.FOIS, rang.ToString(CultureInfo.InvariantCulture)));
                 Elements.Poser(carte.Achat.Cout, Format.Remplir(E.SOUFFLE_EN_RESERVE, Format.Cout(prix)));
                 carte.Achat.Progresser(reserve, prix);

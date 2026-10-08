@@ -80,7 +80,7 @@ namespace IdlePond.Jeu
 
         public void Grandir() => Appliquer(Reducteur.Grandir);
 
-        public void Insuffler(string id) => Appliquer(etat => Reducteur.Insuffler(etat, id));
+        public void AcheterUneAmelioration(string id) => Appliquer(etat => Reducteur.AcheterUneAmelioration(etat, id));
 
         public void Renaitre() => Appliquer(Renaissance.Renaitre);
 

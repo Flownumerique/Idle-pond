@@ -12,7 +12,7 @@ namespace IdlePond.Tests
             var etat = EtatDeTravail.Creer();
             Assert.That(Reducteur.Debloquer(etat, "inconnue"), Is.SameAs(etat));
             Assert.That(Reducteur.Ameliorer(etat, "inconnue"), Is.SameAs(etat));
-            Assert.That(Reducteur.Insuffler(etat, "inconnue"), Is.SameAs(etat));
+            Assert.That(Reducteur.AcheterUneAmelioration(etat, "inconnue"), Is.SameAs(etat));
             var pauvre = Reducteur.EtatInitial(1);
             pauvre = pauvre with { Cycle = pauvre.Cycle with { ManaCourant = Decimal.Zero } };
             Assert.That(Reducteur.Creuser(pauvre), Is.SameAs(pauvre));

@@ -43,10 +43,10 @@ namespace IdlePond.Tests
             Assert.That(Constantes.COUTS_DE_NOEUD, Is.EqualTo(reference["COUTS_DE_NOEUD"].ToObject<int[]>()));
         }
 
-        [Test, Description("la sauvegarde Unity repart à la version 1")]
-        public void La_sauvegarde_Unity_repart_a_la_version_1()
+        [Test, Description("la sauvegarde Unity est en version 2 depuis les améliorations de renaissance")]
+        public void La_sauvegarde_Unity_est_en_version_2()
         {
-            Assert.That(Constantes.VERSION_SAVE, Is.EqualTo(1));
+            Assert.That(Constantes.VERSION_SAVE, Is.EqualTo(2));
         }
 
         [Test, Description("chaque terme a un identifiant, et un seul registre")]
@@ -58,7 +58,7 @@ namespace IdlePond.Tests
                 Assert.That(registres, Is.EqualTo(1), terme.ToString());
                 Assert.That(Termes.Identifiant(terme), Does.Match("^[a-z_]+$"));
             }
-            Assert.That(Termes.Identifiant(TermeDeFormule.CoutInsufflation), Is.EqualTo("cout_insufflation"));
+            Assert.That(Termes.Identifiant(TermeDeFormule.CoutAmelioration), Is.EqualTo("cout_amelioration"));
         }
     }
 }

@@ -10,7 +10,7 @@ chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`
 ## Où on en est
 
 **Le jeu est dans Unity** ; la version web est archivée dans `archive/web/`. **La Noue et
-le Gour** sont jouables de bout en bout : creuser, convaincre, monter, grandir, insuffler,
+le Gour** sont jouables de bout en bout : creuser, convaincre, monter, grandir, améliorer,
 renaître. La scène est en **pixel art** (URP 2D, lumières 2D), sprites **provisoires**
 générés par script (cahier des charges : `docs/da/gabarits.md`). L'écran est celui du
 téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en paysage.
@@ -21,7 +21,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Paliers | 18 | 62 |
 | Espèces | 6 | 21 |
 | Succès | 54 | — |
-| Axes permanents | insufflations, densité, succès | + technique |
+| Axes permanents | améliorations de renaissance, densité, succès | + technique |
 
 **Tests** : 340 EditMode et 16 PlayMode, tous verts (2026-10-07). Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
@@ -62,12 +62,12 @@ d'équilibrage en aval est suspecte ») ne tient pas pour le rythme.
 
 **Ce qui reste, et c'est une décision de design.** Le joueur rentre dans l'œuf quand
 l'acquis de séjour plafonne, et l'acquis monte avec le temps seul. Le Souffle ne raccourcit
-donc rien. Pour qu'une insufflation se sente, il faut qu'elle touche le temps : l'acquis,
+donc rien. Pour qu'une amélioration de renaissance se sente, il faut qu'elle touche le temps : l'acquis,
 le seuil de renaissance, ou le coût de la descente. À trancher avec l'auteur avant le
 chantier 3, qui calibre contre ce rythme.
 
-**L'outil est en place** : `Politique.Insuffler` dans le simulateur, et la mesure
-`MesurePolitiquesDInsufflationTests` à relancer après toute décision.
+**L'outil est en place** : `Politique.AcheterLesAmeliorations` dans le simulateur, et la mesure
+`MesurePolitiquesDAmeliorationTests` à relancer après toute décision.
 
 ---
 
@@ -79,18 +79,18 @@ d'une branche ne sont pas résolus.
 
 **L'échafaudage est déjà là.** `src/donnees/noeuds-technique.ts` existe et est **vide
 délibérément** : le registre a été créé tôt pour que les tests de canon qui le parcourent —
-frontière technique/insufflation, source unique d'une capacité, budget de verbes — soient
+frontière technique/amélioration, source unique d'une capacité, budget de verbes — soient
 en place **avant** le contenu. Les trente nœuds du §7.3 restent à transcrire, avec la table
 `verbe → cycle d'ouverture visé` en entrée du calibreur (§7.2). Le chantier est donc moins
 risqué qu'un départ à blanc : les gardes existent, c'est le contenu qui manque.
 
-**Une dette de conception à signaler.** Le §12 voulait technique et insufflations livrées
-« *en même temps, puis recalibrées ensemble* ». On a livré les insufflations seules. La
+**Une dette de conception à signaler.** Le §12 voulait technique et améliorations de renaissance livrées
+« *en même temps, puis recalibrées ensemble* ». On a livré les améliorations de renaissance seules. La
 recalibration commune n'a donc jamais eu lieu — raison de plus pour ne pas laisser cet
 écart s'agrandir.
 
 **La règle dure, déjà testée** : la technique baisse les **coûts** et automatise. Elle ne
-monte jamais la production — c'est le métier de l'insufflation. `canon.test.ts` verrouille
+monte jamais la production — c'est le métier de l'amélioration de renaissance. `canon.test.ts` verrouille
 les deux sens, et la contradiction interne du noyau sur le nœud « Réputation » est déjà
 tranchée dans `PRESEANCE.md` (à réécrire en réduction de coût).
 
@@ -146,7 +146,7 @@ Conçus, jamais construits. Le GDD les porte ; aucun n'est bloquant.
 | **Temples et alliés** | Des divinités de seconde zone qui accordent quelque chose contre une **taxe permanente** sur le revenu de Souffle | Le frein est déjà conçu : chaque allié redirige une part définitivement |
 | **Portails** | Relier les bassins voisins | Acte IV s'y appuie narrativement |
 | **Découplage des chapitres** | Séparer le récit de la profondeur | Repoussé depuis la phase 4 |
-| **Miracles** | Ce que le Souffle achetait dans l'ancienne conception | **Gelé** `[P26]`. Coexisteront avec les insufflations le jour où ils seront tranchés |
+| **Miracles** | Ce que le Souffle achetait dans l'ancienne conception | **Gelé** `[P26]`. Coexisteront avec les améliorations de renaissance le jour où ils seront tranchés |
 | **Défiscalisation** | — | Le moins spécifié des cinq |
 
 ---
@@ -161,7 +161,7 @@ Aucune ne mérite un chantier : **elles montent dans celui qui touche le fichier
 |---|---|
 | `economie.ts` | `ECHELLE_DE_PRODUCTION` n'apparaît dans aucune ligne de `detailDeCaptation` — le test d'invariant ne passe que parce qu'elle vaut 1 aujourd'hui |
 | `canon.test.ts` | `src/scene/` est exempté du balayage des mots morts **en entier**, pour un seul mot (`bancs`) |
-| `canon.test.ts` | Les textes d'insufflation ne sont pas dans la garde lexicale de l'écran |
+| `canon.test.ts` | Les textes d'amélioration ne sont pas dans la garde lexicale de l'écran |
 | `economie.ts` | `detailDeCaptation` construit sa liste en trois morceaux — fossile d'un correctif |
 | `SceneDeLaMare.ts` | `NaN` si le canevas fait exactement 144 px de large |
 

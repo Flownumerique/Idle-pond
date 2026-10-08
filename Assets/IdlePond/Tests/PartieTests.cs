@@ -92,14 +92,14 @@ namespace IdlePond.Tests
             Assert.That(ecoute.Changements[0], Is.SameAs(partie.Etat));
         }
 
-        [Test, Description("convaincre, monter, grandir, insuffler et renaître sont les actes du noyau")]
-        public void Convaincre_monter_grandir_insuffler_et_renaitre_sont_les_actes_du_noyau()
+        [Test, Description("convaincre, monter, grandir, améliorer et renaître sont les actes du noyau")]
+        public void Convaincre_monter_grandir_acheter_une_amelioration_et_renaitre_sont_les_actes_du_noyau()
         {
             var depart = EtatAise();
             var partie = new Partie(new HorlogeFigee(DEPART), depart);
             var ecoute = new Ecoute(partie);
             var espece = Especes.Toutes.First(e => e.Palier < depart.Cycle.PaliersOuverts).Id;
-            var insufflation = Insufflations.Toutes[0].Id;
+            var amelioration = AmeliorationsDeRenaissance.Toutes[0].Id;
 
             var attendu = Reducteur.Debloquer(depart, espece);
             partie.Convaincre(espece);
@@ -116,10 +116,10 @@ namespace IdlePond.Tests
             AssertEtatsIdentiques(partie.Etat, attendu);
             Assert.That(partie.Etat.Cycle.NiveauDuHeros, Is.EqualTo(depart.Cycle.NiveauDuHeros + 1));
 
-            attendu = Reducteur.Insuffler(attendu, insufflation);
-            partie.Insuffler(insufflation);
+            attendu = Reducteur.AcheterUneAmelioration(attendu, amelioration);
+            partie.AcheterUneAmelioration(amelioration);
             AssertEtatsIdentiques(partie.Etat, attendu);
-            Assert.That(partie.Etat.Permanent.Insufflations[insufflation], Is.EqualTo(1));
+            Assert.That(partie.Etat.Permanent.AmeliorationsDeRenaissance[amelioration], Is.EqualTo(1));
 
             attendu = Renaissance.Renaitre(attendu);
             partie.Renaitre();
@@ -145,8 +145,8 @@ namespace IdlePond.Tests
                 partie.Monter(espece);
                 partie.Monter("espece-inconnue");
                 partie.Grandir();
-                partie.Insuffler(Insufflations.Toutes[0].Id);
-                partie.Insuffler("insufflation-inconnue");
+                partie.AcheterUneAmelioration(AmeliorationsDeRenaissance.Toutes[0].Id);
+                partie.AcheterUneAmelioration("amelioration-inconnue");
             }, Throws.Nothing);
 
             Assert.That(partie.Etat, Is.SameAs(pauvre));

@@ -62,8 +62,8 @@ namespace IdlePond.Tests
                 for (var i = 0; i < 3; i++) etat = Reducteur.Grandir(etat);
                 etat = Renaissance.Renaitre(etat);
                 Comparer($"renaissances[{k}]", Instantane.De(etat), attendus[k++]);
-                etat = Reducteur.Insuffler(etat, IdlePond.Noyau.Donnees.Insufflations.GLOBALE_ID);
-                etat = Reducteur.Insuffler(etat, "insufflation-vairon");
+                etat = Reducteur.AcheterUneAmelioration(etat, IdlePond.Noyau.Donnees.AmeliorationsDeRenaissance.GLOBALE_ID);
+                etat = Reducteur.AcheterUneAmelioration(etat, "amelioration-vairon");
                 etat = Reducteur.Creuser(etat);
                 etat = Reducteur.Debloquer(etat, "vairon");
                 for (var n = 0; n < 20; n++) etat = Reducteur.Ameliorer(etat, "vairon");

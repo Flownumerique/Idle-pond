@@ -33,10 +33,10 @@ namespace IdlePond.Tests.Outils
                 if (p.Succes.TryGetValue(s.Id, out var entree))
                     succes[s.Id] = new JObject { ["obtenuAuCycle"] = entree.ObtenuAuCycle, ["registre"] = Registre(entree.Registre) };
 
-            var insufflations = new JObject();
-            foreach (var i in Insufflations.Toutes)
-                if (p.Insufflations.TryGetValue(i.Id, out var rang))
-                    insufflations[i.Id] = rang;
+            var ameliorations = new JObject();
+            foreach (var i in AmeliorationsDeRenaissance.Toutes)
+                if (p.AmeliorationsDeRenaissance.TryGetValue(i.Id, out var rang))
+                    ameliorations[i.Id] = rang;
 
             double Compteur(BrancheTechnique b) => p.CompteursTechnique.TryGetValue(b, out var x) ? x : 0;
 
@@ -77,7 +77,7 @@ namespace IdlePond.Tests.Outils
                     ["especesAyantAtteintCent"] = new JArray(p.EspecesAyantAtteintCent),
                     ["manaAmbiant"] = D(p.ManaAmbiant),
                     ["heuresHorsLigneCreditees"] = p.HeuresHorsLigneCreditees,
-                    ["insufflations"] = insufflations,
+                    ["ameliorations"] = ameliorations,
                 },
                 ["telemetrie"] = new JObject
                 {

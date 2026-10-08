@@ -41,13 +41,13 @@ namespace IdlePond.Tests
             }), Reference["paliers"]);
         }
 
-        [Test, Description("les insufflations sont celles du TypeScript, renommées")]
-        public void Les_insufflations_sont_celles_du_TypeScript_renommees()
+        [Test, Description("les améliorations sont celles du TypeScript, renommées")]
+        public void Les_ameliorations_sont_celles_du_TypeScript_renommees()
         {
-            Egal("insufflations", Insufflations.Toutes.Select(i => new JObject
+            Egal("ameliorations", AmeliorationsDeRenaissance.Toutes.Select(i => new JObject
             {
-                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDInsufflation.Globale ? "globale" : "ciblee", ["espece"] = Chaine(i.Espece),
-            }), Reference["insufflations"]);
+                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDAmelioration.Globale ? "globale" : "ciblee", ["espece"] = Chaine(i.Espece),
+            }), Reference["ameliorations"]);
         }
 
         [Test, Description("le registre des succès est celui du TypeScript, dans le même ordre")]

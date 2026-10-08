@@ -266,31 +266,31 @@ namespace IdlePond.Noyau
         /// </summary>
         public const double RATIO_COUT_DE_CROISSANCE = 1.75;
 
-        /* ─── Les insufflations — noyau v1.0 §4, spec 2026-09-17 §3.2 ────────────────
+        /* ─── Les améliorations — noyau v1.0 §4, spec 2026-09-17 §3.2 ────────────────
          * L'écran d'améliorations permanentes du jeu, payé en Souffle. Toutes ces valeurs
          * sont des graines : le premier cycle rapporte ~5 Souffle, le deuxième ~1 600, et
          * c'est contre cette échelle qu'elles seront réfutées.
          */
 
         /// [P] graine — une ciblée multiplie son espèce par `(1 + c)` à chaque rang.
-        public const double INSUFFLATION_CIBLEE_PAR_RANG = 0.5;
+        public const double AMELIORATION_CIBLEE_PAR_RANG = 0.5;
 
         /// <summary>
         /// [P] graine — la globale ajoute `k × rang` au débit de base de CHAQUE espèce,
         /// en mana/s par niveau. Le vairon capte 0,2 : à 0,05 le premier rang lui
         /// donne +25 %, et il ne donne plus rien de visible à la dixième espèce.
         /// </summary>
-        public const double INSUFFLATION_GLOBALE_PAR_RANG = 0.05;
+        public const double AMELIORATION_GLOBALE_PAR_RANG = 0.05;
 
         /// [P] graine — coût du premier rang, en Souffle.
-        public const double SOUFFLE_COUT_D_INSUFFLATION_CIBLEE = 3;
-        public const double SOUFFLE_COUT_D_INSUFFLATION_GLOBALE = 2;
+        public const double SOUFFLE_COUT_D_AMELIORATION_CIBLEE = 3;
+        public const double SOUFFLE_COUT_D_AMELIORATION_GLOBALE = 2;
 
         /// <summary>
         /// [P] graine — chaque rang coûte ce facteur de plus que le précédent.
         ///
         /// MESURÉ — tâche B4. Faire monter ce ratio par pas de +2 depuis la graine (4)
-        /// ne fait que ralentir, sans jamais borner, le total de rangs d'insufflation
+        /// ne fait que ralentir, sans jamais borner, le total de rangs d'amélioration
         /// achetés par la politique simulée optimale d'ici le cycle 5 :
         ///
         /// | ratio | rangs achetés (cycle 5) |
@@ -303,15 +303,15 @@ namespace IdlePond.Noyau
         ///
         /// Décroissant, mais ne converge vers aucune cible raisonnable. Aucune valeur
         /// plausible de ce ratio ne peut vraiment plafonner le total sans rendre la
-        /// première insufflation impayable au cycle 1 — exigence dure et séparée : la
-        /// première insufflation doit rester payable dès la première renaissance.
+        /// première amélioration impayable au cycle 1 — exigence dure et séparée : la
+        /// première amélioration doit rester payable dès la première renaissance.
         ///
         /// Le vrai levier, si ce point revient : la politique de dépense gloutonne du
-        /// SIMULATEUR (`Simulateur.InsufflerAuMieux`, `src/simulateur/simulateur.ts`), pas ce facteur
+        /// SIMULATEUR (`Simulateur.AcheterAuMieux`, `src/simulateur/simulateur.ts`), pas ce facteur
         /// de coût — changer la politique est une décision de design plus large,
         /// volontairement laissée ouverte, non tentée ici.
         /// </summary>
-        public const double RATIO_COUT_D_INSUFFLATION = 4;
+        public const double RATIO_COUT_D_AMELIORATION = 4;
 
         /* ─── Graines d'échelle économique ──────────────────────────────────────────
          * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle
@@ -628,7 +628,9 @@ namespace IdlePond.Noyau
         /// Le jeu appelle tick à 100 ms. Le simulateur l'appelle avec 60 s ou 8 h.
         public const int PERIODE_DE_TICK_MS = 100;
 
-        /// La sauvegarde Unity repart à 1 (spec 2026-09-27) : les saves du navigateur ne sont pas reprises.
-        public const int VERSION_SAVE = 1;
+        /// La sauvegarde Unity est repartie à 1 (spec 2026-09-27) : les saves du navigateur ne
+        /// sont pas reprises. 2 depuis le 2026-10-08 : les insufflations deviennent les
+        /// améliorations de renaissance (`Persistance.MIGRATIONS[1]`).
+        public const int VERSION_SAVE = 2;
     }
 }

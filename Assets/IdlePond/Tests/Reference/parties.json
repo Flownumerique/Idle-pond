@@ -116,7 +116,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -354,7 +354,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -592,7 +592,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -830,7 +830,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -1068,7 +1068,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -1306,7 +1306,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -1544,7 +1544,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -1782,7 +1782,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2020,7 +2020,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2149,7 +2149,7 @@
       "especesAyantAtteintCent": [],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2287,7 +2287,7 @@
       "especesAyantAtteintCent": [],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2535,7 +2535,7 @@
       "especesAyantAtteintCent": [],
       "manaAmbiant": "1.51675791794989e5",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2805,7 +2805,7 @@
       "especesAyantAtteintCent": [],
       "manaAmbiant": "1.919685518976e8",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -2962,7 +2962,7 @@
       ],
       "manaAmbiant": "0e0",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
@@ -3190,7 +3190,7 @@
       ],
       "manaAmbiant": "9.9923798208465e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {}
+      "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [
@@ -3439,9 +3439,9 @@
       ],
       "manaAmbiant": "9.9923798208465e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {
-       "insufflation-globale": 1,
-       "insufflation-vairon": 1
+      "ameliorations": {
+       "amelioration-globale": 1,
+       "amelioration-vairon": 1
       }
      },
      "telemetrie": {
@@ -3686,9 +3686,9 @@
       ],
       "manaAmbiant": "9.99241684520643e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {
-       "insufflation-globale": 1,
-       "insufflation-vairon": 1
+      "ameliorations": {
+       "amelioration-globale": 1,
+       "amelioration-vairon": 1
       }
      },
      "telemetrie": {
@@ -3949,9 +3949,9 @@
       ],
       "manaAmbiant": "9.99241684520643e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {
-       "insufflation-globale": 2,
-       "insufflation-vairon": 2
+      "ameliorations": {
+       "amelioration-globale": 2,
+       "amelioration-vairon": 2
       }
      },
      "telemetrie": {
@@ -4207,9 +4207,9 @@
       ],
       "manaAmbiant": "9.99248001119784e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {
-       "insufflation-globale": 2,
-       "insufflation-vairon": 2
+      "ameliorations": {
+       "amelioration-globale": 2,
+       "amelioration-vairon": 2
       }
      },
      "telemetrie": {
@@ -4481,9 +4481,9 @@
       ],
       "manaAmbiant": "9.99248001119784e11",
       "heuresHorsLigneCreditees": 0.0,
-      "insufflations": {
-       "insufflation-globale": 3,
-       "insufflation-vairon": 3
+      "ameliorations": {
+       "amelioration-globale": 3,
+       "amelioration-vairon": 3
       }
      },
      "telemetrie": {
@@ -4870,29 +4870,29 @@
     ],
     "manaAmbiant": "2.6269669036774e197",
     "heuresHorsLigneCreditees": 0.0,
-    "insufflations": {
-     "insufflation-globale": 158,
-     "insufflation-vairon": 158,
-     "insufflation-loche": 158,
-     "insufflation-epinoche": 158,
-     "insufflation-chabot": 158,
-     "insufflation-lamproie": 158,
-     "insufflation-ombre": 158,
-     "insufflation-espece-3-1": 158,
-     "insufflation-espece-3-2": 158,
-     "insufflation-espece-3-3": 158,
-     "insufflation-espece-3-4": 158,
-     "insufflation-espece-4-1": 158,
-     "insufflation-espece-4-2": 158,
-     "insufflation-espece-4-3": 158,
-     "insufflation-espece-4-4": 158,
-     "insufflation-espece-5-1": 158,
-     "insufflation-espece-5-2": 158,
-     "insufflation-espece-5-3": 158,
-     "insufflation-espece-5-4": 158,
-     "insufflation-espece-6-1": 158,
-     "insufflation-espece-6-2": 158,
-     "insufflation-espece-6-3": 158
+    "ameliorations": {
+     "amelioration-globale": 158,
+     "amelioration-vairon": 158,
+     "amelioration-loche": 158,
+     "amelioration-epinoche": 158,
+     "amelioration-chabot": 158,
+     "amelioration-lamproie": 158,
+     "amelioration-ombre": 158,
+     "amelioration-espece-3-1": 158,
+     "amelioration-espece-3-2": 158,
+     "amelioration-espece-3-3": 158,
+     "amelioration-espece-3-4": 158,
+     "amelioration-espece-4-1": 158,
+     "amelioration-espece-4-2": 158,
+     "amelioration-espece-4-3": 158,
+     "amelioration-espece-4-4": 158,
+     "amelioration-espece-5-1": 158,
+     "amelioration-espece-5-2": 158,
+     "amelioration-espece-5-3": 158,
+     "amelioration-espece-5-4": 158,
+     "amelioration-espece-6-1": 158,
+     "amelioration-espece-6-2": 158,
+     "amelioration-espece-6-3": 158
     }
    },
    "telemetrie": {

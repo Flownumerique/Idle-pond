@@ -135,8 +135,8 @@ namespace IdlePond.Jeu.UI
                     return source.Valeur <= 0 ? E.EAU_NEUTRE : Remplir(E.EAU_A_DENSITE, source.Valeur.ToString("F1", Inv));
                 case QuoiSource.Heros:
                     return valeur <= 1 ? E.TOI_QUI_CAPTES_SEUL : Remplir(E.TOI_GRANDI, valeur - 1);
-                case QuoiSource.Insufflation:
-                    return valeur == 0 ? E.RIEN_D_INSUFFLE : Remplir(E.INSUFFLE_FOIS, valeur);
+                case QuoiSource.AmeliorationDeRenaissance:
+                    return valeur == 0 ? E.AUCUNE_AMELIORATION : Remplir(E.AMELIORE_FOIS, valeur);
                 default:
                     return E.PLUS_BAS;
             }

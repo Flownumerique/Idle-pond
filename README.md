@@ -13,7 +13,7 @@ qui s'adapte au portrait et au paysage.
 ## État
 
 **La Noue et le Gour** (assises I et II, 18 paliers, 6 espèces) sont jouables de bout
-en bout dans Unity : creuser, convaincre, monter, grandir, insuffler, renaître, quitter,
+en bout dans Unity : creuser, convaincre, monter, grandir, améliorer, renaître, quitter,
 revenir et recevoir le crédit hors ligne. La scène est en **pixel art** (URP 2D,
 ≈240 px de large, lumières 2D) : l'eau des paliers ouverts, la roche obscure de ceux
 qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires**,
@@ -95,7 +95,7 @@ vérifient par des tests :
    aucun champ statique modifiable (`ArchitectureTests`, et l'asmdef).
 2. Toute mécanique du cœur se calcule en **un seul pas** pour `dt = 8 h`
    (`EquivalenceDePasTests`).
-3. La technique baisse les **coûts** et automatise ; l'insufflation monte la
+3. La technique baisse les **coûts** et automatise ; l'amélioration de renaissance monte la
    **production**, et c'est la seule chose qu'elle fait. Aucun nœud, **aucun
    succès** ne franchit cette ligne (`CanonTests`).
 4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est

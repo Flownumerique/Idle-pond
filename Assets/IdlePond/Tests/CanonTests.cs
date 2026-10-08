@@ -21,17 +21,17 @@ namespace IdlePond.Tests
     /// </summary>
     public class CanonTests
     {
-        /* ─── noyau v1.0 §4 — le Souffle achète des insufflations, et rien d'autre ne
+        /* ─── noyau v1.0 §4 — le Souffle achète des améliorations, et rien d'autre ne
          * monte la production ──────────────────────────────────────────────────────
          *
          * RETOURNÉ une seconde fois, le 2026-09-17. Le 2026-09-08 ce bloc avait
-         * supprimé les insufflations au nom du GDD §4.2 ; le soir même la préséance
+         * supprimé les améliorations au nom du GDD §4.2 ; le soir même la préséance
          * est passée au noyau v1.0 pour la mécanique (`docs/PRESEANCE.md`), et le
-         * noyau §4 fait des insufflations « l'écran d'améliorations du jeu ». Le code
+         * noyau §4 fait des améliorations « l'écran d'améliorations du jeu ». Le code
          * avait gardé la suppression. Spec 2026-09-17 [D8].
          *
          * Ce qui reste vrai, et vérifié : la technique et les succès ne montent
-         * jamais une production ; une insufflation ne fait QUE cela. */
+         * jamais une production ; une amélioration ne fait QUE cela. */
 
         [Test, Description("aucun nœud de technique ne monte une production")]
         public void Aucun_noeud_de_technique_ne_monte_une_production()
@@ -44,25 +44,25 @@ namespace IdlePond.Tests
             }
         }
 
-        [Test, Description("une insufflation ne cible qu'un terme de production, jamais un coût ni un plafond")]
-        public void Une_insufflation_ne_cible_qu_un_terme_de_production_jamais_un_cout_ni_un_plafond()
+        [Test, Description("une amélioration ne cible qu'un terme de production, jamais un coût ni un plafond")]
+        public void Une_amelioration_ne_cible_qu_un_terme_de_production_jamais_un_cout_ni_un_plafond()
         {
-            foreach (var insufflation in Insufflations.Toutes)
+            foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
             {
-                var terme = insufflation.Portee == PorteeDInsufflation.Ciblee
-                    ? TermeDeFormule.MultiplicateurInsufflation
-                    : TermeDeFormule.InsufflationGlobale;
+                var terme = amelioration.Portee == PorteeDAmelioration.Ciblee
+                    ? TermeDeFormule.MultiplicateurAmelioration
+                    : TermeDeFormule.AmeliorationGlobale;
                 Assert.That(Termes.DE_PRODUCTION, Has.Member(terme));
                 Assert.That(Termes.DE_COUT, Has.No.Member(terme));
                 Assert.That(Termes.DE_CONFORT, Has.No.Member(terme));
             }
         }
 
-        [Test, Description("une insufflation ciblée par espèce, une globale, et pas une de plus")]
-        public void Une_insufflation_ciblee_par_espece_une_globale_et_pas_une_de_plus()
+        [Test, Description("une amélioration ciblée par espèce, une globale, et pas une de plus")]
+        public void Une_amelioration_ciblee_par_espece_une_globale_et_pas_une_de_plus()
         {
-            var ciblees = Insufflations.Toutes.Where(i => i.Portee == PorteeDInsufflation.Ciblee).ToList();
-            var globales = Insufflations.Toutes.Where(i => i.Portee == PorteeDInsufflation.Globale).ToList();
+            var ciblees = AmeliorationsDeRenaissance.Toutes.Where(i => i.Portee == PorteeDAmelioration.Ciblee).ToList();
+            var globales = AmeliorationsDeRenaissance.Toutes.Where(i => i.Portee == PorteeDAmelioration.Globale).ToList();
             Assert.That(ciblees.Select(i => i.Espece), Is.EqualTo(Especes.Toutes.Select(e => e.Id)));
             Assert.That(globales, Has.Count.EqualTo(1));
             Assert.That(globales[0].Espece, Is.Null);

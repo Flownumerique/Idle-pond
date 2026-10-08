@@ -1,6 +1,6 @@
 # IdlePond — le Codex
 
-**Version** : 1.0 — 2026-09-18
+**Version** : 1.1 — 2026-10-08
 **Objet** : la fiction et le lexique. Ce que le monde est, ce que le héros devient, et
 comment chaque chose s'appelle — à l'écran comme dans le code.
 **Remplace** : `idlepond-histoire-v0.1.md`, absorbé et archivé.
@@ -447,7 +447,7 @@ entre dans les sauvegardes.
 | Faire venir une espèce | **Convaincre** | `debloquer()` |
 | Monter une espèce d'un cran | **Monter** | `ameliorer()` |
 | Se faire grandir soi-même | **Grandir** | `grandir()` |
-| Dépenser du Souffle en permanent | **Insuffler** | `insuffler()` |
+| Dépenser du Souffle en permanent | **Améliorer** | `AcheterUneAmelioration()` |
 
 Les quatre premiers se paient en mana et se perdent à la renaissance. Le cinquième se paie
 en Souffle et ne se perd jamais.
@@ -456,13 +456,13 @@ en Souffle et ne se perd jamais.
 
 | Fiction | Écran | Code | Appliqué par |
 |---|---|---|---|
-| Une amélioration permanente payée en Souffle | **une insufflation** | `Insufflation`, `INSUFFLATIONS` | `insufflations.test.ts` |
-| L'écran qui les liste | **Ce que tu insuffles** | `Insufflations.tsx` | — |
+| Une amélioration permanente payée en Souffle | **une amélioration de renaissance** | `AmeliorationDeRenaissance`, `AmeliorationsDeRenaissance` | `AmeliorationsDeRenaissanceTests` |
+| L'écran qui les liste | **Améliorations de renaissance** | `Jeu/UI/AmeliorationsDeRenaissance.cs` | — |
 | Ce qui baisse les coûts et automatise | la technique | `technique` | `canon.test.ts` (§6.3) |
 | Ce qu'il a fait, consigné | un succès | `succes`, `SuccesId` | `canon.test.ts` (registre figé) |
 
 **La ligne dure, vérifiée par test** : la technique baisse les **coûts** et automatise ;
-l'insufflation monte la **production**, et c'est la seule chose qu'elle fait. Aucun nœud,
+l'amélioration de renaissance monte la **production**, et c'est la seule chose qu'elle fait. Aucun nœud,
 aucun succès ne franchit cette ligne.
 
 ### Les mots morts
@@ -472,7 +472,8 @@ revenir — ni en identifiant, ni à l'écran. `tests/canon.test.ts` balaie `src
 
 `foi` · `fidèle` · `bénédiction` · `bénir` · `éclore` · `ponte` · `pondre` · `population` ·
 `maturation` · `acclimatation` · `banc` (comme champ d'état) · `place` · `prestige` ·
-`rebirth` · `gemme` · `perle` · `corail` · `layer` · `zone` · `biome` · `étage` · `strate`
+`rebirth` · `gemme` · `perle` · `corail` · `layer` · `zone` · `biome` · `étage` · `strate` ·
+`insufflation` · `insuffler`
 
 ### Les mots interdits à l'écran seulement
 
@@ -526,13 +527,19 @@ la gêne qu'il cause.
 contient aucun mot mort.
 
 Deuxième exception, de nature différente : **« bénédiction » survit une fois**, à l'acte IX
-— *la bénédiction de l'esprit*. Ce n'est pas une insufflation, ce n'est pas une mécanique,
+— *la bénédiction de l'esprit*. Ce n'est pas une amélioration de renaissance, ce n'est pas une mécanique,
 c'est un événement de récit qui arrive une seule fois. Le mot est mort comme terme de
 système et vivant comme terme de fiction. Aucun identifiant ne le porte.
 
 ---
 
 ## Journal
+
+**v1.1 — 2026-10-08.** Les insufflations deviennent **les améliorations de
+renaissance**, sur décision de l'utilisateur : un nom plus simple, qui dit ce que l'achat
+fait et quand on le fait. « Rebirth » reste un mot mort : la renaissance garde son nom
+français. `insufflation` et `insuffler` rejoignent les mots morts. Les sauvegardes passent
+en version 2 ; seule la migration `Persistance.MIGRATIONS[1]` lit encore l'ancienne clef.
 
 **v1.0 — 2026-09-18.** Création. Absorbe `idlepond-histoire-v0.1.md` (archivé). Prend
 l'autorité sur la fiction et le lexique, jusque-là partagée entre le GDD et l'histoire.

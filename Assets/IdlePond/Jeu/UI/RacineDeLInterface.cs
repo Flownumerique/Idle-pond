@@ -46,7 +46,7 @@ namespace IdlePond.Jeu.UI
         Mare mare;
         Renaissance renaissance;
         Succes succes;
-        Insufflations insufflations;
+        AmeliorationsDeRenaissance ameliorations;
         Annonces annonces;
         Action<EtatJeu>[] rafraichisseurs = Array.Empty<Action<EtatJeu>>();
 
@@ -162,7 +162,7 @@ namespace IdlePond.Jeu.UI
             renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre(),
                 () => dock != null && dock.Actif == Tiroir.Oeuf);
             succes = new Succes(racine.Q<VisualElement>("succes"));
-            insufflations = new Insufflations(racine.Q<VisualElement>("insufflations"), id => p.Insuffler(id));
+            ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));
             dock = new Dock(racine.Q<VisualElement>("dock"), AppliquerLeTiroir);
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));
@@ -173,7 +173,7 @@ namespace IdlePond.Jeu.UI
             {
                 barre.Rafraichir, lieu.Rafraichir, creusement.Rafraichir, fiche.Rafraichir,
                 heros.Rafraichir, captation.Rafraichir, mare.Rafraichir, renaissance.Rafraichir,
-                succes.Rafraichir, insufflations.Rafraichir, dock.Rafraichir,
+                succes.Rafraichir, ameliorations.Rafraichir, dock.Rafraichir,
             };
             AppliquerLeTiroir();
         }

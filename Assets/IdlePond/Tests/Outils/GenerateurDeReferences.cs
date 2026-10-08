@@ -71,9 +71,9 @@ namespace IdlePond.Tests.Outils
             {
                 ["index"] = p.Index, ["assise"] = p.Assise, ["espece"] = Chaine(p.Espece),
             })),
-            ["insufflations"] = new JArray(Insufflations.Toutes.Select(i => new JObject
+            ["ameliorations"] = new JArray(AmeliorationsDeRenaissance.Toutes.Select(i => new JObject
             {
-                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDInsufflation.Globale ? "globale" : "ciblee", ["espece"] = Chaine(i.Espece),
+                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDAmelioration.Globale ? "globale" : "ciblee", ["espece"] = Chaine(i.Espece),
             })),
             ["succes"] = new JArray(RegistreDesSucces.Tous.Select(Succes)),
         };
@@ -124,8 +124,8 @@ namespace IdlePond.Tests.Outils
                 for (var i = 0; i < 3; i++) etat = Reducteur.Grandir(etat);
                 etat = Renaissance.Renaitre(etat);
                 renaissances.Add(Instantane.De(etat));
-                etat = Reducteur.Insuffler(etat, Insufflations.GLOBALE_ID);
-                etat = Reducteur.Insuffler(etat, "insufflation-vairon");
+                etat = Reducteur.AcheterUneAmelioration(etat, AmeliorationsDeRenaissance.GLOBALE_ID);
+                etat = Reducteur.AcheterUneAmelioration(etat, "amelioration-vairon");
                 etat = Reducteur.Creuser(etat);
                 etat = Reducteur.Debloquer(etat, "vairon");
                 for (var n = 0; n < 20; n++) etat = Reducteur.Ameliorer(etat, "vairon");

@@ -51,10 +51,39 @@ namespace IdlePond.Jeu
         /// <summary>
         /// Chaîne de migrations. Une entrée par version franchie : `MIGRATIONS[n]`
         /// transforme un contenu de version `n` en contenu de version `n + 1`.
-        /// Vide aujourd'hui, et c'est le but : le mécanisme existe avant le besoin.
         /// </summary>
         public static readonly IReadOnlyDictionary<int, Func<JObject, JObject>> MIGRATIONS =
-            new Dictionary<int, Func<JObject, JObject>>();
+            new Dictionary<int, Func<JObject, JObject>>
+            {
+                [1] = RenommerLesAmeliorations,
+            };
+
+        /// Le vocabulaire de la version 1, avant le 2026-10-08. Ces chaînes décrivent un
+        /// format qui a existé : elles ne se renomment pas, seule la migration les lit.
+        public const string CLEF_V1_DES_AMELIORATIONS = "insufflations";
+        public const string PREFIXE_V1_DES_AMELIORATIONS = "insufflation-";
+        const string PREFIXE_DES_AMELIORATIONS = "amelioration-";
+
+        /// v1 → v2 : les insufflations deviennent les améliorations de renaissance. La
+        /// table change de clef, et chaque identifiant de préfixe ; les rangs ne bougent pas.
+        static JObject RenommerLesAmeliorations(JObject contenu)
+        {
+            var sortie = (JObject)contenu.DeepClone();
+            if (sortie["permanent"] is JObject permanent && permanent[CLEF_V1_DES_AMELIORATIONS] is JObject anciennes)
+            {
+                var ameliorations = new JObject();
+                foreach (var paire in anciennes.Properties())
+                {
+                    var id = paire.Name.StartsWith(PREFIXE_V1_DES_AMELIORATIONS, StringComparison.Ordinal)
+                        ? PREFIXE_DES_AMELIORATIONS + paire.Name.Substring(PREFIXE_V1_DES_AMELIORATIONS.Length)
+                        : paire.Name;
+                    ameliorations[id] = paire.Value;
+                }
+                permanent.Remove(CLEF_V1_DES_AMELIORATIONS);
+                permanent["ameliorations"] = ameliorations;
+            }
+            return sortie;
+        }
 
         /* ─── Les nombres ───────────────────────────────────────────────────────────*/
 
@@ -165,10 +194,10 @@ namespace IdlePond.Jeu
                 if (p.Succes.TryGetValue(s.Id, out var entree))
                     succes[s.Id] = new JObject { ["obtenuAuCycle"] = entree.ObtenuAuCycle, ["registre"] = NomDeRegistre(entree.Registre) };
 
-            var insufflations = new JObject();
-            foreach (var i in Insufflations.Toutes)
-                if (p.Insufflations.TryGetValue(i.Id, out var rang))
-                    insufflations[i.Id] = rang;
+            var ameliorations = new JObject();
+            foreach (var i in AmeliorationsDeRenaissance.Toutes)
+                if (p.AmeliorationsDeRenaissance.TryGetValue(i.Id, out var rang))
+                    ameliorations[i.Id] = rang;
 
             var compteurs = new JObject();
             foreach (BrancheTechnique branche in Enum.GetValues(typeof(BrancheTechnique)))
@@ -207,7 +236,7 @@ namespace IdlePond.Jeu
                     ["especesAyantAtteintCent"] = Textes(p.EspecesAyantAtteintCent),
                     ["manaAmbiant"] = SerialiserDecimal(p.ManaAmbiant),
                     ["heuresHorsLigneCreditees"] = N(p.HeuresHorsLigneCreditees),
-                    ["insufflations"] = insufflations,
+                    ["ameliorations"] = ameliorations,
                 },
                 ["telemetrie"] = new JObject
                 {
@@ -304,16 +333,16 @@ namespace IdlePond.Jeu
                 succes = lus;
             }
 
-            IReadOnlyDictionary<string, int> insufflations = permanentRepli.Insufflations;
-            if (permanent["insufflations"] is JObject tableInsufflations)
+            IReadOnlyDictionary<string, int> ameliorations = permanentRepli.AmeliorationsDeRenaissance;
+            if (permanent["ameliorations"] is JObject tableAmeliorations)
             {
                 var lues = new Dictionary<string, int>();
-                foreach (var i in Insufflations.Toutes)
+                foreach (var i in AmeliorationsDeRenaissance.Toutes)
                 {
-                    var rang = Entier(tableInsufflations[i.Id], 0);
+                    var rang = Entier(tableAmeliorations[i.Id], 0);
                     if (rang > 0) lues[i.Id] = rang;
                 }
-                insufflations = lues;
+                ameliorations = lues;
             }
 
             IReadOnlyDictionary<BrancheTechnique, double> compteurs = permanentRepli.CompteursTechnique;
@@ -384,7 +413,7 @@ namespace IdlePond.Jeu
                     EspecesAyantAtteintCent: ListeDeTextes(permanent["especesAyantAtteintCent"], permanentRepli.EspecesAyantAtteintCent),
                     ManaAmbiant: DeserialiserDecimal(permanent["manaAmbiant"], permanentRepli.ManaAmbiant),
                     HeuresHorsLigneCreditees: Nombre(permanent["heuresHorsLigneCreditees"], permanentRepli.HeuresHorsLigneCreditees),
-                    Insufflations: insufflations),
+                    AmeliorationsDeRenaissance: ameliorations),
                 Telemetrie: new EtatTelemetrie(
                     Cycles: cycles,
                     SecondesDepuisDernierSucces: Nombre(telemetrie["secondesDepuisDernierSucces"], telemetrieRepli.SecondesDepuisDernierSucces),

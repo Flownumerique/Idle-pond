@@ -168,7 +168,7 @@ namespace IdlePond.Tests.Outils
 
         static readonly Regex Identifiant = new Regex(@"[\p{L}_][\p{L}\p{Nd}_]*", RegexOptions.CultureInvariant);
 
-        /// Chaque identifiant découpé en mots : `CoutDInsufflation` → cout, d, insufflation ;
+        /// Chaque identifiant découpé en mots : `CoutDAmelioration` → cout, d, amélioration ;
         /// `SOUFFLE_BASE` → souffle, base. Minuscules, sans accents.
         public static IEnumerable<string> Mots(string code)
         {

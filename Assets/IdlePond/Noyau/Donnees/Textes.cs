@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 
 namespace IdlePond.Noyau.Donnees
 {
-    /// <summary>Ce que l'écran dit d'une insufflation — un verbe, ce que ça fait.</summary>
-    public sealed record TexteDInsufflation(string Nom, string Effet);
+    /// <summary>Ce que l'écran dit d'une amélioration — un verbe, ce que ça fait.</summary>
+    public sealed record TexteDAmelioration(string Nom, string Effet);
 
     public sealed record TexteDeSucces(string Nom, string Condition, string Rapport);
 
@@ -57,12 +57,12 @@ namespace IdlePond.Noyau.Donnees
         };
 
         /// <summary>
-        /// Ce que l'écran dit d'une insufflation — un verbe, ce que ça fait. La globale
+        /// Ce que l'écran dit d'une amélioration — un verbe, ce que ça fait. La globale
         /// a un nom à elle ; une ciblée prend le nom de son espèce.
         /// </summary>
-        public static readonly TexteDInsufflation INSUFFLATION_GLOBALE = new("Insuffler l’eau", "tout ce qui vit ici capte un peu plus, et tout ce qui viendra");
+        public static readonly TexteDAmelioration AMELIORATION_GLOBALE = new("Améliorer l’eau", "tout ce qui vit ici capte un peu plus, et tout ce qui viendra");
 
-        public static readonly TexteDInsufflation INSUFFLATION_CIBLEE = new(null, "ils te donnent moitié plus, à chaque fois");
+        public static readonly TexteDAmelioration AMELIORATION_CIBLEE = new(null, "ils te donnent moitié plus, à chaque fois");
 
         static readonly IReadOnlyDictionary<string, TexteDeSucces> TEXTES_DE_SUCCES = new Dictionary<string, TexteDeSucces>
         {
@@ -205,7 +205,7 @@ namespace IdlePond.Noyau.Donnees
 
         /// <summary>
         /// Les chaînes de l'interface : tout ce que les panneaux écrivent hors des noms, des
-        /// insufflations et des succès ci-dessus. Elles vivent ici, au même endroit que les
+        /// améliorations et des succès ci-dessus. Elles vivent ici, au même endroit que les
         /// autres, parce que la règle est la même — provisoires, jamais dans un identifiant
         /// ni dans une sauvegarde, et balayées par `LexiqueTests` contre les mots morts et
         /// les mots interdits à l'écran (Codex §5).
@@ -266,11 +266,11 @@ namespace IdlePond.Noyau.Donnees
             public const string SUCCES_EMPLACEMENTS_VIDES = "Emplacements vides";
             public const string SUCCES_MARQUE_DES_VIDES = "·";
 
-            /* — Les insufflations ——————————————————————————————————————————————————— */
-            public const string INSUFFLATIONS_TITRE = "Ce que tu insuffles";
+            /* — Les améliorations ——————————————————————————————————————————————————— */
+            public const string AMELIORATIONS_TITRE = "Améliorations de renaissance";
             public const string SOUFFLE_EN_RESERVE = "{0} de Souffle";
-            public const string INSUFFLER = "Insuffler";
-            public const string INSUFFLER_UNE_ESPECE = "Insuffler {0}";
+            public const string AMELIORER = "Améliorer";
+            public const string AMELIORER_UNE_ESPECE = "Améliorer {0}";
             public const string JAMAIS = "jamais";
             public const string FOIS = "{0} fois";
 
@@ -309,7 +309,7 @@ namespace IdlePond.Noyau.Donnees
             public const string POURCENT = "+{0} %";
             public const string TU_EMPORTES = "Tu emportes";
             public const string TU_LAISSES = "Tu laisses";
-            public const string EMPORTE_SOUFFLE = "le Souffle, et ce que tu as insufflé";
+            public const string EMPORTE_SOUFFLE = "le Souffle, et tes améliorations";
             public const string EMPORTE_JOURNAL = "ce qui est arrivé";
             public const string EMPORTE_MARQUES = "les marques sur ton corps";
             public const string LAISSE_MANA = "le mana";
@@ -341,8 +341,8 @@ namespace IdlePond.Noyau.Donnees
             public const string EAU_A_DENSITE = "eau à {0} de densité";
             public const string TOI_QUI_CAPTES_SEUL = "toi, qui captes seul";
             public const string TOI_GRANDI = "toi, grandi {0} fois";
-            public const string RIEN_D_INSUFFLE = "rien d’insufflé";
-            public const string INSUFFLE_FOIS = "insufflé {0} fois";
+            public const string AUCUNE_AMELIORATION = "aucune amélioration";
+            public const string AMELIORE_FOIS = "amélioré {0} fois";
             public const string DUREE_INCONNUE = "—";
         }
 
@@ -370,10 +370,10 @@ namespace IdlePond.Noyau.Donnees
                 if (NOM_DES_ESPECES.TryGetValue(espece.Id, out var nom))
                     yield return ($"espece {espece.Id}.nom", nom);
 
-            if (INSUFFLATION_GLOBALE.Nom != null) yield return ("insufflation insufflation-globale.nom", INSUFFLATION_GLOBALE.Nom);
-            yield return ("insufflation insufflation-globale.effet", INSUFFLATION_GLOBALE.Effet);
-            if (INSUFFLATION_CIBLEE.Nom != null) yield return ("insufflation insufflation-ciblee.nom", INSUFFLATION_CIBLEE.Nom);
-            yield return ("insufflation insufflation-ciblee.effet", INSUFFLATION_CIBLEE.Effet);
+            if (AMELIORATION_GLOBALE.Nom != null) yield return ("amélioration amelioration-globale.nom", AMELIORATION_GLOBALE.Nom);
+            yield return ("amélioration amelioration-globale.effet", AMELIORATION_GLOBALE.Effet);
+            if (AMELIORATION_CIBLEE.Nom != null) yield return ("amélioration amelioration-ciblee.nom", AMELIORATION_CIBLEE.Nom);
+            yield return ("amélioration amelioration-ciblee.effet", AMELIORATION_CIBLEE.Effet);
 
             // Les chaînes de l'interface : les constantes de `Ecran`, lues une à une.
             foreach (var champ in typeof(Ecran).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))

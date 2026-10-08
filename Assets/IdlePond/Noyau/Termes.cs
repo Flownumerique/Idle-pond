@@ -14,13 +14,13 @@ namespace IdlePond.Noyau
             TermeDeFormule.TauxBase, TermeDeFormule.Niveau, TermeDeFormule.MultiplicateurJalon,
             TermeDeFormule.MultiplicateurDrapeau, TermeDeFormule.MultiplicateurProfondeur,
             TermeDeFormule.MultiplicateurDensite, TermeDeFormule.DebitHeros, TermeDeFormule.MultiplicateurHeros,
-            TermeDeFormule.MultiplicateurInsufflation, TermeDeFormule.InsufflationGlobale,
+            TermeDeFormule.MultiplicateurAmelioration, TermeDeFormule.AmeliorationGlobale,
         };
 
         public static readonly IReadOnlyList<TermeDeFormule> DE_COUT = new[]
         {
             TermeDeFormule.CoutCreuser, TermeDeFormule.CoutNiveau, TermeDeFormule.CoutDeblocage,
-            TermeDeFormule.CoutCroissance, TermeDeFormule.CoutInsufflation, TermeDeFormule.CoutTemple,
+            TermeDeFormule.CoutCroissance, TermeDeFormule.CoutAmelioration, TermeDeFormule.CoutTemple,
             TermeDeFormule.CoutPortail, TermeDeFormule.CoutReouverture,
         };
 

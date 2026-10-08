@@ -24,12 +24,12 @@ namespace IdlePond.Tests
     /// </summary>
     public class SimulateurTests
     {
-        /// Recopiée de `InsufflationsTests` : pas encore de module d'aides de test partagé.
-        static EtatJeu Insufflee(EtatJeu etat, IReadOnlyDictionary<string, int> rangs)
+        /// Recopiée de `AmeliorationsDeRenaissanceTests` : pas encore de module d'aides de test partagé.
+        static EtatJeu Amelioree(EtatJeu etat, IReadOnlyDictionary<string, int> rangs)
         {
-            var insufflations = new Dictionary<string, int>(etat.Permanent.Insufflations);
-            foreach (var kv in rangs) insufflations[kv.Key] = kv.Value;
-            return etat with { Permanent = etat.Permanent with { Insufflations = insufflations } };
+            var ameliorations = new Dictionary<string, int>(etat.Permanent.AmeliorationsDeRenaissance);
+            foreach (var kv in rangs) ameliorations[kv.Key] = kv.Value;
+            return etat with { Permanent = etat.Permanent with { AmeliorationsDeRenaissance = ameliorations } };
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace IdlePond.Tests
         /// débloquée, sans quoi la branche « débloquer » n'est jamais prise.
         ///
         /// `baseEtat` par défaut `EtatDeTravail.Creer()`, mais accepte tout état déjà
-        /// préparé (par exemple insufflé) : seule la forme (paliers ouverts, espèces)
+        /// préparé (par exemple amélioré) : seule la forme (paliers ouverts, espèces)
         /// compte ici.
         /// </summary>
         static (EtatJeu Etat, Espece ACent, Espece ADebloquer) EtatAuxTroisAchats(EtatJeu baseEtat = null)
@@ -293,15 +293,15 @@ namespace IdlePond.Tests
             // confronté au noyau lui-même — la production APRÈS l'achat, moins la
             // production avant —, pour les quatre achats.
             //
-            // Un second passage, insufflé, referme la même mesure côté Tâche B2 : le
-            // simulateur doit lire l'assiette INSUFFLÉE (`DebitInsuffle` × multiplicateur
-            // d'insufflation), pas la seule assiette de base — sans quoi ses décisions
-            // d'achat sous-estimeraient toute espèce insufflée.
+            // Un second passage, amélioré, referme la même mesure côté Tâche B2 : le
+            // simulateur doit lire l'assiette AMÉLIORÉE (`DebitAmeliore` × multiplicateur
+            // d'amélioration), pas la seule assiette de base — sans quoi ses décisions
+            // d'achat sous-estimeraient toute espèce améliorée.
             var passages = new[]
             {
-                (Etiquette: "sans insufflation", Base: EtatDeTravail.Creer()),
-                (Etiquette: "avec insufflation",
-                    Base: Insufflee(EtatDeTravail.Creer(), new Dictionary<string, int> { ["insufflation-globale"] = 2, ["insufflation-vairon"] = 1 })),
+                (Etiquette: "sans amélioration", Base: EtatDeTravail.Creer()),
+                (Etiquette: "avec amélioration",
+                    Base: Amelioree(EtatDeTravail.Creer(), new Dictionary<string, int> { ["amelioration-globale"] = 2, ["amelioration-vairon"] = 1 })),
             };
             foreach (var (etiquette, baseEtat) in passages)
             {
@@ -478,15 +478,15 @@ namespace IdlePond.Tests
             Assert.That(r.Etat.Permanent.NombreDeRenaissances, Is.EqualTo(0));
         }
 
-        [Test, Description("le Souffle est dépensé en insufflations après la renaissance, et la partie converge toujours")]
-        public void Le_Souffle_est_depense_en_insufflations_apres_la_renaissance_et_la_partie_converge_toujours()
+        [Test, Description("le Souffle est dépensé en améliorations après la renaissance, et la partie converge toujours")]
+        public void Le_Souffle_est_depense_en_ameliorations_apres_la_renaissance_et_la_partie_converge_toujours()
         {
             // Spec [D6] : l'échelle de Souffle (~5 au cycle 1, ~1 600 au cycle 2) doit
-            // rendre la première insufflation payable dès la première renaissance,
+            // rendre la première amélioration payable dès la première renaissance,
             // sans que tout le registre soit acheté avant le cycle 5.
             var resultat = Simuler(5, null, 1);
             Assert.That(resultat.CycleNonConvergent, Is.Null);
-            var rangs = resultat.Etat.Permanent.Insufflations.Values.ToList();
+            var rangs = resultat.Etat.Permanent.AmeliorationsDeRenaissance.Values.ToList();
             Assert.That(rangs.Count, Is.GreaterThan(0));
             var total = rangs.Sum();
             Assert.That(total, Is.GreaterThanOrEqualTo(2));
@@ -494,15 +494,15 @@ namespace IdlePond.Tests
             // avant le cycle 5 », mais n'avait pas mesuré la composition sur 5 cycles
             // complets : le Souffle croît de façon exponentielle d'un cycle à l'autre
             // (~5 au cycle 1, ~1600 au cycle 2, bien plus ensuite), et aucune valeur
-            // raisonnable de RATIO_COUT_D_INSUFFLATION ne peut contenir ça sans casser
-            // l'accessibilité de la première insufflation au cycle 1 (mesuré : 4→12 ne
+            // raisonnable de RATIO_COUT_D_AMELIORATION ne peut contenir ça sans casser
+            // l'accessibilité de la première amélioration au cycle 1 (mesuré : 4→12 ne
             // fait passer le total que de 684 à 357 — ruling du contrôleur, tâche B4).
             // 1000 garde une marge large sur le total mesuré à la graine (684) tout en
             // attrapant une vraie régression (boucle infinie, double achat...).
             Assert.That(total, Is.LessThan(1000));
-            // Il reste moins de Souffle qu'il n'en faut pour l'insufflation la moins
+            // Il reste moins de Souffle qu'il n'en faut pour l'amélioration la moins
             // chère : la politique dépense, elle ne thésaurise pas.
-            var moinsChere = Insufflations.Toutes.Select(b => Economie.CoutDInsufflation(resultat.Etat, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
+            var moinsChere = AmeliorationsDeRenaissance.Toutes.Select(b => Economie.CoutDAmelioration(resultat.Etat, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
             Assert.That(resultat.Etat.Permanent.Souffle.Lt(moinsChere), Is.True);
         }
     }

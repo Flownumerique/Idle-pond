@@ -52,8 +52,8 @@ namespace IdlePond.Simulateur
     ///     des réglages dont certains ne convergent pas : sans lui, il bouclerait.
     /// </summary>
     /// <summary>
-    /// `Insuffler` : ce que le joueur fait de son Souffle à la renaissance. Null, c'est la
-    /// politique historique, `InsufflerAuMieux` — celle que la parité fige. Les autres
+    /// `AcheterLesAmeliorations` : ce que le joueur fait de son Souffle à la renaissance. Null, c'est la
+    /// politique historique, `AcheterAuMieux` — celle que la parité fige. Les autres
     /// existent pour la MESURE du chantier 2 de la roadmap, pas pour le jeu.
     /// </summary>
     public sealed record Politique(
@@ -61,7 +61,7 @@ namespace IdlePond.Simulateur
         double Pas,
         double FractionDeSaturationPourRenaitre,
         double DureeMaxParCycleSecondes,
-        Func<EtatJeu, EtatJeu> Insuffler = null);
+        Func<EtatJeu, EtatJeu> AcheterLesAmeliorations = null);
 
     /// Les quatre achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute.
     public enum TypeDAchat { Creuser, Grandir, Debloquer, Niveau }
@@ -191,16 +191,16 @@ namespace IdlePond.Simulateur
                     if (HorsDePortee(cout)) continue;
                     achats.Add(new Achat(
                         TypeDAchat.Debloquer, espece, cout,
-                        Economie.DebitInsuffle(etat, espece).Mul(Multiplicateurs()).Mul(Economie.MultiplicateurDeSeuil(1)).Mul(Economie.MultiplicateurDInsufflation(etat, espece))));
+                        Economie.DebitAmeliore(etat, espece).Mul(Multiplicateurs()).Mul(Economie.MultiplicateurDeSeuil(1)).Mul(Economie.MultiplicateurDAmelioration(etat, espece))));
                     continue;
                 }
                 var n = vivante.Niveau;
                 var coutNiveau = Economie.CoutDeNiveau(etat, espece, n);
                 if (HorsDePortee(coutNiveau)) continue;
-                var propreNiveau = Economie.DebitInsuffle(etat, espece)
+                var propreNiveau = Economie.DebitAmeliore(etat, espece)
                     .Mul(Multiplicateurs())
                     .Mul((n + 1) * Economie.MultiplicateurDeSeuil(n + 1) - n * Economie.MultiplicateurDeSeuil(n))
-                    .Mul(Economie.MultiplicateurDInsufflation(etat, espece));
+                    .Mul(Economie.MultiplicateurDAmelioration(etat, espece));
                 var poseLeDrapeau =
                     n + 1 >= Constantes.SEUIL_DU_DRAPEAU_PERMANENT && !etat.Permanent.EspecesAyantAtteintCent.Contains(espece.Id);
                 var gainNiveau = poseLeDrapeau
@@ -306,7 +306,7 @@ namespace IdlePond.Simulateur
         }
 
         /// <summary>
-        /// Ce que le joueur fait de son Souffle : il insuffle, la moins chère d'abord, tant
+        /// Ce que le joueur fait de son Souffle : il améliore, la moins chère d'abord, tant
         /// qu'il peut payer. Une politique, pas une règle du noyau — la globale et les
         /// ciblées ont chacune leur échelle de prix, et le simulateur n'a pas à savoir
         /// laquelle rapporte le plus dans une vie qui n'a pas encore commencé.
@@ -314,77 +314,77 @@ namespace IdlePond.Simulateur
         /// Appelée juste après `Renaitre` : c'est là que le Souffle est crédité. Elle
         /// termine d'elle-même — chaque rang multiplie le prix par le ratio.
         /// </summary>
-        public static EtatJeu InsufflerAuMieux(EtatJeu etat)
+        public static EtatJeu AcheterAuMieux(EtatJeu etat)
         {
             var courant = etat;
             for (var garde = 0; garde < 10_000; garde += 1)
             {
                 (string Id, Decimal Cout)? choix = null;
-                foreach (var insufflation in Insufflations.Toutes)
+                foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
                 {
-                    var cout = Economie.CoutDInsufflation(courant, insufflation);
+                    var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle)) continue;
-                    if (choix == null || cout.Lt(choix.Value.Cout)) choix = (insufflation.Id, cout);
+                    if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration.Id, cout);
                 }
                 if (choix == null) return courant;
-                var suivant = Reducteur.Insuffler(courant, choix.Value.Id);
+                var suivant = Reducteur.AcheterUneAmelioration(courant, choix.Value.Id);
                 if (ReferenceEquals(suivant, courant))
-                    throw new InvalidOperationException($"Le noyau refuse une insufflation que la politique croyait payable : {choix.Value.Id}");
+                    throw new InvalidOperationException($"Le noyau refuse une amélioration que la politique croyait payable : {choix.Value.Id}");
                 courant = suivant;
             }
-            throw new InvalidOperationException("La politique d'insufflation ne termine pas");
+            throw new InvalidOperationException("La politique d'amélioration ne termine pas");
         }
 
-        /* ─── Les politiques d'insufflation mesurées (roadmap, chantier 2) ─────────── */
+        /* ─── Les politiques d'amélioration mesurées (roadmap, chantier 2) ─────────── */
 
         /// <summary>
         /// La moins chère d'abord, mais en gardant la moitié du Souffle disponible à la
         /// renaissance : un joueur prudent, qui ne vide pas sa réserve.
         /// </summary>
-        public static EtatJeu InsufflerALaMoitie(EtatJeu etat)
+        public static EtatJeu AcheterALaMoitie(EtatJeu etat)
         {
             var plancher = etat.Permanent.Souffle.Mul(0.5);
-            return InsufflerTantQue(etat, (courant, _, cout) => courant.Permanent.Souffle.Sub(cout).Gte(plancher));
+            return AcheterTantQue(etat, (courant, _, cout) => courant.Permanent.Souffle.Sub(cout).Gte(plancher));
         }
 
         /// La globale seule : le joueur qui ne choisit pas d'espèce.
-        public static EtatJeu InsufflerLaGlobaleSeule(EtatJeu etat) =>
-            InsufflerTantQue(etat, (_, insufflation, __) => insufflation.Id == Insufflations.GLOBALE_ID);
+        public static EtatJeu AcheterLaGlobaleSeule(EtatJeu etat) =>
+            AcheterTantQue(etat, (_, amelioration, __) => amelioration.Id == AmeliorationsDeRenaissance.GLOBALE_ID);
 
         /// <summary>
         /// La globale et la ciblée de l'espèce la plus profonde que la vie précédente a
         /// convaincue : le joueur qui mise sur ce qu'il vient de découvrir.
         /// </summary>
-        public static EtatJeu InsufflerLaPlusProfonde(EtatJeu etat)
+        public static EtatJeu AcheterLaPlusProfonde(EtatJeu etat)
         {
             var profondeur = etat.Permanent.ProfondeurMaxAtteinte;
             var visee = Especes.Toutes.Where(e => e.Palier < Math.Max(1, profondeur)).OrderByDescending(e => e.Palier).FirstOrDefault();
-            return InsufflerTantQue(etat, (_, insufflation, __) =>
-                insufflation.Id == Insufflations.GLOBALE_ID || (visee != null && insufflation.Espece == visee.Id));
+            return AcheterTantQue(etat, (_, amelioration, __) =>
+                amelioration.Id == AmeliorationsDeRenaissance.GLOBALE_ID || (visee != null && amelioration.Espece == visee.Id));
         }
 
         /// La moins chère d'abord parmi celles que `permise` accepte, tant qu'elle accepte.
-        static EtatJeu InsufflerTantQue(EtatJeu etat, Func<EtatJeu, Insufflation, Decimal, bool> permise)
+        static EtatJeu AcheterTantQue(EtatJeu etat, Func<EtatJeu, AmeliorationDeRenaissance, Decimal, bool> permise)
         {
             var courant = etat;
             for (var garde = 0; garde < 10_000; garde += 1)
             {
-                (Insufflation Insufflation, Decimal Cout)? choix = null;
-                foreach (var insufflation in Insufflations.Toutes)
+                (AmeliorationDeRenaissance AmeliorationDeRenaissance, Decimal Cout)? choix = null;
+                foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
                 {
-                    var cout = Economie.CoutDInsufflation(courant, insufflation);
-                    if (cout.Gt(courant.Permanent.Souffle) || !permise(courant, insufflation, cout)) continue;
-                    if (choix == null || cout.Lt(choix.Value.Cout)) choix = (insufflation, cout);
+                    var cout = Economie.CoutDAmelioration(courant, amelioration);
+                    if (cout.Gt(courant.Permanent.Souffle) || !permise(courant, amelioration, cout)) continue;
+                    if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration, cout);
                 }
                 if (choix == null) return courant;
-                // La même garde que `InsufflerAuMieux` : un refus du noyau est une
+                // La même garde que `AcheterAuMieux` : un refus du noyau est une
                 // divergence entre la politique et la règle, pas une boucle à épuiser.
-                var suivant = Reducteur.Insuffler(courant, choix.Value.Insufflation.Id);
+                var suivant = Reducteur.AcheterUneAmelioration(courant, choix.Value.AmeliorationDeRenaissance.Id);
                 if (ReferenceEquals(suivant, courant))
-                    throw new InvalidOperationException($"Le noyau refuse une insufflation que la politique croyait payable : {choix.Value.Insufflation.Id}");
+                    throw new InvalidOperationException($"Le noyau refuse une amélioration que la politique croyait payable : {choix.Value.AmeliorationDeRenaissance.Id}");
                 courant = suivant;
             }
-            throw new InvalidOperationException("La politique d'insufflation ne termine pas");
+            throw new InvalidOperationException("La politique d'amélioration ne termine pas");
         }
 
         // `reglage` : le réglage de la courbe, pour le calibreur — il balaie des
@@ -445,7 +445,7 @@ namespace IdlePond.Simulateur
                 }
 
                 if (cycleNonConvergent != null) break;
-                etat = (politique.Insuffler ?? InsufflerAuMieux)(Renaissance.Renaitre(etat));
+                etat = (politique.AcheterLesAmeliorations ?? AcheterAuMieux)(Renaissance.Renaitre(etat));
                 acheves += 1;
                 observer?.Invoke(etat);
             }

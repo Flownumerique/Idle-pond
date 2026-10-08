@@ -93,7 +93,7 @@ sur la forme de la courbe.
 
 ## Finding 6 — le Souffle ne change pas le rythme (2026-10-07)
 
-Mesuré par `MesurePolitiquesDInsufflationTests` (à la demande, `Explicit`) : quinze cycles,
+Mesuré par `MesurePolitiquesDAmeliorationTests` (à la demande, `Explicit`) : quinze cycles,
 graine 7, quatre façons de dépenser le Souffle.
 
 | Politique | Rangs achetés | Ciblée max | Cycle 1 | Cycle 5 | Cycle 10 | Cycle 15 | Fond atteint | Pic du cycle 15 |
@@ -103,7 +103,7 @@ graine 7, quatre façons de dépenser le Souffle.
 | la globale seule | 90 | 0 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 8,5e108 /s |
 | la plus profonde + la globale | 924 | 157 | 3,1 h | 4,5 h | 7,0 h | 8,9 h | cycle 13 | 3,4e189 /s |
 
-**Les insufflations changent l'échelle des nombres de 84 ordres de grandeur, et le rythme de
+**Les améliorations de renaissance changent l’échelle des nombres de 84 ordres de grandeur, et le rythme de
 zéro.** Durées de cycle, jeu actif (90,9 h) et cycle du fond sont identiques au dixième
 d'heure. La raison : le joueur simulé rentre dans l'œuf quand l'acquis de séjour atteint
 95 % de son maximum, et l'acquis monte avec le **temps** (`τ₀`), pas avec la production.
@@ -114,7 +114,7 @@ une échelle.
 = 0`. Les cycles dégénèrent (≈ 0 h chacun après le premier, le fond n'est jamais atteint,
 1,0 h de jeu actif en quinze cycles) : le blocage tombe presque aussitôt après chaque retour
 dans l'œuf. C'est donc bien l'acquis de séjour, borné par le temps, qui donne sa longueur au
-cycle — et aucune politique d'insufflation n'y touche.
+cycle — et aucune politique d’amélioration n’y touche.
 
 **Ce que ça défait.** La roadmap (chantier 2) tenait que « tant que la politique de dépense
 n'est pas actionnée, toute mesure d'équilibrage en aval est suspecte ». Pour le rythme,
@@ -138,6 +138,7 @@ régénération n'a lieu que pour un changement voulu, noté ici.
 | Date | Raison | Ce qui a bougé |
 |---|---|---|
 | 2026-10-07 | L'assise II, le Gour, livrée jouable (spec `2026-10-07-assise-ii-le-gour-design.md`) | Identifiants `assise-2` → `gour`, `espece-2-2/3/4` → `chabot`, `lamproie`, `ombre` ; `paliersLivres` 6 → 18 ; registre des succès 41 → 54 (seuils des trois espèces, fond du Gour). Les nouvelles remises de coût changent l'économie simulée : sur quinze cycles, densités ×1,09 (5,35e115 → 5,85e115), pics de production et Souffle gagnés en hausse. Aucun autre écart : le reste est identique au TypeScript, à un dernier chiffre de flottant près |
+| 2026-10-08 | Les insufflations deviennent les améliorations de renaissance (Codex v1.1) | Renommage seul, sans régénération : clef `insufflations` → `ameliorations`, identifiants `insufflation-*` → `amelioration-*`, constantes `*_INSUFFLATION_*` → `*_AMELIORATION_*`, termes `cout_insufflation`, `insufflation_globale`. Aucun chiffre ne bouge |
 
 ---
 

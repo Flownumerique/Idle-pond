@@ -112,8 +112,8 @@ namespace IdlePond.Tests
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Densite, 1.26)), Is.EqualTo("eau à 1.3 de densité"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Heros, 1)), Is.EqualTo("toi, qui captes seul"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Heros, 4)), Is.EqualTo("toi, grandi 3 fois"));
-            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Insufflation, 0)), Is.EqualTo("rien d’insufflé"));
-            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Insufflation, 2)), Is.EqualTo("insufflé 2 fois"));
+            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, 0)), Is.EqualTo("aucune amélioration"));
+            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, 2)), Is.EqualTo("amélioré 2 fois"));
         }
 
         [Test, Description("le héros est un alevin tant qu'il n'a pas grandi")]

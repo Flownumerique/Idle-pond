@@ -116,18 +116,18 @@ namespace IdlePond.Tests
             Assert.That(Renaissance.Renaitre(avant).Permanent.EspecesAyantAtteintCent, Is.EqualTo(new[] { "vairon" }));
         }
 
-        [Test, Description("les insufflations traversent")]
-        public void Les_insufflations_traversent()
+        [Test, Description("les améliorations traversent")]
+        public void Les_ameliorations_traversent()
         {
             var depart = EtatDeTravail.Creer();
             var avant = depart with
             {
                 Permanent = depart.Permanent with
                 {
-                    Insufflations = new Dictionary<string, int> { ["insufflation-globale"] = 2, ["insufflation-vairon"] = 1 },
+                    AmeliorationsDeRenaissance = new Dictionary<string, int> { ["amelioration-globale"] = 2, ["amelioration-vairon"] = 1 },
                 },
             };
-            Assert.That(Renaissance.Renaitre(avant).Permanent.Insufflations, Is.EqualTo(avant.Permanent.Insufflations));
+            Assert.That(Renaissance.Renaitre(avant).Permanent.AmeliorationsDeRenaissance, Is.EqualTo(avant.Permanent.AmeliorationsDeRenaissance));
         }
 
         [Test, Description("chaque assise traversée dans cette vie laisse une couche, dans l’ordre des assises, une seule fois")]

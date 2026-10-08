@@ -25,6 +25,7 @@ namespace IdlePond.Tests
             "ponte", "pondre", "population", "maturation", "acclimatation", "banc", "bancs", "place", "places",
             "prestige", "rebirth", "gemme", "gemmes", "perle", "perles", "corail", "layer", "layers",
             "zone", "zones", "biome", "biomes", "etage", "etages", "strate", "strates",
+            "insufflation", "insufflations", "insuffler",
         };
 
         /// Codex §5, « Les mots interdits à l'écran seulement ».
@@ -32,7 +33,7 @@ namespace IdlePond.Tests
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         static readonly Regex MotsMortsALEcran = new Regex(
-            @"\b(foi|fid[èe]les?|b[ée]n[ée]dictions?|b[ée]nir|b[ée]ni[est]?|[ée]clore|ponte|pondre|population|maturation|acclimatation|prestige|rebirth|gemmes?|perles?|corail)\b",
+            @"\b(foi|fid[èe]les?|b[ée]n[ée]dictions?|b[ée]nir|b[ée]ni[est]?|[ée]clore|ponte|pondre|population|maturation|acclimatation|prestige|rebirth|gemmes?|perles?|corail|insuffl\w*)\b",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         /// Codex §7 : « bénédiction » survit une fois, comme terme de fiction.
@@ -74,9 +75,11 @@ namespace IdlePond.Tests
             InterditsALEcran.IsMatch(texte) || MotsMortsALEcran.IsMatch(texte.Replace(ExceptionDeFiction, ""));
 
         /// La clef de sauvegarde `couches` est un IDENTIFIANT du Codex (§5, « le code »), écrit
-        /// dans les saves : elle n'est jamais affichée. Seule `Persistance.cs` la porte.
+        /// dans les saves : elle n'est jamais affichée. Seule `Persistance.cs` la porte —
+        /// avec le vocabulaire v1 des améliorations de renaissance, que seule sa migration lit.
         static bool ClefDeSauvegarde(string fichier, string litterale) =>
-            Path.GetFileName(fichier) == "Persistance.cs" && litterale == "couches";
+            Path.GetFileName(fichier) == "Persistance.cs"
+            && (litterale == "couches" || litterale == "insufflations" || litterale == "insufflation-");
 
         [Test, Description("aucune chaîne du jeu ne porte un terme de couche ni un mot mort")]
         public void Aucune_chaine_du_jeu_ne_porte_un_terme_de_couche_ni_un_mot_mort()

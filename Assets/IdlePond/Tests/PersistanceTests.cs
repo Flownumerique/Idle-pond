@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using IdlePond.Jeu;
@@ -37,7 +38,7 @@ namespace IdlePond.Tests
         static void AssertEtatsIdentiques(EtatJeu obtenu, EtatJeu attendu) =>
             Comparateur.ComparerATolerance(Instantane.De(obtenu), Instantane.De(attendu), 0);
 
-        /// Un état qui porte un peu de tout : succès, insufflation, renaissances, télémétrie.
+        /// Un état qui porte un peu de tout : succès, amélioration, renaissances, télémétrie.
         static EtatJeu EtatRiche()
         {
             var etat = EtatDeTravail.Creer();
@@ -45,7 +46,7 @@ namespace IdlePond.Tests
             etat = RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches);
             etat = Renaissance.Renaitre(etat);
             etat = etat with { Permanent = etat.Permanent with { Souffle = Decimal.Parse("1.2345678901234567e30") } };
-            etat = Reducteur.Insuffler(etat, Insufflations.Toutes[0].Id);
+            etat = Reducteur.AcheterUneAmelioration(etat, AmeliorationsDeRenaissance.Toutes[0].Id);
             return Reducteur.Tick(etat, 61.5);
         }
 
@@ -94,7 +95,7 @@ namespace IdlePond.Tests
         {
             var depart = EtatRiche();
             Assert.That(depart.Permanent.Succes, Is.Not.Empty, "l'état d'essai doit porter des succès");
-            Assert.That(depart.Permanent.Insufflations, Is.Not.Empty);
+            Assert.That(depart.Permanent.AmeliorationsDeRenaissance, Is.Not.Empty);
             Assert.That(depart.Telemetrie.Cycles, Is.Not.Empty);
 
             var texte = Persistance.ComposerLeFichier(Persistance.Serialiser(depart), 42).ToString();
@@ -148,10 +149,38 @@ namespace IdlePond.Tests
         {
             var save = Persistance.Serialiser(Reducteur.EtatInitial(1));
             Assert.That(save.VersionSave, Is.EqualTo(Constantes.VERSION_SAVE));
-            Assert.That(Constantes.VERSION_SAVE, Is.EqualTo(1));
-            // Vide aujourd'hui, et c'est le but : le mécanisme existe avant le besoin.
-            Assert.That(Persistance.MIGRATIONS, Is.Empty);
+            Assert.That(Constantes.VERSION_SAVE, Is.EqualTo(2));
+            Assert.That(Persistance.MIGRATIONS.Keys, Is.EquivalentTo(new[] { 1 }));
             Assert.That(() => { Persistance.Migrer(save); }, Throws.Nothing);
+        }
+
+        [Test, Description("une save v1 retrouve ses insufflations en améliorations de renaissance, rangs intacts")]
+        public void Une_save_v1_retrouve_ses_insufflations_en_ameliorations_de_renaissance()
+        {
+            var riche = Reducteur.EtatInitial(0) with
+            {
+                Permanent = Reducteur.EtatInitial(0).Permanent with
+                {
+                    AmeliorationsDeRenaissance = new Dictionary<string, int>
+                    {
+                        [AmeliorationsDeRenaissance.GLOBALE_ID] = 3,
+                        [AmeliorationsDeRenaissance.CibleeDe("vairon").Id] = 2,
+                    },
+                },
+            };
+            // Une save v1 : la même, écrite avec l'ancien vocabulaire.
+            var contenu = Persistance.Serialiser(riche).Contenu;
+            var permanent = (JObject)contenu["permanent"];
+            var v1 = new JObject();
+            foreach (var paire in ((JObject)permanent["ameliorations"]).Properties())
+                v1[Persistance.PREFIXE_V1_DES_AMELIORATIONS + paire.Name.Substring("amelioration-".Length)] = paire.Value;
+            permanent.Remove("ameliorations");
+            permanent[Persistance.CLEF_V1_DES_AMELIORATIONS] = v1;
+
+            var retour = Persistance.Deserialiser(new SaveSerialisee(1, contenu), Reducteur.EtatInitial(0));
+
+            Assert.That(retour.Permanent.AmeliorationsDeRenaissance, Is.EquivalentTo(riche.Permanent.AmeliorationsDeRenaissance));
+            Assert.That(retour.VersionSave, Is.EqualTo(Constantes.VERSION_SAVE));
         }
 
         [Test, Description("une save d’une version inconnue refuse de se charger en silence")]
@@ -196,14 +225,14 @@ namespace IdlePond.Tests
             var contenu = Persistance.Serialiser(EtatRiche()).Contenu;
             ((JObject)contenu["cycle"]).Remove("niveauDuHeros");
             ((JObject)contenu["permanent"]).Remove("souffle");
-            ((JObject)contenu["permanent"]).Remove("insufflations");
+            ((JObject)contenu["permanent"]).Remove("ameliorations");
             contenu.Remove("telemetrie");
             contenu.Remove("prng");
 
             var retour = Persistance.Deserialiser(new SaveSerialisee(1, contenu), repli);
             Assert.That(retour.Cycle.NiveauDuHeros, Is.EqualTo(repli.Cycle.NiveauDuHeros));
             Assert.That(retour.Permanent.Souffle.Eq(repli.Permanent.Souffle), Is.True);
-            Assert.That(retour.Permanent.Insufflations, Is.Empty);
+            Assert.That(retour.Permanent.AmeliorationsDeRenaissance, Is.Empty);
             Assert.That(retour.Telemetrie.Cycles, Is.Empty);
             Assert.That(retour.Prng, Is.EqualTo(repli.Prng));
             // Ce que la save portait reste lu : un champ absent n'en emporte pas d'autres.

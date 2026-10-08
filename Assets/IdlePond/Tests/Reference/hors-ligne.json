@@ -224,7 +224,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 0.0,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -469,7 +469,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 2.0,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -714,7 +714,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 2.3429352777777779,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -959,7 +959,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 8.3429352777777783,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -1204,7 +1204,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 8.3429352777777783,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -1449,7 +1449,7 @@
      ],
      "manaAmbiant": "0e0",
      "heuresHorsLigneCreditees": 8.3429352777777783,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [],
@@ -1680,7 +1680,7 @@
      ],
      "manaAmbiant": "9.98357723882811e11",
      "heuresHorsLigneCreditees": 8.3429352777777783,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [
@@ -1931,7 +1931,7 @@
      ],
      "manaAmbiant": "9.98357723882811e11",
      "heuresHorsLigneCreditees": 11.342935277777778,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [
@@ -2182,7 +2182,7 @@
      ],
      "manaAmbiant": "9.98357723882811e11",
      "heuresHorsLigneCreditees": 17.342935277777777,
-     "insufflations": {}
+     "ameliorations": {}
     },
     "telemetrie": {
      "cycles": [

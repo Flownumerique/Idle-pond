@@ -72,7 +72,7 @@ namespace IdlePond.Noyau
                     EspecesAyantAtteintCent: Array.Empty<string>(),
                     ManaAmbiant: new Decimal(0),
                     HeuresHorsLigneCreditees: 0,
-                    Insufflations: new Dictionary<string, int>()),
+                    AmeliorationsDeRenaissance: new Dictionary<string, int>()),
                 Telemetrie: new EtatTelemetrie(
                     Cycles: Array.Empty<MesureDeCycle>(),
                     SecondesDepuisDernierSucces: 0,
@@ -315,7 +315,7 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
-        /// Insuffler — noyau v1.0 §4. Payé en SOUFFLE, permanent, et le seul débouché du
+        /// Améliorer — noyau v1.0 §4. Payé en SOUFFLE, permanent, et le seul débouché du
         /// Souffle tant que les miracles sont gelés ([P26]).
         ///
         /// La table est reconstruite dans l'ordre du registre, jamais dans l'ordre des
@@ -323,24 +323,24 @@ namespace IdlePond.Noyau
         /// d'un dictionnaire neuf est celui de ses insertions, et le test de
         /// déterminisme compare la chaîne de save.
         /// </summary>
-        public static EtatJeu Insuffler(EtatJeu etat, string id)
+        public static EtatJeu AcheterUneAmelioration(EtatJeu etat, string id)
         {
-            var insufflation = Insufflations.ParId(id);
-            if (insufflation == null) return etat;
-            var cout = Economie.CoutDInsufflation(etat, insufflation);
+            var amelioration = AmeliorationsDeRenaissance.ParId(id);
+            if (amelioration == null) return etat;
+            var cout = Economie.CoutDAmelioration(etat, amelioration);
             if (etat.Permanent.Souffle.Lt(cout)) return etat;
             var rangs = new Dictionary<string, int>();
-            foreach (var paire in etat.Permanent.Insufflations) rangs[paire.Key] = paire.Value;
-            rangs[id] = (etat.Permanent.Insufflations.TryGetValue(id, out var actuel) ? actuel : 0) + 1;
-            var insufflations = new Dictionary<string, int>();
-            foreach (var i in Insufflations.Toutes)
-                if (rangs.TryGetValue(i.Id, out var rang) && rang > 0) insufflations[i.Id] = rang;
+            foreach (var paire in etat.Permanent.AmeliorationsDeRenaissance) rangs[paire.Key] = paire.Value;
+            rangs[id] = (etat.Permanent.AmeliorationsDeRenaissance.TryGetValue(id, out var actuel) ? actuel : 0) + 1;
+            var ameliorations = new Dictionary<string, int>();
+            foreach (var i in AmeliorationsDeRenaissance.Toutes)
+                if (rangs.TryGetValue(i.Id, out var rang) && rang > 0) ameliorations[i.Id] = rang;
             return etat with
             {
                 Permanent = etat.Permanent with
                 {
                     Souffle = etat.Permanent.Souffle.Sub(cout),
-                    Insufflations = insufflations,
+                    AmeliorationsDeRenaissance = ameliorations,
                 },
             };
         }

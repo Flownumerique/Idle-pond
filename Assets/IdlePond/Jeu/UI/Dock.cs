@@ -11,7 +11,7 @@ namespace IdlePond.Jeu.UI
 
     /// <summary>
     /// Le dock, en bas de l'écran (spec du 2026-10-07, §1) : quatre boutons, un tiroir chacun.
-    /// Les insufflations vivent dans le tiroir de l'œuf : elles se paient en Souffle, et le
+    /// Les améliorations vivent dans le tiroir de l'œuf : elles se paient en Souffle, et le
     /// Souffle se gagne en y rentrant.
     /// Toucher le bouton du tiroir ouvert le referme — on revient à la mare sans viser une
     /// croix. Le contrôleur ne garde que le tiroir choisi ; c'est la racine qui montre et

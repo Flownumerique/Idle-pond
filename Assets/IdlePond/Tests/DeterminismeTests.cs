@@ -102,23 +102,23 @@ namespace IdlePond.Tests
             Assert.That(Instantane.De(a)["permanent"]["succes"].ToString(), Is.EqualTo(Instantane.De(b)["permanent"]["succes"].ToString()));
         }
 
-        [Test, Description("les clefs des insufflations suivent l'ordre du registre quel que soit l'ordre d'achat")]
-        public void Les_clefs_des_insufflations_suivent_l_ordre_du_registre_quel_que_soit_l_ordre_d_achat()
+        [Test, Description("les clefs des améliorations suivent l'ordre du registre quel que soit l'ordre d'achat")]
+        public void Les_clefs_des_ameliorations_suivent_l_ordre_du_registre_quel_que_soit_l_ordre_d_achat()
         {
             // L'instantané (Instantane.De) réordonne tout par le registre à l'écriture :
             // il ne peut donc jamais révéler un désordre du dictionnaire D'ÉTAT lui-même.
-            // Ici on lit directement `Permanent.Insufflations.Keys`, reconstruit à chaque
-            // achat par `Reducteur.Insuffler` (~l.332-337), jamais accumulé dans l'ordre
-            // d'arrivée — sans quoi deux parties qui insufflent les deux mêmes choses dans
+            // Ici on lit directement `Permanent.AmeliorationsDeRenaissance.Keys`, reconstruit à chaque
+            // achat par `Reducteur.AcheterUneAmelioration` (~l.332-337), jamais accumulé dans l'ordre
+            // d'arrivée — sans quoi deux parties qui améliorent les deux mêmes choses dans
             // un ordre opposé sérialiseraient des chaînes de save différentes.
             var riche = Reducteur.EtatInitial(5) with { Permanent = Reducteur.EtatInitial(5).Permanent with { Souffle = new Decimal(1e6) } };
-            var ciblee = Insufflations.CibleeDe("loche").Id;
-            var a = Reducteur.Insuffler(Reducteur.Insuffler(riche, ciblee), Insufflations.GLOBALE_ID);
-            var b = Reducteur.Insuffler(Reducteur.Insuffler(riche, Insufflations.GLOBALE_ID), ciblee);
-            var attendu = Insufflations.Toutes.Select(i => i.Id).Where(id => id == ciblee || id == Insufflations.GLOBALE_ID).ToArray();
-            Assert.That(a.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(attendu));
-            Assert.That(b.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(attendu));
-            Assert.That(a.Permanent.Insufflations.Keys.ToArray(), Is.EqualTo(b.Permanent.Insufflations.Keys.ToArray()));
+            var ciblee = AmeliorationsDeRenaissance.CibleeDe("loche").Id;
+            var a = Reducteur.AcheterUneAmelioration(Reducteur.AcheterUneAmelioration(riche, ciblee), AmeliorationsDeRenaissance.GLOBALE_ID);
+            var b = Reducteur.AcheterUneAmelioration(Reducteur.AcheterUneAmelioration(riche, AmeliorationsDeRenaissance.GLOBALE_ID), ciblee);
+            var attendu = AmeliorationsDeRenaissance.Toutes.Select(i => i.Id).Where(id => id == ciblee || id == AmeliorationsDeRenaissance.GLOBALE_ID).ToArray();
+            Assert.That(a.Permanent.AmeliorationsDeRenaissance.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(b.Permanent.AmeliorationsDeRenaissance.Keys.ToArray(), Is.EqualTo(attendu));
+            Assert.That(a.Permanent.AmeliorationsDeRenaissance.Keys.ToArray(), Is.EqualTo(b.Permanent.AmeliorationsDeRenaissance.Keys.ToArray()));
         }
 
         [Test, Description("les clefs des succes suivent l'ordre du registre quel que soit l'ordre de declenchement")]

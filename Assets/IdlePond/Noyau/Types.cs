@@ -9,9 +9,9 @@ namespace IdlePond.Noyau
     {
         // production
         TauxBase, Niveau, MultiplicateurJalon, MultiplicateurDrapeau, MultiplicateurProfondeur,
-        MultiplicateurDensite, DebitHeros, MultiplicateurHeros, MultiplicateurInsufflation, InsufflationGlobale,
+        MultiplicateurDensite, DebitHeros, MultiplicateurHeros, MultiplicateurAmelioration, AmeliorationGlobale,
         // coût
-        CoutCreuser, CoutNiveau, CoutDeblocage, CoutCroissance, CoutInsufflation, CoutTemple, CoutPortail, CoutReouverture,
+        CoutCreuser, CoutNiveau, CoutDeblocage, CoutCroissance, CoutAmelioration, CoutTemple, CoutPortail, CoutReouverture,
         // confort
         CapHorsLigne, DensiteConservee, ContenanceDeDepart, NiveauDeDepart, ChargeAllieeParReponse,
     }
@@ -79,11 +79,11 @@ namespace IdlePond.Noyau
     public sealed record Espece(string Id, string Assise, int Rang, int Palier);
     public sealed record Palier(int Index, string Assise, string Espece);
 
-    public enum PorteeDInsufflation { Ciblee, Globale }
+    public enum PorteeDAmelioration { Ciblee, Globale }
 
     /// Noyau v1.0 §4.2 : la ciblée MULTIPLIE une espèce, la globale ADDITIONNE
     /// au débit de base de toutes. `Espece` est null pour la globale.
-    public sealed record Insufflation(string Id, PorteeDInsufflation Portee, string Espece);
+    public sealed record AmeliorationDeRenaissance(string Id, PorteeDAmelioration Portee, string Espece);
 
     /* ─── État ────────────────────────────────────────────────────────────── */
 
@@ -113,7 +113,7 @@ namespace IdlePond.Noyau
         IReadOnlyList<string> EspecesAyantAtteintCent,
         Decimal ManaAmbiant,
         double HeuresHorsLigneCreditees,
-        IReadOnlyDictionary<string, int> Insufflations);
+        IReadOnlyDictionary<string, int> AmeliorationsDeRenaissance);
 
     public sealed record MesureDeCycle(int Index, double DureeEcouleeSecondes, int PaliersOuverts,
         Decimal ProductionPicParSeconde, Decimal SouffleGagne);
@@ -137,7 +137,7 @@ namespace IdlePond.Noyau
 
     /* ─── Détail de captation (§8.2) ──────────────────────────────────────── */
 
-    public enum QuoiSource { Niveau, Palier, DrapeauxPermanents, Profondeur, Densite, Heros, Insufflation }
+    public enum QuoiSource { Niveau, Palier, DrapeauxPermanents, Profondeur, Densite, Heros, AmeliorationDeRenaissance }
 
     /// Une structure, jamais une phrase : le noyau ne fabrique aucun texte d'écran.
     /// `Valeur` est le niveau, le palier, le nombre d'espèces, les paliers ouverts,

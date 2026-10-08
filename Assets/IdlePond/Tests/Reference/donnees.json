@@ -484,114 +484,114 @@
    "espece": null
   }
  ],
- "insufflations": [
+ "ameliorations": [
   {
-   "id": "insufflation-globale",
+   "id": "amelioration-globale",
    "portee": "globale",
    "espece": null
   },
   {
-   "id": "insufflation-vairon",
+   "id": "amelioration-vairon",
    "portee": "ciblee",
    "espece": "vairon"
   },
   {
-   "id": "insufflation-loche",
+   "id": "amelioration-loche",
    "portee": "ciblee",
    "espece": "loche"
   },
   {
-   "id": "insufflation-epinoche",
+   "id": "amelioration-epinoche",
    "portee": "ciblee",
    "espece": "epinoche"
   },
   {
-   "id": "insufflation-chabot",
+   "id": "amelioration-chabot",
    "portee": "ciblee",
    "espece": "chabot"
   },
   {
-   "id": "insufflation-lamproie",
+   "id": "amelioration-lamproie",
    "portee": "ciblee",
    "espece": "lamproie"
   },
   {
-   "id": "insufflation-ombre",
+   "id": "amelioration-ombre",
    "portee": "ciblee",
    "espece": "ombre"
   },
   {
-   "id": "insufflation-espece-3-1",
+   "id": "amelioration-espece-3-1",
    "portee": "ciblee",
    "espece": "espece-3-1"
   },
   {
-   "id": "insufflation-espece-3-2",
+   "id": "amelioration-espece-3-2",
    "portee": "ciblee",
    "espece": "espece-3-2"
   },
   {
-   "id": "insufflation-espece-3-3",
+   "id": "amelioration-espece-3-3",
    "portee": "ciblee",
    "espece": "espece-3-3"
   },
   {
-   "id": "insufflation-espece-3-4",
+   "id": "amelioration-espece-3-4",
    "portee": "ciblee",
    "espece": "espece-3-4"
   },
   {
-   "id": "insufflation-espece-4-1",
+   "id": "amelioration-espece-4-1",
    "portee": "ciblee",
    "espece": "espece-4-1"
   },
   {
-   "id": "insufflation-espece-4-2",
+   "id": "amelioration-espece-4-2",
    "portee": "ciblee",
    "espece": "espece-4-2"
   },
   {
-   "id": "insufflation-espece-4-3",
+   "id": "amelioration-espece-4-3",
    "portee": "ciblee",
    "espece": "espece-4-3"
   },
   {
-   "id": "insufflation-espece-4-4",
+   "id": "amelioration-espece-4-4",
    "portee": "ciblee",
    "espece": "espece-4-4"
   },
   {
-   "id": "insufflation-espece-5-1",
+   "id": "amelioration-espece-5-1",
    "portee": "ciblee",
    "espece": "espece-5-1"
   },
   {
-   "id": "insufflation-espece-5-2",
+   "id": "amelioration-espece-5-2",
    "portee": "ciblee",
    "espece": "espece-5-2"
   },
   {
-   "id": "insufflation-espece-5-3",
+   "id": "amelioration-espece-5-3",
    "portee": "ciblee",
    "espece": "espece-5-3"
   },
   {
-   "id": "insufflation-espece-5-4",
+   "id": "amelioration-espece-5-4",
    "portee": "ciblee",
    "espece": "espece-5-4"
   },
   {
-   "id": "insufflation-espece-6-1",
+   "id": "amelioration-espece-6-1",
    "portee": "ciblee",
    "espece": "espece-6-1"
   },
   {
-   "id": "insufflation-espece-6-2",
+   "id": "amelioration-espece-6-2",
    "portee": "ciblee",
    "espece": "espece-6-2"
   },
   {
-   "id": "insufflation-espece-6-3",
+   "id": "amelioration-espece-6-3",
    "portee": "ciblee",
    "espece": "espece-6-3"
   }
