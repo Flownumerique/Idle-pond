@@ -7,7 +7,8 @@ using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 
 namespace IdlePond.Jeu.UI
 {
-    public enum Tiroir { Aucun, Toi, Especes, Oeuf, Journal }
+    /// `Reglages` n'a pas de bouton dans le dock, qui reste au jeu : la roue de la barre l'ouvre.
+    public enum Tiroir { Aucun, Toi, Especes, Oeuf, Journal, Reglages }
 
     /// <summary>
     /// Le dock, en bas de l'écran (spec du 2026-10-07, §1) : quatre boutons, un tiroir chacun.

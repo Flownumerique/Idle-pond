@@ -19,6 +19,10 @@ namespace IdlePond.TestsDeJeu
         {
             var dossier = Path.Combine(Application.temporaryCachePath, "idlepond-tests");
             Directory.CreateDirectory(dossier);
+            // Les réglages vivent dans le même dossier : un format forcé par un test ne doit
+            // pas se retrouver dans le suivant.
+            var reglages = Path.Combine(dossier, MagasinDeReglages.NOM_DU_FICHIER);
+            if (File.Exists(reglages)) File.Delete(reglages);
             ServicesDePartie.RedirigerLaSauvegarde(dossier);
         }
     }

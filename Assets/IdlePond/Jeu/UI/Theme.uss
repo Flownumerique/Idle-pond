@@ -60,4 +60,19 @@
     --souffle-60: rgba(240, 181, 74, 0.6);
     --trouble-50: rgba(157, 146, 108, 0.5);
     --transparent: rgba(0, 0, 0, 0);
+
+    /* Effacer la partie, et rien d'autre (spec du 2026-10-08). */
+    --couleur-alerte: rgb(232, 128, 104);
+    --couleur-alerte-fond: rgb(48, 24, 20);
+}
+
+/* Contraste renforcé (réglage d'accessibilité) : les textes doux s'éclaircissent, les bords
+   se marquent, le voile sous les tiroirs s'épaissit. Seules les variables changent. */
+.racine.contraste {
+    --couleur-bord: rgb(74, 112, 105);
+    --couleur-clair: rgb(98, 140, 131);
+    --couleur-jour-doux: rgb(208, 224, 218);
+    --couleur-jour-tu: rgb(182, 202, 195);
+    --bord-60: rgba(74, 112, 105, 0.9);
+    --voile: rgba(4, 10, 9, 0.8);
 }

@@ -70,7 +70,7 @@ namespace IdlePond.Tests
         public void L_echelle_est_celle_du_format_fois_la_taille()
         {
             Assert.That(Adaptation.FacteurDEchelle(FormatDAffichage.Telephone, 1), Is.EqualTo(1).Within(1e-9));
-            Assert.That(Adaptation.FacteurDEchelle(FormatDAffichage.Tablette, 1.1), Is.EqualTo(1.1).Within(1e-9));
+            Assert.That(Adaptation.FacteurDEchelle(FormatDAffichage.Tablette, 1.1), Is.EqualTo(Adaptation.ECHELLE_TABLETTE * 1.1).Within(1e-9));
             Assert.That(Adaptation.FacteurDEchelle(FormatDAffichage.Pc, 1.2), Is.EqualTo(Adaptation.ECHELLE_PC * 1.2).Within(1e-9));
         }
 

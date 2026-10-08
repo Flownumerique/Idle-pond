@@ -1,3 +1,4 @@
+using System;
 using IdlePond.Noyau;
 using UnityEngine.UIElements;
 using E = IdlePond.Noyau.Donnees.Textes.Ecran;
@@ -21,7 +22,8 @@ namespace IdlePond.Jeu.UI
         readonly VisualElement remplissage;
         readonly VisualElement fantome;
 
-        public Barre(VisualElement racine)
+        /// `surReglages` : la roue, à droite du Souffle, ouvre et referme le tiroir des réglages.
+        public Barre(VisualElement racine, Action surReglages)
         {
             var haut = Elements.Conteneur("barre-haut");
             var gauche = Elements.Conteneur("barre-mana");
@@ -41,7 +43,13 @@ namespace IdlePond.Jeu.UI
             souffle =Elements.Texte("chiffre souffle base", "", "souffle-valeur");
             pastille.Add(souffle);
             pastille.Add(Elements.Texte("souffle-doux xs", E.SOUFFLE));
-            haut.Add(pastille);
+            var droite = Elements.Conteneur("barre-droite");
+            droite.Add(pastille);
+            var roue = Elements.Conteneur("barre-reglages", "roue-reglages");
+            roue.Add(new Icone(Icones.ENGRENAGE));
+            roue.AddManipulator(new Clickable(surReglages));
+            droite.Add(roue);
+            haut.Add(droite);
             racine.Add(haut);
 
             var rail = Elements.Conteneur("jauge barre-jauge");

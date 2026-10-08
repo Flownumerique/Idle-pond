@@ -32,6 +32,10 @@ namespace IdlePond.Jeu.UI
         /// Quand l'écran ne dit pas son dpi : la plus petite dimension, en pixels.
         public const double COTE_TABLETTE_PX = 1200;
 
+        /// La tablette a la place de deux colonnes : son interface est un peu plus petite,
+        /// sans quoi elle ne serait qu'un téléphone agrandi.
+        public const double ECHELLE_TABLETTE = 0.8;
+
         /// Le PC se lit de plus près et à la souris : son interface est plus dense.
         public const double ECHELLE_PC = 0.85;
 
@@ -65,8 +69,15 @@ namespace IdlePond.Jeu.UI
         }
 
         /// Ce par quoi l'interface est agrandie : le facteur du format, fois la taille choisie.
-        public static double FacteurDEchelle(FormatDAffichage format, double taille) =>
-            (format == FormatDAffichage.Pc ? ECHELLE_PC : 1.0) * taille;
+        public static double FacteurDEchelle(FormatDAffichage format, double taille)
+        {
+            switch (format)
+            {
+                case FormatDAffichage.Tablette: return ECHELLE_TABLETTE * taille;
+                case FormatDAffichage.Pc: return ECHELLE_PC * taille;
+                default: return taille;
+            }
+        }
 
         public static string ClasseDu(FormatDAffichage format)
         {

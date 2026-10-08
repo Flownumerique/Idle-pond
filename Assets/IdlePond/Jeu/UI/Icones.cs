@@ -147,6 +147,23 @@ namespace IdlePond.Jeu.UI
             "............",
         };
 
+        /// La roue des réglages, à droite de la barre : hors du dock, donc hors de `Toutes`.
+        public static readonly string[] ENGRENAGE =
+        {
+            ".....##.....",
+            "..#.####.#..",
+            ".##########.",
+            "..###..###..",
+            ".###....###.",
+            "####....####",
+            "####....####",
+            ".###....###.",
+            "..###..###..",
+            ".##########.",
+            "..#.####.#..",
+            ".....##.....",
+        };
+
         /// Les quatre icônes du dock, dans son ordre.
         public static readonly IReadOnlyList<(string Nom, string[] Grille)> Toutes = new[]
         {

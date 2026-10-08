@@ -1117,3 +1117,194 @@
     left: 0;
     margin-left: 14px;
 }
+
+/* ─── La barre : le Souffle et la roue des réglages, à droite ─────────────────────── */
+
+.barre-droite {
+    flex-direction: row;
+    align-items: center;
+}
+
+.barre-reglages {
+    width: 88px;
+    height: 88px;
+    margin-left: 18px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 28px;
+    color: var(--couleur-jour-doux);
+    transition-property: background-color, scale;
+    transition-duration: 0.15s;
+}
+
+.barre-reglages:hover {
+    background-color: var(--couleur-fond);
+}
+
+.barre-reglages:active {
+    scale: 0.92 0.92;
+}
+
+.barre-reglages > .icone {
+    width: 48px;
+    height: 48px;
+}
+
+/* ─── Le tiroir des réglages (spec du 2026-10-08) ─────────────────────────────────── */
+
+.reglages-onglets {
+    margin-bottom: 8px;
+}
+
+.reglages-note {
+    margin-bottom: 12px;
+}
+
+.reglages-ligne {
+    padding: 26px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--couleur-bord);
+}
+
+.reglages-detail {
+    margin-top: 6px;
+}
+
+.reglages-puces {
+    margin-top: 18px;
+    margin-bottom: 0;
+}
+
+.pas-a-pas {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.pas-bouton {
+    width: 100px;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 28px;
+    background-color: var(--couleur-surface);
+    transition-property: background-color, scale;
+    transition-duration: 0.15s;
+}
+
+.pas-bouton:hover {
+    background-color: var(--couleur-clair);
+}
+
+.pas-bouton:active {
+    scale: 0.92 0.92;
+}
+
+.pas-bouton.inactif > .texte {
+    color: var(--couleur-jour-tu);
+}
+
+.pas-bouton > .texte {
+    -unity-text-align: middle-center;
+}
+
+.pas-jauge {
+    flex-grow: 1;
+    margin: 0 22px;
+}
+
+.pas-jauge > .jauge-remplissage {
+    transition-duration: 0.15s;
+}
+
+.pas-valeur {
+    min-width: 130px;
+    margin-left: 18px;
+    -unity-text-align: middle-right;
+}
+
+/* Effacer : la seule couleur franche de l'écran, parce que c'est le seul geste sans retour. */
+.bouton-danger {
+    background-color: var(--couleur-alerte-fond);
+    border-width: 2px;
+    border-color: var(--couleur-alerte);
+}
+
+.bouton-danger > .texte {
+    color: var(--couleur-alerte);
+}
+
+.bouton-danger.a-confirmer {
+    background-color: var(--couleur-alerte);
+}
+
+.bouton-danger.a-confirmer > .texte {
+    color: var(--couleur-abysse);
+}
+
+.bouton-sobre {
+    background-color: var(--couleur-surface);
+}
+
+.bouton-sobre > .texte {
+    color: var(--couleur-jour);
+}
+
+.bouton-sobre.a-confirmer {
+    background-color: var(--couleur-clair);
+}
+
+/* ─── La tablette : plus de place, deux colonnes ──────────────────────────────────── */
+
+.tablette {
+    --marge: 56px;
+}
+
+/* En portrait, le tiroir ne court pas d'un bord à l'autre : il se lit au centre. */
+.portrait.tablette .tiroir {
+    left: 7%;
+    right: 7%;
+}
+
+.tablette .liste {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.tablette .liste > .carte {
+    width: 49%;
+}
+
+/* ─── Le PC : un dock compact au centre, des survols partout ──────────────────────── */
+
+.pc .dock {
+    justify-content: center;
+}
+
+.pc .dock-bouton {
+    flex-grow: 0;
+    flex-basis: auto;
+    min-width: 240px;
+}
+
+.pc .carte:hover {
+    border-color: var(--couleur-clair);
+}
+
+.pc .filtre:hover {
+    border-color: var(--couleur-jour-doux);
+}
+
+/* ─── Réduire les animations ──────────────────────────────────────────────────────── */
+
+.mouvement-reduit .tiroir,
+.mouvement-reduit .voile-du-tiroir,
+.mouvement-reduit .annonce,
+.mouvement-reduit .jauge-remplissage,
+.mouvement-reduit .bouton,
+.mouvement-reduit .dock-bouton,
+.mouvement-reduit .pas-bouton,
+.mouvement-reduit .barre-reglages {
+    transition-duration: 0s;
+}

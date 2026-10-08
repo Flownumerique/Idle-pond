@@ -286,6 +286,43 @@ namespace IdlePond.Noyau.Donnees
             public const string SOUS_TITRE_OEUF = "Ce que tu emportes, ce que tu laisses";
             public const string SOUS_TITRE_JOURNAL = "Ce qui est arrivé, et ce qui vient";
 
+            /* — Le tiroir des réglages (spec du 2026-10-08) ———————————————————————— */
+            public const string REGLAGES = "Réglages";
+            public const string SOUS_TITRE_REGLAGES = "Le son, l’écran, et ce qui t’aide à jouer";
+            public const string ONGLET_SON = "Son";
+            public const string ONGLET_AFFICHAGE = "Affichage";
+            public const string ONGLET_JEU = "Jeu";
+            public const string ONGLET_ACCESSIBILITE = "Accessibilité";
+            public const string OUI = "Oui";
+            public const string NON = "Non";
+            public const string POURCENT_DU_REGLAGE = "{0} %";
+            public const string VOLUME_GENERAL = "Volume général";
+            public const string VOLUME_MUSIQUE = "Musique";
+            public const string VOLUME_EFFETS = "Effets";
+            public const string COUPER_LE_SON = "Couper le son";
+            public const string SE_TAIRE_DERRIERE = "Se taire quand le jeu passe derrière";
+            public const string SONS_A_VENIR = "La mare n’a pas encore de sons : ces réglages les attendent.";
+            public const string FORMAT_D_AFFICHAGE = "Format de l’écran";
+            public const string FORMAT_DETECTE = "Reconnu : {0}";
+            public const string FORMAT_AUTO = "Auto";
+            public const string FORMAT_TELEPHONE = "Téléphone";
+            public const string FORMAT_TABLETTE = "Tablette";
+            public const string FORMAT_PC = "PC";
+            public const string TAILLE_DE_L_INTERFACE = "Taille de l’interface";
+            public const string PLEIN_ECRAN = "Plein écran";
+            public const string IMAGES_PAR_SECONDE = "Images par seconde";
+            public const string IMAGES_SANS_LIMITE = "Sans limite";
+            public const string IMAGES_DETAIL = "Moins d’images, c’est moins de batterie.";
+            public const string NOTATION = "Les grands nombres";
+            public const string ANNONCES_DE_SUCCES = "Annoncer les succès";
+            public const string ANNONCES_DETAIL = "Ils arrivent toujours dans le Journal.";
+            public const string EFFACER_LA_PARTIE = "Effacer la partie";
+            public const string EFFACER_DETAIL = "Tout recommence. Une copie de ta partie est gardée à côté de la sauvegarde.";
+            public const string RETABLIR_LES_REGLAGES = "Rétablir les réglages";
+            public const string TOUCHER_POUR_CONFIRMER = "Toucher encore pour confirmer";
+            public const string MOUVEMENT_REDUIT = "Réduire les animations";
+            public const string CONTRASTE_RENFORCE = "Contraste renforcé";
+
             /* — Le tiroir « Toi » ——————————————————————————————————————————————————— */
             public const string GAIN_DU_SEJOUR = "Rester t’a gagné";
             public const string POURCENT_DE_CONTENANCE = "+{0} % de ce que tu peux porter";

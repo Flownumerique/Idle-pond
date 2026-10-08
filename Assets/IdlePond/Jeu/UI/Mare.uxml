@@ -37,6 +37,9 @@
                     <ui:VisualElement name="tiroir-journal" class="tiroir-contenu">
                         <ui:VisualElement name="succes" />
                     </ui:VisualElement>
+                    <ui:VisualElement name="tiroir-reglages" class="tiroir-contenu">
+                        <ui:VisualElement name="menu-reglages" />
+                    </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>

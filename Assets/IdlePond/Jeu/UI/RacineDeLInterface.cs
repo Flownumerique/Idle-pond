@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using IdlePond.Noyau;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,10 +15,11 @@ namespace IdlePond.Jeu.UI
     /// panneau, et renvoie chaque geste du joueur à la partie. Tout ce que le joueur lit
     /// vient d'un état immuable, relu à chaque changement.
     ///
-    /// Il possède trois choses, et trois seulement : l'abonnement aux événements de la
+    /// Il possède quatre choses, et quatre seulement : l'abonnement aux événements de la
     /// partie (pris à l'activation, rendu à la désactivation, sans quoi une scène rechargée
     /// laisserait des fantômes qui écrivent dans un arbre détruit), l'adaptation au
-    /// portrait et au paysage, et l'élément `#scene` que la scène dessinée emprunte.
+    /// portrait et au paysage, au téléphone, à la tablette et au PC, l'application des
+    /// réglages du joueur, et l'élément `#scene` que la scène dessinée emprunte.
     /// </summary>
     [DefaultExecutionOrder(100)]
     [RequireComponent(typeof(UIDocument))]
@@ -34,6 +36,12 @@ namespace IdlePond.Jeu.UI
         readonly System.Collections.Generic.Dictionary<Tiroir, VisualElement> contenus =
             new System.Collections.Generic.Dictionary<Tiroir, VisualElement>();
         bool paysage;
+        string classeDeFormat;
+        MagasinDeReglages reglages;
+        MenuDesReglages menu;
+        Notation notationPosee = Notation.Suffixes;
+        PanelSettings panneau;
+        Vector2Int resolutionDeBase;
 
         Barre barre;
         Lieu lieu;
@@ -84,6 +92,7 @@ namespace IdlePond.Jeu.UI
             // Le seul chemin de création de la partie : Mare.unity lancée seule, sans
             // Amorce, la crée elle-même (§2) pour rester jouable.
             partie = Boucle.ObtenirOuCreerLaPartie();
+            reglages = Boucle.ObtenirOuCreerLesReglages();
 
             racine = trouvee;
             CadreDeScene = racine.Q<VisualElement>("scene");
@@ -100,12 +109,20 @@ namespace IdlePond.Jeu.UI
             partie.EtatChange += SurEtat;
             partie.SuccesDeclenches += SurSucces;
             partie.RetourAffiche += SurRetour;
+            reglages.Change += SurReglages;
+
+            // Le panneau est un ASSET : dans l'éditeur, ce qu'on y change survit au Play. On
+            // relève sa résolution pour la lui rendre au débranchement.
+            panneau = document.panelSettings;
+            if (panneau != null) resolutionDeBase = panneau.referenceResolution;
 
             // Ce qui est arrivé AVANT que l'interface existe : le crédit hors ligne du
             // démarrage, les succès déjà déclenchés. Les événements, eux, sont passés.
+            // Les réglages d'abord : la notation décide de l'écriture des nombres.
+            AppliquerLesReglages(reglages.Courants);
             SurEtat(partie.Etat);
             retour.Afficher(partie.Retour);
-            annonces.Afficher(partie.AAnnoncer);
+            AfficherLesAnnonces();
             Adapter(racine.layout.width, racine.layout.height);
         }
 
@@ -117,6 +134,13 @@ namespace IdlePond.Jeu.UI
                 partie.SuccesDeclenches -= SurSucces;
                 partie.RetourAffiche -= SurRetour;
             }
+            if (reglages != null) reglages.Change -= SurReglages;
+            menu?.Fermer();
+            if (panneau != null) panneau.referenceResolution = resolutionDeBase;
+            panneau = null;
+            reglages = null;
+            menu = null;
+            classeDeFormat = null;
             racine?.UnregisterCallback<GeometryChangedEvent>(SurGeometrie);
             racine = null;
             CadreDeScene = null;
@@ -137,8 +161,10 @@ namespace IdlePond.Jeu.UI
             contenus[Tiroir.Especes] = racine.Q<VisualElement>("tiroir-especes");
             contenus[Tiroir.Journal] = racine.Q<VisualElement>("tiroir-journal");
             contenus[Tiroir.Oeuf] = racine.Q<VisualElement>("tiroir-oeuf");
+            contenus[Tiroir.Reglages] = racine.Q<VisualElement>("tiroir-reglages");
 
-            barre = new Barre(racine.Q<VisualElement>("barre"));
+            barre = new Barre(racine.Q<VisualElement>("barre"),
+                () => dock.Choisir(dock.Actif == Tiroir.Reglages ? Tiroir.Aucun : Tiroir.Reglages));
             lieu = new Lieu(racine.Q<VisualElement>("lieu"));
             creusement = new Creusement(racine.Q<VisualElement>("creuser"), () => p.Creuser());
             retour = new Retour(racine.Q<VisualElement>("retour"), () => p.OublierRetour());
@@ -165,6 +191,13 @@ namespace IdlePond.Jeu.UI
             ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));
             dock = new Dock(racine.Q<VisualElement>("dock"), AppliquerLeTiroir);
+            menu = new MenuDesReglages(racine.Q<VisualElement>("menu-reglages"), reglages, FormatReconnu,
+                () => Screen.fullScreen, AffichageDeLApplication.PleinEcranReglable, AffichageDeLApplication.Mobile,
+                () =>
+                {
+                    p.Reinitialiser(Boucle.DossierDeSauvegarde());
+                    dock.Fermer();
+                });
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));
             // Toucher la mare voilée referme le tiroir : on revient à la vue sans viser.
             voile.AddManipulator(new Clickable(() => dock.Fermer()));
@@ -222,8 +255,77 @@ namespace IdlePond.Jeu.UI
 
         void SurSucces(System.Collections.Generic.IReadOnlyList<string> _)
         {
-            try { annonces.Afficher(partie.AAnnoncer); }
+            try { AfficherLesAnnonces(); }
             catch (Exception exception) { Debug.LogException(exception, this); }
+        }
+
+        /// <summary>
+        /// Annonces masquées : celles qui attendent sont oubliées tout de suite, sans quoi
+        /// elles ressurgiraient toutes ensemble quand le joueur les réactive. Les succès,
+        /// eux, sont arrivés : le Journal et la pastille du dock les comptent.
+        /// </summary>
+        void AfficherLesAnnonces()
+        {
+            if (!reglages.Courants.AnnoncesAffichees)
+                foreach (var id in partie.AAnnoncer.ToArray()) partie.OublierAnnonce(id);
+            annonces.Afficher(partie.AAnnoncer);
+        }
+
+        /* ─── Les réglages ─────────────────────────────────────────────────────────── */
+
+        void SurReglages(Reglages r)
+        {
+            try { AppliquerLesReglages(r); }
+            catch (Exception exception) { Debug.LogException(exception, this); }
+        }
+
+        /// <summary>
+        /// Tout ce que les réglages changent à l'écran. Chaque morceau est protégé : un
+        /// réglage qui échoue n'empêche pas les autres de s'appliquer.
+        /// </summary>
+        void AppliquerLesReglages(Reglages r)
+        {
+            Proteger(() => AffichageDeLApplication.Appliquer(r));
+            Proteger(() =>
+            {
+                racine.EnableInClassList("mouvement-reduit", r.MouvementReduit);
+                racine.EnableInClassList("contraste", r.ContrasteRenforce);
+                Adapter(racine.layout.width, racine.layout.height, force: true);
+            });
+            Proteger(() =>
+            {
+                if (r.Notation == notationPosee && Format.Notation == r.Notation) return;
+                notationPosee = r.Notation;
+                Format.Notation = r.Notation;
+                // Tous les nombres de l'écran se réécrivent maintenant, pas au tick suivant.
+                SurEtat(partie.Etat);
+            });
+            Proteger(AfficherLesAnnonces);
+            Proteger(() => menu?.Rafraichir(r));
+        }
+
+        void Proteger(Action appliquer)
+        {
+            try { appliquer(); }
+            catch (Exception exception) { Debug.LogException(exception, this); }
+        }
+
+        FormatDAffichage FormatReconnu() =>
+            Adaptation.Detecter(Screen.width, Screen.height, Screen.dpi, AffichageDeLApplication.Mobile);
+
+        /// <summary>
+        /// L'échelle passe par la résolution de référence du panneau (« Scale With Screen
+        /// Size ») : une référence plus petite agrandit l'interface. On part toujours de la
+        /// résolution relevée au branchement, jamais de la courante, pour ne pas cumuler.
+        /// </summary>
+        void Echelonner(FormatDAffichage format)
+        {
+            if (panneau == null) return;
+            var facteur = Adaptation.FacteurDEchelle(format, reglages.Courants.TailleDInterface);
+            var voulue = new Vector2Int(
+                Mathf.RoundToInt(resolutionDeBase.x / (float)facteur),
+                Mathf.RoundToInt(resolutionDeBase.y / (float)facteur));
+            if (panneau.referenceResolution != voulue) panneau.referenceResolution = voulue;
         }
 
         void SurRetour(AbsenceCreditee absence)
@@ -240,8 +342,21 @@ namespace IdlePond.Jeu.UI
         /// Paysage si la largeur vaut au moins 1,2 fois la hauteur, sinon portrait. Le
         /// contrôleur ne pose que la classe : la mise en page est dans `Mare.uss`.
         /// </summary>
-        void Adapter(float largeur, float hauteur)
+        void Adapter(float largeur, float hauteur, bool force = false)
         {
+            if (reglages != null)
+            {
+                // Le format ne dépend pas de la taille de la racine : il se pose même avant
+                // le premier calcul de mise en page.
+                var format = Adaptation.Resoudre(reglages.Courants.Affichage, FormatReconnu());
+                var classe = Adaptation.ClasseDu(format);
+                if (force || classe != classeDeFormat)
+                {
+                    classeDeFormat = classe;
+                    foreach (var autre in Adaptation.CLASSES_DE_FORMAT) racine.EnableInClassList(autre, autre == classe);
+                    Echelonner(format);
+                }
+            }
             if (!(largeur > 0 && hauteur > 0)) return;
             EviterLesBordsCaches();
             var estPaysage = Adaptation.EstPaysage(largeur, hauteur);
@@ -304,6 +419,7 @@ namespace IdlePond.Jeu.UI
                 return;
             }
 
+            menu?.Fermer();
             var etaitOuvert = tiroir.ClassListContains("ouvert");
             tiroir.RemoveFromClassList("ouvert");
             voile.RemoveFromClassList("ouvert");
@@ -319,7 +435,7 @@ namespace IdlePond.Jeu.UI
                 if (dock.Actif != Tiroir.Aucun) return;
                 Elements.Montrer(voile, false);
                 Elements.Montrer(tiroir, false);
-            }).StartingIn(DUREE_DU_TIROIR_MS);
+            }).StartingIn(reglages != null && reglages.Courants.MouvementReduit ? 0 : DUREE_DU_TIROIR_MS);
         }
 
         static (string Titre, string SousTitre) TitresDu(Tiroir tiroir)
@@ -330,6 +446,7 @@ namespace IdlePond.Jeu.UI
                 case Tiroir.Especes: return (E.DOCK_ESPECES, E.SOUS_TITRE_ESPECES);
                 case Tiroir.Oeuf: return (E.DOCK_OEUF, E.SOUS_TITRE_OEUF);
                 case Tiroir.Journal: return (E.DOCK_JOURNAL, E.SOUS_TITRE_JOURNAL);
+                case Tiroir.Reglages: return (E.REGLAGES, E.SOUS_TITRE_REGLAGES);
                 default: return ("", "");
             }
         }
