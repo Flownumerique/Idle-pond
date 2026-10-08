@@ -90,6 +90,7 @@ namespace IdlePond.Jeu.UI
             Ouvert = true;
             racine.RemoveFromClassList("accueil-sortant");
             Elements.Montrer(racine, true);
+            CacherLeJeu(true);
         }
 
         /// Le tiroir des réglages ouvert depuis l'accueil passe devant : la couche s'efface
@@ -99,7 +100,15 @@ namespace IdlePond.Jeu.UI
             if (!Ouvert) return;
             if (tiroirOuvert) nouvelle.Desarmer();
             Elements.Montrer(racine, !tiroirOuvert);
+            CacherLeJeu(!tiroirOuvert);
         }
+
+        /// <summary>
+        /// Sous l'accueil, seule la mare dessinée se voit : la barre, le dock et le bouton
+        /// de creusement s'effacent (classe sur la racine de l'interface, styles dans
+        /// `Mare.uss`), sans quoi ils transparaîtraient sous le voile.
+        /// </summary>
+        void CacherLeJeu(bool cache) => racine.parent?.EnableInClassList("accueil-ouvert", cache);
 
         /// Entrer dans la mare : la couche se fond, puis disparaît.
         void Entrer()
@@ -108,6 +117,7 @@ namespace IdlePond.Jeu.UI
             Ouvert = false;
             nouvelle.Desarmer();
             racine.AddToClassList("accueil-sortant");
+            CacherLeJeu(false);
             var duree = mouvementReduit() ? 0 : DUREE_DU_FONDU_MS;
             racine.schedule.Execute(() =>
             {

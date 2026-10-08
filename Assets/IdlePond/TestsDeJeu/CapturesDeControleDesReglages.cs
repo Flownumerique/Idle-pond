@@ -44,6 +44,7 @@ namespace IdlePond.TestsDeJeu
             ServicesDePartie.Oublier();
             SauvegardeDeTest.Rediriger();
             ServicesDePartie.Installer(new Partie(new HorlogeFigee(1_700_000_000_000L)));
+            ServicesDePartie.DemanderLAccueil(premiereFois: false);
             var chargement = SceneManager.LoadSceneAsync("Mare");
             while (!chargement.isDone) yield return null;
             UIDocument document = null;
@@ -65,6 +66,20 @@ namespace IdlePond.TestsDeJeu
             panneau.colorClearValue = new Color(0.04f, 0.09f, 0.09f, 1f);
             try
             {
+                // D'abord l'accueil, dans chaque format ; puis on entre dans la mare.
+                foreach (var cadre in CADRES)
+                {
+                    var rt = new RenderTexture(cadre.Largeur, cadre.Hauteur, 24, RenderTextureFormat.ARGB32);
+                    panneau.targetTexture = rt;
+                    magasin.Modifier(r => r with { Affichage = cadre.Format });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{cadre.Nom}-accueil.png"));
+                    panneau.targetTexture = null;
+                    Object.Destroy(rt);
+                }
+                yield return Doigt.Toucher(document.rootVisualElement.Q<VisualElement>("accueil-principal"));
+                yield return new WaitForSeconds(0.6f);
+
                 foreach (var cadre in CADRES)
                 {
                     var rt = new RenderTexture(cadre.Largeur, cadre.Hauteur, 24, RenderTextureFormat.ARGB32);

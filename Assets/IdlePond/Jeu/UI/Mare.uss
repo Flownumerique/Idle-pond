@@ -1311,7 +1311,7 @@
     bottom: 0;
     justify-content: center;
     align-items: center;
-    background-color: rgba(4, 10, 9, 0.78);
+    background-color: rgba(4, 10, 9, 0.55);
     opacity: 1;
     transition-property: opacity;
     transition-duration: 0.4s;
@@ -1368,4 +1368,43 @@
 .pc .accueil-colonne,
 .tablette .accueil-colonne {
     max-width: 1000px;
+}
+
+/* En paysage, la hauteur manque : un titre plus petit, moins d'air sous lui. */
+.paysage .accueil-titre {
+    font-size: 110px;
+}
+
+.paysage .accueil-sous-titre {
+    margin-bottom: 36px;
+}
+
+.paysage .accueil-resume {
+    padding: 20px 36px;
+}
+
+/* Sous l'accueil, seule la mare dessinée se voit ; le jeu revient en fondu avec elle. */
+.barre,
+.dock,
+.lieu,
+.creuser,
+.retour {
+    transition-property: opacity;
+    transition-duration: 0.4s;
+}
+
+.accueil-ouvert .barre,
+.accueil-ouvert .dock,
+.accueil-ouvert .lieu,
+.accueil-ouvert .creuser,
+.accueil-ouvert .retour {
+    opacity: 0;
+}
+
+.mouvement-reduit .barre,
+.mouvement-reduit .dock,
+.mouvement-reduit .lieu,
+.mouvement-reduit .creuser,
+.mouvement-reduit .retour {
+    transition-duration: 0s;
 }
