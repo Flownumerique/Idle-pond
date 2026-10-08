@@ -26,6 +26,16 @@ namespace IdlePond.Jeu
             return courante;
         }
 
+        static MagasinDeReglages reglages;
+
+        /// Les réglages du joueur, ouverts une fois et gardés avec la partie : ils vivent
+        /// dans le même dossier, et le même `Oublier` les remet au disque.
+        public static MagasinDeReglages ObtenirOuCreerLesReglages(Func<MagasinDeReglages> creer)
+        {
+            if (reglages == null) reglages = creer();
+            return reglages;
+        }
+
         /// <summary>
         /// Le dossier où la `Boucle` sauvegarde à la place de `persistentDataPath`, s'il est
         /// posé. Seuls les ateliers le posent : un bac à sable qui donne du mana ne doit
@@ -41,6 +51,7 @@ namespace IdlePond.Jeu
         public static void Oublier()
         {
             courante = null;
+            reglages = null;
             redirige = null;
         }
     }

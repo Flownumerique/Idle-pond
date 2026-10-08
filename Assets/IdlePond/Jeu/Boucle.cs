@@ -30,6 +30,7 @@ namespace IdlePond.Jeu
         const double IMAGE_MAXIMALE_S = 1.0;
 
         Partie partie;
+        MagasinDeReglages reglages;
         string dossier;
         double cumul;
         double depuisLaSauvegarde;
@@ -44,8 +45,22 @@ namespace IdlePond.Jeu
         public static Partie ObtenirOuCreerLaPartie() =>
             ServicesDePartie.ObtenirOuCreer(() => Partie.Ouvrir(new HorlogeSysteme(), DossierDeSauvegarde()));
 
+        /// <summary>
+        /// Les réglages du joueur, ouverts au besoin, dans le même dossier que la partie. Un
+        /// fichier illisible le dit une fois dans la console : les défauts sont en place, et
+        /// il sera remplacé au premier changement.
+        /// </summary>
+        public static MagasinDeReglages ObtenirOuCreerLesReglages() =>
+            ServicesDePartie.ObtenirOuCreerLesReglages(() =>
+            {
+                var magasin = MagasinDeReglages.Ouvrir(DossierDeSauvegarde());
+                if (magasin.FichierIllisible)
+                    Debug.LogWarning($"Réglages illisibles ({magasin.Chemin}) : les défauts sont en place.");
+                return magasin;
+            });
+
         /// Le dossier de la partie : celui du joueur, sauf si un atelier l'a redirigé.
-        static string DossierDeSauvegarde() => ServicesDePartie.DossierDeSauvegardeRedirige ?? Application.persistentDataPath;
+        public static string DossierDeSauvegarde() => ServicesDePartie.DossierDeSauvegardeRedirige ?? Application.persistentDataPath;
 
         /// <summary>
         /// Le projet active les options d'entrée en Play Mode : si le rechargement du domaine
@@ -61,6 +76,7 @@ namespace IdlePond.Jeu
             // `persistentDataPath` ne se lit que sur le fil principal : on le garde ici.
             dossier = DossierDeSauvegarde();
             partie = ObtenirOuCreerLaPartie();
+            reglages = ObtenirOuCreerLesReglages();
         }
 
         void Update()
@@ -76,6 +92,25 @@ namespace IdlePond.Jeu
             }
             depuisLaSauvegarde += dt;
             if (depuisLaSauvegarde >= PERIODE_DE_SAUVEGARDE_S) Sauvegarder();
+            Proteger(() => reglages.Avancer(dt));
+        }
+
+        /// <summary>
+        /// Le jeu passe derrière une autre fenêtre, ou le téléphone change d'application : on
+        /// se tait si le joueur l'a demandé. `AudioListener.pause` suspend tout, musique comme
+        /// effets, et reprend où l'on en était.
+        /// </summary>
+        void OnApplicationFocus(bool aLeFocus) => Taire(!aLeFocus);
+
+        void Taire(bool enArrierePlan) =>
+            AudioListener.pause = enArrierePlan && reglages != null && reglages.Courants.MuetEnArrierePlan;
+
+        /// Une écriture de réglages ratée ne doit pas arrêter la partie : on la journalise,
+        /// et le magasin réessaiera.
+        static void Proteger(Action ecrire)
+        {
+            try { ecrire(); }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         /// <summary>
@@ -86,9 +121,11 @@ namespace IdlePond.Jeu
         void OnApplicationPause(bool enPause)
         {
             if (partie == null) return;
+            Taire(enPause);
             if (enPause)
             {
                 Sauvegarder();
+                Proteger(() => reglages?.Enregistrer());
                 return;
             }
             partie.Reprendre();
@@ -101,6 +138,7 @@ namespace IdlePond.Jeu
         void OnApplicationQuit()
         {
             if (partie != null && !sauvegardeAJour) Sauvegarder();
+            Proteger(() => reglages?.Enregistrer());
         }
 
         void Sauvegarder()
