@@ -1254,7 +1254,7 @@
     background-color: var(--couleur-clair);
 }
 
-/* ─── La tablette : plus de place, deux colonnes ──────────────────────────────────── */
+/* ─── La tablette : plus de marge, un tiroir qui se lit au centre ──────────────────────────────────── */
 
 .tablette {
     --marge: 56px;
@@ -1266,15 +1266,6 @@
     right: 7%;
 }
 
-.tablette .liste {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.tablette .liste > .carte {
-    width: 49%;
-}
 
 /* ─── Le PC : un dock compact au centre, des survols partout ──────────────────────── */
 
