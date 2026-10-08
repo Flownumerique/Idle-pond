@@ -40,6 +40,18 @@ namespace IdlePond.Tests
             Assert.That(fautes, Is.Empty);
         }
 
+        [Test, Description("les réglages et le calcul du son sont purs : ni moteur, ni fichier")]
+        public void Les_reglages_sont_purs()
+        {
+            var fautes = (from nom in new[] { "Reglages.cs", "Son.cs" }
+                          let fichier = Path.Combine("Assets/IdlePond/Jeu/Reglages", nom)
+                          let code = SourceCSharp.SansCommentairesNiChaines(File.ReadAllText(fichier))
+                          from motif in new[] { @"\bUnityEngine\b|\bUnityEditor\b", @"\bFile\s*\.|\bDirectory\s*\." }
+                          where Regex.IsMatch(code, motif)
+                          select $"{nom} : {motif}").ToList();
+            Assert.That(fautes, Is.Empty);
+        }
+
         [Test, Description("le jeu ne lit l'heure que par HorlogeSysteme, et ne tire aucun hasard hors de l'état")]
         public void Le_jeu_ne_lit_l_heure_que_par_HorlogeSysteme()
         {
