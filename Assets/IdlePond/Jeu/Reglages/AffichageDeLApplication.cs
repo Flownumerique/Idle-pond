@@ -14,10 +14,23 @@ namespace IdlePond.Jeu
         /// Le plein écran ne se règle que sur PC : un téléphone l'est toujours.
         public static bool PleinEcranReglable => !Application.isMobilePlatform && !Application.isEditor;
 
-        public static void Appliquer(Reglages r)
+        /// <summary>
+        /// Le plein écran à imposer, ou null pour laisser la fenêtre telle qu'elle est. Il ne
+        /// s'impose qu'au démarrage (`avant` null) et quand le joueur change CE réglage : un
+        /// Alt+Entrée ne doit pas être défait parce qu'on a touché au volume.
+        /// </summary>
+        public static bool? PleinEcranAImposer(Reglages avant, Reglages apres)
         {
-            if (PleinEcranReglable && r.PleinEcran.HasValue && r.PleinEcran.Value != Screen.fullScreen)
-                Screen.fullScreenMode = r.PleinEcran.Value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+            if (avant != null && avant.PleinEcran == apres.PleinEcran) return null;
+            return apres.PleinEcran;
+        }
+
+        /// `avant` : les réglages appliqués la fois précédente, null au premier appel.
+        public static void Appliquer(Reglages avant, Reglages r)
+        {
+            var plein = PleinEcranAImposer(avant, r);
+            if (PleinEcranReglable && plein.HasValue && plein.Value != Screen.fullScreen)
+                Screen.fullScreenMode = plein.Value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
 
             var limite = r.Images ?? (Mobile ? LimiteDImages.Trente : LimiteDImages.Soixante);
             // Une limite n'est tenue que sans synchronisation verticale ; « sans limite » rend

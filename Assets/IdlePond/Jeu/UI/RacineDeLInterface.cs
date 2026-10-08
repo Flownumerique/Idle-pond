@@ -40,6 +40,7 @@ namespace IdlePond.Jeu.UI
         MagasinDeReglages reglages;
         MenuDesReglages menu;
         Notation notationPosee = Notation.Suffixes;
+        Reglages reglagesAppliques;
         PanelSettings panneau;
         Vector2Int resolutionDeBase;
 
@@ -141,6 +142,7 @@ namespace IdlePond.Jeu.UI
             reglages = null;
             menu = null;
             classeDeFormat = null;
+            reglagesAppliques = null;
             racine?.UnregisterCallback<GeometryChangedEvent>(SurGeometrie);
             racine = null;
             CadreDeScene = null;
@@ -285,7 +287,9 @@ namespace IdlePond.Jeu.UI
         /// </summary>
         void AppliquerLesReglages(Reglages r)
         {
-            Proteger(() => AffichageDeLApplication.Appliquer(r));
+            var avant = reglagesAppliques;
+            reglagesAppliques = r;
+            Proteger(() => AffichageDeLApplication.Appliquer(avant, r));
             Proteger(() =>
             {
                 racine.EnableInClassList("mouvement-reduit", r.MouvementReduit);
@@ -400,6 +404,9 @@ namespace IdlePond.Jeu.UI
         {
             if (racine == null) return;
             var actif = dock.Actif;
+            // Quitter les réglages, même pour un autre tiroir, désarme ce qui attendait une
+            // confirmation : un seul toucher au retour ne doit rien effacer.
+            if (actif != Tiroir.Reglages) menu?.Fermer();
             if (actif != Tiroir.Aucun)
             {
                 var (titre, sousTitre) = TitresDu(actif);
@@ -419,7 +426,6 @@ namespace IdlePond.Jeu.UI
                 return;
             }
 
-            menu?.Fermer();
             var etaitOuvert = tiroir.ClassListContains("ouvert");
             tiroir.RemoveFromClassList("ouvert");
             voile.RemoveFromClassList("ouvert");

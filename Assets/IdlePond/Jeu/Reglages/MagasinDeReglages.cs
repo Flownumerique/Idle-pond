@@ -24,6 +24,9 @@ namespace IdlePond.Jeu
 
         readonly string dossier;
         bool aEcrire;
+        /// Vrai après une écriture ratée : on ne réessaie qu'au changement suivant (ou en
+        /// pause et à la sortie), pas toutes les demi-secondes dans la console.
+        bool enEchec;
         double depuisLeChangement;
 
         MagasinDeReglages(string dossier, Reglages courants, bool illisible)
@@ -52,8 +55,10 @@ namespace IdlePond.Jeu
                 var reglages = Reglages.Deserialiser(File.ReadAllText(chemin, Encoding.UTF8), out var lisible);
                 return new MagasinDeReglages(dossier, reglages, !lisible);
             }
-            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            catch (Exception)
             {
+                // Toute cause : le contrat est qu'un fichier de réglages n'empêche jamais le
+                // jeu de démarrer.
                 return new MagasinDeReglages(dossier, Reglages.ParDefaut, true);
             }
         }
@@ -65,17 +70,18 @@ namespace IdlePond.Jeu
             if (nouveaux == Courants) return;
             Courants = nouveaux;
             aEcrire = true;
+            enEchec = false;
             depuisLeChangement = 0;
             Change?.Invoke(nouveaux);
         }
 
         /// <summary>
-        /// Le temps qui passe. Une écriture ratée lève (l'appelant la journalise) et sera
-        /// retentée après un nouveau délai : le compteur est remis à zéro AVANT d'écrire.
+        /// Le temps qui passe. Une écriture ratée lève (l'appelant la journalise) et ne sera
+        /// retentée qu'au changement suivant.
         /// </summary>
         public void Avancer(double dt)
         {
-            if (!aEcrire || !(dt > 0)) return;
+            if (!aEcrire || enEchec || !(dt > 0)) return;
             depuisLeChangement += dt;
             if (depuisLeChangement < DELAI_D_ENREGISTREMENT_S) return;
             depuisLeChangement = 0;
@@ -86,13 +92,22 @@ namespace IdlePond.Jeu
         public void Enregistrer()
         {
             if (!aEcrire) return;
-            Directory.CreateDirectory(dossier);
-            var cible = Chemin;
-            var temporaire = cible + SUFFIXE_TEMPORAIRE;
-            File.WriteAllText(temporaire, Reglages.Serialiser(Courants), new UTF8Encoding(false));
-            if (File.Exists(cible)) File.Replace(temporaire, cible, null);
-            else File.Move(temporaire, cible);
+            try
+            {
+                Directory.CreateDirectory(dossier);
+                var cible = Chemin;
+                var temporaire = cible + SUFFIXE_TEMPORAIRE;
+                File.WriteAllText(temporaire, Reglages.Serialiser(Courants), new UTF8Encoding(false));
+                if (File.Exists(cible)) File.Replace(temporaire, cible, null);
+                else File.Move(temporaire, cible);
+            }
+            catch
+            {
+                enEchec = true;
+                throw;
+            }
             aEcrire = false;
+            enEchec = false;
         }
     }
 }

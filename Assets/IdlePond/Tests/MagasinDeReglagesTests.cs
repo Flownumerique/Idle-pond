@@ -85,6 +85,29 @@ namespace IdlePond.Tests
             Assert.That(MagasinDeReglages.Ouvrir(dossier).Courants.ContrasteRenforce, Is.True);
         }
 
+        [Test, Description("une écriture ratée n'est retentée qu'au changement suivant, pas toutes les demi-secondes")]
+        public void Une_ecriture_ratee_attend_le_changement_suivant()
+        {
+            // Un dossier au nom du fichier : l'écriture échoue à coup sûr.
+            Directory.CreateDirectory(Chemin);
+            var magasin = MagasinDeReglages.Ouvrir(dossier);
+            magasin.Modifier(r => r with { Muet = true });
+            Assert.That(() => magasin.Avancer(MagasinDeReglages.DELAI_D_ENREGISTREMENT_S), Throws.InstanceOf<IOException>());
+            Assert.DoesNotThrow(() => magasin.Avancer(MagasinDeReglages.DELAI_D_ENREGISTREMENT_S * 10));
+            magasin.Modifier(r => r with { Muet = false });
+            Assert.That(() => magasin.Avancer(MagasinDeReglages.DELAI_D_ENREGISTREMENT_S), Throws.InstanceOf<IOException>());
+        }
+
+        [Test, Description("un fichier au contenu inattendu ne fait jamais lever l'ouverture")]
+        public void Un_contenu_inattendu_ne_fait_pas_lever()
+        {
+            Directory.CreateDirectory(dossier);
+            File.WriteAllText(Chemin, "{\"version\":99999999999999999999}");
+            MagasinDeReglages magasin = null;
+            Assert.DoesNotThrow(() => magasin = MagasinDeReglages.Ouvrir(dossier));
+            Assert.That(magasin.Courants, Is.EqualTo(Reglages.ParDefaut));
+        }
+
         [Test, Description("un fichier corrompu rend les défauts, sans exception, et le signale")]
         public void Un_fichier_corrompu_rend_les_defauts()
         {

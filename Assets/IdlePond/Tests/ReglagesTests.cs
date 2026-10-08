@@ -101,6 +101,8 @@ namespace IdlePond.Tests
         [TestCase("{\"version\":1,\"muet\":tr", Description = "tronqué")]
         [TestCase("[1,2]", Description = "racine qui n'est pas un objet")]
         [TestCase("", Description = "vide")]
+        [TestCase("{\"version\":99999999999999999999,\"muet\":true}", Description = "version entière trop grande pour un long")]
+        [TestCase("{\"version\":1e30,\"muet\":true}", Description = "version flottante")]
         public void Un_fichier_illisible_rend_les_defauts(string json)
         {
             var r = Reglages.Deserialiser(json, out var lisible);

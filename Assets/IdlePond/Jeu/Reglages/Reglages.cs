@@ -122,7 +122,9 @@ namespace IdlePond.Jeu
             }
             if (o == null) return ParDefaut;
             var version = o["version"];
-            if (version == null || version.Type != JTokenType.Integer || (long)version < 1 || (long)version > VERSION)
+            // Un entier trop grand pour un `long` arrive en BigInteger : on compare sans convertir.
+            if (version == null || version.Type != JTokenType.Integer || !(((JValue)version).Value is long numero)
+                || numero < 1 || numero > VERSION)
                 return ParDefaut;
 
             lisible = true;
