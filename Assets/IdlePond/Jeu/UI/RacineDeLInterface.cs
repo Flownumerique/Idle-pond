@@ -57,6 +57,7 @@ namespace IdlePond.Jeu.UI
         Succes succes;
         AmeliorationsDeRenaissance ameliorations;
         Annonces annonces;
+        Accueil accueil;
         Action<EtatJeu>[] rafraichisseurs = Array.Empty<Action<EtatJeu>>();
 
         /// <summary>
@@ -125,6 +126,13 @@ namespace IdlePond.Jeu.UI
             retour.Afficher(partie.Retour);
             AfficherLesAnnonces();
             Adapter(racine.layout.width, racine.layout.height);
+
+            // L'accueil n'est montré que si l'amorce l'a demandé, et une seule fois.
+            if (ServicesDePartie.AccueilDemande)
+            {
+                ServicesDePartie.ConsommerLAccueil();
+                accueil.Ouvrir(ResumeDeLaPartie.De(partie.Etat, partie.Retour, ServicesDePartie.PremiereFois));
+            }
         }
 
         void Debrancher()
@@ -197,9 +205,13 @@ namespace IdlePond.Jeu.UI
                 () => Screen.fullScreen, AffichageDeLApplication.PleinEcranReglable, AffichageDeLApplication.Mobile,
                 () =>
                 {
-                    p.Reinitialiser(Boucle.DossierDeSauvegarde());
+                    EffacerLaPartie();
                     dock.Fermer();
                 });
+            accueil = new Accueil(racine.Q<VisualElement>("accueil"), EffacerLaPartie,
+                () => dock.Choisir(Tiroir.Reglages),
+                !AffichageDeLApplication.Mobile, Application.Quit, Application.version,
+                () => reglages != null && reglages.Courants.MouvementReduit);
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));
             // Toucher la mare voilée referme le tiroir : on revient à la vue sans viser.
             voile.AddManipulator(new Clickable(() => dock.Fermer()));
@@ -271,6 +283,17 @@ namespace IdlePond.Jeu.UI
             if (!reglages.Courants.AnnoncesAffichees)
                 foreach (var id in partie.AAnnoncer.ToArray()) partie.OublierAnnonce(id);
             annonces.Afficher(partie.AAnnoncer);
+        }
+
+        /// <summary>
+        /// Recommencer, depuis les réglages ou l'accueil. Ce que l'écran montrait de
+        /// l'ancienne partie (la carte du retour, les annonces) part avec elle.
+        /// </summary>
+        void EffacerLaPartie()
+        {
+            partie.Reinitialiser(Boucle.DossierDeSauvegarde());
+            retour.Afficher(partie.Retour);
+            AfficherLesAnnonces();
         }
 
         /* ─── Les réglages ─────────────────────────────────────────────────────────── */
@@ -407,6 +430,7 @@ namespace IdlePond.Jeu.UI
             // Quitter les réglages, même pour un autre tiroir, désarme ce qui attendait une
             // confirmation : un seul toucher au retour ne doit rien effacer.
             if (actif != Tiroir.Reglages) menu?.Fermer();
+            accueil?.Recouvrir(actif != Tiroir.Aucun);
             if (actif != Tiroir.Aucun)
             {
                 var (titre, sousTitre) = TitresDu(actif);

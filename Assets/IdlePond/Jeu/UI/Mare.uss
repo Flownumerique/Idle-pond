@@ -1299,3 +1299,73 @@
 .mouvement-reduit .barre-reglages {
     transition-duration: 0s;
 }
+
+/* ─── L'écran d'accueil (spec du 2026-10-08) ──────────────────────────────────────── */
+
+/* Par-dessus tout, la mare dessinée vivant derrière le voile. */
+.accueil {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(4, 10, 9, 0.78);
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration: 0.4s;
+}
+
+.accueil.accueil-sortant {
+    opacity: 0;
+}
+
+.mouvement-reduit .accueil {
+    transition-duration: 0s;
+}
+
+.accueil-colonne {
+    width: 100%;
+    max-width: 920px;
+    padding: 0 var(--marge);
+}
+
+.accueil-titre {
+    font-size: 150px;
+    color: var(--couleur-mana);
+    letter-spacing: 6px;
+    -unity-text-align: middle-center;
+}
+
+.accueil-sous-titre {
+    margin: 4px 0 64px 0;
+    -unity-text-align: middle-center;
+}
+
+.accueil-resume {
+    padding: 30px 40px;
+    margin-bottom: 12px;
+}
+
+.accueil-resume > .mana {
+    margin-top: 6px;
+}
+
+.accueil-principal-texte {
+    color: var(--couleur-abysse);
+    font-size: var(--t-lg);
+}
+
+.accueil-version {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 36px;
+    -unity-text-align: middle-center;
+}
+
+.pc .accueil-colonne,
+.tablette .accueil-colonne {
+    max-width: 1000px;
+}

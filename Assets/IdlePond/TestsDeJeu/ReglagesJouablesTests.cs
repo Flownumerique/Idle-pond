@@ -123,28 +123,12 @@ namespace IdlePond.TestsDeJeu
             Assert.That(racine.Q<VisualElement>("annonces").childCount, Is.EqualTo(0));
         }
     
-        /// <summary>
-        /// Un toucher au doigt : appuyer puis relâcher au centre de l'élément, envoyés au
-        /// panneau, qui retrouve lui-même l'élément sous le doigt — comme pour un vrai doigt.
-        /// </summary>
-        static IEnumerator Toucher(VisualElement element)
-        {
-            var centre = element.worldBound.center;
-            var arbre = element.panel.visualTree;
-            using (var e = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, mousePosition = centre, button = 0, clickCount = 1 }))
-                arbre.SendEvent(e);
-            yield return null;
-            using (var e = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = centre, button = 0, clickCount = 1 }))
-                arbre.SendEvent(e);
-            yield return null;
-        }
-
         IEnumerator OuvrirLOngletJeu()
         {
             interfaceDeLaMare.Ouvrir(Tiroir.Reglages);
             // Le tiroir glisse en 0,26 s : on touche une fois qu'il est arrivé.
             yield return new WaitForSeconds(0.5f);
-            yield return Toucher(racine.Q<VisualElement>("onglet-jeu"));
+            yield return Doigt.Toucher(racine.Q<VisualElement>("onglet-jeu"));
         }
 
         void DonnerDuMana()
@@ -164,10 +148,10 @@ namespace IdlePond.TestsDeJeu
             yield return OuvrirLOngletJeu();
             var bouton = racine.Q<VisualElement>("reinitialiser");
 
-            yield return Toucher(bouton);
+            yield return Doigt.Toucher(bouton);
             Assert.That(ServicesDePartie.Partie.Etat.Cycle.ManaCourant.ToNumber(), Is.GreaterThanOrEqualTo(5e5), "un seul toucher ne fait rien");
 
-            yield return Toucher(bouton);
+            yield return Doigt.Toucher(bouton);
             Assert.That(ServicesDePartie.Partie.Etat.Cycle.ManaCourant.ToNumber(), Is.LessThan(1e3), "deux touchers effacent");
             Assert.That(interfaceDeLaMare.TiroirOuvert, Is.EqualTo(Tiroir.Aucun));
             var copies = Directory.GetFiles(Boucle.DossierDeSauvegarde(), "idlepond.avant-reinitialisation-*.json");
@@ -180,13 +164,13 @@ namespace IdlePond.TestsDeJeu
         {
             DonnerDuMana();
             yield return OuvrirLOngletJeu();
-            yield return Toucher(racine.Q<VisualElement>("reinitialiser"));
+            yield return Doigt.Toucher(racine.Q<VisualElement>("reinitialiser"));
 
             interfaceDeLaMare.Ouvrir(Tiroir.Toi);
             yield return null;
             interfaceDeLaMare.Ouvrir(Tiroir.Reglages);
             yield return new WaitForSeconds(0.5f);
-            yield return Toucher(racine.Q<VisualElement>("reinitialiser"));
+            yield return Doigt.Toucher(racine.Q<VisualElement>("reinitialiser"));
             Assert.That(ServicesDePartie.Partie.Etat.Cycle.ManaCourant.ToNumber(), Is.GreaterThanOrEqualTo(5e5));
         }
     }

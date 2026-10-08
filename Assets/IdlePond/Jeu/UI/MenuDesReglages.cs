@@ -258,43 +258,12 @@ namespace IdlePond.Jeu.UI
             return precision;
         }
 
-        /// <summary>
-        /// Un bouton qui efface : le premier toucher le fait changer de mot, le second dans
-        /// les trois secondes agit. Le délai passe par le planificateur d'UI Toolkit (une
-        /// interface ne lit pas l'horloge) : à son terme, la confirmation est annulée — d'où
-        /// l'instant constant donné à `Confirmation`, qui n'a alors qu'à savoir si elle est armée.
-        /// </summary>
+        /// Un bouton qui efface, et sa confirmation, désarmée quand le tiroir se ferme.
         VisualElement BoutonAConfirmer(string libelle, string nom, string classe, Action agir)
         {
-            var confirmation = new Confirmation();
-            var bouton = Elements.Conteneur("bouton " + classe, nom);
-            var texte = Elements.Texte("base titre", libelle);
-            bouton.Add(texte);
-            IVisualElementScheduledItem minuterie = null;
-
-            void Desarmer()
-            {
-                confirmation.Annuler();
-                minuterie?.Pause();
-                Elements.Poser(texte, libelle);
-                bouton.RemoveFromClassList("a-confirmer");
-            }
-
-            bouton.AddManipulator(new Clickable(() =>
-            {
-                if (confirmation.Toucher(0))
-                {
-                    Desarmer();
-                    agir();
-                    return;
-                }
-                Elements.Poser(texte, E.TOUCHER_POUR_CONFIRMER);
-                bouton.AddToClassList("a-confirmer");
-                minuterie?.Pause();
-                minuterie = bouton.schedule.Execute(Desarmer).StartingIn(Confirmation.DELAI_MS);
-            }));
-            annulations.Add(Desarmer);
-            return bouton;
+            var bouton = new BoutonAConfirmer(libelle, nom, classe, agir);
+            annulations.Add(bouton.Desarmer);
+            return bouton.Racine;
         }
     }
 }

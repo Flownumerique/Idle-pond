@@ -44,5 +44,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="dock" class="dock" />
+        <!-- L'écran d'accueil, par-dessus tout : montré au lancement si l'amorce le demande. -->
+        <ui:VisualElement name="accueil" />
     </ui:VisualElement>
 </ui:UXML>
