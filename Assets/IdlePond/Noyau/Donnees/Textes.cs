@@ -286,6 +286,16 @@ namespace IdlePond.Noyau.Donnees
             public const string SOUS_TITRE_OEUF = "Ce que tu emportes, ce que tu laisses";
             public const string SOUS_TITRE_JOURNAL = "Ce qui est arrivé, et ce qui vient";
 
+            /* — L’écran d’accueil (spec du 2026-10-08) ————————————————————————————— */
+            public const string ACCUEIL_SOUS_TITRE = "Une mare, un poisson, et tout le temps du monde";
+            public const string COMMENCER = "Commencer";
+            public const string CONTINUER = "Continuer";
+            public const string NOUVELLE_PARTIE = "Nouvelle partie";
+            public const string QUITTER = "Quitter";
+            public const string ACCUEIL_MANA = "{0} de mana";
+            public const string ACCUEIL_ABSENT = "absent {0}";
+            public const string VERSION = "version {0}";
+
             /* — Le tiroir des réglages (spec du 2026-10-08) ———————————————————————— */
             public const string REGLAGES = "Réglages";
             public const string SOUS_TITRE_REGLAGES = "Le son, l’écran, et ce qui t’aide à jouer";

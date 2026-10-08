@@ -48,11 +48,31 @@ namespace IdlePond.Jeu
         public static void RedirigerLaSauvegarde(string dossier) =>
             redirige = string.IsNullOrEmpty(dossier) ? throw new ArgumentException("Dossier vide.", nameof(dossier)) : dossier;
 
+        /// <summary>
+        /// L'écran d'accueil, demandé par l'`Amorce` et seulement par elle : la Mare lancée
+        /// seule (éditeur, tests, ateliers) s'ouvre directement sur le jeu. La demande est
+        /// consommée à l'affichage, pour que l'accueil ne revienne pas à chaque rechargement.
+        /// </summary>
+        public static bool AccueilDemande { get; private set; }
+
+        /// Vrai si le démarrage n'a trouvé aucune sauvegarde : l'accueil dit « Commencer ».
+        public static bool PremiereFois { get; private set; }
+
+        public static void DemanderLAccueil(bool premiereFois)
+        {
+            AccueilDemande = true;
+            PremiereFois = premiereFois;
+        }
+
+        public static void ConsommerLAccueil() => AccueilDemande = false;
+
         public static void Oublier()
         {
             courante = null;
             reglages = null;
             redirige = null;
+            AccueilDemande = false;
+            PremiereFois = false;
         }
     }
 }
