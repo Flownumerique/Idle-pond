@@ -485,19 +485,40 @@ namespace IdlePond.Jeu
             return jeton as JObject ?? throw new InvalidDataException("la racine n'est pas un objet JSON");
         }
 
+        /// <summary>
+        /// Copie la sauvegarde du dossier en `idlepond.avant-reinitialisation-&lt;horodatage&gt;.json`
+        /// avant qu'une réinitialisation ne la remplace : effacer sa partie se regrette, et
+        /// la copie se relit en la renommant `idlepond.json`. Rend son chemin, ou null s'il
+        /// n'y avait rien à copier.
+        /// </summary>
+        public static string CopierAvantReinitialisation(string dossier, long instantMs)
+        {
+            var chemin = CheminDeLaSauvegarde(dossier);
+            if (!File.Exists(chemin)) return null;
+            var destination = CheminLibre(dossier, "idlepond.avant-reinitialisation", instantMs);
+            File.Copy(chemin, destination);
+            return destination;
+        }
+
+        /// Un nom horodaté qui n'écrase rien : deux copies dans la même milliseconde sont numérotées.
+        static string CheminLibre(string dossier, string prefixe, long instantMs)
+        {
+            var horodatage = DateTimeOffset.FromUnixTimeMilliseconds(instantMs).UtcDateTime
+                .ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture);
+            var destination = Path.Combine(dossier, $"{prefixe}-{horodatage}.json");
+            for (var n = 2; File.Exists(destination); n++)
+                destination = Path.Combine(dossier, $"{prefixe}-{horodatage}-{n}.json");
+            return destination;
+        }
+
         /// Renomme le fichier fautif. Si le renommage échoue (fichier verrouillé), on rend
         /// null : la partie neuve démarre quand même, et le fichier sera remplacé à la
         /// prochaine sauvegarde.
         static string MettreDeCote(string chemin, long instantMs)
         {
-            var dossier = Path.GetDirectoryName(chemin);
-            var horodatage = DateTimeOffset.FromUnixTimeMilliseconds(instantMs).UtcDateTime
-                .ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture);
-            var destination = Path.Combine(dossier, $"idlepond.corrompue-{horodatage}.json");
             // Deux sauvegardes illisibles dans la même milliseconde : la seconde ne doit pas
             // écraser la première.
-            for (var n = 2; File.Exists(destination); n++)
-                destination = Path.Combine(dossier, $"idlepond.corrompue-{horodatage}-{n}.json");
+            var destination = CheminLibre(Path.GetDirectoryName(chemin), "idlepond.corrompue", instantMs);
             try
             {
                 File.Move(chemin, destination);

@@ -367,5 +367,39 @@ namespace IdlePond.Tests
             var releve = Telemetrie.Relever(EtatDeTravail.Creer());
             Assert.That(() => { collecteur.Publier(releve); }, Throws.Nothing);
         }
+    
+        [Test, Description("réinitialiser rend une partie neuve, et garde une copie relisible de l'ancienne")]
+        public void Reinitialiser_rend_une_partie_neuve_et_garde_une_copie() => DansUnDossier(dossier =>
+        {
+            var horloge = new HorlogeFigee(DEPART);
+            var partie = new Partie(horloge, EtatAise());
+            partie.Creuser();
+            var avant = partie.Etat;
+            var ecoute = new Ecoute(partie);
+
+            horloge.AvancerMs(5000);
+            var copie = partie.Reinitialiser(dossier);
+
+            AssertEtatsIdentiques(partie.Etat, Partie.NouvelEtat(horloge));
+            Assert.That(ecoute.Changements, Has.Count.EqualTo(1));
+            Assert.That(partie.AAnnoncer, Is.Empty);
+            Assert.That(partie.Retour, Is.Null);
+
+            Assert.That(copie, Is.Not.Null);
+            Assert.That(Path.GetFileName(copie), Does.StartWith("idlepond.avant-reinitialisation-"));
+            Directory.CreateDirectory(Path.Combine(dossier, "copie"));
+            File.Copy(copie, Persistance.CheminDeLaSauvegarde(Path.Combine(dossier, "copie")));
+            AssertEtatsIdentiques(Persistance.Charger(Path.Combine(dossier, "copie"), horloge).Etat, avant);
+
+            AssertEtatsIdentiques(Persistance.Charger(dossier, horloge).Etat, partie.Etat);
+        });
+
+        [Test, Description("réinitialiser sans aucune sauvegarde sur le disque ne lève pas")]
+        public void Reinitialiser_sans_sauvegarde_ne_leve_pas() => DansUnDossier(dossier =>
+        {
+            var partie = new Partie(new HorlogeFigee(DEPART), EtatAise());
+            Assert.DoesNotThrow(() => partie.Reinitialiser(dossier));
+            Assert.That(File.Exists(Persistance.CheminDeLaSauvegarde(dossier)), Is.True);
+        });
     }
 }

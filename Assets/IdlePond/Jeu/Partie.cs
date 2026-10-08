@@ -147,6 +147,24 @@ namespace IdlePond.Jeu
             EtatChange?.Invoke(etat);
         }
 
+        /// <summary>
+        /// Recommencer de zéro, depuis les réglages. L'état courant est d'abord écrit puis
+        /// copié à part (`Persistance.CopierAvantReinitialisation`) — la sauvegarde du disque
+        /// peut avoir dix secondes de retard, et c'est l'état d'à l'instant que le joueur
+        /// voudrait retrouver. Puis la partie neuve remplace l'ancienne, et s'écrit aussitôt :
+        /// quitter juste après ne doit pas ressusciter l'ancienne. Rend le chemin de la copie.
+        /// </summary>
+        public string Reinitialiser(string dossier)
+        {
+            Sauvegarder(dossier);
+            var copie = Persistance.CopierAvantReinitialisation(dossier, horloge.MaintenantMs());
+            aAnnoncer.Clear();
+            Retour = null;
+            Remplacer(NouvelEtat(horloge));
+            Sauvegarder(dossier);
+            return copie;
+        }
+
         public void OublierAnnonce(string id) => aAnnoncer.RemoveAll(autre => autre == id);
 
         public void OublierRetour() => Retour = null;
