@@ -1,3 +1,4 @@
+using IdlePond.Jeu;
 using IdlePond.Jeu.UI;
 using IdlePond.Noyau;
 using NUnit.Framework;
@@ -12,6 +13,40 @@ namespace IdlePond.Tests
     /// </summary>
     public class FormatTests
     {
+        [SetUp, TearDown]
+        public void RemettreLaNotation() => Format.Notation = Notation.Suffixes;
+
+        [Test, Description("en notation scientifique, dès 1000, mantisse à deux décimales")]
+        public void La_notation_scientifique()
+        {
+            Format.Notation = Notation.Scientifique;
+            Assert.That(Format.Montant(new Decimal(999)), Is.EqualTo("999"));
+            Assert.That(Format.Montant(new Decimal(1000)), Is.EqualTo("1.00e+3"));
+            Assert.That(Format.Montant(new Decimal(12345)), Is.EqualTo("1.23e+4"));
+            Assert.That(Format.Montant(new Decimal(1.5e6)), Is.EqualTo("1.50e+6"));
+            Assert.That(Format.Cout(new Decimal(1.5e6)), Is.EqualTo("1.50e+6"));
+        }
+
+        [Test, Description("en notation ingénieur, l'exposant est un multiple de 3, trois chiffres significatifs")]
+        public void La_notation_ingenieur()
+        {
+            Format.Notation = Notation.Ingenieur;
+            Assert.That(Format.Montant(new Decimal(999)), Is.EqualTo("999"));
+            Assert.That(Format.Montant(new Decimal(12345)), Is.EqualTo("12.3e+3"));
+            Assert.That(Format.Montant(new Decimal(1.25e6)), Is.EqualTo("1.25e+6"));
+            Assert.That(Format.Montant(new Decimal(1.25e7)), Is.EqualTo("12.5e+6"));
+            Assert.That(Format.Montant(new Decimal(1.25e8)), Is.EqualTo("125e+6"));
+            Assert.That(Format.Montant(Decimal.Pow10(400)), Is.EqualTo("10.0e+399"));
+        }
+
+        [Test, Description("en notation ingénieur, la retenue de l'arrondi passe au multiple de 3 suivant")]
+        public void La_retenue_en_notation_ingenieur()
+        {
+            Format.Notation = Notation.Ingenieur;
+            Assert.That(Format.Montant(new Decimal(9.996e8)), Is.EqualTo("1.00e+9"));
+            Assert.That(Format.Montant(new Decimal(99.96e3)), Is.EqualTo("100e+3"));
+        }
+
         [Test, Description("un montant tient en peu de caractères, avec son suffixe")]
         public void Un_montant_tient_en_peu_de_caracteres()
         {

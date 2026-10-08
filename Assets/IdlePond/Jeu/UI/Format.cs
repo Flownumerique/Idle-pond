@@ -30,16 +30,27 @@ namespace IdlePond.Jeu.UI
 
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
 
+        /// <summary>
+        /// L'écriture des grands nombres, choisie dans les réglages. Posée par
+        /// `RacineDeLInterface` quand le réglage change, puis tout l'écran est réécrit. Sous
+        /// 1000, les trois notations écrivent le nombre tel quel.
+        /// </summary>
+        public static Notation Notation { get; set; } = Notation.Suffixes;
+
         /// Un montant de mana ou de Souffle, lisible d'un coup d'œil.
         public static string Montant(Decimal valeur)
         {
             var nombre = valeur.ToNumber();
-            if (double.IsNaN(nombre) || double.IsInfinity(nombre)) return Exponentielle(valeur, 2);
+            // Au-delà du double (10⁴⁰⁰), le nombre ne se lit plus que par sa mantisse et son exposant.
+            if (double.IsNaN(nombre) || double.IsInfinity(nombre))
+                return Notation == Notation.Ingenieur ? Ingenieur(valeur) : Exponentielle(valeur, 2);
             if (nombre < 1000)
             {
                 if (EstEntier(nombre)) return nombre.ToString("0", Inv);
                 return nombre < 10 ? nombre.ToString("F1", Inv) : Math.Floor(nombre).ToString("0", Inv);
             }
+            if (Notation == Notation.Scientifique) return Exponentielle(valeur, 2);
+            if (Notation == Notation.Ingenieur) return Ingenieur(valeur);
 
             var reste = nombre;
             var rang = 0;
@@ -152,6 +163,25 @@ namespace IdlePond.Jeu.UI
         public static string Remplir(string phrase, params object[] valeurs) => string.Format(Inv, phrase, valeurs);
 
         static bool EstEntier(double x) => Math.Floor(x) == x;
+
+        /// <summary>
+        /// L'écriture ingénieur : l'exposant ramené au multiple de 3 inférieur, trois
+        /// chiffres significatifs — `1.25e+6`, `12.5e+6`, `125e+6`. L'arrondi se fait sur la
+        /// mantisse d'abord, pour que la retenue (9,996 → 10,0) change l'exposant avant le
+        /// choix du multiple de 3.
+        /// </summary>
+        static string Ingenieur(Decimal valeur)
+        {
+            if (double.IsNaN(valeur.Mantisse) || double.IsNaN(valeur.Exposant)) return "NaN";
+            var exposant = valeur.Exposant;
+            var arrondie = Math.Round(Math.Abs(valeur.Mantisse), 2, MidpointRounding.AwayFromZero);
+            if (arrondie >= 10) { arrondie /= 10; exposant += 1; }
+            var decalage = (int)(((exposant % 3) + 3) % 3);
+            var mantisse = arrondie * Math.Pow(10, decalage);
+            exposant -= decalage;
+            return (valeur.Mantisse < 0 ? "-" : "") + mantisse.ToString("F" + (2 - decalage), Inv)
+                + "e" + (exposant >= 0 ? "+" : "-") + Math.Abs(exposant).ToString("0", Inv);
+        }
 
         /// <summary>
         /// L'écriture exponentielle à `decimales` chiffres, `1.23e+400`, que `double` ne sait
