@@ -164,10 +164,68 @@ namespace IdlePond.Jeu.UI
             ".....##.....",
         };
 
-        /// Les quatre icônes du dock, dans son ordre.
+        /// La clef de l'onglet « Débloquer » (spec du 2026-10-10).
+        public static readonly string[] DEBLOQUER =
+        {
+            "............",
+            "............",
+            "............",
+            "..####......",
+            ".##..##.....",
+            ".#....#.....",
+            ".##..#######",
+            "..####...#.#",
+            ".........#.#",
+            "............",
+            "............",
+            "............",
+        };
+
+        /// Un bonus qui baisse un coût : la flèche qui descend vers le sol.
+        public static readonly string[] BAISSE =
+        {
+            "............",
+            ".....##.....",
+            ".....##.....",
+            ".....##.....",
+            ".....##.....",
+            "..########..",
+            "...######...",
+            "....####....",
+            ".....##.....",
+            "............",
+            ".##########.",
+            "............",
+        };
+
+        /// Un bonus qui allonge l'absence comptée : le sablier.
+        public static readonly string[] SABLIER =
+        {
+            "............",
+            "..########..",
+            "...#....#...",
+            "...##..##...",
+            "....####....",
+            ".....##.....",
+            ".....##.....",
+            "....#..#....",
+            "...#....#...",
+            "...######...",
+            "..########..",
+            "............",
+        };
+
+        /// Les cinq icônes du dock, dans son ordre.
         public static readonly IReadOnlyList<(string Nom, string[] Grille)> Toutes = new[]
         {
-            ("toi", TOI), ("especes", ESPECES), ("oeuf", OEUF), ("journal", JOURNAL),
+            ("toi", TOI), ("especes", ESPECES), ("debloquer", DEBLOQUER), ("oeuf", OEUF), ("journal", JOURNAL),
+        };
+
+        /// Les icônes qui ne sont pas au dock mais se dessinent de même : à vérifier aussi.
+        public static readonly IReadOnlyList<(string Nom, string[] Grille)> Autres = new[]
+        {
+            ("cadenas", CADENAS), ("croix", CROIX), ("goutte", GOUTTE), ("etincelle", ETINCELLE),
+            ("engrenage", ENGRENAGE), ("baisse", BAISSE), ("sablier", SABLIER),
         };
 
         /// Les cases pleines, en (colonne, ligne) depuis le coin haut gauche.

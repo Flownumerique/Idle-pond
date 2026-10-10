@@ -10,7 +10,7 @@ namespace IdlePond.Tests
         [Test]
         public void Chaque_icone_est_une_grille_carree_de_la_bonne_taille()
         {
-            foreach (var (nom, grille) in Icones.Toutes)
+            foreach (var (nom, grille) in Icones.Toutes.Concat(Icones.Autres))
             {
                 Assert.That(grille.Length, Is.EqualTo(Icones.COTE), nom);
                 Assert.That(grille.All(ligne => ligne.Length == Icones.COTE), Is.True, nom);
@@ -20,7 +20,7 @@ namespace IdlePond.Tests
         [Test]
         public void Une_icone_ne_porte_que_des_pixels_pleins_ou_vides_et_n_est_pas_vide()
         {
-            foreach (var (nom, grille) in Icones.Toutes)
+            foreach (var (nom, grille) in Icones.Toutes.Concat(Icones.Autres))
             {
                 var caracteres = string.Concat(grille);
                 Assert.That(caracteres.All(c => c == '#' || c == '.'), Is.True, nom);
@@ -29,10 +29,11 @@ namespace IdlePond.Tests
         }
 
         [Test]
-        public void Les_quatre_icones_du_dock_existent_et_sont_distinctes()
+        public void Les_cinq_icones_du_dock_existent_et_sont_distinctes()
         {
-            Assert.That(Icones.Toutes.Count, Is.EqualTo(4));
-            Assert.That(Icones.Toutes.Select(i => string.Concat(i.Grille)).Distinct().Count(), Is.EqualTo(4));
+            Assert.That(Icones.Toutes.Count, Is.EqualTo(5));
+            var toutes = Icones.Toutes.Concat(Icones.Autres).ToList();
+            Assert.That(toutes.Select(i => string.Concat(i.Grille)).Distinct().Count(), Is.EqualTo(toutes.Count));
         }
 
         [Test]

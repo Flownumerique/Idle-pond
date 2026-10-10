@@ -20,8 +20,9 @@ qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires
 générés par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
-jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de quatre boutons
-(Toi, Espèces, L'œuf, Journal) qui ouvrent des tiroirs. En paysage, le tiroir s'ouvre
+jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de cinq boutons
+(Toi, Espèces, Débloquer, L'œuf, Journal) qui ouvrent des tiroirs. Débloquer montre les
+lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. En paysage, le tiroir s'ouvre
 à droite. Police : Nunito. Specs : `docs/superpowers/specs/2026-10-07-*.md`.
 
 Le portage depuis le web est fini — spec

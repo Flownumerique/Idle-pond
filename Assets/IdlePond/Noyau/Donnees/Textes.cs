@@ -328,6 +328,9 @@ namespace IdlePond.Noyau.Donnees
             public const string GENRE_PRODUCTION = "captation";
             public const string GENRE_CONFORT = "absence";
             public const string GENRE_VERBE = "seul";
+            public const string DOCK_DEBLOQUER = "Débloquer";
+            public const string AUCUN_BONUS_DE_LIEU = "aucun bonus de lieu";
+            public const string BONUS_DE_LIEU_RANGS = "{0} rangs de bonus de lieu";
 
             /* — Le dock : un mot sous chaque icône, qui tient sous le pouce ————————— */
             public const string DOCK_TOI = "Toi";

@@ -40,9 +40,21 @@ Huit bonus de lieu (quatre pour la Noue, quatre pour le Gour) et sept techniques
 verbes. Toutes les valeurs sont des graines `[P]` : ni le simulateur ni une vraie partie ne
 les ont mesurées. Le simulateur n'achète aucun bonus.
 
-## §3. Ce qui reste
+## §3. L'interface
 
-- **L'interface** : l'onglet Débloquer et ses trois sous-onglets, dans Unity.
+Un cinquième bouton au dock, **Débloquer**, entre Espèces et L'œuf ; sa pastille, couleur du
+mana, compte les bonus achetables. Le tiroir porte trois puces : **Lieux** (chaque lieu
+atteint, sa maîtrise et ce qu'elle ouvre ; le suivant fermé, avec sa condition ; « ??? »
+au-delà du livré), **Bonus de lieu** (groupés par lieu atteint) et **Techniques**. Chaque
+rangée : une icône par genre, le nom, l'étiquette du genre, l'effet d'un rang, la barre des
+rangs, et Acheter (éteint tant qu'on ne peut pas payer), « max » au dernier rang, ou ce qui
+l'ouvrira.
+
+Le reste de la maquette (fusion Toi + Espèces en « Améliorer », mare à toucher, popups
+d'options et de fiche) n'est pas porté : la mare à toucher serait une mécanique neuve.
+
+## §4. Ce qui reste
+
 - **La mesure** : faire acheter les bonus par une politique du simulateur, puis régler les
   graines.
 - **L'arbre de technique du noyau v1.0 §6** (points gagnés par l'usage, permanent) reste
