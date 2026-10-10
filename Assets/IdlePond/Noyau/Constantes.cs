@@ -610,6 +610,29 @@ namespace IdlePond.Noyau
         /// </summary>
         public const double PART_REMISE_D_UN_SUCCES = 0.02;
 
+        /* ─── Bonus de lieu et techniques — spec du 2026-10-10 ─────────────────────*/
+
+        /// <summary>
+        /// [P] graine — prix du premier rang d'un bonus, en fraction du coût de creuser son
+        /// palier de prix (`Bonus.PalierDePrix`). Un bonus coûte donc ce que coûte la
+        /// profondeur où il s'ouvre : il reste un choix contre le creusement, jamais un
+        /// achat négligeable ni un mur. À mesurer en vraie partie.
+        /// </summary>
+        public const double COUT_DE_BONUS_RELATIF = 1;
+
+        /// <summary>
+        /// [P] graine — croissance du prix d'un rang au suivant. Plus douce que `g` : dix
+        /// rangs de la technique la plus longue coûtent `2^9 ≈ 512` fois le premier, ce que
+        /// la contenance d'un cycle moyen porte encore. À mesurer en vraie partie.
+        /// </summary>
+        public const double RATIO_COUT_DE_BONUS = 2;
+
+        /// <summary>
+        /// [P] graine — la technique « La main sûre » ne monte un cran que s'il coûte moins
+        /// que cette part du mana courant : elle laisse le reste s'épargner. À mesurer.
+        /// </summary>
+        public const double PART_DU_MANA_POUR_UN_ACHAT_AUTO = 0.1;
+
         /* ─── Budget de verbes (§7.5 règle 2) ───────────────────────────────────────*/
 
         /// L'arbre en porte 10 ; il en reste ~5 pour les succès. Plafond partagé.

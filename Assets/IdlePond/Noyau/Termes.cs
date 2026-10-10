@@ -15,6 +15,7 @@ namespace IdlePond.Noyau
             TermeDeFormule.MultiplicateurDrapeau, TermeDeFormule.MultiplicateurProfondeur,
             TermeDeFormule.MultiplicateurDensite, TermeDeFormule.DebitHeros, TermeDeFormule.MultiplicateurHeros,
             TermeDeFormule.MultiplicateurAmelioration, TermeDeFormule.AmeliorationGlobale,
+            TermeDeFormule.MultiplicateurDeLieu,
         };
 
         public static readonly IReadOnlyList<TermeDeFormule> DE_COUT = new[]

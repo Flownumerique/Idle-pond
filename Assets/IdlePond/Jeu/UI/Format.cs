@@ -148,10 +148,15 @@ namespace IdlePond.Jeu.UI
                     return valeur <= 1 ? E.TOI_QUI_CAPTES_SEUL : Remplir(E.TOI_GRANDI, valeur - 1);
                 case QuoiSource.AmeliorationDeRenaissance:
                     return valeur == 0 ? E.AUCUNE_AMELIORATION : Remplir(E.AMELIORE_FOIS, valeur);
+                case QuoiSource.BonusDeLieu:
+                    return valeur == 0 ? E.AUCUN_BONUS_DE_LIEU : Remplir(E.BONUS_DE_LIEU_RANGS, valeur);
                 default:
                     return E.PLUS_BAS;
             }
         }
+
+        /// La part d'un rang de bonus, en pour cent, sans décimale inutile : 0,08 → « 8 », 0,5 → « 50 ».
+        public static string Pourcent(double part) => (part * 100).ToString("0.#", Inv);
 
         /// <summary>
         /// Le nombre d'une ligne de captation : trois décimales sous dix, une au-dessus —

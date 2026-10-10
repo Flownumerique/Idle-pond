@@ -315,6 +315,38 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
+        /// Acheter le rang suivant d'un bonus de lieu ou d'une technique — l'onglet
+        /// « Débloquer », spec du 2026-10-10. Payé en MANA ; perdu à la renaissance avec lui.
+        ///
+        /// Même forme que les autres achats : refusé, l'état revient inchangé. Le bonus doit
+        /// être ouvert (son lieu atteint et assez creusé), ne pas être au rang maximal, et
+        /// payable. La table est reconstruite dans l'ordre du registre, pour que deux parties
+        /// qui achètent les mêmes rangs dans un ordre différent se sérialisent à l'identique.
+        /// </summary>
+        public static EtatJeu AcheterUnBonus(EtatJeu etat, string id)
+        {
+            var bonus = RegistreDesBonus.ParId(id);
+            if (bonus == null) return etat;
+            if (!Economie.BonusOuvert(etat, bonus) || Economie.BonusAuMaximum(etat, bonus)) return etat;
+            var cout = Economie.CoutDeBonus(etat, bonus);
+            if (etat.Cycle.ManaCourant.Lt(cout)) return etat;
+            var rangs = new Dictionary<string, int>();
+            foreach (var autre in RegistreDesBonus.Tous)
+            {
+                var rang = Economie.RangDeBonus(etat, autre.Id) + (autre.Id == id ? 1 : 0);
+                if (rang > 0) rangs[autre.Id] = rang;
+            }
+            return etat with
+            {
+                Cycle = etat.Cycle with
+                {
+                    ManaCourant = etat.Cycle.ManaCourant.Sub(cout),
+                    Bonus = rangs,
+                },
+            };
+        }
+
+        /// <summary>
         /// Améliorer — noyau v1.0 §4. Payé en SOUFFLE, permanent, et le seul débouché du
         /// Souffle tant que les miracles sont gelés ([P26]).
         ///

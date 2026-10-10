@@ -452,6 +452,17 @@ entre dans les sauvegardes.
 Les quatre premiers se paient en mana et se perdent à la renaissance. Le cinquième se paie
 en Souffle et ne se perd jamais.
 
+### L'onglet « Débloquer » (2026-10-10)
+
+| Fiction | Écran | Code |
+|---|---|---|
+| Ce qu'un lieu offre à qui l'a assez creusé | **un bonus de lieu** | `Bonus` (avec `Assise`), `AcheterUnBonus()` |
+| Ce qui vaut partout, payé en mana pour une vie | **une technique** | `Bonus` (sans `Assise`) |
+| Les creux ouverts d'un lieu dans la vie courante | **la maîtrise** | `MaitriseDuLieu` |
+
+Les deux se paient en mana et se perdent à la renaissance, comme les quatre premiers achats.
+L'écran ne dit jamais « zone » : il dit le nom du lieu.
+
 ### Les axes permanents
 
 | Fiction | Écran | Code | Appliqué par |
@@ -463,7 +474,8 @@ en Souffle et ne se perd jamais.
 
 **La ligne dure, vérifiée par test** : la technique baisse les **coûts** et automatise ;
 l'amélioration de renaissance monte la **production**, et c'est la seule chose qu'elle fait. Aucun nœud,
-aucun succès ne franchit cette ligne.
+aucun succès ne franchit cette ligne. **Amendée le 2026-10-10** : un bonus de lieu monte aussi
+la production, mais seulement celle des espèces de son lieu, et il se perd à la renaissance.
 
 ### Les mots morts
 

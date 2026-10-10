@@ -9,6 +9,12 @@ namespace IdlePond.Noyau.Donnees
     public sealed record TexteDeSucces(string Nom, string Condition, string Rapport);
 
     /// <summary>
+    /// Ce que l'écran dit d'un bonus de lieu ou d'une technique : un nom, et ce que fait un
+    /// rang. `{0}` reçoit la part d'un rang, en pour cent, que `Format` écrit.
+    /// </summary>
+    public sealed record TexteDeBonus(string Nom, string Effet);
+
+    /// <summary>
     /// IdlePond — TOUS les textes affichés, et ils sont PROVISOIRES.
     ///
     /// ╔════════════════════════════════════════════════════════════════════════╗
@@ -63,6 +69,31 @@ namespace IdlePond.Noyau.Donnees
         public static readonly TexteDAmelioration AMELIORATION_GLOBALE = new("Améliorer l’eau", "tout ce qui vit ici capte un peu plus, et tout ce qui viendra");
 
         public static readonly TexteDAmelioration AMELIORATION_CIBLEE = new(null, "ils te donnent moitié plus, à chaque fois");
+
+        /// Les bonus de l'onglet « Débloquer » (spec du 2026-10-10), par identifiant de registre.
+        static readonly IReadOnlyDictionary<string, TexteDeBonus> TEXTES_DE_BONUS = new Dictionary<string, TexteDeBonus>
+        {
+            ["noue-vase"] = new("Vase meuble", "creuser la Noue coûte {0} % de moins, par rang"),
+            ["noue-herbier"] = new("Herbier", "ce qui vit dans la Noue te donne {0} % de plus, par rang"),
+            ["noue-racines"] = new("Racines", "convaincre dans la Noue coûte {0} % de moins, par rang"),
+            ["noue-eau-calme"] = new("Eau calme", "monter d’un cran dans la Noue coûte {0} % de moins, par rang"),
+            ["gour-roche-tendre"] = new("Roche tendre", "creuser le Gour coûte {0} % de moins, par rang"),
+            ["gour-courant"] = new("Courant porteur", "ce qui vit dans le Gour te donne {0} % de plus, par rang"),
+            ["gour-abris"] = new("Abris", "convaincre dans le Gour coûte {0} % de moins, par rang"),
+            ["gour-vasques"] = new("Vasques", "monter d’un cran dans le Gour coûte {0} % de moins, par rang"),
+            ["technique-pelle"] = new("Pelle de nacre", "creuser coûte {0} % de moins, par rang"),
+            ["technique-geste"] = new("Geste sûr", "monter d’un cran coûte {0} % de moins, par rang"),
+            ["technique-approche"] = new("Approche", "convaincre coûte {0} % de moins, par rang"),
+            ["technique-croissance"] = new("Mue facile", "grandir coûte {0} % de moins, par rang"),
+            ["technique-patience"] = new("Patience", "ton absence compte {0} % plus longtemps, par rang"),
+            ["technique-main-sure"] = new("La main sûre", "monte seule le cran le moins cher, sans vider ta réserve"),
+            ["technique-sonde"] = new("La sonde", "creuse seule dès que la roche le permet"),
+        };
+
+        public static readonly TexteDeBonus BONUS_INCONNU = new("—", "—");
+
+        public static TexteDeBonus DuBonus(string id) =>
+            id != null && TEXTES_DE_BONUS.TryGetValue(id, out var texte) ? texte : BONUS_INCONNU;
 
         static readonly IReadOnlyDictionary<string, TexteDeSucces> TEXTES_DE_SUCCES = new Dictionary<string, TexteDeSucces>
         {
@@ -274,6 +305,33 @@ namespace IdlePond.Noyau.Donnees
             public const string JAMAIS = "jamais";
             public const string FOIS = "{0} fois";
 
+            /* — L’onglet Débloquer : lieux, bonus de lieu, techniques (spec du 2026-10-10) */
+            public const string DEBLOQUER = "Débloquer";
+            public const string SOUS_TITRE_DEBLOQUER = "Ce que tu peux encore ouvrir, ici et partout";
+            public const string ONGLET_LIEUX = "Lieux";
+            public const string ONGLET_BONUS_DE_LIEU = "Bonus de lieu";
+            public const string ONGLET_TECHNIQUES = "Techniques";
+            public const string LIEUX_ATTEINTS = "{0} sur {1} atteints";
+            public const string LIEU_OUVERT = "ouvert";
+            public const string MAITRISE = "Maîtrise";
+            public const string MAITRISE_SUR = "{0} / {1}";
+            public const string BONUS_S_OUVRE_A = "s’ouvre à la maîtrise {0}";
+            public const string TECHNIQUE_S_OUVRE_A = "s’ouvre à {0} creux ouverts";
+            public const string LIEU_FERME_CONDITION = "s’ouvre en creusant {0} jusqu’au fond";
+            public const string BONUS_DU_LIEU_EXPLIQUE = "Ils ne valent que pour leur lieu, et restent ici quand tu rentres dans l’œuf.";
+            public const string TECHNIQUES_EXPLIQUE = "Elles valent partout, et restent ici quand tu rentres dans l’œuf.";
+            public const string RANG_SUR = "rang {0} / {1}";
+            public const string ACHETER = "Acheter";
+            public const string AU_MAXIMUM = "max";
+            public const string VERROUILLE = "fermé";
+            public const string GENRE_COUT = "coût";
+            public const string GENRE_PRODUCTION = "captation";
+            public const string GENRE_CONFORT = "absence";
+            public const string GENRE_VERBE = "seul";
+            public const string DOCK_DEBLOQUER = "Débloquer";
+            public const string AUCUN_BONUS_DE_LIEU = "aucun bonus de lieu";
+            public const string BONUS_DE_LIEU_RANGS = "{0} rangs de bonus de lieu";
+
             /* — Le dock : un mot sous chaque icône, qui tient sous le pouce ————————— */
             public const string DOCK_TOI = "Toi";
             public const string DOCK_ESPECES = "Espèces";
@@ -426,6 +484,13 @@ namespace IdlePond.Noyau.Donnees
             foreach (var champ in typeof(Ecran).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
                 if (champ.IsLiteral && champ.GetRawConstantValue() is string chaine)
                     yield return ($"ecran {champ.Name}", chaine);
+
+            foreach (var bonus in RegistreDesBonus.Tous)
+            {
+                var texte = DuBonus(bonus.Id);
+                yield return ($"bonus {bonus.Id}.nom", texte.Nom);
+                yield return ($"bonus {bonus.Id}.effet", texte.Effet);
+            }
 
             foreach (var succes in RegistreDesSucces.Tous)
             {

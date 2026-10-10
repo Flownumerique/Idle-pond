@@ -14,6 +14,9 @@ namespace IdlePond.Noyau
         CoutCreuser, CoutNiveau, CoutDeblocage, CoutCroissance, CoutAmelioration, CoutTemple, CoutPortail, CoutReouverture,
         // confort
         CapHorsLigne, DensiteConservee, ContenanceDeDepart, NiveauDeDepart, ChargeAllieeParReponse,
+        // production, ajouté le 2026-10-10 : les bonus de lieu. En queue d'énumération pour ne
+        // décaler aucune valeur existante ; la partition vit dans Termes.cs, pas dans l'ordre.
+        MultiplicateurDeLieu,
     }
 
     public enum CapaciteId
@@ -85,6 +88,33 @@ namespace IdlePond.Noyau
     /// au débit de base de toutes. `Espece` est null pour la globale.
     public sealed record AmeliorationDeRenaissance(string Id, PorteeDAmelioration Portee, string Espece);
 
+    /* ─── Bonus de lieu et techniques (spec du 2026-10-10) ────────────────── */
+
+    /// <summary>
+    /// Ce qu'un bonus fait, par rang acheté.
+    ///   ReductionDeCout — le coût du terme est multiplié par `(1 − part) ^ rang` ;
+    ///   Production      — le débit des espèces du lieu est multiplié par `(1 + part) ^ rang` ;
+    ///   Confort         — le plafond du terme est multiplié par `1 + part × rang` ;
+    ///   Verbe           — une capacité s'ouvre au premier rang.
+    /// </summary>
+    public enum GenreDeBonus { ReductionDeCout, Production, Confort, Verbe }
+
+    /// <summary>
+    /// Un achat de l'onglet « Débloquer », payé en MANA et perdu à la renaissance comme les
+    /// quatre autres achats au mana.
+    ///
+    /// `Assise` nomme le lieu dont il ne touche que les espèces et les paliers ; null, c'est
+    /// une TECHNIQUE, qui vaut partout. La ligne du canon (CanonTests) : seul un bonus de lieu
+    /// monte une production ; une technique baisse un coût, relève un plafond ou ouvre un verbe.
+    ///
+    /// `MaitriseRequise` : pour un bonus de lieu, les paliers ouverts DANS le lieu ; pour une
+    /// technique, les paliers ouverts en tout. `PalierDePrix` ancre le prix sur le coût de ce
+    /// palier, pour qu'un bonus profond coûte ce que coûte sa profondeur.
+    /// </summary>
+    public sealed record Bonus(
+        string Id, string Assise, GenreDeBonus Genre, TermeDeFormule? Terme, double Part,
+        int RangMax, int MaitriseRequise, int PalierDePrix, CapaciteId? Capacite = null);
+
     /* ─── État ────────────────────────────────────────────────────────────── */
 
     public sealed record EtatPrng(uint Graine);
@@ -98,7 +128,8 @@ namespace IdlePond.Noyau
         Decimal ProductionPicParSeconde,
         double DureeSecondes,
         double AcquisDeSejour,
-        int NiveauDuHeros);
+        int NiveauDuHeros,
+        IReadOnlyDictionary<string, int> Bonus);
 
     public sealed record EtatPermanent(
         IReadOnlyList<double> Densites,
@@ -137,11 +168,11 @@ namespace IdlePond.Noyau
 
     /* ─── Détail de captation (§8.2) ──────────────────────────────────────── */
 
-    public enum QuoiSource { Niveau, Palier, DrapeauxPermanents, Profondeur, Densite, Heros, AmeliorationDeRenaissance }
+    public enum QuoiSource { Niveau, Palier, DrapeauxPermanents, Profondeur, Densite, Heros, AmeliorationDeRenaissance, BonusDeLieu }
 
     /// Une structure, jamais une phrase : le noyau ne fabrique aucun texte d'écran.
     /// `Valeur` est le niveau, le palier, le nombre d'espèces, les paliers ouverts,
-    /// la densité ou le rang, selon `Quoi`.
+    /// la densité ou le rang (la somme des rangs pour les bonus de lieu), selon `Quoi`.
     public sealed record SourceDeTerme(QuoiSource Quoi, double Valeur);
 
     public sealed record LigneDeCaptation(TermeDeFormule Terme, double Valeur, SourceDeTerme Source);

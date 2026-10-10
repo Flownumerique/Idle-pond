@@ -56,6 +56,7 @@ namespace IdlePond.Jeu.UI
         Renaissance renaissance;
         Succes succes;
         AmeliorationsDeRenaissance ameliorations;
+        Debloquer debloquer;
         Annonces annonces;
         Accueil accueil;
         Action<EtatJeu>[] rafraichisseurs = Array.Empty<Action<EtatJeu>>();
@@ -169,6 +170,7 @@ namespace IdlePond.Jeu.UI
             contenus.Clear();
             contenus[Tiroir.Toi] = racine.Q<VisualElement>("tiroir-toi");
             contenus[Tiroir.Especes] = racine.Q<VisualElement>("tiroir-especes");
+            contenus[Tiroir.Debloquer] = racine.Q<VisualElement>("tiroir-debloquer");
             contenus[Tiroir.Journal] = racine.Q<VisualElement>("tiroir-journal");
             contenus[Tiroir.Oeuf] = racine.Q<VisualElement>("tiroir-oeuf");
             contenus[Tiroir.Reglages] = racine.Q<VisualElement>("tiroir-reglages");
@@ -199,6 +201,7 @@ namespace IdlePond.Jeu.UI
                 () => dock != null && dock.Actif == Tiroir.Oeuf);
             succes = new Succes(racine.Q<VisualElement>("succes"));
             ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id));
+            debloquer = new Debloquer(racine.Q<VisualElement>("debloquer"), id => p.AcheterUnBonus(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));
             dock = new Dock(racine.Q<VisualElement>("dock"), AppliquerLeTiroir);
             menu = new MenuDesReglages(racine.Q<VisualElement>("menu-reglages"), reglages, FormatReconnu,
@@ -224,7 +227,7 @@ namespace IdlePond.Jeu.UI
             {
                 barre.Rafraichir, lieu.Rafraichir, creusement.Rafraichir, fiche.Rafraichir,
                 heros.Rafraichir, captation.Rafraichir, mare.Rafraichir, renaissance.Rafraichir,
-                succes.Rafraichir, ameliorations.Rafraichir, dock.Rafraichir,
+                succes.Rafraichir, ameliorations.Rafraichir, debloquer.Rafraichir, dock.Rafraichir,
             };
             AppliquerLeTiroir();
         }
@@ -482,6 +485,7 @@ namespace IdlePond.Jeu.UI
             {
                 case Tiroir.Toi: return (E.DOCK_TOI, E.SOUS_TITRE_TOI);
                 case Tiroir.Especes: return (E.DOCK_ESPECES, E.SOUS_TITRE_ESPECES);
+                case Tiroir.Debloquer: return (E.DEBLOQUER, E.SOUS_TITRE_DEBLOQUER);
                 case Tiroir.Oeuf: return (E.DOCK_OEUF, E.SOUS_TITRE_OEUF);
                 case Tiroir.Journal: return (E.DOCK_JOURNAL, E.SOUS_TITRE_JOURNAL);
                 case Tiroir.Reglages: return (E.REGLAGES, E.SOUS_TITRE_REGLAGES);

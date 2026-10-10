@@ -1,6 +1,8 @@
 using System.Collections;
 using IdlePond.Jeu;
 using IdlePond.Jeu.UI;
+using IdlePond.Noyau;
+using IdlePond.Noyau.Donnees;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -16,8 +18,8 @@ namespace IdlePond.TestsDeJeu
     {
         static readonly (Tiroir Quel, string Nom)[] TIROIRS =
         {
-            (Tiroir.Toi, "tiroir-toi"), (Tiroir.Especes, "tiroir-especes"), (Tiroir.Oeuf, "tiroir-oeuf"),
-            (Tiroir.Journal, "tiroir-journal"),
+            (Tiroir.Toi, "tiroir-toi"), (Tiroir.Especes, "tiroir-especes"), (Tiroir.Debloquer, "tiroir-debloquer"),
+            (Tiroir.Oeuf, "tiroir-oeuf"), (Tiroir.Journal, "tiroir-journal"),
         };
 
         RacineDeLInterface racine;
@@ -55,7 +57,7 @@ namespace IdlePond.TestsDeJeu
             Assert.That(racine.TiroirOuvert, Is.EqualTo(Tiroir.Aucun));
             Assert.That(Visible(arbre.Q("tiroir")), Is.False);
             Assert.That(Visible(arbre.Q("voile-du-tiroir")), Is.False);
-            Assert.That(arbre.Q("dock").childCount, Is.EqualTo(4));
+            Assert.That(arbre.Q("dock").childCount, Is.EqualTo(5));
         }
 
         [UnityTest]
@@ -91,6 +93,33 @@ namespace IdlePond.TestsDeJeu
             Assert.That(creuser.parent, Is.EqualTo(arbre.Q("centre")), "Creuser vit sur la mare, pas dans un tiroir");
             Assert.That(Visible(creuser), Is.True);
             Assert.That(arbre.Q("lieu").Q<Label>().text, Is.Not.Empty, "le lieu porte son nom");
+        }
+
+        [UnityTest]
+        public IEnumerator Debloquer_montre_une_vue_a_la_fois_et_achete_un_bonus()
+        {
+            racine.Ouvrir(Tiroir.Debloquer);
+            yield return null;
+            yield return null;
+            Assert.That(Visible(arbre.Q("debloquer-lieux")), Is.True, "on ouvre sur les lieux");
+            Assert.That(Visible(arbre.Q("debloquer-bonus")), Is.False);
+            Assert.That(Visible(arbre.Q("lieu-noue")), Is.True, "la Noue est atteinte au départ");
+
+            // Le tiroir glisse : on attend qu'il soit arrivé avant de toucher une puce.
+            yield return new WaitForSecondsRealtime(0.5f);
+            yield return Doigt.Toucher(arbre.Q("debloquer-vue-techniques"));
+            Assert.That(Visible(arbre.Q("debloquer-techniques")), Is.True);
+            Assert.That(Visible(arbre.Q("debloquer-lieux")), Is.False);
+
+            // Le premier bonus de la Noue s'achète avec la charge de départ, une fois chargé.
+            var partie = ServicesDePartie.Partie;
+            partie.Remplacer(partie.Etat with
+            {
+                Cycle = partie.Etat.Cycle with { ManaCourant = Economie.CoutDeBonus(partie.Etat, RegistreDesBonus.ParId("noue-vase")) },
+            });
+            partie.AcheterUnBonus("noue-vase");
+            yield return null;
+            Assert.That(Economie.RangDeBonus(partie.Etat, "noue-vase"), Is.EqualTo(1));
         }
     }
 }

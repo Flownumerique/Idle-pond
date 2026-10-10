@@ -1042,6 +1042,120 @@
     color: var(--couleur-souffle-fond);
 }
 
+/* ─── Débloquer : lieux, bonus de lieu, techniques (spec du 2026-10-10) ─────────────
+ * Les puces du haut sont celles du Journal, à la couleur du mana : on y dépense du mana. */
+
+.filtres-mana > .filtre.actif {
+    border-color: var(--couleur-mana);
+    background-color: var(--couleur-mana);
+}
+
+.filtres-mana > .filtre.actif > .texte {
+    color: var(--couleur-abysse);
+}
+
+.debloquer-explique {
+    margin-bottom: 24px;
+}
+
+.carte-de-lieu-tete {
+    flex-direction: row;
+    align-items: center;
+    color: rgb(124, 196, 122);
+}
+
+.carte-de-lieu-tete > .icone {
+    width: 56px;
+    height: 56px;
+}
+
+.carte-de-lieu-etat {
+    color: rgb(124, 196, 122);
+    -unity-font: url("../Polices/Nunito-Bold.ttf");
+}
+
+.carte-de-lieu.verrouillee {
+    background-color: rgb(18, 28, 30);
+}
+
+.carte-de-lieu.verrouillee > .carte-de-lieu-tete,
+.carte-de-lieu.verrouillee .carte-de-lieu-etat {
+    color: var(--couleur-jour-tu);
+}
+
+.carte-de-lieu-maitrise {
+    margin-top: 24px;
+}
+
+.carte-de-lieu-maitrise > .rail-de-seuil > .rail-de-seuil-remplissage {
+    background-color: rgb(124, 196, 122);
+}
+
+.carte-de-lieu-jalon {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 14px;
+    color: var(--couleur-mana);
+}
+
+.carte-de-lieu-jalon > .icone {
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
+
+.carte-de-lieu-jalon-niveau {
+    min-width: 90px;
+    margin-right: 16px;
+    color: var(--couleur-jour-doux);
+}
+
+.carte-de-lieu-jalon.a-venir {
+    color: var(--couleur-jour-tu);
+}
+
+.carte-de-lieu-jalon.a-venir > .texte {
+    color: var(--couleur-jour-tu);
+}
+
+.rangee-bonus-tete {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.vignette-bonus {
+    color: var(--couleur-mana);
+}
+
+.rangee-espece.verrouillee > .vignette-bonus {
+    color: var(--couleur-jour-tu);
+}
+
+.etiquette-de-genre {
+    margin-left: 16px;
+    padding: 2px 16px;
+    border-radius: 14px;
+    background-color: var(--couleur-abysse);
+    color: var(--couleur-mana);
+}
+
+.rangee-espece.verrouillee .etiquette-de-genre {
+    color: var(--couleur-jour-tu);
+}
+
+.bonus-max {
+    min-width: 200px;
+    margin-left: 24px;
+    -unity-text-align: middle-center;
+}
+
+/* La pastille de Débloquer : du mana à dépenser, pas un succès arrivé. */
+.dock-pastille-mana {
+    background-color: var(--couleur-mana);
+    color: var(--couleur-abysse);
+}
+
 .grille-de-succes {
     flex-direction: row;
     flex-wrap: wrap;

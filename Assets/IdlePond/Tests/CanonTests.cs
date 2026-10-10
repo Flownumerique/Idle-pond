@@ -31,7 +31,53 @@ namespace IdlePond.Tests
          * avait gardé la suppression. Spec 2026-09-17 [D8].
          *
          * Ce qui reste vrai, et vérifié : la technique et les succès ne montent
-         * jamais une production ; une amélioration ne fait QUE cela. */
+         * jamais une production ; une amélioration ne fait QUE cela.
+         *
+         * AMENDÉ le 2026-10-10, à la demande de l'auteur (spec « Débloquer : bonus de lieu
+         * et techniques ») : un BONUS DE LIEU, payé en mana et perdu à la renaissance, monte
+         * aussi une production — celle des espèces de SON lieu, et elle seule, par un terme
+         * nommé (`MultiplicateurDeLieu`). Les techniques de l'onglet restent du côté des
+         * coûts, des plafonds et des verbes. */
+
+        [Test, Description("seul un bonus de lieu monte une production, et seulement celle de son lieu")]
+        public void Seul_un_bonus_de_lieu_monte_une_production()
+        {
+            foreach (var bonus in RegistreDesBonus.Tous)
+            {
+                var monte = bonus.Genre == GenreDeBonus.Production
+                            || (bonus.Terme.HasValue && Termes.EstDeProduction(bonus.Terme.Value));
+                if (!monte) continue;
+                Assert.That(bonus.Assise, Is.Not.Null, $"la technique {bonus.Id} monte une production");
+                Assert.That(bonus.Genre, Is.EqualTo(GenreDeBonus.Production), bonus.Id);
+                Assert.That(bonus.Terme, Is.EqualTo(TermeDeFormule.MultiplicateurDeLieu), bonus.Id);
+            }
+        }
+
+        [Test, Description("le genre d'un bonus et son terme vont ensemble")]
+        public void Le_genre_d_un_bonus_et_son_terme_vont_ensemble()
+        {
+            foreach (var bonus in RegistreDesBonus.Tous)
+            {
+                switch (bonus.Genre)
+                {
+                    case GenreDeBonus.ReductionDeCout:
+                        Assert.That(Termes.DE_COUT, Has.Member(bonus.Terme), bonus.Id);
+                        break;
+                    case GenreDeBonus.Confort:
+                        Assert.That(Termes.DE_CONFORT, Has.Member(bonus.Terme), bonus.Id);
+                        // Un plafond ne se règle pas lieu par lieu : il n'a qu'une valeur.
+                        Assert.That(bonus.Assise, Is.Null, bonus.Id);
+                        break;
+                    case GenreDeBonus.Verbe:
+                        Assert.That(bonus.Terme.HasValue, Is.False, bonus.Id);
+                        Assert.That(bonus.Capacite.HasValue, Is.True, bonus.Id);
+                        Assert.That(bonus.Assise, Is.Null, bonus.Id);
+                        Assert.That(bonus.RangMax, Is.EqualTo(1), bonus.Id);
+                        break;
+                }
+                if (bonus.Genre != GenreDeBonus.Verbe) Assert.That(bonus.Capacite.HasValue, Is.False, bonus.Id);
+            }
+        }
 
         [Test, Description("aucun nœud de technique ne monte une production")]
         public void Aucun_noeud_de_technique_ne_monte_une_production()
@@ -119,9 +165,13 @@ namespace IdlePond.Tests
         [Test, Description("une capacité a exactement une source")]
         public void Une_capacite_a_exactement_une_source()
         {
+            // L'arbre et les techniques de l'onglet « Débloquer » sont une même source : la
+            // technique. Une capacité n'y figure qu'une fois, et jamais aussi dans un succès.
             var parLArbre = new HashSet<CapaciteId>();
             foreach (var noeud in NoeudsTechnique.Tous)
-                if (noeud.Effet.Nature == NatureDEffet.Verbe) parLArbre.Add(noeud.Effet.Capacite.Value);
+                if (noeud.Effet.Nature == NatureDEffet.Verbe) Assert.That(parLArbre.Add(noeud.Effet.Capacite.Value), Is.True, noeud.Id);
+            foreach (var bonus in RegistreDesBonus.Tous)
+                if (bonus.Genre == GenreDeBonus.Verbe) Assert.That(parLArbre.Add(bonus.Capacite.Value), Is.True, bonus.Id);
             foreach (var succes in RegistreDesSucces.Tous)
             {
                 if (succes.Effet?.Genre != GenreDEffetDeSucces.Verbe) continue;
@@ -133,7 +183,8 @@ namespace IdlePond.Tests
         [Test, Description("le budget de verbes est commun et tenu")]
         public void Le_budget_de_verbes_est_commun_et_tenu()
         {
-            var verbesDeLArbre = NoeudsTechnique.Tous.Count(n => n.Effet.Nature == NatureDEffet.Verbe);
+            var verbesDeLArbre = NoeudsTechnique.Tous.Count(n => n.Effet.Nature == NatureDEffet.Verbe)
+                                 + RegistreDesBonus.Tous.Count(b => b.Genre == GenreDeBonus.Verbe);
             var verbesDesSucces = RegistreDesSucces.Tous.Count(s => s.Effet?.Genre == GenreDEffetDeSucces.Verbe);
             Assert.That(verbesDeLArbre, Is.LessThanOrEqualTo(Constantes.BUDGET_DE_VERBES_ARBRE));
             Assert.That(verbesDeLArbre + verbesDesSucces, Is.LessThanOrEqualTo(Constantes.BUDGET_DE_VERBES_TOTAL));

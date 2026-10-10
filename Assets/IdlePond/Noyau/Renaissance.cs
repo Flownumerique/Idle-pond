@@ -17,7 +17,7 @@ namespace IdlePond.Noyau
     ///   Conservé : densité, arbre de technique, succès, couches, contenance, et le
     ///              drapeau des cent — l'unique exception.
     ///   Perdu    : espèces débloquées et leurs niveaux, paliers ouverts, mana
-    ///              courant.
+    ///              courant, bonus de lieu et techniques (payés en mana).
     ///   Le mana expire vers l'ambiant — il n'est pas détruit (Tier 0 §5).
     /// </summary>
     public static class Renaissance
@@ -53,7 +53,9 @@ namespace IdlePond.Noyau
             ProductionPicParSeconde: new Decimal(0),
             DureeSecondes: 0,
             AcquisDeSejour: 0,
-            NiveauDuHeros: Constantes.NIVEAU_DU_HEROS_AU_DEPART);
+            NiveauDuHeros: Constantes.NIVEAU_DU_HEROS_AU_DEPART,
+            // Les bonus de lieu et les techniques se paient en mana : ils se perdent avec lui.
+            Bonus: new Dictionary<string, int>());
 
         /// <summary>
         /// Les couches du corps — GDD §15.1, « une marque par assise fixée ».

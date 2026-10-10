@@ -64,6 +64,8 @@ namespace IdlePond.Noyau.Donnees
 
         public static readonly IReadOnlyList<Assise> Toutes = Construire();
 
+        public static Assise ParId(string id) => Toutes.FirstOrDefault(a => a.Id == id);
+
         public static Assise DuPalier(int index)
         {
             var assise = Toutes.FirstOrDefault(a => index >= a.IndexPremierPalier && index < a.IndexPremierPalier + a.NombreDePaliers);

@@ -30,6 +30,9 @@
                         <ui:VisualElement name="captation" class="panneau" />
                         <ui:VisualElement name="mare" />
                     </ui:VisualElement>
+                    <ui:VisualElement name="tiroir-debloquer" class="tiroir-contenu">
+                        <ui:VisualElement name="debloquer" />
+                    </ui:VisualElement>
                     <ui:VisualElement name="tiroir-oeuf" class="tiroir-contenu">
                         <ui:VisualElement name="renaissance" />
                         <ui:VisualElement name="ameliorations" />
