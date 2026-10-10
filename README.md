@@ -97,7 +97,9 @@ vérifient par des tests :
    (`EquivalenceDePasTests`).
 3. La technique baisse les **coûts** et automatise ; l'amélioration de renaissance monte la
    **production**, et c'est la seule chose qu'elle fait. Aucun nœud, **aucun
-   succès** ne franchit cette ligne (`CanonTests`).
+   succès** ne franchit cette ligne (`CanonTests`). Une exception, voulue le 2026-10-10 :
+   un **bonus de lieu** (payé en mana, perdu à la renaissance) monte la production des
+   espèces de *son* lieu, et d'aucune autre.
 4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est
    calibré contre cette lecture (`SeuilsTests`).
 5. Le plafond ne monte **que** par séjour prolongé en mana dense : le ×47,1 par

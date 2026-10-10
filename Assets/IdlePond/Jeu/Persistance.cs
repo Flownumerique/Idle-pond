@@ -199,6 +199,13 @@ namespace IdlePond.Jeu
                 if (p.AmeliorationsDeRenaissance.TryGetValue(i.Id, out var rang))
                     ameliorations[i.Id] = rang;
 
+            var bonus = new JObject();
+            foreach (var b in RegistreDesBonus.Tous)
+            {
+                var rang = Economie.RangDeBonus(etat, b.Id);
+                if (rang > 0) bonus[b.Id] = rang;
+            }
+
             var compteurs = new JObject();
             foreach (BrancheTechnique branche in Enum.GetValues(typeof(BrancheTechnique)))
                 if (p.CompteursTechnique.TryGetValue(branche, out var compteur))
@@ -221,6 +228,7 @@ namespace IdlePond.Jeu
                     ["dureeSecondes"] = N(c.DureeSecondes),
                     ["acquisDeSejour"] = N(c.AcquisDeSejour),
                     ["niveauDuHeros"] = c.NiveauDuHeros,
+                    ["bonus"] = bonus,
                 },
                 ["permanent"] = new JObject
                 {
@@ -345,6 +353,20 @@ namespace IdlePond.Jeu
                 ameliorations = lues;
             }
 
+            // Absente d'une save écrite avant le 2026-10-10 : aucun bonus, comme une vie neuve.
+            // Un rang lu est borné à son maximum, et un identifiant inconnu est ignoré.
+            IReadOnlyDictionary<string, int> bonus = cycleRepli.Bonus;
+            if (cycle["bonus"] is JObject tableBonus)
+            {
+                var lus = new Dictionary<string, int>();
+                foreach (var b in RegistreDesBonus.Tous)
+                {
+                    var rang = Math.Min(Entier(tableBonus[b.Id], 0), b.RangMax);
+                    if (rang > 0) lus[b.Id] = rang;
+                }
+                bonus = lus;
+            }
+
             IReadOnlyDictionary<BrancheTechnique, double> compteurs = permanentRepli.CompteursTechnique;
             if (permanent["compteursTechnique"] is JObject tableCompteurs)
             {
@@ -399,7 +421,8 @@ namespace IdlePond.Jeu
                     ProductionPicParSeconde: DeserialiserDecimal(cycle["productionPicParSeconde"], cycleRepli.ProductionPicParSeconde),
                     DureeSecondes: Nombre(cycle["dureeSecondes"], cycleRepli.DureeSecondes),
                     AcquisDeSejour: Nombre(cycle["acquisDeSejour"], cycleRepli.AcquisDeSejour),
-                    NiveauDuHeros: Entier(cycle["niveauDuHeros"], cycleRepli.NiveauDuHeros)),
+                    NiveauDuHeros: Entier(cycle["niveauDuHeros"], cycleRepli.NiveauDuHeros),
+                    Bonus: bonus),
                 Permanent: new EtatPermanent(
                     Densites: densites,
                     Souffle: DeserialiserDecimal(permanent["souffle"], permanentRepli.Souffle),

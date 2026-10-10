@@ -82,6 +82,8 @@ namespace IdlePond.Jeu
 
         public void AcheterUneAmelioration(string id) => Appliquer(etat => Reducteur.AcheterUneAmelioration(etat, id));
 
+        public void AcheterUnBonus(string id) => Appliquer(etat => Reducteur.AcheterUnBonus(etat, id));
+
         public void Renaitre() => Appliquer(Renaissance.Renaitre);
 
         void Appliquer(Func<EtatJeu, EtatJeu> acte)
@@ -113,7 +115,8 @@ namespace IdlePond.Jeu
             if (!(dt > 0)) return;
             DernierInstantMs = Math.Max(DernierInstantMs, horloge.MaintenantMs());
             var resultat = Reducteur.TickDetaille(Etat, dt);
-            Etat = RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches);
+            // Les verbes des techniques jouent après le pas, jamais dedans (`Automatismes`).
+            Etat = Automatismes.Appliquer(RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches));
             EtatChange?.Invoke(Etat);
             if (resultat.Declenches.Count == 0) return;
             aAnnoncer.AddRange(resultat.Declenches);

@@ -16,9 +16,11 @@ namespace IdlePond.Jeu
     /// </summary>
     public static class HorsLigne
     {
-        /// Plafond courant, en heures. La branche Entretien le pousse de 6 h à 24 h.
+        /// Plafond courant, en heures. La technique « Patience » le pousse, jusqu'au maximum
+        /// que `Horloge` garde de toute façon.
         public static double CapHorsLigneCourantHeures(EtatJeu etat) =>
-            Constantes.CAP_HORS_LIGNE_HEURES_INITIAL * Technique.FacteurDeTechnique(etat, TermeDeFormule.CapHorsLigne);
+            Constantes.CAP_HORS_LIGNE_HEURES_INITIAL * Technique.FacteurDeTechnique(etat, TermeDeFormule.CapHorsLigne)
+            * Economie.FacteurDeBonus(etat, TermeDeFormule.CapHorsLigne, null);
 
         public static RetourDeHorsLigne Crediter(EtatJeu etat, long dernierInstantMs, long maintenantMs)
         {

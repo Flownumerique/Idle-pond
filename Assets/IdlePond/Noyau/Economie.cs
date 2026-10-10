@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using IdlePond.Noyau.Donnees;
 
 namespace IdlePond.Noyau
@@ -134,7 +135,8 @@ namespace IdlePond.Noyau
             return DebitAmeliore(etat, espece)
                 .Mul(vivante.Niveau)
                 .Mul(MultiplicateurDeSeuil(vivante.Niveau))
-                .Mul(MultiplicateurDAmelioration(etat, espece));
+                .Mul(MultiplicateurDAmelioration(etat, espece))
+                .Fois(MultiplicateurDeLieu(etat, espece));
         }
 
         /// Ce qu'une espèce donne réellement par seconde, tous termes nommés appliqués.
@@ -228,6 +230,9 @@ namespace IdlePond.Noyau
                 TermeDeFormule.MultiplicateurProfondeur, MultiplicateurDeProfondeur(etat).ToNumber(), new SourceDeTerme(QuoiSource.Profondeur, etat.Cycle.PaliersOuverts)));
             lignes.Add(new LigneDeCaptation(TermeDeFormule.MultiplicateurDensite, Densite.Multiplicateur(densite), new SourceDeTerme(QuoiSource.Densite, densite)));
             lignes.Add(new LigneDeCaptation(TermeDeFormule.MultiplicateurHeros, MultiplicateurDuHeros(etat), new SourceDeTerme(QuoiSource.Heros, etat.Cycle.NiveauDuHeros)));
+            lignes.Add(new LigneDeCaptation(
+                TermeDeFormule.MultiplicateurDeLieu, MultiplicateurDeLieu(etat, espece),
+                new SourceDeTerme(QuoiSource.BonusDeLieu, RegistreDesBonus.DuLieu(espece.Assise).Sum(b => RangDeBonus(etat, b.Id)))));
             return lignes;
         }
 
@@ -259,9 +264,13 @@ namespace IdlePond.Noyau
             return facteur;
         }
 
-        /// Technique et succès se composent sur un même terme, chacun nommé et attribuable.
-        static double FacteurDeCout(EtatJeu etat, TermeDeFormule terme) =>
-            Technique.FacteurDeTechnique(etat, terme) * FacteurDeSucces(etat, terme);
+        /// <summary>
+        /// Technique, succès et bonus se composent sur un même terme, chacun nommé et
+        /// attribuable. `assise` est le lieu de ce qu'on paie — l'espèce, le palier — et ne
+        /// sert qu'aux bonus de lieu ; null, seuls les bonus valables partout comptent.
+        /// </summary>
+        static double FacteurDeCout(EtatJeu etat, TermeDeFormule terme, string assise = null) =>
+            Technique.FacteurDeTechnique(etat, terme) * FacteurDeSucces(etat, terme) * FacteurDeBonus(etat, terme, assise);
 
         /// Coût d'origine d'un palier, avant tout levier. Le palier 0 est ouvert au départ.
         public static Decimal CoutBaseDuPalier(int cible) =>
@@ -280,7 +289,8 @@ namespace IdlePond.Noyau
         public static Decimal CoutDeDescente(EtatJeu etat, int cible) =>
             CoutBaseDuPalier(cible)
                 .Mul(Technique.FacteurDeTechnique(etat, TermeDeFormule.CoutCreuser))
-                .Mul(FacteurDeSucces(etat, TermeDeFormule.CoutCreuser));
+                .Mul(FacteurDeSucces(etat, TermeDeFormule.CoutCreuser))
+                .Fois(FacteurDeBonus(etat, TermeDeFormule.CoutCreuser, LieuDuPalier(cible)));
 
         /// <summary>
         /// Ce que coûte de débloquer une espèce — noyau v1.0 §1.3.
@@ -299,7 +309,7 @@ namespace IdlePond.Noyau
         public static Decimal CoutDeDeblocage(EtatJeu etat, Espece espece) =>
             CoutBaseDuPalier(espece.Palier)
                 .Mul(Constantes.COUT_DEBLOCAGE_RATIO)
-                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutDeblocage));
+                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutDeblocage, espece.Assise));
 
         /// <summary>
         /// Coût du niveau suivant. Achat répétable de la boucle, ×1.15.
@@ -311,7 +321,7 @@ namespace IdlePond.Noyau
             DebitBaseDeLEspece(espece)
                 .Mul(Constantes.COUT_NIVEAU_PAR_DEBIT)
                 .Mul(Echelles.PuissanceDuCoutDeNiveau(Math.Max(0, niveau)))
-                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutNiveau));
+                .Mul(FacteurDeCout(etat, TermeDeFormule.CoutNiveau, espece.Assise));
 
         /// <summary>
         /// Ce que coûte de faire grandir le héros de `niveau` à `niveau + 1` — spec
@@ -339,6 +349,90 @@ namespace IdlePond.Noyau
                 .Mul(Decimal.Pow(Constantes.RATIO_COUT_D_AMELIORATION, RangDAmelioration(etat, amelioration.Id)))
                 .Mul(FacteurDeCout(etat, TermeDeFormule.CoutAmelioration));
         }
+
+        /* ─── Bonus de lieu et techniques — spec du 2026-10-10 ──────────────────────
+         *
+         * L'onglet « Débloquer ». Des achats au MANA, perdus à la renaissance comme les quatre
+         * autres. Un bonus de lieu ne touche que son lieu ; une technique vaut partout. Ils ne
+         * changent qu'à l'achat, jamais pendant un pas : le pas reste homogène et le §5.2
+         * tient sans rien faire. Un facteur neutre n'est jamais multiplié (`Fois`), pour que
+         * les parties qui n'en achètent aucun restent identiques au bit près — c'est ce que
+         * la parité vérifie.
+         */
+
+        public static int RangDeBonus(EtatJeu etat, string id) =>
+            etat.Cycle.Bonus != null && etat.Cycle.Bonus.TryGetValue(id, out var rang) ? rang : 0;
+
+        /// <summary>
+        /// La maîtrise d'un lieu : combien de ses paliers sont ouverts dans cette vie, de 0
+        /// (pas encore atteint) à son nombre de paliers. Elle se perd à la renaissance avec
+        /// les paliers : c'est la profondeur de la vie courante, pas un acquis.
+        /// </summary>
+        public static int MaitriseDuLieu(EtatJeu etat, Assise assise) =>
+            Math.Max(0, Math.Min(assise.NombreDePaliers, etat.Cycle.PaliersOuverts - assise.IndexPremierPalier));
+
+        /// Ce que `MaitriseRequise` compare : la maîtrise du lieu, ou les paliers ouverts en tout pour une technique.
+        public static int MaitrisePourLeBonus(EtatJeu etat, Bonus bonus) =>
+            bonus.Assise == null ? etat.Cycle.PaliersOuverts : MaitriseDuLieu(etat, Assises.ParId(bonus.Assise));
+
+        /// Le bonus est proposé : son lieu est atteint, et assez creusé.
+        public static bool BonusOuvert(EtatJeu etat, Bonus bonus) =>
+            MaitrisePourLeBonus(etat, bonus) >= Math.Max(1, bonus.MaitriseRequise);
+
+        public static bool BonusAuMaximum(EtatJeu etat, Bonus bonus) => RangDeBonus(etat, bonus.Id) >= bonus.RangMax;
+
+        /// <summary>
+        /// Le prix du rang suivant : `coût_base(palier de prix) × relatif × ratio ^ rang`. Il
+        /// suit la profondeur où le bonus s'ouvre, comme le déblocage suit celle de son espèce.
+        /// </summary>
+        public static Decimal CoutDeBonus(EtatJeu etat, Bonus bonus) =>
+            CoutBaseDuPalier(bonus.PalierDePrix)
+                .Mul(Constantes.COUT_DE_BONUS_RELATIF)
+                .Mul(Decimal.Pow(Constantes.RATIO_COUT_DE_BONUS, RangDeBonus(etat, bonus.Id)));
+
+        /// <summary>
+        /// Le facteur des bonus achetés sur un terme, pour ce qui se paie ou produit dans
+        /// `assise`. Neutre = 1. Une réduction compose `(1 − part) ^ rang` — jamais négative ;
+        /// une production `(1 + part) ^ rang` ; un plafond `1 + part × rang`.
+        /// </summary>
+        public static double FacteurDeBonus(EtatJeu etat, TermeDeFormule terme, string assise)
+        {
+            var facteur = 1.0;
+            foreach (var bonus in RegistreDesBonus.Tous)
+            {
+                if (bonus.Terme != terme) continue;
+                if (bonus.Assise != null && bonus.Assise != assise) continue;
+                var rang = RangDeBonus(etat, bonus.Id);
+                if (rang == 0) continue;
+                switch (bonus.Genre)
+                {
+                    case GenreDeBonus.ReductionDeCout: facteur *= Math.Pow(1 - bonus.Part, rang); break;
+                    case GenreDeBonus.Production: facteur *= Math.Pow(1 + bonus.Part, rang); break;
+                    case GenreDeBonus.Confort: facteur *= 1 + bonus.Part * rang; break;
+                }
+            }
+            return facteur;
+        }
+
+        /// Le multiplicateur que les bonus de son lieu donnent à une espèce. 1 sans bonus.
+        public static double MultiplicateurDeLieu(EtatJeu etat, Espece espece) =>
+            FacteurDeBonus(etat, TermeDeFormule.MultiplicateurDeLieu, espece.Assise);
+
+        /// Les verbes ouverts par les techniques achetées dans cette vie.
+        public static IReadOnlyCollection<CapaciteId> CapacitesDesBonus(EtatJeu etat)
+        {
+            var ouvertes = new HashSet<CapaciteId>();
+            foreach (var bonus in RegistreDesBonus.Tous)
+                if (bonus.Genre == GenreDeBonus.Verbe && bonus.Capacite.HasValue && RangDeBonus(etat, bonus.Id) > 0)
+                    ouvertes.Add(bonus.Capacite.Value);
+            return ouvertes;
+        }
+
+        static string LieuDuPalier(int index) =>
+            index >= 0 && index < Constantes.NOMBRE_DE_PALIERS ? Assises.DuPalier(index).Id : null;
+
+        /// Multiplie par un facteur, sauf s'il est neutre : une partie sans bonus reste exacte au bit près.
+        static Decimal Fois(this Decimal valeur, double facteur) => facteur == 1 ? valeur : valeur.Mul(facteur);
 
         /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
 
