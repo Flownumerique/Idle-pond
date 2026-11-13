@@ -7,6 +7,14 @@ l'utilisateur (canevas « IdlePond — Écran principal mobile », version du 20
 et l'achat groupé avec. Le reste de la nouvelle maquette (onglets fusionnés, panneau du bas,
 Récits, Bestiaire, popups) est un chantier séparé.
 
+> **Amendé le 2026-11-13 — l'achat groupé de cette spec est remplacé.** Entre-temps, un autre
+> achat en lot a été construit et livré : deux puces en tête du tiroir Espèces, « un cran » et
+> « jusqu'au seuil » (`Reducteur.AmeliorerJusquAuSeuil`, `Economie.LotDeNiveaux`), plus « Tout
+> améliorer » dans le tiroir de l'œuf. L'utilisateur a choisi de **garder ces deux puces** : le
+> sélecteur ×1 / ×10 / ×25 / MAX, `AmeliorerPlusieurs`, `GrandirPlusieurs` et le réglage
+> `AchatGroupe` décrits plus bas **ne sont pas à construire**. Le reste de la spec — toucher la
+> mare, l'ambiant, l'amélioration du toucher — tient, et n'est pas encore implémenté.
+
 ## Intention
 
 Le héros devient **actif**. Ce qu'il capte, il le capte quand le joueur touche la mare :
