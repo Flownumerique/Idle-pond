@@ -1523,3 +1523,26 @@
 .mouvement-reduit .retour {
     transition-duration: 0s;
 }
+
+/* Especes : la facon de monter (un cran, ou un lot). */
+
+.facon-de-monter-titre {
+    align-self: center;
+    margin: 0 24px 16px 0;
+}
+
+/* Le detail du retour d absence : une ligne par chose qui a bouge. */
+
+.retour-detail {
+    margin-top: 10px;
+}
+
+/* Toi : ce que tu sais (l arbre de technique). */
+
+.savoir-ligne {
+    margin-top: 16px;
+}
+
+.savoir-prochain {
+    margin-top: 16px;
+}

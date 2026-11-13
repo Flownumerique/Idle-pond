@@ -164,7 +164,9 @@ namespace IdlePond.Tests
             Assert.That(tick.Declenches, Is.Not.Empty, "l'état d'essai doit faire tomber des succès au premier pas");
             partie.Avancer(0.1);
 
-            AssertEtatsIdentiques(partie.Etat, RegleDesSucces.EnregistrerIntervalleDeSucces(tick.Etat, tick.Declenches));
+            // Puis les verbes que l’état d’essai a appris en se construisant jouent, après le pas.
+            AssertEtatsIdentiques(partie.Etat,
+                Automatismes.Appliquer(RegleDesSucces.EnregistrerIntervalleDeSucces(tick.Etat, tick.Declenches)));
             Assert.That(partie.Etat.Telemetrie.IntervallesEntreSucces, Has.Count.EqualTo(1));
             Assert.That(partie.Etat.Telemetrie.SecondesDepuisDernierSucces, Is.EqualTo(0.0));
             Assert.That(ecoute.Changements, Has.Count.EqualTo(1));
@@ -367,6 +369,29 @@ namespace IdlePond.Tests
             var releve = Telemetrie.Relever(EtatDeTravail.Creer());
             Assert.That(() => { collecteur.Publier(releve); }, Throws.Nothing);
         }
+
+        [Test, Description("le collecteur sur disque écrit une ligne par renaissance, et rien pour une partie sans cycle clos")]
+        public void Le_collecteur_sur_disque_ecrit_une_ligne_par_renaissance() => DansUnDossier(dossier =>
+        {
+            var collecteur = new CollecteurSurDisque(dossier);
+
+            collecteur.Publier(Telemetrie.Relever(EtatDeTravail.Creer()));
+            Assert.That(File.Exists(collecteur.Chemin), Is.False, "aucun cycle clos : rien à écrire");
+
+            var uneVie = IdlePond.Simulateur.Simulateur.Simuler(1, limiteDeContenu: Assises.PALIERS_LIVRES);
+            collecteur.Publier(uneVie.Releve);
+            var deuxVies = IdlePond.Simulateur.Simulateur.Simuler(2, limiteDeContenu: Assises.PALIERS_LIVRES);
+            collecteur.Publier(deuxVies.Releve);
+
+            var lignes = File.ReadAllLines(collecteur.Chemin);
+            Assert.That(lignes.Length, Is.EqualTo(2));
+            var premiere = Newtonsoft.Json.Linq.JObject.Parse(lignes[0]);
+            var seconde = Newtonsoft.Json.Linq.JObject.Parse(lignes[1]);
+            Assert.That((int)premiere["renaissances"], Is.EqualTo(1));
+            Assert.That((int)seconde["renaissances"], Is.EqualTo(2));
+            Assert.That((double)premiere["dureeSecondes"], Is.EqualTo(uneVie.Cycles[0].DureeEcouleeSecondes));
+            Assert.That((int)seconde["paliersOuverts"], Is.EqualTo(deuxVies.Cycles[1].PaliersOuverts));
+        });
     
         [Test, Description("réinitialiser rend une partie neuve, et garde une copie relisible de l'ancienne")]
         public void Reinitialiser_rend_une_partie_neuve_et_garde_une_copie() => DansUnDossier(dossier =>

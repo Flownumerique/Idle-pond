@@ -254,23 +254,34 @@ namespace IdlePond.Tests
         [Test, Description("sans verbe, les automatismes rendent le même état")]
         public void Sans_verbe_les_automatismes_rendent_le_meme_etat()
         {
-            var etat = EtatDeTravail.Creer();
+            // L’état d’essai apprend des verbes en se construisant : on les lui retire.
+            var etat = AvecLesNoeuds(EtatDeTravail.Creer());
             Assert.That(Automatismes.Appliquer(etat), Is.SameAs(etat));
         }
 
-        [Test, Description("la sonde creuse seule quand la roche le permet")]
+        static EtatJeu AvecLesNoeuds(EtatJeu etat, params string[] noeuds) =>
+            etat with { Permanent = etat.Permanent with { NoeudsTechnique = noeuds } };
+
+        [Test, Description("les galeries connues se rouvrent seules ; la roche neuve attend le joueur")]
         public void La_sonde_creuse_seule()
         {
-            var etat = AvecRangs(Creusee(3), ("technique-sonde", 1));
-            Assert.That(Economie.CapacitesDesBonus(etat), Has.Member(CapaciteId.CreusementAuto));
-            Assert.That(Automatismes.Appliquer(etat).Cycle.PaliersOuverts, Is.EqualTo(4));
+            // Depuis le 2026-11-13 le verbe vient de l'arbre (« Galeries connues ») et ne
+            // rouvre que la roche déjà ouverte dans une vie passée.
+            var etat = AvecLesNoeuds(Creusee(3), "creusement-galeries");
+            Assert.That(Automatismes.Capacites(etat), Has.Member(CapaciteId.CreusementAuto));
+            Assert.That(Automatismes.Appliquer(etat), Is.SameAs(etat), "roche neuve : à la main");
+
+            var densites = etat.Permanent.Densites.ToArray();
+            densites[3] = 1;
+            var connue = etat with { Permanent = etat.Permanent with { Densites = densites } };
+            Assert.That(Automatismes.Appliquer(connue).Cycle.PaliersOuverts, Is.EqualTo(4));
         }
 
         [Test, Description("la main sûre monte le cran le moins cher, et garde la réserve")]
         public void La_main_sure_monte_le_cran_le_moins_cher()
         {
             var etat = Reducteur.Debloquer(Reducteur.Debloquer(Creusee(4), "vairon"), "loche");
-            etat = AvecRangs(etat, ("technique-main-sure", 1));
+            etat = AvecLesNoeuds(etat, "amelioration-main-sure");
             var apres = Automatismes.Appliquer(etat);
             Assert.That(apres.Cycle.Especes["vairon"].Niveau, Is.EqualTo(2));
             Assert.That(apres.Cycle.Especes["loche"].Niveau, Is.EqualTo(1));

@@ -48,7 +48,14 @@ namespace IdlePond.Jeu.UI
 
         readonly Action<string> surDeblocage;
         readonly Action<string> surNiveau;
+        readonly Action<string> surLot;
         readonly Action<string> surCaptation;
+        readonly VisualElement puceUnCran;
+        readonly VisualElement puceAuSeuil;
+
+        /// Comment « Monter » achète : un cran, ou un lot jusqu'au prochain seuil. Un choix
+        /// d'écran, gardé le temps de la séance — il ne change aucune règle.
+        bool parLot;
         sealed class Groupe
         {
             public Assise Lieu;
@@ -71,12 +78,23 @@ namespace IdlePond.Jeu.UI
         /// Creuser n'est plus ici : c'est un bouton posé sur la mare (`Creusement`, spec du
         /// 2026-10-07), visible sans ouvrir ce tiroir.
         public Mare(VisualElement racine, Action<string> surDeblocage, Action<string> surNiveau,
-            Action<string> surCaptation)
+            Action<string> surCaptation, Action<string> surLot = null)
         {
             this.surDeblocage = surDeblocage;
             this.surNiveau = surNiveau;
+            this.surLot = surLot ?? surNiveau;
             this.surCaptation = surCaptation;
             racine.AddToClassList("panneau");
+
+            // En tête : la façon de monter. Deux puces, comme les vues de « Débloquer ».
+            var facon = Elements.Conteneur("filtres filtres-mana", "facon-de-monter");
+            facon.Add(Elements.Texte("doux sm facon-de-monter-titre", E.FACON_DE_MONTER));
+            puceUnCran = Puce("monter-un-cran", E.MONTER_UN_CRAN, false);
+            puceAuSeuil = Puce("monter-au-seuil", E.MONTER_JUSQU_AU_SEUIL, true);
+            facon.Add(puceUnCran);
+            facon.Add(puceAuSeuil);
+            racine.Add(facon);
+            ChoisirLaFacon(false);
 
             // Un groupe par lieu que le jeu livre. Seuls les lieux atteints, et le premier
             // qu'on n'atteint pas encore, se montrent ; au-delà de ce qui est livré, « ??? ».
@@ -95,6 +113,25 @@ namespace IdlePond.Jeu.UI
                 plusLoin.Add(Elements.Texte("doux base", E.INCONNU));
                 racine.Add(plusLoin);
             }
+        }
+
+        VisualElement Puce(string nom, string libelle, bool lot)
+        {
+            var puce = Elements.Conteneur("filtre", nom);
+            puce.Add(Elements.Texte("sm", libelle));
+            puce.AddManipulator(new Clickable(() =>
+            {
+                ChoisirLaFacon(lot);
+                if (dernier != null) Rafraichir(dernier);
+            }));
+            return puce;
+        }
+
+        void ChoisirLaFacon(bool lot)
+        {
+            parLot = lot;
+            Elements.Marquer(puceUnCran, "actif", !lot);
+            Elements.Marquer(puceAuSeuil, "actif", lot);
         }
 
         static Groupe EnTeteDeLieu(Assise lieu)
@@ -156,7 +193,16 @@ namespace IdlePond.Jeu.UI
                         ? E.TOUS_LES_SEUILS
                         : Format.Remplir(E.PROCHAIN_SEUIL, prochain.MultiplicateurCumule.ToString("0", CultureInfo.InvariantCulture), prochain.Seuil));
                 }
-                Elements.Poser(carte.Achat.Libelle, niveau == 0 ? E.VERBE_DEBLOQUER : E.MONTER);
+                var libelle = niveau == 0 ? E.VERBE_DEBLOQUER : E.MONTER;
+                if (parLot && niveau > 0)
+                {
+                    // Le lot payable à l'instant : son nombre de crans et son prix entier. S'il
+                    // n'y en a aucun, le bouton garde le prix d'un cran, celui qu'on attend.
+                    var lot = Economie.LotDeNiveaux(etat, espece);
+                    cout = lot.Cout;
+                    if (lot.Crans > 1) libelle = Format.Remplir(E.MONTER_PLUSIEURS, lot.Crans);
+                }
+                Elements.Poser(carte.Achat.Libelle, libelle);
                 Elements.Poser(carte.Achat.Cout, Format.Cout(cout));
                 carte.Achat.Progresser(mana, cout);
                 carte.Achat.Regler(mana.Gte(cout) && cout.Lte(limite));
@@ -236,6 +282,7 @@ namespace IdlePond.Jeu.UI
             {
                 if (dernier == null) return;
                 if (NiveauDe(dernier, espece.Id) == 0) surDeblocage(espece.Id);
+                else if (parLot) surLot(espece.Id);
                 else surNiveau(espece.Id);
             });
             carte.Racine.Add(carte.Achat.Racine);

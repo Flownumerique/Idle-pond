@@ -10,7 +10,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99189671906449e11",
+      "manaCourant": "9.99254497879569e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -101,14 +101,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {},
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [
@@ -126,7 +132,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1e14",
-      "partDeContenance": 0.00999189671906449,
+      "partDeContenance": 0.0099925449787956911,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "0e0"
@@ -139,7 +145,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99189673248425e11",
+      "manaCourant": "9.99254499221545e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -230,14 +236,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -364,7 +376,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.0012716800322679e14",
-      "partDeContenance": 0.0099792063749992825,
+      "partDeContenance": 0.00997985381139854,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -377,7 +389,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99190478434092e11",
+      "manaCourant": "9.99255304407212e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -468,14 +480,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -602,7 +620,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.7581867033218543e14",
-      "partDeContenance": 0.00568307379726088,
+      "partDeContenance": 0.0056834425065282034,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -615,7 +633,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99190479776068e11",
+      "manaCourant": "9.99255305749188e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -706,14 +724,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -840,7 +864,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.759438127663131e14",
-      "partDeContenance": 0.0056790316412159573,
+      "partDeContenance": 0.00567940008823379,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -853,7 +877,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99238790916069e11",
+      "manaCourant": "9.99303616889189e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -944,14 +968,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -1078,7 +1108,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "3.0697115013293734e15",
-      "partDeContenance": 0.00032551553801825914,
+      "partDeContenance": 0.00032553665595494213,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1091,7 +1121,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99238884854397e11",
+      "manaCourant": "9.99303710827517e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1182,14 +1212,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -1316,7 +1352,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "3.0730564674961305e15",
-      "partDeContenance": 0.00032516125083394853,
+      "partDeContenance": 0.00032518234578414083,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1329,7 +1365,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99625373974403e11",
+      "manaCourant": "9.99690199947523e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1420,14 +1456,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -1554,7 +1596,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.8591861989716438e15",
-      "partDeContenance": 0.00020571868066837103,
+      "partDeContenance": 0.00020573202157988697,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1567,7 +1609,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99625375316379e11",
+      "manaCourant": "9.99690201289499e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1658,14 +1700,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -1792,7 +1840,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.8591862207131253e15",
-      "partDeContenance": 0.00020571868002409587,
+      "partDeContenance": 0.00020573202093555212,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1805,7 +1853,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99637453101379e11",
+      "manaCourant": "9.99702279074499e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1896,14 +1944,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -2030,7 +2084,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.859360144565394e15",
-      "partDeContenance": 0.000205713802509442,
+      "partDeContenance": 0.0002057271429434069,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -2314,29 +2368,29 @@
       "graine": 3
      },
      "cycle": {
-      "manaCourant": "2.67672235903776e4",
+      "manaCourant": "5.9134146845265168e4",
       "paliersOuverts": 10,
       "especes": {
        "vairon": {
         "debloquee": true,
-        "niveau": 49
+        "niveau": 50
        },
        "loche": {
         "debloquee": true,
-        "niveau": 44
+        "niveau": 45
        },
        "epinoche": {
         "debloquee": true,
-        "niveau": 39
+        "niveau": 40
        },
        "chabot": {
         "debloquee": true,
-        "niveau": 31
+        "niveau": 36
        }
       },
-      "productionPicParSeconde": "8.73689779317953e4",
+      "productionPicParSeconde": "1.04562357681756e5",
       "dureeSecondes": 1800.0,
-      "acquisDeSejour": 19.968062550692707,
+      "acquisDeSejour": 19.929440638693187,
       "niveauDuHeros": 9
      },
      "permanent": {
@@ -2409,280 +2463,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 10,
       "compteursTechnique": {
-       "creusement": 100369.85506697568,
-       "amelioration": 1559802.2758746434,
+       "creusement": 81048.96170613615,
+       "amelioration": 1824079.9612219406,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
-      "succes": {
-       "acte-premiere-conviction": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-deuxieme-niveau": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-cinquieme-niveau": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-premier-banc-de-cinq": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-premier-creusement": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-deux-bancs": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-dixieme-niveau": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "acte-trois-bancs": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-vairon-10": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-vairon-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-loche-10": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-loche-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-epinoche-10": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-epinoche-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-chabot-10": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-chabot-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-mare-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-mare-45": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-mare-70": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-mare-95": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-mare-130": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-profondeur-3": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-profondeur-5": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-palier-sature-1": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-palier-sature-2": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-palier-sature-4": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-palier-sature-5": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "franchissement-fond-de-la-mare": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       }
-      },
-      "nombreDeRenaissances": 0,
-      "especesAyantAtteintCent": [],
-      "manaAmbiant": "1.51675791794989e5",
-      "heuresHorsLigneCreditees": 0.0,
-      "ameliorations": {}
-     },
-     "telemetrie": {
-      "cycles": [],
-      "secondesDepuisDernierSucces": 2.0,
-      "intervallesEntreSucces": [
-       1.0,
-       240.0,
-       255.0,
-       274.0,
-       190.0,
-       57.0,
-       297.0,
-       54.0,
-       114.0,
-       7.0,
-       45.0,
-       84.0,
-       18.0,
-       41.0,
-       11.0,
-       3.0,
-       26.0,
-       13.0,
-       59.0,
-       8.0,
-       1.0
-      ]
-     },
-     "derives": {
-      "production": "8.86789497222685e4",
-      "contenance": "5.9243269389677664e4",
-      "partDeContenance": 0.4518188119280504,
-      "eauTroublee": false,
-      "estBloque": true,
-      "gainDeSoufflePrevu": "2.95e2"
-     }
-    },
-    {
-     "tempsJeuSecondes": 3600.0,
-     "limiteDeContenu": 18,
-     "prng": {
-      "graine": 3
-     },
-     "cycle": {
-      "manaCourant": "8.8591282600231178e4",
-      "paliersOuverts": 10,
-      "especes": {
-       "vairon": {
-        "debloquee": true,
-        "niveau": 53
-       },
-       "loche": {
-        "debloquee": true,
-        "niveau": 48
-       },
-       "epinoche": {
-        "debloquee": true,
-        "niveau": 43
-       },
-       "chabot": {
-        "debloquee": true,
-        "niveau": 38
-       }
-      },
-      "productionPicParSeconde": "1.11112216634122e5",
-      "dureeSecondes": 3600.0,
-      "acquisDeSejour": 30.355250548198164,
-      "niveauDuHeros": 9
-     },
-     "permanent": {
-      "densites": [
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0,
-       0.0
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
       ],
-      "souffle": "0e0",
-      "contenanceMana": "2.82540502950381e3",
-      "couches": [],
-      "profondeurMaxAtteinte": 10,
-      "compteursTechnique": {
-       "creusement": 100369.85506697568,
-       "amelioration": 2815401.1944666081,
-       "recrutement": 4.0,
-       "entretien": 0.0,
-       "construction": 0.0,
-       "renaissance": 0.0
-      },
-      "noeudsTechnique": [],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -2803,13 +2597,13 @@
       },
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [],
-      "manaAmbiant": "1.919685518976e8",
+      "manaAmbiant": "4.77376976545521e6",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
-      "secondesDepuisDernierSucces": 1792.0,
+      "secondesDepuisDernierSucces": 41.0,
       "intervallesEntreSucces": [
        1.0,
        240.0,
@@ -2818,27 +2612,302 @@
        190.0,
        57.0,
        297.0,
-       54.0,
-       114.0,
+       31.0,
+       116.0,
        7.0,
-       45.0,
-       84.0,
-       18.0,
-       41.0,
+       43.0,
+       77.0,
+       17.0,
+       40.0,
+       10.0,
+       2.0,
+       25.0,
        11.0,
-       3.0,
-       26.0,
-       13.0,
-       59.0,
-       8.0,
+       50.0,
+       2.0,
+       14.0
+      ]
+     },
+     "derives": {
+      "production": "1.04562357681756e5",
+      "contenance": "5.9134146845265168e4",
+      "partDeContenance": 1.0,
+      "eauTroublee": true,
+      "estBloque": true,
+      "gainDeSoufflePrevu": "3.23e2"
+     }
+    },
+    {
+     "tempsJeuSecondes": 3600.0,
+     "limiteDeContenu": 18,
+     "prng": {
+      "graine": 3
+     },
+     "cycle": {
+      "manaCourant": "8.8523180573676239e4",
+      "paliersOuverts": 10,
+      "especes": {
+       "vairon": {
+        "debloquee": true,
+        "niveau": 53
+       },
+       "loche": {
+        "debloquee": true,
+        "niveau": 48
+       },
+       "epinoche": {
+        "debloquee": true,
+        "niveau": 43
+       },
+       "chabot": {
+        "debloquee": true,
+        "niveau": 38
+       }
+      },
+      "productionPicParSeconde": "1.11112216634122e5",
+      "dureeSecondes": 3600.0,
+      "acquisDeSejour": 30.331147091934795,
+      "niveauDuHeros": 9
+     },
+     "permanent": {
+      "densites": [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "souffle": "0e0",
+      "contenanceMana": "2.82540502950381e3",
+      "couches": [],
+      "profondeurMaxAtteinte": 10,
+      "compteursTechnique": {
+       "creusement": 81048.96170613615,
+       "amelioration": 2590209.5216148132,
+       "recrutement": 4.0,
+       "entretien": 0.0,
+       "construction": 0.0,
+       "renaissance": 0.0
+      },
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
+      "succes": {
+       "acte-premiere-conviction": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deuxieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-cinquieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-banc-de-cinq": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-premier-creusement": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-deux-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-dixieme-niveau": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "acte-trois-bancs": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-vairon-50": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-loche-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-epinoche-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-chabot-10": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-chabot-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-25": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-45": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-70": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-95": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-mare-130": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-3": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-profondeur-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-1": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-2": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-4": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "seuil-palier-sature-5": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       },
+       "franchissement-fond-de-la-mare": {
+        "obtenuAuCycle": 0,
+        "registre": "pente"
+       }
+      },
+      "nombreDeRenaissances": 0,
+      "especesAyantAtteintCent": [],
+      "manaAmbiant": "1.99931773294315e8",
+      "heuresHorsLigneCreditees": 0.0,
+      "ameliorations": {}
+     },
+     "telemetrie": {
+      "cycles": [],
+      "secondesDepuisDernierSucces": 1841.0,
+      "intervallesEntreSucces": [
        1.0,
-       10.0
+       240.0,
+       255.0,
+       274.0,
+       190.0,
+       57.0,
+       297.0,
+       31.0,
+       116.0,
+       7.0,
+       43.0,
+       77.0,
+       17.0,
+       40.0,
+       10.0,
+       2.0,
+       25.0,
+       11.0,
+       50.0,
+       2.0,
+       14.0
       ]
      },
      "derives": {
       "production": "1.11112216634122e5",
-      "contenance": "8.8591282600231178e4",
-      "partDeContenance": 0.99999999999999989,
+      "contenance": "8.8523180573676239e4",
+      "partDeContenance": 1.0,
       "eauTroublee": true,
       "estBloque": true,
       "gainDeSoufflePrevu": "3.33e2"
@@ -2856,7 +2925,7 @@
       "graine": 777
      },
      "cycle": {
-      "manaCourant": "9.99189671906449e11",
+      "manaCourant": "9.99254497879569e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -2947,14 +3016,20 @@
       "couches": [],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810316836.38019168,
+       "creusement": 7352.94336,
+       "amelioration": 745491657.58456337,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 0.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche"
+      ],
       "succes": {},
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [
@@ -2972,7 +3047,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1e14",
-      "partDeContenance": 0.00999189671906449,
+      "partDeContenance": 0.0099925449787956911,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "0e0"
@@ -3066,14 +3141,21 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810317798.18019164,
+       "creusement": 7352.94336,
+       "amelioration": 745492619.38456333,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 1.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "renaissance-heure"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -3188,7 +3270,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.9923798208465e11",
+      "manaAmbiant": "9.9930280805777e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
@@ -3221,7 +3303,7 @@
       "graine": 777
      },
      "cycle": {
-      "manaCourant": "5.290568275802694e5",
+      "manaCourant": "5.29062227580269e5",
       "paliersOuverts": 1,
       "especes": {
        "vairon": {
@@ -3307,14 +3389,21 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810317798.18019164,
+       "creusement": 7352.94336,
+       "amelioration": 745492619.38456333,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 1.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "renaissance-heure"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -3437,7 +3526,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.9923798208465e11",
+      "manaAmbiant": "9.9930280805777e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 1,
@@ -3460,7 +3549,7 @@
      "derives": {
       "production": "8.81761379300449e2",
       "contenance": "2.4477633721494421e16",
-      "partDeContenance": 2.1613887747478276E-11,
+      "partDeContenance": 2.1614108357038052E-11,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "2.9e1"
@@ -3554,14 +3643,22 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810318759.98019159,
+       "creusement": 7352.94336,
+       "amelioration": 745493581.18456328,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 2.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "renaissance-heure",
+       "renaissance-lire-l-eau"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -3684,7 +3781,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99241684520643e11",
+      "manaAmbiant": "9.99306510499163e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 1,
@@ -3727,7 +3824,7 @@
       "graine": 777
      },
      "cycle": {
-      "manaCourant": "9.02508705872226e5",
+      "manaCourant": "9.02514105872226e5",
       "paliersOuverts": 1,
       "especes": {
        "vairon": {
@@ -3813,14 +3910,22 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810318759.98019159,
+       "creusement": 7352.94336,
+       "amelioration": 745493581.18456328,
        "recrutement": 5.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 2.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "renaissance-heure",
+       "renaissance-lire-l-eau"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -3947,7 +4052,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99241684520643e11",
+      "manaAmbiant": "9.99306510499163e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 2,
@@ -3977,7 +4082,7 @@
      "derives": {
       "production": "1.50418117645371e3",
       "contenance": "8.10244909073436e17",
-      "partDeContenance": 1.1138714921446396E-12,
+      "partDeContenance": 1.1138781567962028E-12,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "3.8e1"
@@ -4071,14 +4176,22 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810319721.78019154,
+       "creusement": 7352.94336,
+       "amelioration": 745494542.98456323,
        "recrutement": 5.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 3.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "renaissance-heure",
+       "renaissance-lire-l-eau"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -4205,7 +4318,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99248001119784e11",
+      "manaAmbiant": "9.99312827103704e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 2,
@@ -4255,7 +4368,7 @@
       "graine": 777
      },
      "cycle": {
-      "manaCourant": "1.532708750489898e6",
+      "manaCourant": "1.5327141504899e6",
       "paliersOuverts": 1,
       "especes": {
        "vairon": {
@@ -4341,14 +4454,23 @@
       ],
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
-       "creusement": 8147.2703999999994,
-       "amelioration": 810319721.78019154,
+       "creusement": 7352.94336,
+       "amelioration": 745494542.98456323,
        "recrutement": 6.0,
        "entretien": 0.0,
        "construction": 0.0,
        "renaissance": 3.0
       },
-      "noeudsTechnique": [],
+      "noeudsTechnique": [
+       "creusement-etaiement",
+       "creusement-drainage",
+       "amelioration-repetition",
+       "amelioration-main-sure",
+       "recrutement-approche",
+       "recrutement-habitudes",
+       "renaissance-heure",
+       "renaissance-lire-l-eau"
+      ],
       "succes": {
        "acte-premiere-conviction": {
         "obtenuAuCycle": 0,
@@ -4479,7 +4601,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99248001119784e11",
+      "manaAmbiant": "9.99312827103704e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 3,
@@ -4516,7 +4638,7 @@
      "derives": {
       "production": "2.55451458414983e3",
       "contenance": "2.682027274976889e19",
-      "partDeContenance": 5.7147396105548747E-14,
+      "partDeContenance": 5.714759744578315E-14,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "5e1"
@@ -4527,7 +4649,7 @@
  ],
  "simulation": {
   "instant": {
-   "tempsJeuSecondes": 327300.0,
+   "tempsJeuSecondes": 331320.0,
    "limiteDeContenu": 62,
    "prng": {
     "graine": 7
@@ -4543,71 +4665,71 @@
    },
    "permanent": {
     "densites": [
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115,
-     5.846699519141593E+115
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177,
+     6.4937090396136562E+177
     ],
-    "souffle": "7.5256179458024e94",
-    "contenanceMana": "2.6606587491460307e28",
+    "souffle": "1.57640860944174e135",
+    "contenanceMana": "2.660207946603562e28",
     "couches": [
      "noue",
      "gour",
@@ -4618,14 +4740,34 @@
     ],
     "profondeurMaxAtteinte": 62,
     "compteursTechnique": {
-     "creusement": 1.6779193781139761E+25,
-     "amelioration": 4.1528416715161278E+30,
-     "recrutement": 206.0,
+     "creusement": 1.2137492945779439E+25,
+     "amelioration": 8.19853534911248E+30,
+     "recrutement": 207.0,
      "entretien": 0.0,
      "construction": 0.0,
      "renaissance": 15.0
     },
-    "noeudsTechnique": [],
+    "noeudsTechnique": [
+     "creusement-etaiement",
+     "creusement-drainage",
+     "creusement-file",
+     "creusement-percement",
+     "creusement-galeries",
+     "amelioration-repetition",
+     "amelioration-main-sure",
+     "amelioration-geste",
+     "amelioration-elan",
+     "recrutement-approche",
+     "recrutement-habitudes",
+     "recrutement-memoire",
+     "recrutement-reputation",
+     "recrutement-refuge",
+     "renaissance-heure",
+     "renaissance-lire-l-eau",
+     "renaissance-ce-qui-reste",
+     "renaissance-coquille",
+     "renaissance-chemin-connu"
+    ],
     "succes": {
      "acte-premiere-conviction": {
       "obtenuAuCycle": 0,
@@ -4868,155 +5010,155 @@
      "espece-6-2",
      "espece-6-3"
     ],
-    "manaAmbiant": "2.6269669036774e197",
+    "manaAmbiant": "9.05782457822891e277",
     "heuresHorsLigneCreditees": 0.0,
     "ameliorations": {
-     "amelioration-globale": 158,
-     "amelioration-vairon": 158,
-     "amelioration-loche": 158,
-     "amelioration-epinoche": 158,
-     "amelioration-chabot": 158,
-     "amelioration-lamproie": 158,
-     "amelioration-ombre": 158,
-     "amelioration-espece-3-1": 158,
-     "amelioration-espece-3-2": 158,
-     "amelioration-espece-3-3": 158,
-     "amelioration-espece-3-4": 158,
-     "amelioration-espece-4-1": 158,
-     "amelioration-espece-4-2": 158,
-     "amelioration-espece-4-3": 158,
-     "amelioration-espece-4-4": 158,
-     "amelioration-espece-5-1": 158,
-     "amelioration-espece-5-2": 158,
-     "amelioration-espece-5-3": 158,
-     "amelioration-espece-5-4": 158,
-     "amelioration-espece-6-1": 158,
-     "amelioration-espece-6-2": 158,
-     "amelioration-espece-6-3": 158
+     "amelioration-globale": 225,
+     "amelioration-vairon": 225,
+     "amelioration-loche": 225,
+     "amelioration-epinoche": 225,
+     "amelioration-chabot": 225,
+     "amelioration-lamproie": 225,
+     "amelioration-ombre": 225,
+     "amelioration-espece-3-1": 225,
+     "amelioration-espece-3-2": 225,
+     "amelioration-espece-3-3": 225,
+     "amelioration-espece-3-4": 225,
+     "amelioration-espece-4-1": 225,
+     "amelioration-espece-4-2": 225,
+     "amelioration-espece-4-3": 225,
+     "amelioration-espece-4-4": 225,
+     "amelioration-espece-5-1": 225,
+     "amelioration-espece-5-2": 225,
+     "amelioration-espece-5-3": 225,
+     "amelioration-espece-5-4": 224,
+     "amelioration-espece-6-1": 224,
+     "amelioration-espece-6-2": 224,
+     "amelioration-espece-6-3": 224
     }
    },
    "telemetrie": {
     "cycles": [
      {
       "index": 0,
-      "dureeEcouleeSecondes": 11220.0,
-      "paliersOuverts": 10,
-      "productionPicParSeconde": "1.56037085139124e5",
-      "souffleGagne": "3.95e2"
+      "dureeEcouleeSecondes": 11340.0,
+      "paliersOuverts": 11,
+      "productionPicParSeconde": "2.48920737178525e5",
+      "souffleGagne": "4.98e2"
      },
      {
       "index": 1,
       "dureeEcouleeSecondes": 12540.0,
       "paliersOuverts": 15,
-      "productionPicParSeconde": "5.23324538052244e11",
-      "souffleGagne": "7.23411e5"
+      "productionPicParSeconde": "8.29851831144504e11",
+      "souffleGagne": "9.10962e5"
      },
      {
       "index": 2,
       "dureeEcouleeSecondes": 13620.0,
       "paliersOuverts": 19,
-      "productionPicParSeconde": "6.16707398958759e19",
-      "souffleGagne": "7.853072003e9"
+      "productionPicParSeconde": "6.4565003001491e20",
+      "souffleGagne": "2.5409644429e10"
      },
      {
       "index": 3,
-      "dureeEcouleeSecondes": 14880.0,
+      "dureeEcouleeSecondes": 14940.0,
       "paliersOuverts": 24,
-      "productionPicParSeconde": "2.54505943018025e29",
-      "souffleGagne": "5.04485820433067e14"
+      "productionPicParSeconde": "6.0867536001408e31",
+      "souffleGagne": "7.8017649286176258e15"
      },
      {
       "index": 4,
-      "dureeEcouleeSecondes": 16200.0,
+      "dureeEcouleeSecondes": 16260.0,
       "paliersOuverts": 28,
-      "productionPicParSeconde": "1.65155399958341e40",
-      "souffleGagne": "1.2851280090261088e20"
+      "productionPicParSeconde": "3.99066186723522e44",
+      "souffleGagne": "1.9976641027047615e22"
      },
      {
       "index": 5,
-      "dureeEcouleeSecondes": 17640.0,
-      "paliersOuverts": 32,
-      "productionPicParSeconde": "8.77919317246196e51",
-      "souffleGagne": "9.36973488016708e25"
+      "dureeEcouleeSecondes": 17880.0,
+      "paliersOuverts": 33,
+      "productionPicParSeconde": "2.45089176056221e59",
+      "souffleGagne": "4.9506482005513277e29"
      },
      {
       "index": 6,
-      "dureeEcouleeSecondes": 19320.0,
-      "paliersOuverts": 37,
-      "productionPicParSeconde": "9.90282323313837e64",
-      "souffleGagne": "3.1468751537260533e32"
+      "dureeEcouleeSecondes": 19740.0,
+      "paliersOuverts": 38,
+      "productionPicParSeconde": "2.02322150683803e76",
+      "souffleGagne": "1.4223999110088661e38"
      },
      {
       "index": 7,
-      "dureeEcouleeSecondes": 21000.0,
-      "paliersOuverts": 41,
-      "productionPicParSeconde": "4.69109538489138e78",
-      "souffleGagne": "2.1658936688792871e39"
+      "dureeEcouleeSecondes": 21480.0,
+      "paliersOuverts": 42,
+      "productionPicParSeconde": "7.01155470558825e94",
+      "souffleGagne": "2.6479340447957251e47"
      },
      {
       "index": 8,
-      "dureeEcouleeSecondes": 22860.0,
-      "paliersOuverts": 46,
-      "productionPicParSeconde": "4.37394062972933e93",
-      "souffleGagne": "6.6135774205261484e46"
+      "dureeEcouleeSecondes": 23520.0,
+      "paliersOuverts": 47,
+      "productionPicParSeconde": "2.92810473882872e115",
+      "souffleGagne": "5.4111964839845905e57"
      },
      {
       "index": 9,
-      "dureeEcouleeSecondes": 25020.0,
-      "paliersOuverts": 50,
-      "productionPicParSeconde": "1.376794496506321e109",
-      "souffleGagne": "3.7105181531779641e54"
+      "dureeEcouleeSecondes": 25620.0,
+      "paliersOuverts": 51,
+      "productionPicParSeconde": "6.29329661648093e137",
+      "souffleGagne": "7.9330300746189844e68"
      },
      {
       "index": 10,
-      "dureeEcouleeSecondes": 27180.0,
-      "paliersOuverts": 54,
-      "productionPicParSeconde": "1.693618811488744e125",
-      "souffleGagne": "4.1153600225116929e62"
+      "dureeEcouleeSecondes": 27780.0,
+      "paliersOuverts": 55,
+      "productionPicParSeconde": "1.5877165591795519e162",
+      "souffleGagne": "1.2600462527937424e81"
      },
      {
       "index": 11,
-      "dureeEcouleeSecondes": 29760.0,
-      "paliersOuverts": 59,
-      "productionPicParSeconde": "2.27744802293041e142",
-      "souffleGagne": "1.5091216064089765e71"
+      "dureeEcouleeSecondes": 30480.0,
+      "paliersOuverts": 60,
+      "productionPicParSeconde": "3.41674008188043e188",
+      "souffleGagne": "1.8484426098422504e94"
      },
      {
       "index": 12,
-      "dureeEcouleeSecondes": 31980.0,
+      "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "7.83288248349332e159",
-      "souffleGagne": "8.85035732809321e79"
+      "productionPicParSeconde": "1.6650646288556319e216",
+      "souffleGagne": "1.290373832986252e108"
      },
      {
       "index": 13,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "5.38983693655318e176",
-      "souffleGagne": "2.3216022347838097e88"
+      "productionPicParSeconde": "3.53093123552355e244",
+      "souffleGagne": "1.8790772297922056e122"
      },
      {
       "index": 14,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "8.80747240219385e192",
-      "souffleGagne": "2.9677386007183735e96"
+      "productionPicParSeconde": "3.11889113476064e273",
+      "souffleGagne": "5.5847033356845737e136"
      }
     ],
-    "secondesDepuisDernierSucces": 327300.0,
+    "secondesDepuisDernierSucces": 331320.0,
     "intervallesEntreSucces": []
    },
    "derives": {
-    "production": "1.8494331658231598e153",
-    "contenance": "2.6606587491460307e28",
-    "partDeContenance": 1.3530483761419843E-27,
+    "production": "9.8737329316484459e235",
+    "contenance": "5.3204158932071239e28",
+    "partDeContenance": 6.7663883280183478E-28,
     "eauTroublee": false,
     "estBloque": false,
     "gainDeSoufflePrevu": "0e0"
    }
   },
   "cyclesAcheves": 15,
-  "secondesActives": 327300.0,
-  "secondesEcoulees": 327300.0
+  "secondesActives": 331320.0,
+  "secondesEcoulees": 331320.0
  }
 }

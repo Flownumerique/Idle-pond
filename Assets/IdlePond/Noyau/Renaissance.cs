@@ -81,7 +81,11 @@ namespace IdlePond.Noyau
         /// « le blocage est doux, il peut continuer à jouer indéfiniment ». Rester
         /// jauge pleine ne fait plus renaître à sa place.
         /// </summary>
-        public static EtatJeu Renaitre(EtatJeu etat)
+        public static EtatJeu Renaitre(EtatJeu etat) =>
+            // Rentrer apprend à rentrer : le compteur de renaissances vient de monter.
+            Technique.Apprendre(RenaitreSansApprendre(etat), BrancheTechnique.Renaissance);
+
+        static EtatJeu RenaitreSansApprendre(EtatJeu etat)
         {
             var pic = etat.Cycle.ProductionPicParSeconde;
             var souffleGagne = GainDeSoufflePrevu(etat);
@@ -93,7 +97,9 @@ namespace IdlePond.Noyau
             // agit sur la production, par le multiplicateur de densité.
             // Aucun facteur n'est écrit en dur — le ×47,1 visé est un RÉSULTAT de
             // `A∞` et `τ₀`, pas une ligne de code (§2.B).
-            var contenanceMana = Economie.Contenance(etat);
+            // La coquille épaisse (arbre) n'est pas fixée avec : elle s'applique à la lecture,
+            // sans quoi elle se composerait à chaque renaissance.
+            var contenanceMana = Economie.ContenanceAFixer(etat);
 
             var cycles = new List<MesureDeCycle>(etat.Telemetrie.Cycles)
             {

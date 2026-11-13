@@ -22,7 +22,9 @@ générés par script ; le cahier des charges du vrai dessin est `docs/da/gabari
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
 jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de cinq boutons
 (Toi, Espèces, Débloquer, L'œuf, Journal) qui ouvrent des tiroirs. Débloquer montre les
-lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. En paysage, le tiroir s'ouvre
+lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. Le tiroir Toi
+liste ce que le héros a appris pour toujours (l'arbre de technique : trente nœuds, appris par
+l'usage, dont les verbes qui automatisent la redescente). En paysage, le tiroir s'ouvre
 à droite. Police : Nunito. Specs : `docs/superpowers/specs/2026-10-07-*.md`.
 
 Le portage depuis le web est fini — spec
@@ -100,7 +102,9 @@ vérifient par des tests :
    **production**, et c'est la seule chose qu'elle fait. Aucun nœud, **aucun
    succès** ne franchit cette ligne (`CanonTests`). Une exception, voulue le 2026-10-10 :
    un **bonus de lieu** (payé en mana, perdu à la renaissance) monte la production des
-   espèces de *son* lieu, et d'aucune autre.
+   espèces de *son* lieu, et d'aucune autre. Une seconde, voulue le 2026-11-13 :
+   l'amélioration **de séjour** ne monte pas la production, elle raccourcit le temps que met
+   la contenance à monter, sur dix rangs au plus.
 4. Cent individus d'une espèce valent **×16**, jamais ×1024 — `D = 2.31` est
    calibré contre cette lecture (`SeuilsTests`).
 5. Le plafond ne monte **que** par séjour prolongé en mana dense : le ×47,1 par

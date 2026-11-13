@@ -88,7 +88,8 @@ namespace IdlePond.Tests
         {
             var depart = EtatDeTravail.Creer();
             var avant = depart with { Permanent = depart.Permanent with { NoeudsTechnique = new[] { "noeud-temoin-a", "noeud-temoin-b" } } };
-            Assert.That(Renaissance.Renaitre(avant).Permanent.NoeudsTechnique, Is.EqualTo(new[] { "noeud-temoin-a", "noeud-temoin-b" }));
+            // Rien de ce qu’on savait ne se perd ; rentrer peut en apprendre davantage.
+            Assert.That(Renaissance.Renaitre(avant).Permanent.NoeudsTechnique.Take(2), Is.EqualTo(new[] { "noeud-temoin-a", "noeud-temoin-b" }));
         }
 
         [Test, Description("les compteurs de technique traversent, et celui de la renaissance monte d’un")]

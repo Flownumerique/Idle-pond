@@ -41,7 +41,7 @@ namespace IdlePond.Tests
                 Assert.That(ciblee.Espece, Is.EqualTo(espece.Id));
                 Assert.That(AmeliorationsDeRenaissance.ParId(ciblee.Id), Is.SameAs(ciblee));
             }
-            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(Especes.Toutes.Count + 1));
+            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(Especes.Toutes.Count + 2));
         }
 
         [Test, Description("les graines sont positives, et le coût croît")]
@@ -200,6 +200,84 @@ namespace IdlePond.Tests
             var a = Reducteur.AcheterUneAmelioration(Reducteur.AcheterUneAmelioration(riche, "amelioration-loche"), AmeliorationsDeRenaissance.GLOBALE_ID);
             var b = Reducteur.AcheterUneAmelioration(Reducteur.AcheterUneAmelioration(riche, AmeliorationsDeRenaissance.GLOBALE_ID), "amelioration-loche");
             Assert.That(a.Permanent.AmeliorationsDeRenaissance.Keys.ToArray(), Is.EqualTo(b.Permanent.AmeliorationsDeRenaissance.Keys.ToArray()));
+        }
+
+        /* ─── L'amélioration de séjour — 2026-11-13 ───────────────────────────── */
+
+        static readonly AmeliorationDeRenaissance Sejour = AmeliorationsDeRenaissance.ParId(AmeliorationsDeRenaissance.SEJOUR_ID);
+
+        static EtatJeu AvecDuSouffle(EtatJeu etat, string souffle) =>
+            etat with { Permanent = etat.Permanent with { Souffle = Decimal.Parse(souffle) } };
+
+        [Test, Description("sans rang de séjour, le temps du séjour est exactement celui d'avant")]
+        public void Sans_rang_de_sejour_le_temps_du_sejour_ne_bouge_pas()
+        {
+            var etat = EtatDeTravail.Creer();
+            Assert.That(Economie.FacteurDuSejour(etat), Is.EqualTo(1));
+            Assert.That(Reducteur.TauDuSejourSecondes(etat), Is.EqualTo(
+                Constantes.TAU_SEJOUR_HEURES * 3600 * Math.Pow(etat.Reglage.CroissanceDuSejourParPalier, etat.Permanent.ProfondeurMaxAtteinte)));
+        }
+
+        [Test, Description("chaque rang de séjour raccourcit le temps du séjour de sa part, et rien d'autre ne bouge")]
+        public void Chaque_rang_de_sejour_raccourcit_le_temps_du_sejour()
+        {
+            var sans = EtatDeTravail.Creer();
+            var avec = Amelioree(sans, new Dictionary<string, int> { [Sejour.Id] = 3 });
+            Assert.That(Reducteur.TauDuSejourSecondes(avec), Is.EqualTo(
+                Reducteur.TauDuSejourSecondes(sans) * Math.Pow(1 - Constantes.AMELIORATION_DE_SEJOUR_PAR_RANG, 3)).Within(1e-9));
+            // Ni la production ni la valeur vers laquelle l'acquis sature : seulement le temps.
+            Assert.That(Economie.ProductionTotaleParSeconde(avec).ToString(), Is.EqualTo(Economie.ProductionTotaleParSeconde(sans).ToString()));
+            Assert.That(Reducteur.Tick(avec, 1e9).Cycle.AcquisDeSejour, Is.EqualTo(Constantes.ACQUIS_MAX).Within(1e-9));
+            Assert.That(Reducteur.Tick(avec, 3600).Cycle.AcquisDeSejour, Is.GreaterThan(Reducteur.Tick(sans, 3600).Cycle.AcquisDeSejour));
+        }
+
+        [Test, Description("le séjour a un dernier rang : au-delà, l'achat est refusé et le Souffle reste")]
+        public void Le_sejour_a_un_dernier_rang()
+        {
+            var plein = AvecDuSouffle(
+                Amelioree(EtatDeTravail.Creer(), new Dictionary<string, int> { [Sejour.Id] = Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR }),
+                "1e300");
+            Assert.That(Economie.AmeliorationAuMaximum(plein, Sejour), Is.True);
+            Assert.That(Reducteur.AcheterUneAmelioration(plein, Sejour.Id), Is.SameAs(plein));
+            // Les autres n'ont pas de dernier rang.
+            Assert.That(Economie.AmeliorationAuMaximum(plein, AmeliorationsDeRenaissance.CibleeDe(Vairon.Id)), Is.False);
+            // Le temps du séjour est donc borné par le bas.
+            Assert.That(Economie.FacteurDuSejour(plein), Is.EqualTo(
+                Math.Pow(1 - Constantes.AMELIORATION_DE_SEJOUR_PAR_RANG, Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR)).Within(1e-12));
+            Assert.That(Economie.FacteurDuSejour(plein), Is.GreaterThan(0.1));
+        }
+
+        [Test, Description("le séjour se paie en Souffle, à son propre prix et à son propre ratio")]
+        public void Le_sejour_se_paie_en_Souffle_a_son_propre_ratio()
+        {
+            var riche = AvecDuSouffle(EtatDeTravail.Creer(), "1e9");
+            var premier = Economie.CoutDAmelioration(riche, Sejour);
+            var apres = Reducteur.AcheterUneAmelioration(riche, Sejour.Id);
+            Assert.That(Economie.RangDAmelioration(apres, Sejour.Id), Is.EqualTo(1));
+            Assert.That(apres.Permanent.Souffle.ToNumber(), Is.EqualTo(riche.Permanent.Souffle.Sub(premier).ToNumber()).Within(1e-3));
+            Assert.That(Economie.CoutDAmelioration(apres, Sejour).Div(premier).ToNumber(),
+                Is.EqualTo(Constantes.RATIO_COUT_D_AMELIORATION_DE_SEJOUR).Within(1e-9));
+            // Trop pauvre : refusé.
+            var pauvre = AvecDuSouffle(EtatDeTravail.Creer(), "1");
+            Assert.That(Reducteur.AcheterUneAmelioration(pauvre, Sejour.Id), Is.SameAs(pauvre));
+        }
+
+        [Test, Description("avec des rangs de séjour, 480 pas de 60 s valent toujours un pas de 8 h")]
+        public void Avec_des_rangs_de_sejour_l_equivalence_de_pas_tient()
+        {
+            var depart = Amelioree(EtatDeTravail.Creer(), new Dictionary<string, int> { [Sejour.Id] = 4 });
+            var enUnPas = Reducteur.Tick(depart, 8 * 3600);
+            var enPetitsPas = depart;
+            for (var i = 0; i < 480; i += 1) enPetitsPas = Reducteur.Tick(enPetitsPas, 60);
+            Assert.That(enPetitsPas.Cycle.AcquisDeSejour, Is.EqualTo(enUnPas.Cycle.AcquisDeSejour).Within(1e-9));
+            Assert.That(enPetitsPas.Cycle.ManaCourant.Div(enUnPas.Cycle.ManaCourant).ToNumber(), Is.EqualTo(1).Within(1e-9));
+        }
+
+        [Test, Description("le rang de séjour traverse la renaissance et la sauvegarde")]
+        public void Le_rang_de_sejour_traverse_la_renaissance()
+        {
+            var avec = Amelioree(EtatDeTravail.Creer(), new Dictionary<string, int> { [Sejour.Id] = 2 });
+            Assert.That(Economie.RangDAmelioration(Renaissance.Renaitre(avec), Sejour.Id), Is.EqualTo(2));
         }
     }
 }

@@ -313,6 +313,43 @@ namespace IdlePond.Noyau
         /// </summary>
         public const double RATIO_COUT_D_AMELIORATION = 4;
 
+        /* ─── L'amélioration de séjour — 2026-11-13 ─────────────────────────────────
+         * RESULTATS.md, Findings 6 et 7 : ni le Souffle ni les bonus ne changent la durée
+         * d'une vie, parce qu'elle est celle de l'acquis de séjour, qui ne dépend que du
+         * temps. Cette amélioration est le seul achat qui touche ce temps : chaque rang
+         * multiplie `τ` par `(1 − part)`. Elle est BORNÉE en rangs — un `τ` qui pourrait
+         * tendre vers zéro referait de la contenance un forfait (amendement du 2026-09-11).
+         */
+
+        /// [P] graine — part du temps de séjour retirée par rang. Dix rangs : `τ × 0,35`.
+        public const double AMELIORATION_DE_SEJOUR_PAR_RANG = 0.1;
+
+        /// [P] graine — le dernier rang. Au-delà, le noyau refuse l'achat.
+        public const int RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR = 10;
+
+        /// [P] graine — coût du premier rang, en Souffle. La première vie en rapporte ~5.
+        public const double SOUFFLE_COUT_D_AMELIORATION_DE_SEJOUR = 5;
+
+        /// <summary>
+        /// [P] graine — chaque rang coûte ce facteur de plus que le précédent. Bien plus
+        /// raide que les autres : le Souffle gagné est multiplié par plusieurs milliers
+        /// d'une vie à la suivante, et dix rangs doivent s'étaler sur la descente au lieu
+        /// de tomber tous à la troisième vie.
+        ///
+        /// MESURÉ le 2026-11-13 (`MesurePolitiquesDAmeliorationTests`, RESULTATS.md
+        /// Finding 8), quinze cycles, politique « le séjour d'abord » :
+        ///
+        /// | ratio   | cycle 5 | cycle 10 | cycle 15 | jeu actif |
+        /// |---------|---------|----------|----------|-----------|
+        /// | (sans)  | 4,5 h   | 7,0 h    | 8,9 h    | 90,9 h    |
+        /// | 1 000   | 2,7 h   | 2,4 h    | 3,1 h    | 40,7 h    |
+        /// | 100 000 | 3,3 h   | 2,4 h    | 3,1 h    | 44,8 h    |
+        ///
+        /// Le ratio ne déplace que le moment où les rangs tombent ; la durée totale tient
+        /// à la part par rang et au rang maximal. La durée visée reste à trancher.
+        /// </summary>
+        public const double RATIO_COUT_D_AMELIORATION_DE_SEJOUR = 100000;
+
         /* ─── Graines d'échelle économique ──────────────────────────────────────────
          * Le prompt de lancement fixe les RATIOS (g, D, ×1.15) mais aucune échelle
          * absolue. Ces graines fixent l'origine des trois courbes géométriques ; elles
@@ -621,11 +658,24 @@ namespace IdlePond.Noyau
         public const double COUT_DE_BONUS_RELATIF = 1;
 
         /// <summary>
-        /// [P] graine — croissance du prix d'un rang au suivant. Plus douce que `g` : dix
-        /// rangs de la technique la plus longue coûtent `2^9 ≈ 512` fois le premier, ce que
-        /// la contenance d'un cycle moyen porte encore. À mesurer en vraie partie.
+        /// [P] graine — croissance du prix d'un rang au suivant. Un rang de plus coûte à peu
+        /// près deux paliers de plus (`6 ≈ g²`) : les rangs s'ouvrent à mesure qu'on descend,
+        /// au lieu de tomber tous dès que le bonus s'ouvre.
+        ///
+        /// MESURÉ le 2026-11-13 (`MesureDesBonusTests`, RESULTATS.md Finding 7), sur les 18
+        /// paliers livrés, rangs tenus à la fin des vies 1 / 2 / 3, sur 70 :
+        ///
+        /// | ratio | acheteur prudent (10 % du mana) | acheteur avide (dès que payable) |
+        /// |-------|---------------------------------|----------------------------------|
+        /// | 2     | 41 / 60 / 69                    | 54 / 67 / 70                     |
+        /// | 6     | 23 / 43 / 58                    | 32 / 54 / 65                     |
+        ///
+        /// À 2, le bonus n'était pas un choix. À 6, la première vie en tient moins de la
+        /// moitié. Dès la quatrième vie tout est tenu quand même : les prix sont ancrés sur
+        /// des paliers livrés, et la production les dépasse. Ce ratio ne peut pas l'empêcher ;
+        /// c'est la profondeur à venir (assises III+) qui redonnera des rangs chers.
         /// </summary>
-        public const double RATIO_COUT_DE_BONUS = 2;
+        public const double RATIO_COUT_DE_BONUS = 6;
 
         /// <summary>
         /// [P] graine — la technique « La main sûre » ne monte un cran que s'il coûte moins
@@ -637,7 +687,10 @@ namespace IdlePond.Noyau
 
         /// L'arbre en porte 10 ; il en reste ~5 pour les succès. Plafond partagé.
         public const int BUDGET_DE_VERBES_TOTAL = 15;
-        public const int BUDGET_DE_VERBES_ARBRE = 10;
+        // 11 depuis le 2026-11-13 : l'énumération des capacités en porte onze, « Le peuple
+        // continue » compris, que le noyau v1.0 §6.2 listait sans le compter comme verbe. Le
+        // total reste 15 : il en reste 4 aux succès.
+        public const int BUDGET_DE_VERBES_ARBRE = 11;
 
         /// <summary>
         /// En deçà, l'absence est créditée mais pas annoncée : recharger la page n'est

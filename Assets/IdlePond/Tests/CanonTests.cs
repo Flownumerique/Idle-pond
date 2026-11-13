@@ -90,11 +90,22 @@ namespace IdlePond.Tests
             }
         }
 
-        [Test, Description("une amélioration ne cible qu'un terme de production, jamais un coût ni un plafond")]
+        [Test, Description("une amélioration ne cible qu'un terme de production, jamais un coût ni un plafond — sauf celle de séjour, qui ne cible que le temps du séjour")]
         public void Une_amelioration_ne_cible_qu_un_terme_de_production_jamais_un_cout_ni_un_plafond()
         {
             foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
             {
+                // Amendé le 2026-11-13 (RESULTATS.md, Finding 8) : l'amélioration de séjour est
+                // l'exception, et elle est unique. Elle ne monte aucune production et ne baisse
+                // aucun coût : elle raccourcit le temps du séjour, un terme de confort.
+                if (amelioration.Portee == PorteeDAmelioration.Sejour)
+                {
+                    Assert.That(amelioration.Id, Is.EqualTo(AmeliorationsDeRenaissance.SEJOUR_ID));
+                    Assert.That(Termes.DE_CONFORT, Has.Member(TermeDeFormule.TempsDuSejour));
+                    Assert.That(Termes.DE_PRODUCTION, Has.No.Member(TermeDeFormule.TempsDuSejour));
+                    Assert.That(Termes.DE_COUT, Has.No.Member(TermeDeFormule.TempsDuSejour));
+                    continue;
+                }
                 var terme = amelioration.Portee == PorteeDAmelioration.Ciblee
                     ? TermeDeFormule.MultiplicateurAmelioration
                     : TermeDeFormule.AmeliorationGlobale;
@@ -112,6 +123,10 @@ namespace IdlePond.Tests
             Assert.That(ciblees.Select(i => i.Espece), Is.EqualTo(Especes.Toutes.Select(e => e.Id)));
             Assert.That(globales, Has.Count.EqualTo(1));
             Assert.That(globales[0].Espece, Is.Null);
+            var sejours = AmeliorationsDeRenaissance.Toutes.Where(i => i.Portee == PorteeDAmelioration.Sejour).ToList();
+            Assert.That(sejours, Has.Count.EqualTo(1));
+            Assert.That(sejours[0].Espece, Is.Null);
+            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(ciblees.Count + 2));
         }
 
         [Test, Description("aucun succès ne monte une production (amendement v1.1 §2.D)")]

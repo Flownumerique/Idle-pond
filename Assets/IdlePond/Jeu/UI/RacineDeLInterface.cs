@@ -124,7 +124,7 @@ namespace IdlePond.Jeu.UI
             // Les réglages d'abord : la notation décide de l'écriture des nombres.
             AppliquerLesReglages(reglages.Courants);
             SurEtat(partie.Etat);
-            retour.Afficher(partie.Retour);
+            retour.Afficher(partie.Retour, partie.Rapport);
             AfficherLesAnnonces();
             Adapter(racine.layout.width, racine.layout.height);
 
@@ -195,12 +195,13 @@ namespace IdlePond.Jeu.UI
                     captation.Rafraichir(p.Etat);
                     // La table s'ouvre en haut du tiroir : on y remonte pour la voir.
                     defilement.scrollOffset = Vector2.zero;
-                });
+                },
+                id => p.MonterJusquAuSeuil(id));
             // Le gain prévu ne se calcule que tiroir de l'œuf ouvert : voir `Renaissance`.
             renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre(),
                 () => dock != null && dock.Actif == Tiroir.Oeuf);
             succes = new Succes(racine.Q<VisualElement>("succes"));
-            ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id));
+            ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id), () => p.ToutAmeliorer());
             debloquer = new Debloquer(racine.Q<VisualElement>("debloquer"), id => p.AcheterUnBonus(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));
             dock = new Dock(racine.Q<VisualElement>("dock"), AppliquerLeTiroir);
@@ -303,7 +304,7 @@ namespace IdlePond.Jeu.UI
         void EffacerLaPartie()
         {
             partie.Reinitialiser(Boucle.DossierDeSauvegarde());
-            retour.Afficher(partie.Retour);
+            retour.Afficher(partie.Retour, partie.Rapport);
             AfficherLesAnnonces();
         }
 
@@ -368,7 +369,7 @@ namespace IdlePond.Jeu.UI
 
         void SurRetour(AbsenceCreditee absence)
         {
-            try { retour.Afficher(absence); }
+            try { retour.Afficher(absence, partie?.Rapport); }
             catch (Exception exception) { Debug.LogException(exception, this); }
         }
 

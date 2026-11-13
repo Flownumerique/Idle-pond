@@ -29,6 +29,7 @@ namespace IdlePond.Noyau
         {
             TermeDeFormule.CapHorsLigne, TermeDeFormule.DensiteConservee, TermeDeFormule.ContenanceDeDepart,
             TermeDeFormule.NiveauDeDepart, TermeDeFormule.ChargeAllieeParReponse,
+            TermeDeFormule.TempsDuSejour, TermeDeFormule.GainDeDensite,
         };
 
         public static bool EstDeProduction(TermeDeFormule t) => DE_PRODUCTION.Contains(t);

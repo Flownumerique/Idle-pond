@@ -32,12 +32,13 @@ namespace IdlePond.Jeu.UI
         }
 
         readonly Label souffle;
+        readonly VisualElement toutAmeliorer;
         readonly List<Carte> cartes = new List<Carte>();
 
         // Le clic lit l'état d'au moment du clic, comme `Mare` : le prix a pu bouger.
         EtatJeu dernier;
 
-        public AmeliorationsDeRenaissance(VisualElement racine, Action<string> surAmelioration)
+        public AmeliorationsDeRenaissance(VisualElement racine, Action<string> surAmelioration, Action surTout = null)
         {
             racine.AddToClassList("panneau");
 
@@ -47,17 +48,35 @@ namespace IdlePond.Jeu.UI
             haut.Add(souffle);
             racine.Add(haut);
 
+            // D'un geste : le rang le moins cher d'abord, tant que le Souffle en paie un.
+            // Éteint quand rien n'est payable, jamais caché.
+            toutAmeliorer = Elements.Conteneur("bouton bouton-souffle", "tout-ameliorer");
+            toutAmeliorer.Add(Elements.Texte("base", E.TOUT_AMELIORER));
+            toutAmeliorer.AddManipulator(new Clickable(() => surTout?.Invoke()));
+            racine.Add(toutAmeliorer);
+
             var liste = Elements.Conteneur("liste");
             foreach (var amelioration in Registre.Toutes)
             {
                 var carte = new Carte { AmeliorationDeRenaissance = amelioration };
                 var racineDeCarte = Elements.Conteneur("carte");
                 var entete = Elements.Conteneur("rangee entre");
-                var estGlobale = amelioration.Id == Registre.GLOBALE_ID;
-                var nom = estGlobale
-                    ? Textes.AMELIORATION_GLOBALE.Nom
-                    : Format.Remplir(E.AMELIORER_UNE_ESPECE, Format.NomDeLEspece(amelioration.Espece));
-                var effet = estGlobale ? Textes.AMELIORATION_GLOBALE.Effet : Textes.AMELIORATION_CIBLEE.Effet;
+                string nom, effet;
+                switch (amelioration.Portee)
+                {
+                    case PorteeDAmelioration.Globale:
+                        nom = Textes.AMELIORATION_GLOBALE.Nom;
+                        effet = Textes.AMELIORATION_GLOBALE.Effet;
+                        break;
+                    case PorteeDAmelioration.Sejour:
+                        nom = Textes.AMELIORATION_DE_SEJOUR.Nom;
+                        effet = Textes.AMELIORATION_DE_SEJOUR.Effet;
+                        break;
+                    default:
+                        nom = Format.Remplir(E.AMELIORER_UNE_ESPECE, Format.NomDeLEspece(amelioration.Espece));
+                        effet = Textes.AMELIORATION_CIBLEE.Effet;
+                        break;
+                }
                 entete.Add(Elements.Texte("titre base", nom));
                 carte.Rang = Elements.Texte("chiffre tu xs");
                 entete.Add(carte.Rang);
@@ -79,11 +98,28 @@ namespace IdlePond.Jeu.UI
             var reserve = etat.Permanent.Souffle;
             Elements.Poser(souffle, Format.Remplir(E.SOUFFLE_EN_RESERVE, Format.Montant(reserve)));
 
+            var unRangPayable = false;
+            foreach (var carte in cartes)
+            {
+                unRangPayable |= !Economie.AmeliorationAuMaximum(etat, carte.AmeliorationDeRenaissance)
+                    && reserve.Gte(Economie.CoutDAmelioration(etat, carte.AmeliorationDeRenaissance));
+            }
+            toutAmeliorer.SetEnabled(unRangPayable);
+            toutAmeliorer.EnableInClassList("inactif", !unRangPayable);
+
             foreach (var carte in cartes)
             {
                 var rang = Economie.RangDAmelioration(etat, carte.AmeliorationDeRenaissance.Id);
                 var prix = Economie.CoutDAmelioration(etat, carte.AmeliorationDeRenaissance);
                 Elements.Poser(carte.Rang, rang == 0 ? E.JAMAIS : Format.Remplir(E.FOIS, rang.ToString(CultureInfo.InvariantCulture)));
+                // Seule l'amélioration de séjour a un dernier rang : le prix cède la place à « max ».
+                if (Economie.AmeliorationAuMaximum(etat, carte.AmeliorationDeRenaissance))
+                {
+                    Elements.Poser(carte.Achat.Cout, E.AU_MAXIMUM);
+                    carte.Achat.Progresser(prix, prix);
+                    carte.Achat.Regler(false);
+                    continue;
+                }
                 Elements.Poser(carte.Achat.Cout, Format.Remplir(E.SOUFFLE_EN_RESERVE, Format.Cout(prix)));
                 carte.Achat.Progresser(reserve, prix);
                 carte.Achat.Regler(reserve.Gte(prix));

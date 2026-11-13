@@ -17,6 +17,11 @@ namespace IdlePond.Noyau
         // production, ajouté le 2026-10-10 : les bonus de lieu. En queue d'énumération pour ne
         // décaler aucune valeur existante ; la partition vit dans Termes.cs, pas dans l'ordre.
         MultiplicateurDeLieu,
+        // confort, ajouté le 2026-11-13 : l'amélioration de séjour. En queue, même raison.
+        TempsDuSejour,
+        // confort, ajouté le 2026-11-13 : le nœud « Pondre à l'heure » de l'arbre. Le facteur
+        // multiplie `α`, l'exposant du gain de densité.
+        GainDeDensite,
     }
 
     public enum CapaciteId
@@ -82,10 +87,14 @@ namespace IdlePond.Noyau
     public sealed record Espece(string Id, string Assise, int Rang, int Palier);
     public sealed record Palier(int Index, string Assise, string Espece);
 
-    public enum PorteeDAmelioration { Ciblee, Globale }
+    public enum PorteeDAmelioration { Ciblee, Globale, Sejour }
 
     /// Noyau v1.0 §4.2 : la ciblée MULTIPLIE une espèce, la globale ADDITIONNE
     /// au débit de base de toutes. `Espece` est null pour la globale.
+    ///
+    /// Le séjour (2026-11-13, RESULTATS.md Findings 6 et 7) RACCOURCIT le temps que met
+    /// l'acquis de séjour à monter : c'est la seule amélioration qui touche le rythme, et
+    /// elle est bornée en rangs. `Espece` est null pour elle aussi.
     public sealed record AmeliorationDeRenaissance(string Id, PorteeDAmelioration Portee, string Espece);
 
     /* ─── Bonus de lieu et techniques (spec du 2026-10-10) ────────────────── */

@@ -463,6 +463,20 @@ en Souffle et ne se perd jamais.
 Les deux se paient en mana et se perdent à la renaissance, comme les quatre premiers achats.
 L'écran ne dit jamais « zone » : il dit le nom du lieu.
 
+**Amendé le 2026-11-13.** Les techniques de l'onglet ne portent plus de verbe : la main sûre et
+la sonde sont passées dans l'arbre de technique, où un verbe s'apprend pour toujours.
+
+### L'arbre de technique (2026-11-13)
+
+| Fiction | Écran | Code |
+|---|---|---|
+| Ce que le héros a appris en faisant, pour toujours | **ce que tu sais** | `NoeudsTechnique`, `Technique.Apprendre()` |
+| Une chose apprise | son nom propre (« Les habitudes tiennent ») | `NoeudTechnique` |
+| Ce qui se fait seul une fois appris | — (ça se voit) | `CapaciteId`, `Automatismes` |
+
+Rien ne s'y achète : creuser apprend à creuser, convaincre à convaincre, rentrer à rentrer,
+s'absenter à s'absenter. L'écran ne dit ni « arbre », ni « nœud », ni « point ».
+
 ### Les axes permanents
 
 | Fiction | Écran | Code | Appliqué par |
@@ -476,6 +490,9 @@ L'écran ne dit jamais « zone » : il dit le nom du lieu.
 l'amélioration de renaissance monte la **production**, et c'est la seule chose qu'elle fait. Aucun nœud,
 aucun succès ne franchit cette ligne. **Amendée le 2026-10-10** : un bonus de lieu monte aussi
 la production, mais seulement celle des espèces de son lieu, et il se perd à la renaissance.
+**Amendée le 2026-11-13** : une amélioration de renaissance, et une seule, ne monte pas la
+production : **le séjour** (« Apprendre à porter », `amelioration-sejour`). Elle raccourcit le
+temps que met la contenance à monter, sur un nombre de rangs borné. Elle ne baisse aucun coût.
 
 ### Les mots morts
 
