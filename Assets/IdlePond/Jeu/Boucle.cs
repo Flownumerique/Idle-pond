@@ -32,6 +32,9 @@ namespace IdlePond.Jeu
         Partie partie;
         MagasinDeReglages reglages;
         string dossier;
+        ICollecteur collecteur = CollecteurSilencieux.Instance;
+        /// Le nombre de renaissances déjà relevé : chaque renaissance de plus écrit une ligne.
+        int renaissancesRelevees;
         double cumul;
         double depuisLaSauvegarde;
         /// Vrai tant qu'aucun pas n'a eu lieu depuis la dernière écriture : évite d'écrire
@@ -77,6 +80,8 @@ namespace IdlePond.Jeu
             dossier = DossierDeSauvegarde();
             partie = ObtenirOuCreerLaPartie();
             reglages = ObtenirOuCreerLesReglages();
+            collecteur = new CollecteurSurDisque(dossier);
+            renaissancesRelevees = partie.Etat.Permanent.NombreDeRenaissances;
         }
 
         void Update()
@@ -90,6 +95,7 @@ namespace IdlePond.Jeu
                 cumul -= PERIODE_DE_TICK_S;
                 sauvegardeAJour = false;
             }
+            ReleverLesRenaissances();
             depuisLaSauvegarde += dt;
             if (depuisLaSauvegarde >= PERIODE_DE_SAUVEGARDE_S) Sauvegarder();
             Proteger(() => reglages.Avancer(dt));
@@ -104,6 +110,18 @@ namespace IdlePond.Jeu
 
         void Taire(bool enArrierePlan) =>
             AudioListener.pause = enArrierePlan && reglages != null && reglages.Courants.MuetEnArrierePlan;
+
+        /// <summary>
+        /// Une renaissance de plus : son cycle part dans la télémétrie. Un compte qui baisse,
+        /// c'est une partie réinitialisée ou remplacée — on repart de là, sans rien écrire.
+        /// </summary>
+        void ReleverLesRenaissances()
+        {
+            var renaissances = partie.Etat.Permanent.NombreDeRenaissances;
+            if (renaissances > renaissancesRelevees)
+                Proteger(() => collecteur.Publier(Telemetrie.Relever(partie.Etat)));
+            renaissancesRelevees = renaissances;
+        }
 
         /// Une écriture de réglages ratée ne doit pas arrêter la partie : on la journalise,
         /// et le magasin réessaiera.

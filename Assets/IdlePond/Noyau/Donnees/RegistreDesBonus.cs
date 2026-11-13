@@ -45,8 +45,9 @@ namespace IdlePond.Noyau.Donnees
             new Bonus("technique-approche", null, GenreDeBonus.ReductionDeCout, TermeDeFormule.CoutDeblocage, 0.1, 5, 4, 4),
             new Bonus("technique-croissance", null, GenreDeBonus.ReductionDeCout, TermeDeFormule.CoutCroissance, 0.05, 5, 4, 4),
             new Bonus("technique-patience", null, GenreDeBonus.Confort, TermeDeFormule.CapHorsLigne, 0.5, 4, 5, 5),
-            new Bonus("technique-main-sure", null, GenreDeBonus.Verbe, null, 0, 1, 6, 7, CapaciteId.AchatAuto),
-            new Bonus("technique-sonde", null, GenreDeBonus.Verbe, null, 0, 1, 9, 10, CapaciteId.CreusementAuto),
+            // La main sûre et la sonde, d'abord vendues ici, sont passées dans l'arbre de
+            // technique le 2026-11-13 (`NoeudsTechnique.cs`) : un verbe s'apprend pour toujours,
+            // il ne se rachète pas à chaque vie. Une save qui les portait les perd sans bruit.
         };
 
         static readonly IReadOnlyDictionary<string, Bonus> PAR_ID = Tous.ToDictionary(b => b.Id);

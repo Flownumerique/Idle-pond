@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-10-07
+**Tenue à jour le** : 2026-11-13
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -21,13 +21,18 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Paliers | 18 | 62 |
 | Espèces | 6 | 21 |
 | Succès | 54 | — |
-| Axes permanents | améliorations de renaissance, densité, succès | + technique |
+| Axes permanents | améliorations de renaissance (dont le séjour), densité, succès, arbre de technique (5 branches sur 6 actives) | la branche Construction |
+| Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 
-**Tests** : 340 EditMode et 16 PlayMode, tous verts (2026-10-07). Les références de
+**Tests** : 460 EditMode et 32 PlayMode, tous verts (2026-11-13), plus trois mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
-**Ce que le README dit encore** : « Sans technique ». C'est le chantier n°3 qui lève ça.
+**Le descriptif complet du backend** (ce qui existe, ce qui reste, les décisions ouvertes) :
+`docs/BACKEND.md`.
+
+**Mesurer une vraie partie** : la boucle écrit une ligne par renaissance dans
+`telemetrie.jsonl`, à côté de la save.
 
 **Outillage** : MCP for Unity (l'éditeur se pilote depuis Claude Code) et les
 **ateliers**, des bacs à sable à sauvegarde redirigée — voir le README.
@@ -51,60 +56,43 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 
 ---
 
-### 2. Ce que le Souffle doit faire gagner
+### 2. Régler ce que le Souffle fait gagner
 
-**Mesuré le 2026-10-07** (`RESULTATS.md`, Finding 6). Quatre politiques de dépense du
-Souffle — la moins chère d'abord, la moitié en réserve, la globale seule, la plus profonde —
-donnent **exactement le même rythme** : mêmes durées de cycle, même fond au cycle 13, même
-jeu actif. Elles ne changent que l'échelle des nombres (de 1e108 à 1e193 /s au cycle 15).
-La politique de dépense n'était donc pas le levier : l'ancienne inquiétude (« toute mesure
-d'équilibrage en aval est suspecte ») ne tient pas pour le rythme.
+**Tranché le 2026-11-13** (`RESULTATS.md`, Finding 8) : une amélioration de renaissance, **le
+séjour**, raccourcit le temps que met la contenance à monter. C'est le premier achat qui change
+la durée d'une vie : la descente simulée passe de 91 h à 45 h quand on l'achète en priorité.
+Les bonus de lieu ont été renchéris le même jour (Finding 7).
 
-**Ce qui reste, et c'est une décision de design.** Le joueur rentre dans l'œuf quand
-l'acquis de séjour plafonne, et l'acquis monte avec le temps seul. Le Souffle ne raccourcit
-donc rien. Pour qu'une amélioration de renaissance se sente, il faut qu'elle touche le temps : l'acquis,
-le seuil de renaissance, ou le coût de la descente. À trancher avec l'auteur avant le
-chantier 3, qui calibre contre ce rythme.
+**Ce qui reste, et c'est encore une décision de design.**
 
-**L'outil est en place** : `Politique.AcheterLesAmeliorations` dans le simulateur, et la mesure
-`MesurePolitiquesDAmeliorationTests` à relancer après toute décision.
+- **La durée totale visée.** Avec les dix rangs, les vies redeviennent presque plates (2,4 à
+  3,3 h). Choisir entre ≈ 45 h, ≈ 91 h ou un entre-deux, puis régler la part par rang et le rang
+  maximal (`Constantes.cs`).
+- **Les bonus après la troisième vie.** Tout est tenu dès la quatrième, quel que soit le prix :
+  il faut soit de la profondeur (chantier 4), soit un verbe qui les rachète (chantier 3).
+- **Une vraie partie.** Rien de tout cela n'a été joué ; `telemetrie.jsonl` est là pour ça.
+
+**L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
+relancer après tout réglage.
 
 ---
 
-### 3. L'arbre de technique
+### 3. L'arbre de technique, ce qui reste
 
-**Ce que c'est.** Le troisième axe de persistance, et le seul qui manque. Le noyau v1.0 §6
-et §7 en posent les règles ; les **six couples (A, B)** qui décident du rythme d'ouverture
-d'une branche ne sont pas résolus.
+**Transcrit le 2026-11-13** (`RESULTATS.md`, Finding 9) : trente nœuds, six branches, appris
+par l'usage. Les verbes tournent, y compris au retour d'absence. La main sûre et la sonde ont
+quitté l'onglet « Débloquer ».
 
-**L'échafaudage est déjà là.** `src/donnees/noeuds-technique.ts` existe et est **vide
-délibérément** : le registre a été créé tôt pour que les tests de canon qui le parcourent —
-frontière technique/amélioration, source unique d'une capacité, budget de verbes — soient
-en place **avant** le contenu. Les trente nœuds du §7.3 restent à transcrire, avec la table
-`verbe → cycle d'ouverture visé` en entrée du calibreur (§7.2). Le chantier est donc moins
-risqué qu'un départ à blanc : les gardes existent, c'est le contenu qui manque.
+**Ce qui reste.**
 
-**Une dette de conception à signaler.** Le §12 voulait technique et améliorations de renaissance livrées
-« *en même temps, puis recalibrées ensemble* ». On a livré les améliorations de renaissance seules. La
-recalibration commune n'a donc jamais eu lieu — raison de plus pour ne pas laisser cet
-écart s'agrandir.
-
-**La règle dure, déjà testée** : la technique baisse les **coûts** et automatise. Elle ne
-monte jamais la production — c'est le métier de l'amélioration de renaissance. `canon.test.ts` verrouille
-les deux sens, et la contradiction interne du noyau sur le nœud « Réputation » est déjà
-tranchée dans `PRESEANCE.md` (à réécrire en réduction de coût).
-
-**Pourquoi maintenant.** C'est l'axe qui porte la partie **après le cycle 13**, quand la
-profondeur est épuisée et que rien ne monte plus. L'amendement v1.2 le dit :
-« *passé la treizième, la partie tient sur d'AUTRES axes* ». Aujourd'hui, un seul des deux
-existe.
-
-**Dépend de** : la décision du chantier 2 — les couples (A, B) se calibrent contre le
-rythme des cycles, et c'est ce rythme que cette décision peut changer.
-
-**Taille** : grande. Mécanique neuve, arbre de données, écran, et six paramètres à
-résoudre par la mesure.
-**Ce que ça lève** : « Sans technique » dans le README.
+- **Resserrer deux branches.** « Galeries connues » tombe à la vie 11 et « Tout le monde suit »
+  jamais en quinze vies : les couples (A, B) de Creusement et d'Amélioration sont à régler
+  (`Technique.COUPLES_A_B`), puis `MesureDeLArbreTests` à relancer.
+- **Trois verbes sans effet** : la file de descente, compter les siens, lire l'eau. Ce sont des
+  capacités que rien ne lit encore ; l'écran doit s'en servir.
+- **Mesurer Entretien**, que le simulateur ne voit pas, et tout l'arbre en vraie partie.
+- **La branche Construction** est muette tant que temples et portails n'existent pas (chantier 5).
+- **Les ~4 verbes réservés aux succès** (budget de 15, dont 11 à l'arbre) ne sont pas alloués.
 
 ---
 

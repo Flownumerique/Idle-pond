@@ -61,7 +61,14 @@ namespace IdlePond.Simulateur
         double Pas,
         double FractionDeSaturationPourRenaitre,
         double DureeMaxParCycleSecondes,
-        Func<EtatJeu, EtatJeu> AcheterLesAmeliorations = null);
+        Func<EtatJeu, EtatJeu> AcheterLesAmeliorations = null,
+        // Les bonus de lieu et les techniques (onglet « Débloquer »). 0, c'est la politique
+        // historique : aucun n'est acheté, et c'est ce que la parité fige. Au-dessus, le
+        // joueur prend à chaque relevé le bonus ouvert le moins cher, tant qu'il coûte au
+        // plus cette part de son mana. Une part, et non un gain marginal : la plupart des
+        // bonus baissent un coût, et un coût baissé n'a pas de « production ajoutée » à
+        // comparer à celle d'un cran. Pour la MESURE, pas pour le jeu.
+        double PartDuManaPourUnBonus = 0);
 
     /// Les quatre achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute.
     public enum TypeDAchat { Creuser, Grandir, Debloquer, Niveau }
@@ -254,13 +261,25 @@ namespace IdlePond.Simulateur
         /// croît de ×1,15. La borne n'est là que contre un défaut du noyau, et elle
         /// CRIE : un relevé tronqué en silence fausserait toute mesure sans le dire.
         /// </summary>
-        static EtatJeu Depenser(EtatJeu etat)
+        static EtatJeu Depenser(EtatJeu etat, double partDuManaPourUnBonus = 0)
         {
             var courant = etat;
             for (var achats = 0; ; achats += 1)
             {
                 if (achats > 100_000)
                     throw new InvalidOperationException("Un relevé ne finit pas de dépenser : le noyau refuse-t-il un achat payable ?");
+                if (partDuManaPourUnBonus > 0)
+                {
+                    var bonus = BonusLeMoinsCher(courant, partDuManaPourUnBonus);
+                    if (bonus != null)
+                    {
+                        var avecBonus = Reducteur.AcheterUnBonus(courant, bonus.Id);
+                        if (ReferenceEquals(avecBonus, courant))
+                            throw new InvalidOperationException($"Le noyau refuse un bonus que la politique croyait payable : {bonus.Id}");
+                        courant = avecBonus;
+                        continue;
+                    }
+                }
                 var achat = MeilleurAchat(courant);
                 if (achat == null) return courant;
                 var suivant = Appliquer(courant, achat);
@@ -273,6 +292,33 @@ namespace IdlePond.Simulateur
                     throw new InvalidOperationException($"Le noyau refuse un achat que la politique croyait payable : {achat.Type}");
                 courant = suivant;
             }
+        }
+
+        /// <summary>
+        /// Le bonus ouvert le moins cher qui coûte au plus `part` du mana courant, ou null.
+        ///
+        /// Les verbes (la main sûre, la sonde) sont laissés de côté : le simulateur achète
+        /// déjà en continu, et `Automatismes` ne tourne que dans la partie jouée. Les payer
+        /// ici dépenserait du mana pour rien et fausserait la mesure des autres.
+        /// </summary>
+        static Bonus BonusLeMoinsCher(EtatJeu etat, double part)
+        {
+            var plafond = etat.Cycle.ManaCourant.Mul(part);
+            Bonus choisi = null;
+            var meilleur = Decimal.Zero;
+            foreach (var bonus in RegistreDesBonus.Tous)
+            {
+                if (bonus.Genre == GenreDeBonus.Verbe) continue;
+                if (!Economie.BonusOuvert(etat, bonus) || Economie.BonusAuMaximum(etat, bonus)) continue;
+                var cout = Economie.CoutDeBonus(etat, bonus);
+                if (cout.Gt(plafond)) continue;
+                if (choisi == null || cout.Lt(meilleur))
+                {
+                    choisi = bonus;
+                    meilleur = cout;
+                }
+            }
+            return choisi;
         }
 
         /// <summary>
@@ -322,6 +368,9 @@ namespace IdlePond.Simulateur
                 (string Id, Decimal Cout)? choix = null;
                 foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
                 {
+                    // La politique historique, celle que la parité fige, date d'avant
+                    // l'amélioration de séjour : elle ne l'achète pas. Voir `AcheterLeSejourDAbord`.
+                    if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration.Id, cout);
@@ -363,6 +412,27 @@ namespace IdlePond.Simulateur
                 amelioration.Id == AmeliorationsDeRenaissance.GLOBALE_ID || (visee != null && amelioration.Espece == visee.Id));
         }
 
+        /// <summary>
+        /// Le séjour d'abord : chaque rang payable de l'amélioration de séjour, jusqu'au
+        /// dernier, puis le reste comme `AcheterAuMieux`. C'est le joueur qui veut des vies
+        /// plus courtes avant des chiffres plus gros — la politique qui mesure ce que le
+        /// Souffle fait gagner en TEMPS (RESULTATS.md, Finding 8).
+        /// </summary>
+        public static EtatJeu AcheterLeSejourDAbord(EtatJeu etat)
+        {
+            var sejour = AmeliorationsDeRenaissance.ParId(AmeliorationsDeRenaissance.SEJOUR_ID);
+            var courant = etat;
+            while (!Economie.AmeliorationAuMaximum(courant, sejour)
+                   && Economie.CoutDAmelioration(courant, sejour).Lte(courant.Permanent.Souffle))
+            {
+                var suivant = Reducteur.AcheterUneAmelioration(courant, sejour.Id);
+                if (ReferenceEquals(suivant, courant))
+                    throw new InvalidOperationException("Le noyau refuse un rang de séjour que la politique croyait payable");
+                courant = suivant;
+            }
+            return AcheterAuMieux(courant);
+        }
+
         /// La moins chère d'abord parmi celles que `permise` accepte, tant qu'elle accepte.
         static EtatJeu AcheterTantQue(EtatJeu etat, Func<EtatJeu, AmeliorationDeRenaissance, Decimal, bool> permise)
         {
@@ -372,6 +442,7 @@ namespace IdlePond.Simulateur
                 (AmeliorationDeRenaissance AmeliorationDeRenaissance, Decimal Cout)? choix = null;
                 foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
                 {
+                    if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle) || !permise(courant, amelioration, cout)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration, cout);
@@ -415,7 +486,7 @@ namespace IdlePond.Simulateur
                 while (true)
                 {
                     // ── Un relevé : le joueur est là ────────────────────────────────────
-                    etat = Depenser(etat);
+                    etat = Depenser(etat, politique.PartDuManaPourUnBonus);
                     observer?.Invoke(etat);
                     if (DoitRenaitre(etat, politique)) break;
                     if (etat.Cycle.DureeSecondes >= politique.DureeMaxParCycleSecondes)

@@ -3,11 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
+using Decimal = IdlePond.Noyau.Decimal;
 
 namespace IdlePond.Jeu
 {
     /// L'absence qui vient d'être créditée, telle que l'écran de retour la montre.
     public sealed record AbsenceCreditee(double SecondesCreditees);
+
+    /// <summary>
+    /// Ce que l'absence a rapporté, pour l'écran de retour (2026-11-13). Rien n'est calculé
+    /// ici qui ne se lise sur les deux états, celui du départ et celui du retour.
+    ///
+    ///   SecondesAbsentes   — le temps réellement écoulé ; `SecondesCreditees` en est la part
+    ///                        comptée, bornée par le plafond hors ligne.
+    ///   ManaGagne          — ce que le stock a pris. Zéro s'il était déjà plein.
+    ///   ContenanceGagnee   — ce que la contenance a pris par le séjour : c'est elle qui
+    ///                        rouvre la descente.
+    ///   StockPlein         — le mana touche la contenance : une partie de l'absence s'est
+    ///                        perdue vers l'ambiant, il est temps de dépenser.
+    ///   DescenteRouverte   — le creux suivant était hors de portée au départ, il ne l'est plus.
+    ///   PeutCreuser        — le creux suivant est payable tout de suite.
+    ///   Succes             — les succès tombés pendant l'absence.
+    /// </summary>
+    public sealed record RapportDeRetour(
+        double SecondesAbsentes,
+        double SecondesCreditees,
+        Decimal ManaGagne,
+        Decimal ContenanceGagnee,
+        bool StockPlein,
+        bool DescenteRouverte,
+        bool PeutCreuser,
+        IReadOnlyList<string> Succes)
+    {
+        /// L'absence a dépassé le plafond hors ligne : le reste n'a pas compté.
+        public bool Plafonnee => SecondesAbsentes > SecondesCreditees + 1;
+
+        public static RapportDeRetour Entre(EtatJeu avant, EtatJeu apres, double secondesAbsentes, double secondesCreditees,
+            IReadOnlyList<string> succes)
+        {
+            var gagne = apres.Cycle.ManaCourant.Sub(avant.Cycle.ManaCourant);
+            var contenance = Economie.Contenance(apres).Sub(Economie.Contenance(avant));
+            var toutEstCreuse = Economie.ToutEstCreuse(apres);
+            return new RapportDeRetour(
+                secondesAbsentes,
+                secondesCreditees,
+                gagne.Gt(0) ? gagne : Decimal.Zero,
+                contenance.Gt(0) ? contenance : Decimal.Zero,
+                StockPlein: Economie.EstSature(apres),
+                DescenteRouverte: Economie.EstBloque(avant) && !Economie.EstBloque(apres),
+                PeutCreuser: !toutEstCreuse && !Economie.EstBloque(apres)
+                    && apres.Cycle.ManaCourant.Gte(Economie.CoutDeDescente(apres, apres.Cycle.PaliersOuverts)),
+                Succes: succes ?? new string[0]);
+        }
+    }
 
     /// <summary>
     /// IdlePond — la partie. L'équivalent du magasin Zustand, et son contrat est le même :
@@ -43,12 +91,26 @@ namespace IdlePond.Jeu
         /// trop brève pour valoir d'être annoncée.
         public AbsenceCreditee Retour { get; private set; }
 
+        /// Le détail du même retour : ce que l'absence a rapporté. Null quand `Retour` l'est.
+        public RapportDeRetour Rapport { get; private set; }
+
         /// Succès à annoncer : une ligne qui apparaît et s'efface, jamais une fenêtre.
         public IReadOnlyList<string> AAnnoncer => aAnnoncer;
 
         public event Action<EtatJeu> EtatChange;
         public event Action<IReadOnlyList<string>> SuccesDeclenches;
         public event Action<AbsenceCreditee> RetourAffiche;
+
+        /// Ce qui vient de se passer (`Evenements`) : un achat, un creux, un seuil, un verbe
+        /// qui a agi. Pour l'habillage et le son ; aucune règle n'en dépend.
+        public event Action<IReadOnlyList<EvenementDeJeu>> EvenementsDeJeu;
+
+        void Signaler(EtatJeu avant, EtatJeu apres, bool automatique = false)
+        {
+            if (EvenementsDeJeu == null) return;
+            var evenements = Evenements.Entre(avant, apres, automatique);
+            if (evenements.Count > 0) EvenementsDeJeu.Invoke(evenements);
+        }
 
         /// <summary>
         /// L'état d'une nouvelle partie : ce que le jeu livre (`PALIERS_LIVRES`, l'assise I
@@ -78,9 +140,15 @@ namespace IdlePond.Jeu
 
         public void Monter(string espece) => Appliquer(etat => Reducteur.Ameliorer(etat, espece));
 
+        /// Autant de crans que le mana en paie, jusqu'au prochain seuil de l'espèce.
+        public void MonterJusquAuSeuil(string espece) => Appliquer(etat => Reducteur.AmeliorerJusquAuSeuil(etat, espece));
+
         public void Grandir() => Appliquer(Reducteur.Grandir);
 
         public void AcheterUneAmelioration(string id) => Appliquer(etat => Reducteur.AcheterUneAmelioration(etat, id));
+
+        /// Tout le Souffle payable, le rang le moins cher d'abord.
+        public void ToutAmeliorer() => Appliquer(Reducteur.AcheterToutesLesAmeliorations);
 
         public void AcheterUnBonus(string id) => Appliquer(etat => Reducteur.AcheterUnBonus(etat, id));
 
@@ -90,8 +158,10 @@ namespace IdlePond.Jeu
         {
             var apres = acte(Etat);
             if (ReferenceEquals(apres, Etat)) return;
+            var avant = Etat;
             Etat = apres;
             EtatChange?.Invoke(apres);
+            Signaler(avant, apres);
         }
 
         /* ─── Le temps ──────────────────────────────────────────────────────────────*/
@@ -114,10 +184,15 @@ namespace IdlePond.Jeu
         {
             if (!(dt > 0)) return;
             DernierInstantMs = Math.Max(DernierInstantMs, horloge.MaintenantMs());
+            var avant = Etat;
             var resultat = Reducteur.TickDetaille(Etat, dt);
             // Les verbes des techniques jouent après le pas, jamais dedans (`Automatismes`).
-            Etat = Automatismes.Appliquer(RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches));
+            var apresLePas = RegleDesSucces.EnregistrerIntervalleDeSucces(resultat.Etat, resultat.Declenches);
+            Etat = Automatismes.Appliquer(apresLePas);
             EtatChange?.Invoke(Etat);
+            Signaler(avant, apresLePas);
+            // Ce que les verbes ont fait est signalé à part, marqué comme tel.
+            if (!ReferenceEquals(apresLePas, Etat)) Signaler(apresLePas, Etat, automatique: true);
             if (resultat.Declenches.Count == 0) return;
             aAnnoncer.AddRange(resultat.Declenches);
             SuccesDeclenches?.Invoke(resultat.Declenches);
@@ -131,13 +206,24 @@ namespace IdlePond.Jeu
         {
             var maintenant = horloge.MaintenantMs();
             var credit = HorsLigne.Crediter(Etat, DernierInstantMs, maintenant);
+            var secondesAbsentes = Math.Max(0, (maintenant - DernierInstantMs) / 1000.0);
             DernierInstantMs = maintenant;
             // Un recul d'horloge ne crédite rien : l'état rendu est alors la même référence.
             var change = !ReferenceEquals(credit.Etat, Etat);
+            var avant = Etat;
             Etat = credit.Etat;
             Retour = credit.SecondesCreditees >= Constantes.SECONDES_MINIMALES_POUR_ANNONCER_LE_RETOUR
                 ? new AbsenceCreditee(credit.SecondesCreditees)
                 : null;
+            Rapport = Retour == null
+                ? null
+                : RapportDeRetour.Entre(avant, Etat, secondesAbsentes, credit.SecondesCreditees, credit.Declenches);
+            // Un succès tombé pendant l'absence s'annonce au retour, comme les autres.
+            if (credit.Declenches != null && credit.Declenches.Count > 0)
+            {
+                aAnnoncer.AddRange(credit.Declenches);
+                SuccesDeclenches?.Invoke(credit.Declenches);
+            }
             if (change) EtatChange?.Invoke(Etat);
             if (Retour != null) RetourAffiche?.Invoke(Retour);
         }
@@ -163,6 +249,7 @@ namespace IdlePond.Jeu
             var copie = Persistance.CopierAvantReinitialisation(dossier, horloge.MaintenantMs());
             aAnnoncer.Clear();
             Retour = null;
+            Rapport = null;
             Remplacer(NouvelEtat(horloge));
             Sauvegarder(dossier);
             return copie;
@@ -170,7 +257,11 @@ namespace IdlePond.Jeu
 
         public void OublierAnnonce(string id) => aAnnoncer.RemoveAll(autre => autre == id);
 
-        public void OublierRetour() => Retour = null;
+        public void OublierRetour()
+        {
+            Retour = null;
+            Rapport = null;
+        }
 
         /* ─── La sauvegarde ─────────────────────────────────────────────────────────*/
 

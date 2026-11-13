@@ -106,7 +106,11 @@ namespace IdlePond.Noyau
         public static double TauDuSejourSecondes(EtatJeu etat)
         {
             var croissance = etat.Reglage.CroissanceDuSejourParPalier;
-            return Constantes.TAU_SEJOUR_HEURES * 3600 * Math.Pow(croissance, etat.Permanent.ProfondeurMaxAtteinte);
+            var tau = Constantes.TAU_SEJOUR_HEURES * 3600 * Math.Pow(croissance, etat.Permanent.ProfondeurMaxAtteinte);
+            // L'amélioration de séjour le raccourcit. Un facteur neutre n'est pas multiplié :
+            // une partie qui ne l'achète pas reste identique au bit près.
+            var facteur = Economie.FacteurDuSejour(etat);
+            return facteur == 1 ? tau : tau * facteur;
         }
 
         /// <summary>
@@ -179,13 +183,38 @@ namespace IdlePond.Noyau
         /// Le contrat du §5.1. `TickDetaille` en rend en plus les succès déclenchés.
         public static EtatJeu Tick(EtatJeu etat, double dt) => TickDetaille(etat, dt).Etat;
 
+        /* ─── L'usage apprend (arbre de technique, 2026-11-13) ───────────────────────
+         * Creuser, monter et grandir font monter un compteur d'usage ; si les points de la
+         * branche paient son prochain nœud, il est appris dans le même geste. Les trois
+         * réducteurs ci-dessous enveloppent l'acte nu, qui garde son nom suivi de
+         * `SansApprendre`. Un acte refusé rend l'état inchangé, la même référence.
+         */
+
+        public static EtatJeu Creuser(EtatJeu etat)
+        {
+            var apres = CreuserSansApprendre(etat);
+            return ReferenceEquals(apres, etat) ? etat : Technique.Apprendre(apres, BrancheTechnique.Creusement);
+        }
+
+        public static EtatJeu Ameliorer(EtatJeu etat, string especeId)
+        {
+            var apres = AmeliorerSansApprendre(etat, especeId);
+            return ReferenceEquals(apres, etat) ? etat : Technique.Apprendre(apres, BrancheTechnique.Amelioration);
+        }
+
+        public static EtatJeu Grandir(EtatJeu etat)
+        {
+            var apres = GrandirSansApprendre(etat);
+            return ReferenceEquals(apres, etat) ? etat : Technique.Apprendre(apres, BrancheTechnique.Amelioration);
+        }
+
         /* ─── Actes du joueur ───────────────────────────────────────────────────────
          * Des réducteurs purs, comme le tick. Un acte qui n'est pas payable rend l'état
          * inchangé : c'est au-dessus du noyau de ne pas le proposer.
          */
 
         /// Creuser le palier suivant. Bloqué doux si son coût dépasse la contenance.
-        public static EtatJeu Creuser(EtatJeu etat)
+        static EtatJeu CreuserSansApprendre(EtatJeu etat)
         {
             if (Economie.ToutEstCreuse(etat)) return etat;
             var cible = etat.Cycle.PaliersOuverts;
@@ -233,18 +262,21 @@ namespace IdlePond.Noyau
             if (etat.Cycle.Especes.TryGetValue(especeId, out var deja) && deja.Debloquee) return etat;
             var cout = Economie.CoutDeDeblocage(etat, espece);
             if (etat.Cycle.ManaCourant.Lt(cout)) return etat;
-            return etat with
+            var convaincue = etat with
             {
                 Cycle = etat.Cycle with
                 {
                     ManaCourant = etat.Cycle.ManaCourant.Sub(cout),
-                    Especes = AvecEspece(etat.Cycle.Especes, especeId, new EtatEspece(true, 1)),
+                    // « Élan » (arbre, Amélioration) : une espèce convaincue démarre plus haut.
+                    Especes = AvecEspece(etat.Cycle.Especes, especeId, new EtatEspece(true, Economie.NiveauDeDepart(etat))),
                 },
                 Permanent = etat.Permanent with
                 {
                     CompteursTechnique = Technique.CreditCompteur(etat.Permanent.CompteursTechnique, BrancheTechnique.Recrutement, 1),
                 },
             };
+            // Convaincre apprend à convaincre : le compteur vient de monter, un nœud peut tomber.
+            return Technique.Apprendre(convaincue, BrancheTechnique.Recrutement);
         }
 
         /// <summary>
@@ -254,7 +286,7 @@ namespace IdlePond.Noyau
         /// milieu d'un pas de tick : il n'y a plus de population qui le franchit toute
         /// seule. C'est ce qui rend le pas homogène.
         /// </summary>
-        public static EtatJeu Ameliorer(EtatJeu etat, string especeId)
+        static EtatJeu AmeliorerSansApprendre(EtatJeu etat, string especeId)
         {
             var espece = Especes.ParId(especeId);
             if (espece == null) return etat;
@@ -289,6 +321,60 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
+        /// Monter une espèce jusqu'à son prochain seuil, ou aussi loin que le mana le
+        /// permet : `Ameliorer`, répété. Aucune règle de plus — chaque cran passe par le même
+        /// réducteur, paie le même prix et crédite le même compteur. Rien de payable : l'état
+        /// revient inchangé, comme pour un achat simple.
+        /// </summary>
+        public static EtatJeu AmeliorerJusquAuSeuil(EtatJeu etat, string especeId)
+        {
+            if (!etat.Cycle.Especes.TryGetValue(especeId ?? "", out var avant) || !avant.Debloquee) return etat;
+            var cible = Economie.ProchainSeuilDeNiveau(avant.Niveau);
+            var courant = etat;
+            for (var niveau = avant.Niveau; niveau < cible; niveau += 1)
+            {
+                var suivant = Ameliorer(courant, especeId);
+                if (ReferenceEquals(suivant, courant)) break;
+                courant = suivant;
+            }
+            return courant;
+        }
+
+        /// <summary>
+        /// Dépenser le Souffle d'un geste : le rang le moins cher d'abord, tant qu'un rang
+        /// est payable. C'est `AcheterUneAmelioration`, répété — l'amélioration de séjour
+        /// comprise, jusqu'à son dernier rang. Rien de payable : l'état revient inchangé.
+        ///
+        /// La borne n'est là que contre un défaut : chaque rang renchérit le suivant, la
+        /// boucle termine d'elle-même.
+        /// </summary>
+        public static EtatJeu AcheterToutesLesAmeliorations(EtatJeu etat)
+        {
+            var courant = etat;
+            for (var garde = 0; garde < 100_000; garde += 1)
+            {
+                AmeliorationDeRenaissance choisie = null;
+                var meilleur = Decimal.Zero;
+                foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
+                {
+                    if (Economie.AmeliorationAuMaximum(courant, amelioration)) continue;
+                    var cout = Economie.CoutDAmelioration(courant, amelioration);
+                    if (cout.Gt(courant.Permanent.Souffle)) continue;
+                    if (choisie == null || cout.Lt(meilleur))
+                    {
+                        choisie = amelioration;
+                        meilleur = cout;
+                    }
+                }
+                if (choisie == null) return courant;
+                var suivant = AcheterUneAmelioration(courant, choisie.Id);
+                if (ReferenceEquals(suivant, courant)) return courant;
+                courant = suivant;
+            }
+            return courant;
+        }
+
+        /// <summary>
         /// Faire grandir le héros d'un niveau — le quatrième achat, spec 2026-09-17.
         ///
         /// Même forme que les trois autres : payable ou rien ne change. Le compteur
@@ -296,7 +382,7 @@ namespace IdlePond.Noyau
         /// l'arbre n'a pas de branche « héros ». Le niveau agit à l'instant où il est
         /// payé, jamais pendant un pas.
         /// </summary>
-        public static EtatJeu Grandir(EtatJeu etat)
+        static EtatJeu GrandirSansApprendre(EtatJeu etat)
         {
             var cout = Economie.CoutDeCroissance(etat, etat.Cycle.NiveauDuHeros);
             if (etat.Cycle.ManaCourant.Lt(cout)) return etat;
@@ -359,6 +445,7 @@ namespace IdlePond.Noyau
         {
             var amelioration = AmeliorationsDeRenaissance.ParId(id);
             if (amelioration == null) return etat;
+            if (Economie.AmeliorationAuMaximum(etat, amelioration)) return etat;
             var cout = Economie.CoutDAmelioration(etat, amelioration);
             if (etat.Permanent.Souffle.Lt(cout)) return etat;
             var rangs = new Dictionary<string, int>();

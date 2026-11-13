@@ -501,8 +501,12 @@ namespace IdlePond.Tests
             // attrapant une vraie régression (boucle infinie, double achat...).
             Assert.That(total, Is.LessThan(1000));
             // Il reste moins de Souffle qu'il n'en faut pour l'amélioration la moins
-            // chère : la politique dépense, elle ne thésaurise pas.
-            var moinsChere = AmeliorationsDeRenaissance.Toutes.Select(b => Economie.CoutDAmelioration(resultat.Etat, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
+            // chère : la politique dépense, elle ne thésaurise pas. L'amélioration de séjour
+            // est hors du compte : la politique historique ne l'achète pas (parité).
+            var moinsChere = AmeliorationsDeRenaissance.Toutes
+                .Where(b => b.Portee != PorteeDAmelioration.Sejour)
+                .Select(b => Economie.CoutDAmelioration(resultat.Etat, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
+            Assert.That(Economie.RangDAmelioration(resultat.Etat, AmeliorationsDeRenaissance.SEJOUR_ID), Is.EqualTo(0));
             Assert.That(resultat.Etat.Permanent.Souffle.Lt(moinsChere), Is.True);
         }
     }

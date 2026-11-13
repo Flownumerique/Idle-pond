@@ -14,13 +14,16 @@ namespace IdlePond.Noyau.Donnees
     public static class AmeliorationsDeRenaissance
     {
         public const string GLOBALE_ID = "amelioration-globale";
+        public const string SEJOUR_ID = "amelioration-sejour";
 
         static IReadOnlyList<AmeliorationDeRenaissance> Construire()
         {
             var globale = new AmeliorationDeRenaissance(GLOBALE_ID, PorteeDAmelioration.Globale, null);
             var ciblees = Especes.Toutes.Select(espece => new AmeliorationDeRenaissance(
                 $"amelioration-{espece.Id}", PorteeDAmelioration.Ciblee, espece.Id));
-            return new[] { globale }.Concat(ciblees).ToList();
+            // En queue : l'ordre du registre est celui des saves, et rien d'existant ne bouge.
+            var sejour = new AmeliorationDeRenaissance(SEJOUR_ID, PorteeDAmelioration.Sejour, null);
+            return new[] { globale }.Concat(ciblees).Concat(new[] { sejour }).ToList();
         }
 
         public static readonly IReadOnlyList<AmeliorationDeRenaissance> Toutes = Construire();

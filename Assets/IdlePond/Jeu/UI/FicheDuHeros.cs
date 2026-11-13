@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using IdlePond.Noyau;
+using IdlePond.Noyau.Donnees;
 using UnityEngine.UIElements;
 using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 
@@ -28,6 +31,11 @@ namespace IdlePond.Jeu.UI
         readonly Label debitPropre;
         readonly Label retours;
         readonly Label bloque;
+
+        // « Ce que tu sais » : une ligne par nœud de l'arbre de technique, créée une fois et
+        // montrée quand le nœud est appris ; puis ce qu'il reste à faire pour le suivant.
+        readonly List<(NoeudTechnique Noeud, VisualElement Ligne)> savoirs = new List<(NoeudTechnique, VisualElement)>();
+        readonly Label savoirProchain;
 
         public FicheDuHeros(VisualElement racine)
         {
@@ -61,6 +69,22 @@ namespace IdlePond.Jeu.UI
 
             bloque = Elements.Texte("doux base contenance-bloque", E.PLUS_DE_QUOI_PORTER);
             racine.Add(bloque);
+
+            var savoir = Elements.Conteneur("carte", "savoir");
+            savoir.Add(Elements.Texte("titre doux base", E.SAVOIR_TITRE));
+            foreach (var noeud in NoeudsTechnique.Tous)
+            {
+                var texte = Textes.DuNoeud(noeud.Id);
+                var ligneDeSavoir = Elements.Conteneur("savoir-ligne", "savoir-" + noeud.Id);
+                ligneDeSavoir.Add(Elements.Texte("base", texte.Nom));
+                ligneDeSavoir.Add(Elements.Texte("tu xs", texte.Effet));
+                Elements.Montrer(ligneDeSavoir, false);
+                savoir.Add(ligneDeSavoir);
+                savoirs.Add((noeud, ligneDeSavoir));
+            }
+            savoirProchain = Elements.Texte("doux xs savoir-prochain", "", "savoir-prochain");
+            savoir.Add(savoirProchain);
+            racine.Add(savoir);
         }
 
         static Label Tuile(VisualElement grille, string nom)
@@ -86,6 +110,23 @@ namespace IdlePond.Jeu.UI
             Elements.Poser(retours, etat.Permanent.NombreDeRenaissances.ToString(CultureInfo.InvariantCulture));
             Elements.Marquer(racine, "eau-trouble", Economie.EauTroublee(etat));
             Elements.Montrer(bloque, Economie.EstBloque(etat));
+
+            var appris = 0;
+            foreach (var (noeud, ligneDeSavoir) in savoirs)
+            {
+                var su = etat.Permanent.NoeudsTechnique.Contains(noeud.Id);
+                Elements.Montrer(ligneDeSavoir, su);
+                if (su) appris += 1;
+            }
+            var reste = Technique.ResteAvantLeProchainNoeud(etat, BrancheTechnique.Recrutement);
+            Elements.Montrer(savoirProchain, reste.HasValue || appris == 0);
+            if (reste.HasValue && reste.Value > 0)
+            {
+                var combien = (int)Math.Ceiling(reste.Value);
+                Elements.Poser(savoirProchain, combien == 1 ? E.SAVOIR_PROCHAIN_UN : Format.Remplir(E.SAVOIR_PROCHAIN, combien));
+            }
+            else if (appris == 0) Elements.Poser(savoirProchain, E.SAVOIR_RIEN_ENCORE);
+            else Elements.Montrer(savoirProchain, false);
         }
     }
 }

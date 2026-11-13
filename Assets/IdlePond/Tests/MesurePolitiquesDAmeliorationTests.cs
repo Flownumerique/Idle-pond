@@ -28,6 +28,7 @@ namespace IdlePond.Tests
             ("la moitié en réserve", AcheterALaMoitie),
             ("la globale seule", AcheterLaGlobaleSeule),
             ("la plus profonde + la globale", AcheterLaPlusProfonde),
+            ("le séjour d'abord, puis la moins chère", AcheterLeSejourDAbord),
         };
 
         [Test]

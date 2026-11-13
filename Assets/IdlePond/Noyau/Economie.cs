@@ -342,12 +342,83 @@ namespace IdlePond.Noyau
         /// </summary>
         public static Decimal CoutDAmelioration(EtatJeu etat, AmeliorationDeRenaissance amelioration)
         {
-            var @base = amelioration.Portee == PorteeDAmelioration.Globale
-                ? Constantes.SOUFFLE_COUT_D_AMELIORATION_GLOBALE
-                : Constantes.SOUFFLE_COUT_D_AMELIORATION_CIBLEE;
+            double @base, ratio;
+            switch (amelioration.Portee)
+            {
+                case PorteeDAmelioration.Globale:
+                    @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_GLOBALE;
+                    ratio = Constantes.RATIO_COUT_D_AMELIORATION;
+                    break;
+                case PorteeDAmelioration.Sejour:
+                    @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_DE_SEJOUR;
+                    ratio = Constantes.RATIO_COUT_D_AMELIORATION_DE_SEJOUR;
+                    break;
+                default:
+                    @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_CIBLEE;
+                    ratio = Constantes.RATIO_COUT_D_AMELIORATION;
+                    break;
+            }
             return new Decimal(@base)
-                .Mul(Decimal.Pow(Constantes.RATIO_COUT_D_AMELIORATION, RangDAmelioration(etat, amelioration.Id)))
+                .Mul(Decimal.Pow(ratio, RangDAmelioration(etat, amelioration.Id)))
                 .Mul(FacteurDeCout(etat, TermeDeFormule.CoutAmelioration));
+        }
+
+        /* ─── Les achats en lot (2026-11-13) ────────────────────────────────────────
+         * Un lot n'est pas une règle de plus : c'est le même achat, répété tant qu'il est
+         * payable. Le prix d'un lot est la somme exacte de ce que coûteraient ses achats un
+         * à un — rien n'est remisé, rien n'est arrondi.
+         */
+
+        /// <summary>
+        /// Le cran que vise « monter jusqu'au seuil » : le prochain seuil de jalon (10, 25,
+        /// 50, 100), puis la centaine suivante une fois tous les seuils franchis.
+        /// </summary>
+        public static int ProchainSeuilDeNiveau(int niveau)
+        {
+            foreach (var seuil in Constantes.SEUILS_DE_JALON)
+                if (seuil.Seuil > niveau) return seuil.Seuil;
+            return (niveau / 100 + 1) * 100;
+        }
+
+        /// <summary>
+        /// Ce que « monter jusqu'au seuil » achèterait à l'instant : combien de crans, pour
+        /// combien de mana. Il s'arrête au seuil visé ou au dernier cran payable, le premier
+        /// des deux. Zéro cran si le premier n'est pas payable ; `Cout` porte alors le prix
+        /// de ce premier cran, pour que l'écran montre ce qu'il manque.
+        /// </summary>
+        public static (int Crans, Decimal Cout) LotDeNiveaux(EtatJeu etat, Espece espece)
+        {
+            if (!etat.Cycle.Especes.TryGetValue(espece.Id, out var vivante) || !vivante.Debloquee)
+                return (0, Decimal.Zero);
+            var cible = ProchainSeuilDeNiveau(vivante.Niveau);
+            var total = Decimal.Zero;
+            var crans = 0;
+            for (var niveau = vivante.Niveau; niveau < cible; niveau += 1)
+            {
+                var avecCeCran = total.Add(CoutDeNiveau(etat, espece, niveau));
+                if (avecCeCran.Gt(etat.Cycle.ManaCourant)) break;
+                total = avecCeCran;
+                crans += 1;
+            }
+            return crans == 0 ? (0, CoutDeNiveau(etat, espece, vivante.Niveau)) : (crans, total);
+        }
+
+        /// Seule l'amélioration de séjour a un dernier rang ; les autres s'empilent sans fin.
+        public static bool AmeliorationAuMaximum(EtatJeu etat, AmeliorationDeRenaissance amelioration) =>
+            amelioration.Portee == PorteeDAmelioration.Sejour
+            && RangDAmelioration(etat, amelioration.Id) >= Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR;
+
+        /// <summary>
+        /// Ce que l'amélioration de séjour fait au temps caractéristique de l'acquis :
+        /// `(1 − part) ^ rang`, 1 à rang 0. Le rang est borné, donc le facteur aussi — il
+        /// ne descend pas sous `(1 − part) ^ rang maximal`. Il ne change qu'à l'achat,
+        /// jamais pendant un pas : la forme exponentielle de l'acquis reste exacte.
+        /// </summary>
+        public static double FacteurDuSejour(EtatJeu etat)
+        {
+            var rang = Math.Min(
+                RangDAmelioration(etat, AmeliorationsDeRenaissance.SEJOUR_ID), Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR);
+            return rang <= 0 ? 1 : Math.Pow(1 - Constantes.AMELIORATION_DE_SEJOUR_PAR_RANG, rang);
         }
 
         /* ─── Bonus de lieu et techniques — spec du 2026-10-10 ──────────────────────
@@ -437,7 +508,22 @@ namespace IdlePond.Noyau
         /* ─── Contenance et blocage doux (§6.4) ─────────────────────────────────────*/
 
         /// La contenance limite le stock, pas la production.
-        public static Decimal Contenance(EtatJeu etat) => etat.Permanent.ContenanceMana.Mul(1 + etat.Cycle.AcquisDeSejour);
+        public static Decimal Contenance(EtatJeu etat) =>
+            ContenanceAFixer(etat).Fois(Technique.FacteurDeTechnique(etat, TermeDeFormule.ContenanceDeDepart));
+
+        /// <summary>
+        /// Ce que la renaissance fixe : la contenance gardée, relevée par l'acquis de séjour,
+        /// SANS la coquille épaisse de l'arbre. Le nœud multiplie ce qu'on peut porter à tout
+        /// instant ; s'il entrait dans la valeur fixée, il se composerait à chaque renaissance.
+        /// </summary>
+        public static Decimal ContenanceAFixer(EtatJeu etat) => etat.Permanent.ContenanceMana.Mul(1 + etat.Cycle.AcquisDeSejour);
+
+        /// <summary>
+        /// Le cran auquel une espèce démarre quand on la convainc : 1, ou 5 avec « Élan »
+        /// (arbre, branche Amélioration). Le facteur du terme EST le niveau de départ.
+        /// </summary>
+        public static int NiveauDeDepart(EtatJeu etat) =>
+            Math.Max(1, (int)Math.Round(Technique.FacteurDeTechnique(etat, TermeDeFormule.NiveauDeDepart)));
 
         /* ─── La jauge et sa saturation — GDD §2.4 ──────────────────────────────────
          *

@@ -47,8 +47,7 @@ namespace IdlePond.Noyau
         {
             var pointsDeTechniqueRendus = new Dictionary<BrancheTechnique, int>();
             foreach (var branche in Technique.REGIME_PAR_BRANCHE.Keys)
-                pointsDeTechniqueRendus[branche] = Technique.PointsDeBranche(
-                    branche, etat.Permanent.CompteursTechnique.TryGetValue(branche, out var compteur) ? compteur : 0);
+                pointsDeTechniqueRendus[branche] = Technique.PointsDeBranche(branche, Technique.CompteurDe(etat, branche));
 
             var intervalles = etat.Telemetrie.IntervallesEntreSucces;
             return new Releve(

@@ -86,11 +86,23 @@ namespace IdlePond.Noyau
         /// `g^paliers` à chaque renaissance, la densité l'est par `g^(paliers × α)`, et
         /// le multiplicateur par `g^(paliers × θ)`.
         /// </summary>
-        public static double LaisseeParLeCycle(Decimal productionDePic)
+        public static double LaisseeParLeCycle(Decimal productionDePic, double alpha = Constantes.ALPHA_GAIN_DE_DENSITE)
         {
             var rapport = productionDePic.Div(Constantes.PRODUCTION_DE_REFERENCE);
             if (rapport.Lte(0)) return 0;
-            return Math.Pow(rapport.ToNumber(), Constantes.ALPHA_GAIN_DE_DENSITE);
+            return Math.Pow(rapport.ToNumber(), alpha);
+        }
+
+        /// <summary>
+        /// `α` tel que l'arbre l'a relevé : le nœud « Pondre à l'heure » le porte de 0,60 à
+        /// 0,65. L'exposant du MULTIPLICATEUR, lui, reste `θ / α` de base : la densité
+        /// compense donc une part un peu plus grande du besoin (`θ × 0,65 / 0,60 ≈ 0,87`),
+        /// toujours sous 1.
+        /// </summary>
+        public static double AlphaCourant(EtatJeu etat)
+        {
+            var facteur = Technique.FacteurDeTechnique(etat, TermeDeFormule.GainDeDensite);
+            return facteur == 1 ? Constantes.ALPHA_GAIN_DE_DENSITE : Constantes.ALPHA_GAIN_DE_DENSITE * facteur;
         }
 
         /// <summary>
@@ -103,7 +115,7 @@ namespace IdlePond.Noyau
         public static IReadOnlyList<double> AppliquerGain(EtatJeu etat, int paliersOuverts, Decimal productionDePic)
         {
             var conservation = Technique.FacteurDeTechnique(etat, TermeDeFormule.DensiteConservee);
-            var laissee = LaisseeParLeCycle(productionDePic) * conservation;
+            var laissee = LaisseeParLeCycle(productionDePic, AlphaCourant(etat)) * conservation;
             if (!(laissee > 0)) return etat.Permanent.Densites;
             var resultat = new List<double>(etat.Permanent.Densites.Count);
             for (var index = 0; index < etat.Permanent.Densites.Count; index += 1)

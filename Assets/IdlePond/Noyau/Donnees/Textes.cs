@@ -70,6 +70,48 @@ namespace IdlePond.Noyau.Donnees
 
         public static readonly TexteDAmelioration AMELIORATION_CIBLEE = new(null, "ils te donnent moitié plus, à chaque fois");
 
+        /// Les nœuds de l'arbre de technique : ce que le héros sait, pour toujours.
+        static readonly IReadOnlyDictionary<string, TexteDAmelioration> NOEUDS = new Dictionary<string, TexteDAmelioration>
+        {
+            ["creusement-etaiement"] = new("L’étaiement", "creuser te coûte moins"),
+            ["creusement-drainage"] = new("Le drainage", "creuser te coûte encore moins"),
+            ["creusement-file"] = new("La file", "tu peux demander plusieurs creux d’avance"),
+            ["creusement-percement"] = new("Le percement guidé", "creuser te coûte presque un tiers de moins"),
+            ["creusement-galeries"] = new("Galeries connues", "la roche que tu as déjà ouverte dans une autre vie se rouvre seule"),
+            ["amelioration-repetition"] = new("La répétition", "monter d’un cran te coûte moins"),
+            ["amelioration-main-sure"] = new("La main sûre", "le cran le moins cher monte seul, sans vider ta réserve"),
+            ["amelioration-geste"] = new("Le geste appris", "monter d’un cran te coûte encore moins"),
+            ["amelioration-elan"] = new("L’élan", "ceux que tu convaincs arrivent déjà nombreux"),
+            ["amelioration-suite"] = new("Tout le monde suit", "les crans montent seuls jusqu’au prochain seuil"),
+            ["recrutement-approche"] = new("L’approche", "convaincre te coûte moins"),
+            ["recrutement-habitudes"] = new("Les habitudes tiennent", "ceux que tu as déjà convaincus reviennent seuls, dès que tu peux payer"),
+            ["recrutement-memoire"] = new("La mémoire des gestes", "convaincre te coûte encore moins"),
+            ["recrutement-reputation"] = new("La réputation", "monter d’un cran te coûte un peu moins"),
+            ["recrutement-refuge"] = new("Le refuge est connu", "convaincre te coûte moitié prix"),
+            ["entretien-releve"] = new("La relève", "ton absence compte deux fois plus longtemps"),
+            ["entretien-veille"] = new("La veille", "ton absence compte encore deux fois plus longtemps"),
+            ["entretien-compte"] = new("Compter les siens", "tu vois ce que chacun te donne"),
+            ["entretien-peuple"] = new("Le peuple continue", "ce qui se fait seul se fait aussi quand tu n’es pas là"),
+            ["entretien-rapport"] = new("Ce qui s’est passé pendant", "à ton retour, tu sais tout ce qui a bougé"),
+            ["construction-fondations"] = new("Les fondations", "bâtir te coûte moins"),
+            ["construction-tunnels"] = new("Les tunnels", "relier deux eaux te coûte moins"),
+            ["construction-signaletique"] = new("La signalétique", "tu vas droit où tu veux"),
+            ["construction-reouverture"] = new("La réouverture", "rouvrir un passage te coûte moitié prix"),
+            ["construction-collecteurs"] = new("Les collecteurs", "ce qu’on te répond charge mieux l’eau"),
+            ["renaissance-heure"] = new("Rentrer à l’heure", "l’eau garde davantage de ce que tu as porté"),
+            ["renaissance-lire-l-eau"] = new("Lire l’eau", "tu vois toujours ce que rentrer te vaudrait"),
+            ["renaissance-ce-qui-reste"] = new("Ce qui reste", "l’eau se souvient un peu mieux de toi"),
+            ["renaissance-coquille"] = new("Coquille épaisse", "tu peux porter deux fois plus"),
+            ["renaissance-chemin-connu"] = new("Le chemin connu", "tout ce que tu avais refait se refait seul"),
+        };
+
+        /// Lance si le nœud n'a pas de texte : un nœud sans nom ne doit pas arriver à l'écran.
+        public static TexteDAmelioration DuNoeud(string id) =>
+            NOEUDS.TryGetValue(id, out var texte) ? texte : throw new System.InvalidOperationException($"Aucun texte pour le nœud {id}");
+
+        /// L'amélioration de séjour (2026-11-13) : la seule qui raccourcit une vie.
+        public static readonly TexteDAmelioration AMELIORATION_DE_SEJOUR = new("Apprendre à porter", "tu te fais à l’eau plus vite : ce que tu peux porter monte plus tôt");
+
         /// Les bonus de l'onglet « Débloquer » (spec du 2026-10-10), par identifiant de registre.
         static readonly IReadOnlyDictionary<string, TexteDeBonus> TEXTES_DE_BONUS = new Dictionary<string, TexteDeBonus>
         {
@@ -86,8 +128,6 @@ namespace IdlePond.Noyau.Donnees
             ["technique-approche"] = new("Approche", "convaincre coûte {0} % de moins, par rang"),
             ["technique-croissance"] = new("Mue facile", "grandir coûte {0} % de moins, par rang"),
             ["technique-patience"] = new("Patience", "ton absence compte {0} % plus longtemps, par rang"),
-            ["technique-main-sure"] = new("La main sûre", "monte seule le cran le moins cher, sans vider ta réserve"),
-            ["technique-sonde"] = new("La sonde", "creuse seule dès que la roche le permet"),
         };
 
         public static readonly TexteDeBonus BONUS_INCONNU = new("—", "—");
@@ -252,6 +292,16 @@ namespace IdlePond.Noyau.Donnees
             public const string SOUFFLE = "Souffle";
             public const string RETOURS_DANS_L_OEUF = "retours dans l’œuf";
             public const string RETOUR_ABSENCE = "{0} a tourné sans toi pendant {1}.";
+            /// Le détail du retour (2026-11-13) : une ligne par chose qui a bougé.
+            public const string RETOUR_PLAFONNE = "Tu es resté loin {0} ; au-delà de {1}, l’eau ne compte plus.";
+            public const string RETOUR_MANA = "+{0} de mana";
+            public const string RETOUR_CONTENANCE = "Tu peux porter {0} de plus.";
+            public const string RETOUR_STOCK_PLEIN = "Tu es plein : le reste s’est perdu dans l’eau.";
+            public const string RETOUR_DESCENTE_ROUVERTE = "La roche d’en dessous est de nouveau à ta portée.";
+            public const string RETOUR_PEUT_CREUSER = "Tu as de quoi creuser plus bas.";
+            public const string RETOUR_SUCCES = "{0} choses consignées au journal.";
+            public const string RETOUR_UN_SUCCES = "Une chose consignée au journal.";
+            public const string RETOUR_FERMER = "toucher pour reprendre";
 
             /* — Contenance ———————————————————————————————————————————————————————— */
             public const string DEBIT = "+{0} / s";
@@ -276,6 +326,12 @@ namespace IdlePond.Noyau.Donnees
             public const string ESPECE_QUI_S_ATTARDE = "un banc s’attarde";
             public const string VERBE_DEBLOQUER = "Convaincre";
             public const string MONTER = "Monter";
+            /// Le bouton d'un lot de crans : « Monter ×7 ».
+            public const string MONTER_PLUSIEURS = "Monter ×{0}";
+            /// Les deux façons de monter, choisies en tête du tiroir « Espèces ».
+            public const string MONTER_UN_CRAN = "un cran";
+            public const string MONTER_JUSQU_AU_SEUIL = "jusqu’au seuil";
+            public const string FACON_DE_MONTER = "Monter";
             public const string CREUSER = "Creuser plus bas";
             public const string PLUS_DE_ROCHE = "Il n’y a plus de roche à ouvrir ici";
 
@@ -301,6 +357,12 @@ namespace IdlePond.Noyau.Donnees
             public const string AMELIORATIONS_TITRE = "Améliorations de renaissance";
             public const string SOUFFLE_EN_RESERVE = "{0} de Souffle";
             public const string AMELIORER = "Améliorer";
+            public const string TOUT_AMELIORER = "Tout améliorer";
+            /// Le tiroir « Toi » : ce que le héros a appris, et ce qui vient ensuite.
+            public const string SAVOIR_TITRE = "Ce que tu sais";
+            public const string SAVOIR_RIEN_ENCORE = "Rien encore. Ça vient en faisant.";
+            public const string SAVOIR_PROCHAIN = "Encore {0} à convaincre, et tu en sauras plus.";
+            public const string SAVOIR_PROCHAIN_UN = "Encore un à convaincre, et tu en sauras plus.";
             public const string AMELIORER_UNE_ESPECE = "Améliorer {0}";
             public const string JAMAIS = "jamais";
             public const string FOIS = "{0} fois";
@@ -479,6 +541,15 @@ namespace IdlePond.Noyau.Donnees
             yield return ("amélioration amelioration-globale.effet", AMELIORATION_GLOBALE.Effet);
             if (AMELIORATION_CIBLEE.Nom != null) yield return ("amélioration amelioration-ciblee.nom", AMELIORATION_CIBLEE.Nom);
             yield return ("amélioration amelioration-ciblee.effet", AMELIORATION_CIBLEE.Effet);
+            yield return ("amélioration amelioration-sejour.nom", AMELIORATION_DE_SEJOUR.Nom);
+            yield return ("amélioration amelioration-sejour.effet", AMELIORATION_DE_SEJOUR.Effet);
+
+            foreach (var noeud in NoeudsTechnique.Tous)
+            {
+                var texte = DuNoeud(noeud.Id);
+                yield return ($"nœud {noeud.Id}.nom", texte.Nom);
+                yield return ($"nœud {noeud.Id}.effet", texte.Effet);
+            }
 
             // Les chaînes de l'interface : les constantes de `Ecran`, lues une à une.
             foreach (var champ in typeof(Ecran).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))

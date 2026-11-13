@@ -26,7 +26,15 @@ namespace IdlePond.Tests
             {
                 Cycle = Renaissance.Renaitre(etat).Cycle with { ManaCourant = Decimal.Parse("1e30") },
             };
-            Assert.That(Economie.CoutDeDescente(apres, 1).Eq(coutNeuf), Is.True);
+            // Ce que le canon ferme, c’est un tarif de REDESCENTE (`f` = 1). Ce que le héros a
+            // appris en creusant (arbre de technique) baisse le prix, lui, pour toujours et
+            // pour tout palier : on compare donc à savoir égal.
+            var neufAussiSavant = Reducteur.EtatInitial(7) with
+            {
+                Permanent = Reducteur.EtatInitial(7).Permanent with { NoeudsTechnique = apres.Permanent.NoeudsTechnique },
+            };
+            Assert.That(Economie.CoutDeDescente(apres, 1).Eq(Economie.CoutDeDescente(neufAussiSavant, 1)), Is.True);
+            Assert.That(Economie.CoutDeDescente(apres, 1).Lte(coutNeuf), Is.True);
         }
 
         [Test, Description("creuser un palier neuf et le recreuser après renaissance coûtent le même prix")]
