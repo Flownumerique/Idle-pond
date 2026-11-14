@@ -25,7 +25,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 | Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
 
-**Tests** : 483 EditMode et 33 PlayMode, tous verts (2026-11-14), plus trois mesures à la demande. Les références de
+**Tests** : 492 EditMode et 33 PlayMode, tous verts (2026-11-14), plus trois mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -94,10 +94,11 @@ quitté l'onglet « Débloquer ».
 - **Resserrer deux branches.** « Galeries connues » tombe à la vie 11 et « Tout le monde suit »
   jamais en quinze vies : les couples (A, B) de Creusement et d'Amélioration sont à régler
   (`Technique.COUPLES_A_B`), puis `MesureDeLArbreTests` à relancer.
-- **Un verbe sans effet** : la file de descente (décidé le 2026-11-14 : une file persistante
-  de trois creux, payés seuls dès que le mana arrive). « Lire l'eau » et « Compter les
-  siens » sont branchés depuis le 2026-11-14 ; « Compter les siens » est passé en tête
-  d'Entretien, son calendrier reste une graine non mesurée.
+- **Tous les verbes de l'arbre agissent** depuis le 2026-11-14 : « La file » (trois creux
+  demandés d'avance, payés seuls dès que le mana arrive, même hors ligne), « Lire l'eau »
+  (sous la jauge, ce que rentrer vaudrait), « Compter les siens » (les débits par espèce ;
+  sans lui, une pente sans chiffre). « Compter les siens » est passé en tête d'Entretien ;
+  ces calendriers restent des graines non mesurées.
 - **Mesurer Entretien**, que le simulateur ne voit pas, et tout l'arbre en vraie partie.
 - **La branche Construction** est muette tant que temples et portails n'existent pas (chantier 5).
 - **Les ~4 verbes réservés aux succès** (budget de 15, dont 11 à l'arbre) ne sont pas alloués.

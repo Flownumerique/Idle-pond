@@ -130,6 +130,16 @@ namespace IdlePond.TestsDeJeu
                     });
                     yield return new WaitForSeconds(0.6f);
                     Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-compte.png"));
+
+                    // « La file » : deux creux demandés d'avance, sans de quoi les payer.
+                    interfaceDeLaMare.Ouvrir(Tiroir.Aucun);
+                    partie.Remplacer(partie.Etat with
+                    {
+                        Cycle = partie.Etat.Cycle with { ManaCourant = IdlePond.Noyau.Decimal.Zero, CreuxDemandes = 2 },
+                        Permanent = partie.Etat.Permanent with { NoeudsTechnique = new[] { "creusement-file" } },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-file.png"));
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
                 }

@@ -318,7 +318,7 @@ Pour travailler le frontend sans ouvrir le noyau.
 
 | Besoin | Appel |
 |---|---|
-| Faire une action | `Partie.Creuser()`, `Convaincre(id)`, `Monter(id)`, `Grandir()`, `AcheterUnBonus(id)`, `AcheterUneAmelioration(id)`, `Renaitre()`, `Toucher()` (rend le gain ; dix par seconde au plus) |
+| Faire une action | `Partie.Creuser()`, `Convaincre(id)`, `Monter(id)`, `Grandir()`, `AcheterUnBonus(id)`, `AcheterUneAmelioration(id)`, `Renaitre()`, `Toucher()` (rend le gain ; dix par seconde au plus) ; `Creuser()` passe par `Reducteur.DemanderUnCreux` (avec « La file », met le creux en attente) |
 | Débit total, par espèce | `Economie.ProductionTotaleParSeconde`, `ProductionDeLEspece` |
 | D'où vient un débit | `Economie.DetailDeCaptation`, `DetailDuHeros`, `DetailDeLAmbiant`, `DetailDuToucher` |
 | Tous les prix | `Economie.CoutDeDescente`, `CoutDeDeblocage`, `CoutDeNiveau`, `CoutDeCroissance`, `CoutDeBonus`, `CoutDAmelioration` |

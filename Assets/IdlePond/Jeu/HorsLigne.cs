@@ -49,6 +49,23 @@ namespace IdlePond.Jeu
             return courant;
         }
 
+        /// <summary>
+        /// « La file » : les creux demandés avant de partir se sont creusés pendant l'absence,
+        /// sur ce qu'elle a amassé — sans « Le peuple continue » : c'était une demande du
+        /// joueur, pas un verbe qui tourne seul.
+        /// </summary>
+        public static EtatJeu LaFileSeVide(EtatJeu etat)
+        {
+            var courant = etat;
+            while (courant.Cycle.CreuxDemandes > 0)
+            {
+                var suivant = Automatismes.CreuserUnCreuxDemande(courant);
+                if (ReferenceEquals(suivant, courant)) break;
+                courant = suivant;
+            }
+            return courant;
+        }
+
         public static RetourDeHorsLigne Crediter(EtatJeu etat, long dernierInstantMs, long maintenantMs)
         {
             var secondes = Horloge.SecondesHorsLigneCreditees(dernierInstantMs, maintenantMs, CapHorsLigneCourantHeures(etat));
@@ -68,7 +85,7 @@ namespace IdlePond.Jeu
             };
             // S'absenter apprend à s'absenter : la branche Entretien de l'arbre.
             credite = Technique.Apprendre(credite, BrancheTechnique.Entretien);
-            return new RetourDeHorsLigne(LePeupleContinue(credite), secondes, resultat.Declenches);
+            return new RetourDeHorsLigne(LaFileSeVide(LePeupleContinue(credite)), secondes, resultat.Declenches);
         }
     }
 }

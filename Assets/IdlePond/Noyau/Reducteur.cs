@@ -226,6 +226,26 @@ namespace IdlePond.Noyau
             return (etat with { Cycle = etat.Cycle with { ManaCourant = etat.Cycle.ManaCourant.Add(gain) } }, gain);
         }
 
+        /// <summary>
+        /// Le geste « Creuser » du joueur — « La file », 2026-11-14. Payable : c'est `Creuser`.
+        /// Sinon, si le héros sait la file, le creux se met en attente, sans rien payer :
+        /// `CREUX_EN_ATTENTE_AU_PLUS` au plus, jamais plus qu'il ne reste de roche, et jamais si
+        /// la contenance ne porte pas le prochain (il attendrait jusqu'à la renaissance). Les
+        /// automatismes le creusent dès que le mana le paie (`Automatismes`).
+        /// </summary>
+        public static EtatJeu DemanderUnCreux(EtatJeu etat)
+        {
+            var creuse = Creuser(etat);
+            if (!ReferenceEquals(creuse, etat)) return creuse;
+            if (!Automatismes.Capacites(etat).Contains(CapaciteId.FileDeDescente)) return etat;
+            var demandes = etat.Cycle.CreuxDemandes;
+            if (demandes >= Constantes.CREUX_EN_ATTENTE_AU_PLUS) return etat;
+            var reste = Math.Min(etat.LimiteDeContenu, Constantes.NOMBRE_DE_PALIERS) - etat.Cycle.PaliersOuverts;
+            if (demandes >= reste) return etat;
+            if (Economie.CoutDeDescente(etat, etat.Cycle.PaliersOuverts).Gt(Economie.Contenance(etat))) return etat;
+            return etat with { Cycle = etat.Cycle with { CreuxDemandes = demandes + 1 } };
+        }
+
         /* ─── Actes du joueur ───────────────────────────────────────────────────────
          * Des réducteurs purs, comme le tick. Un acte qui n'est pas payable rend l'état
          * inchangé : c'est au-dessus du noyau de ne pas le proposer.

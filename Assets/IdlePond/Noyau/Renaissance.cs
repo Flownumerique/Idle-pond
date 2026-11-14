@@ -63,7 +63,8 @@ namespace IdlePond.Noyau
             AcquisDeSejour: 0,
             NiveauDuHeros: Constantes.NIVEAU_DU_HEROS_AU_DEPART,
             // Les bonus de lieu et les techniques se paient en mana : ils se perdent avec lui.
-            Bonus: new Dictionary<string, int>());
+            Bonus: new Dictionary<string, int>(),
+            CreuxDemandes: 0);
 
         /// <summary>
         /// Les couches du corps — GDD §15.1, « une marque par assise fixée ».

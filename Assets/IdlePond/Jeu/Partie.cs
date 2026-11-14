@@ -134,7 +134,8 @@ namespace IdlePond.Jeu
 
         /* ─── Les actes du joueur ───────────────────────────────────────────────────*/
 
-        public void Creuser() => Appliquer(Reducteur.Creuser);
+        /// Creuser, ou, avec « La file », demander le creux d'avance s'il n'est pas payable.
+        public void Creuser() => Appliquer(Reducteur.DemanderUnCreux);
 
         public void Convaincre(string espece) => Appliquer(etat => Reducteur.Debloquer(etat, espece));
 

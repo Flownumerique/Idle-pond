@@ -342,6 +342,8 @@ namespace IdlePond.Noyau.Donnees
             public const string MONTER_JUSQU_AU_SEUIL = "jusqu’au seuil";
             public const string FACON_DE_MONTER = "Monter";
             public const string CREUSER = "Creuser plus bas";
+            /// « La file » : des creux demandés d'avance attendent leur mana.
+            public const string CREUSER_EN_ATTENTE = "Creuser plus bas · {0} en attente";
             public const string PLUS_DE_ROCHE = "Il n’y a plus de roche à ouvrir ici";
 
             /* — La renaissance ———————————————————————————————————————————————————— */

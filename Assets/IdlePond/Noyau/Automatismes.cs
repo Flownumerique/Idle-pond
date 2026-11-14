@@ -34,6 +34,9 @@ namespace IdlePond.Noyau
             var retour = capacites.Contains(CapaciteId.RetourRapide);
             var apres = etat;
 
+            // Ce que le joueur a demandé passe avant ce qui se fait seul.
+            if (capacites.Contains(CapaciteId.FileDeDescente))
+                apres = CreuserUnCreuxDemande(apres);
             // D'abord reconvaincre : c'est ce qui remet la production en route.
             if (retour || capacites.Contains(CapaciteId.DeblocageAuto))
                 apres = ReconvaincreUneEspeceConnue(apres);
@@ -46,6 +49,20 @@ namespace IdlePond.Noyau
             if (retour)
                 apres = RacheterUnBonus(apres);
             return apres;
+        }
+
+        /// <summary>
+        /// « La file » (Creusement) : un creux demandé d'avance se creuse dès que le mana le
+        /// paie. Un par appel. Toute la roche ouverte, la file se vide d'elle-même.
+        /// </summary>
+        public static EtatJeu CreuserUnCreuxDemande(EtatJeu etat)
+        {
+            var demandes = etat.Cycle.CreuxDemandes;
+            if (demandes <= 0) return etat;
+            if (Economie.ToutEstCreuse(etat)) return etat with { Cycle = etat.Cycle with { CreuxDemandes = 0 } };
+            var creuse = Reducteur.Creuser(etat);
+            if (ReferenceEquals(creuse, etat)) return etat;
+            return creuse with { Cycle = creuse.Cycle with { CreuxDemandes = demandes - 1 } };
         }
 
         /// Les verbes ouverts : ceux de l'arbre, et ceux qu'un bonus porterait (aucun aujourd'hui).

@@ -477,6 +477,10 @@ namespace IdlePond.Noyau
         /// </summary>
         public const double DEBIT_AMBIANT = 0.05;
 
+        /// [P] graine — « La file » (arbre, Creusement) : les creux qu'on peut demander d'avance.
+        /// Décidé le 2026-11-14 ; trois, pour que la file soulage sans creuser à la place du joueur.
+        public const int CREUX_EN_ATTENTE_AU_PLUS = 3;
+
         /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────
          * Le héros est actif : un toucher rapporte `BASE × niveau × multiplicateurs
          * globaux × multiplicateur du toucher`, plafonné par la contenance. Le simulateur

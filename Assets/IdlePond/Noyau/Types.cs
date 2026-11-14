@@ -141,7 +141,10 @@ namespace IdlePond.Noyau
         double DureeSecondes,
         double AcquisDeSejour,
         int NiveauDuHeros,
-        IReadOnlyDictionary<string, int> Bonus);
+        IReadOnlyDictionary<string, int> Bonus,
+        // « La file » (2026-11-14) : les creux demandés d'avance, payés seuls dès que le mana
+        // arrive. Du cycle : la renaissance les oublie avec la roche qu'ils devaient ouvrir.
+        int CreuxDemandes);
 
     public sealed record EtatPermanent(
         IReadOnlyList<double> Densites,
