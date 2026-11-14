@@ -132,11 +132,19 @@ namespace IdlePond.Tests
             Assert.That(Format.Entier(1234567.9), Is.EqualTo("1 234 567"));
         }
 
+        [Test, Description("les crans d'une carte d'espèce s'accordent : un cran, des crans")]
+        public void Les_crans_d_une_carte_s_accordent()
+        {
+            Assert.That(Format.CransDeLaCarte(1), Is.EqualTo("1 cran · "));
+            Assert.That(Format.CransDeLaCarte(12), Is.EqualTo("12 crans · "));
+        }
+
         [Test, Description("la source d'un terme se met en mots ici, pas dans le noyau")]
         public void La_source_d_un_terme_se_met_en_mots()
         {
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 0)), Is.EqualTo("personne encore"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 7)), Is.EqualTo("7 crans tenus"));
+            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 1)), Is.EqualTo("1 cran tenu"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Palier, 2)), Is.EqualTo("2 brasses"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.DrapeauxPermanents, 0)), Is.EqualTo("aucune espèce au complet"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.DrapeauxPermanents, 1)), Is.EqualTo("1 espèce déjà au complet"));

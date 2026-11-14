@@ -473,6 +473,7 @@ namespace IdlePond.Noyau.Donnees
             public const string FICHE_RETOURS = "Retours dans l’œuf";
 
             /* — Le tiroir « Espèces » ———————————————————————————————————————————————— */
+            public const string CRAN_ET_DEBIT = "{0} cran · ";
             public const string CRANS_ET_DEBIT = "{0} crans · ";
             /// Sans « Compter les siens » : ce qu'une espèce donne, en pente (part du tout).
             public const string PENTE_L_ESSENTIEL = "l’essentiel";
@@ -517,6 +518,7 @@ namespace IdlePond.Noyau.Donnees
             public const string BRASSE = "{0} brasse";
             public const string BRASSES = "{0} brasses";
             public const string PERSONNE_ENCORE = "personne encore";
+            public const string CRAN_TENU = "{0} cran tenu";
             public const string CRANS_TENUS = "{0} crans tenus";
             public const string AUCUNE_ESPECE_AU_COMPLET = "aucune espèce au complet";
             public const string ESPECE_AU_COMPLET = "{0} espèce déjà au complet";

@@ -187,7 +187,7 @@ namespace IdlePond.Jeu.UI
                 if (niveau == 0) Elements.Poser(carte.Indice, Format.Profondeur(espece.Palier));
                 else
                 {
-                    Elements.Poser(carte.Crans, Format.Remplir(E.CRANS_ET_DEBIT, niveau.ToString(CultureInfo.InvariantCulture)));
+                    Elements.Poser(carte.Crans, Format.CransDeLaCarte(niveau));
                     var compte = Economie.LitLesDebits(etat);
                     Elements.Poser(carte.Production, compte
                         ? Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionDeLEspece(etat, espece)))
