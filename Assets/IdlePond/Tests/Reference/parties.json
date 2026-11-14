@@ -2368,30 +2368,30 @@
       "graine": 3
      },
      "cycle": {
-      "manaCourant": "5.9134146845265168e4",
+      "manaCourant": "1.30687954992795e4",
       "paliersOuverts": 10,
       "especes": {
        "vairon": {
         "debloquee": true,
-        "niveau": 50
+        "niveau": 49
        },
        "loche": {
         "debloquee": true,
-        "niveau": 45
+        "niveau": 44
        },
        "epinoche": {
         "debloquee": true,
-        "niveau": 40
+        "niveau": 39
        },
        "chabot": {
         "debloquee": true,
-        "niveau": 36
+        "niveau": 34
        }
       },
-      "productionPicParSeconde": "1.04562357681756e5",
+      "productionPicParSeconde": "8.03158655504125e4",
       "dureeSecondes": 1800.0,
-      "acquisDeSejour": 19.929440638693187,
-      "niveauDuHeros": 9
+      "acquisDeSejour": 19.983880774038674,
+      "niveauDuHeros": 8
      },
      "permanent": {
       "densites": [
@@ -2464,7 +2464,7 @@
       "profondeurMaxAtteinte": 10,
       "compteursTechnique": {
        "creusement": 81048.96170613615,
-       "amelioration": 1824079.9612219406,
+       "amelioration": 1506307.1072619488,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -2515,10 +2515,6 @@
         "registre": "pente"
        },
        "seuil-vairon-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
-       "seuil-vairon-50": {
         "obtenuAuCycle": 0,
         "registre": "pente"
        },
@@ -2597,26 +2593,26 @@
       },
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [],
-      "manaAmbiant": "4.77376976545521e6",
+      "manaAmbiant": "3.26862056637511e5",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
-      "secondesDepuisDernierSucces": 41.0,
+      "secondesDepuisDernierSucces": 8.0,
       "intervallesEntreSucces": [
        1.0,
        240.0,
        255.0,
-       274.0,
-       190.0,
-       57.0,
-       297.0,
-       31.0,
-       116.0,
+       288.0,
+       203.0,
+       61.0,
+       309.0,
+       32.0,
+       118.0,
        7.0,
        43.0,
-       77.0,
+       78.0,
        17.0,
        40.0,
        10.0,
@@ -2624,17 +2620,16 @@
        25.0,
        11.0,
        50.0,
-       2.0,
-       14.0
+       2.0
       ]
      },
      "derives": {
-      "production": "1.04562357681756e5",
-      "contenance": "5.9134146845265168e4",
-      "partDeContenance": 1.0,
-      "eauTroublee": true,
+      "production": "8.04582537885074e4",
+      "contenance": "5.9287962277477169e4",
+      "partDeContenance": 0.22042915622762413,
+      "eauTroublee": false,
       "estBloque": true,
-      "gainDeSoufflePrevu": "3.23e2"
+      "gainDeSoufflePrevu": "2.83e2"
      }
     },
     {
@@ -2644,7 +2639,7 @@
       "graine": 3
      },
      "cycle": {
-      "manaCourant": "8.8523180573676239e4",
+      "manaCourant": "8.86191748771948e4",
       "paliersOuverts": 10,
       "especes": {
        "vairon": {
@@ -2664,9 +2659,9 @@
         "niveau": 38
        }
       },
-      "productionPicParSeconde": "1.11112216634122e5",
+      "productionPicParSeconde": "1.11030343397218e5",
       "dureeSecondes": 3600.0,
-      "acquisDeSejour": 30.331147091934795,
+      "acquisDeSejour": 30.365122505199853,
       "niveauDuHeros": 9
      },
      "permanent": {
@@ -2740,7 +2735,7 @@
       "profondeurMaxAtteinte": 10,
       "compteursTechnique": {
        "creusement": 81048.96170613615,
-       "amelioration": 2590209.5216148132,
+       "amelioration": 2590302.15527628,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -2873,26 +2868,26 @@
       },
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [],
-      "manaAmbiant": "1.99931773294315e8",
+      "manaAmbiant": "1.94948134723347e8",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
-      "secondesDepuisDernierSucces": 1841.0,
+      "secondesDepuisDernierSucces": 1794.0,
       "intervallesEntreSucces": [
        1.0,
        240.0,
        255.0,
-       274.0,
-       190.0,
-       57.0,
-       297.0,
-       31.0,
-       116.0,
+       288.0,
+       203.0,
+       61.0,
+       309.0,
+       32.0,
+       118.0,
        7.0,
        43.0,
-       77.0,
+       78.0,
        17.0,
        40.0,
        10.0,
@@ -2905,9 +2900,9 @@
       ]
      },
      "derives": {
-      "production": "1.11112216634122e5",
-      "contenance": "8.8523180573676239e4",
-      "partDeContenance": 1.0,
+      "production": "1.11030343397218e5",
+      "contenance": "8.86191748771948e4",
+      "partDeContenance": 0.99999999999999989,
       "eauTroublee": true,
       "estBloque": true,
       "gainDeSoufflePrevu": "3.33e2"
@@ -4649,7 +4644,7 @@
  ],
  "simulation": {
   "instant": {
-   "tempsJeuSecondes": 331320.0,
+   "tempsJeuSecondes": 331260.0,
    "limiteDeContenu": 62,
    "prng": {
     "graine": 7
@@ -4665,71 +4660,71 @@
    },
    "permanent": {
     "densites": [
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177,
-     6.4937090396136562E+177
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177,
+     6.4932753320611064E+177
     ],
-    "souffle": "1.57640860944174e135",
-    "contenanceMana": "2.660207946603562e28",
+    "souffle": "1.57353938671604e135",
+    "contenanceMana": "2.6584627796743172e28",
     "couches": [
      "noue",
      "gour",
@@ -4741,7 +4736,7 @@
     "profondeurMaxAtteinte": 62,
     "compteursTechnique": {
      "creusement": 1.2137492945779439E+25,
-     "amelioration": 8.19853534911248E+30,
+     "amelioration": 8.1985353491124811E+30,
      "recrutement": 207.0,
      "entretien": 0.0,
      "construction": 0.0,
@@ -5010,7 +5005,7 @@
      "espece-6-2",
      "espece-6-3"
     ],
-    "manaAmbiant": "9.05782457822891e277",
+    "manaAmbiant": "9.05435169835963e277",
     "heuresHorsLigneCreditees": 0.0,
     "ameliorations": {
      "amelioration-globale": 225,
@@ -5041,124 +5036,124 @@
     "cycles": [
      {
       "index": 0,
-      "dureeEcouleeSecondes": 11340.0,
+      "dureeEcouleeSecondes": 11280.0,
       "paliersOuverts": 11,
-      "productionPicParSeconde": "2.48920737178525e5",
+      "productionPicParSeconde": "2.48751760965325e5",
       "souffleGagne": "4.98e2"
      },
      {
       "index": 1,
       "dureeEcouleeSecondes": 12540.0,
       "paliersOuverts": 15,
-      "productionPicParSeconde": "8.29851831144504e11",
-      "souffleGagne": "9.10962e5"
+      "productionPicParSeconde": "8.29344036254704e11",
+      "souffleGagne": "9.10683e5"
      },
      {
       "index": 2,
       "dureeEcouleeSecondes": 13620.0,
       "paliersOuverts": 19,
-      "productionPicParSeconde": "6.4565003001491e20",
-      "souffleGagne": "2.5409644429e10"
+      "productionPicParSeconde": "6.45306660057378e20",
+      "souffleGagne": "2.5402886844e10"
      },
      {
       "index": 3,
       "dureeEcouleeSecondes": 14940.0,
       "paliersOuverts": 24,
-      "productionPicParSeconde": "6.0867536001408e31",
-      "souffleGagne": "7.8017649286176258e15"
+      "productionPicParSeconde": "6.08394789999666e31",
+      "souffleGagne": "7.7999666024904624e15"
      },
      {
       "index": 4,
       "dureeEcouleeSecondes": 16260.0,
       "paliersOuverts": 28,
-      "productionPicParSeconde": "3.99066186723522e44",
-      "souffleGagne": "1.9976641027047615e22"
+      "productionPicParSeconde": "3.98906758176068e44",
+      "souffleGagne": "1.99726502541868e22"
      },
      {
       "index": 5,
       "dureeEcouleeSecondes": 17880.0,
       "paliersOuverts": 33,
-      "productionPicParSeconde": "2.45089176056221e59",
-      "souffleGagne": "4.9506482005513277e29"
+      "productionPicParSeconde": "2.45004314898394e59",
+      "souffleGagne": "4.9497910551698441e29"
      },
      {
       "index": 6,
       "dureeEcouleeSecondes": 19740.0,
       "paliersOuverts": 38,
-      "productionPicParSeconde": "2.02322150683803e76",
-      "souffleGagne": "1.4223999110088661e38"
+      "productionPicParSeconde": "2.02261436470329e76",
+      "souffleGagne": "1.4221864732528187e38"
      },
      {
       "index": 7,
       "dureeEcouleeSecondes": 21480.0,
       "paliersOuverts": 42,
-      "productionPicParSeconde": "7.01155470558825e94",
-      "souffleGagne": "2.6479340447957251e47"
+      "productionPicParSeconde": "7.00973113722216e94",
+      "souffleGagne": "2.6475896844530422e47"
      },
      {
       "index": 8,
       "dureeEcouleeSecondes": 23520.0,
       "paliersOuverts": 47,
-      "productionPicParSeconde": "2.92810473882872e115",
-      "souffleGagne": "5.4111964839845905e57"
+      "productionPicParSeconde": "2.92742887594584e115",
+      "souffleGagne": "5.41057194383906e57"
      },
      {
       "index": 9,
       "dureeEcouleeSecondes": 25620.0,
       "paliersOuverts": 51,
-      "productionPicParSeconde": "6.29329661648093e137",
-      "souffleGagne": "7.9330300746189844e68"
+      "productionPicParSeconde": "6.29203766507506e137",
+      "souffleGagne": "7.9322365478313e68"
      },
      {
       "index": 10,
       "dureeEcouleeSecondes": 27780.0,
       "paliersOuverts": 55,
-      "productionPicParSeconde": "1.5877165591795519e162",
-      "souffleGagne": "1.2600462527937424e81"
+      "productionPicParSeconde": "1.5874412874411219e162",
+      "souffleGagne": "1.2599370172517046e81"
      },
      {
       "index": 11,
       "dureeEcouleeSecondes": 30480.0,
       "paliersOuverts": 60,
-      "productionPicParSeconde": "3.41674008188043e188",
-      "souffleGagne": "1.8484426098422504e94"
+      "productionPicParSeconde": "3.41622667970213e188",
+      "souffleGagne": "1.8483037303706689e94"
      },
      {
       "index": 12,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "1.6650646288556319e216",
-      "souffleGagne": "1.290373832986252e108"
+      "productionPicParSeconde": "1.6648368557158459e216",
+      "souffleGagne": "1.2902855713817178e108"
      },
      {
       "index": 13,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "3.53093123552355e244",
-      "souffleGagne": "1.8790772297922056e122"
+      "productionPicParSeconde": "3.53051261865254e244",
+      "souffleGagne": "1.8789658375427e122"
      },
      {
       "index": 14,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "3.11889113476064e273",
-      "souffleGagne": "5.5847033356845737e136"
+      "productionPicParSeconde": "3.1185706678385e273",
+      "souffleGagne": "5.5844164134119687e136"
      }
     ],
-    "secondesDepuisDernierSucces": 331320.0,
+    "secondesDepuisDernierSucces": 331260.0,
     "intervallesEntreSucces": []
    },
    "derives": {
-    "production": "9.8737329316484459e235",
-    "contenance": "5.3204158932071239e28",
-    "partDeContenance": 6.7663883280183478E-28,
+    "production": "9.8728536673535174e235",
+    "contenance": "5.3169255593486344e28",
+    "partDeContenance": 6.7708301720910843E-28,
     "eauTroublee": false,
     "estBloque": false,
     "gainDeSoufflePrevu": "0e0"
    }
   },
   "cyclesAcheves": 15,
-  "secondesActives": 331320.0,
-  "secondesEcoulees": 331320.0
+  "secondesActives": 331260.0,
+  "secondesEcoulees": 331260.0
  }
 }
