@@ -73,7 +73,7 @@ namespace IdlePond.Tests.Outils
             })),
             ["ameliorations"] = new JArray(AmeliorationsDeRenaissance.Toutes.Select(i => new JObject
             {
-                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDAmelioration.Globale ? "globale" : i.Portee == PorteeDAmelioration.Sejour ? "sejour" : "ciblee", ["espece"] = Chaine(i.Espece),
+                ["id"] = i.Id, ["portee"] = i.Portee.ToString().ToLowerInvariant(), ["espece"] = Chaine(i.Espece),
             })),
             ["succes"] = new JArray(RegistreDesSucces.Tous.Select(Succes)),
         };
