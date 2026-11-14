@@ -209,26 +209,37 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
-        /// Toucher la mare — spec du 2026-10-11. Ajoute `ValeurDuToucher`, plafonnée par la
-        /// place qui reste sous la contenance, et rend ce qui a été réellement gagné. Mare
-        /// pleine : l'état revient inchangé, la même référence, gain nul.
+        /// Toucher la mare — specs du 2026-10-11 et du 2026-11-14. Deux effets, dans cet ordre :
+        ///   1. l'acquis de séjour avance de `SejourDuToucher` secondes, par la courbe même du
+        ///      temps (`A∞ + (A − A∞)·exp(−s/τ)`) : il sature avec lui, et toucher ne passe
+        ///      jamais le plafond d'une vie. Ni le temps de jeu, ni la durée du cycle, ni le pic
+        ///      ne bougent : on s'est fait à l'eau plus vite, le temps n'a pas passé ;
+        ///   2. le mana gagne `ValeurDuToucher`, plafonnée par la contenance APRÈS l'avance —
+        ///      mare pleine, le toucher remplit la place qu'il vient de faire.
+        /// Rend le mana réellement gagné. Si rien n'a bougé (acquis au plafond, mare pleine),
+        /// l'état revient inchangé, la même référence, gain nul.
         ///
         /// Ce n'est pas une dépense : aucun compteur de technique n'est crédité, rien ne se
         /// déclenche, et le crédit hors ligne ne touche jamais. La cadence (dix par seconde
         /// au plus) vit dans le jeu, `Partie.Toucher` : le noyau ne voit pas le temps de mur.
         ///
         /// `fois` : autant de touchers d'un coup, pour le simulateur, qui touche par pas
-        /// d'une minute. Un toucher ne change pas la valeur du suivant ; seul le plafond
-        /// compte, et il est le même : n touchers d'un coup valent n touchers un à un.
+        /// d'une minute. Un toucher ne change pas la valeur du suivant, et l'acquis se compose
+        /// exactement (la courbe est exponentielle) : n touchers d'un coup valent n touchers un
+        /// à un. Seule nuance, le plafond est lu une fois, à la fin : si un toucher vaut moins
+        /// de mana que la contenance qu'il ajoute, le lot remplit un peu plus que la série.
         /// </summary>
         public static (EtatJeu Etat, Decimal Gain) Toucher(EtatJeu etat, int fois = 1)
         {
             if (fois <= 0) return (etat, Decimal.Zero);
-            var reste = Economie.Contenance(etat).Sub(etat.Cycle.ManaCourant);
-            if (reste.Lte(0)) return (etat, Decimal.Zero);
-            var valeur = Economie.ValeurDuToucher(etat).Mul(fois);
+            var acquis = Constantes.ACQUIS_MAX
+                + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-fois * Economie.SejourDuToucher(etat) / TauDuSejourSecondes(etat));
+            var avance = acquis == etat.Cycle.AcquisDeSejour ? etat : etat with { Cycle = etat.Cycle with { AcquisDeSejour = acquis } };
+            var reste = Economie.Contenance(avance).Sub(avance.Cycle.ManaCourant);
+            if (reste.Lte(0)) return (avance, Decimal.Zero);
+            var valeur = Economie.ValeurDuToucher(avance).Mul(fois);
             var gain = valeur.Lt(reste) ? valeur : reste;
-            return (etat with { Cycle = etat.Cycle with { ManaCourant = etat.Cycle.ManaCourant.Add(gain) } }, gain);
+            return (avance with { Cycle = avance.Cycle with { ManaCourant = avance.Cycle.ManaCourant.Add(gain) } }, gain);
         }
 
         /// <summary>

@@ -498,6 +498,19 @@ namespace IdlePond.Noyau
         /// dans le jeu (`Partie.Toucher`) ; le simulateur s'y borne aussi (`Politique`).
         public const int TOUCHERS_PAR_SECONDE_AU_PLUS = 10;
 
+        /// [P] graine — le séjour d'un toucher, en secondes (spec du 2026-11-14, « le toucher
+        /// hâte le séjour »). À deux touchers par seconde, l'acquis monte ×1,5 ; à la borne,
+        /// ×3,5. Il avance par la courbe du temps, donc il sature avec lui.
+        public const double SECONDES_DE_SEJOUR_PAR_TOUCHER = 0.25;
+
+        /// [P] graine — part ajoutée au séjour d'un toucher par rang de l'amélioration du
+        /// toucher : `1 + part × rang`.
+        public const double PART_DE_SEJOUR_PAR_RANG_DU_TOUCHER = 0.1;
+
+        /// [P] graine — dernier rang de l'amélioration du toucher (2026-11-14). Sans borne, elle
+        /// montait au rang 225 en quinze vies sans rien acheter (`RESULTATS.md`, Finding 10).
+        public const int RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER = 10;
+
         /// [P] graine — part ajoutée à la valeur d'un toucher par rang de l'amélioration du
         /// toucher : `(1 + part) ^ rang`. Sans borne, comme la globale.
         public const double PART_PAR_RANG_DU_TOUCHER = 0.5;

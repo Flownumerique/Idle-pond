@@ -120,21 +120,79 @@ namespace IdlePond.Tests
             // Une petite contenance : à 1e14, la moitié d'un toucher se perd dans la mantisse.
             var etat = EtatDeTravail.Creer();
             etat = etat with { Permanent = etat.Permanent with { ContenanceMana = new Decimal(1000) } };
-            var contenance = Economie.Contenance(etat);
-            var presquePlein = AvecMana(etat, contenance.Sub(Economie.ValeurDuToucher(etat).Div(2)));
-            var (apres, gain) = Reducteur.Toucher(presquePlein);
-            Assert.That(apres.Cycle.ManaCourant.Eq(contenance), Is.True);
-            Comparateur.ComparerATolerance(Economie.ValeurDuToucher(etat).Div(2), gain);
+            // Le plafond se lit APRÈS l'avance du séjour : la contenance une fois le toucher fait.
+            var contenance = Economie.Contenance(Reducteur.Toucher(AvecMana(etat, new Decimal(0))).Etat);
+            var valeur = Economie.ValeurDuToucher(etat);
+            var (apres, gain) = Reducteur.Toucher(AvecMana(etat, contenance.Sub(valeur.Div(2))));
+            Comparateur.ComparerATolerance(apres.Cycle.ManaCourant, contenance);
+            Comparateur.ComparerATolerance(valeur.Div(2), gain);
         }
 
-        [Test, Description("mare pleine : l'état revient inchangé, gain nul")]
-        public void Mare_pleine_rien_ne_change()
+        /* ─── le toucher hâte le séjour (spec du 2026-11-14) ─────────────────────── */
+
+        static EtatJeu AvecAcquis(EtatJeu etat, double acquis) =>
+            etat with { Cycle = etat.Cycle with { AcquisDeSejour = acquis } };
+
+        [Test, Description("un toucher fait avancer l'acquis de séjour par la courbe du temps, sans faire passer le temps")]
+        public void Un_toucher_fait_avancer_le_sejour()
+        {
+            var etat = AvecAcquis(AvecMana(EtatDeTravail.Creer(), new Decimal(0)), 0);
+            var tau = Reducteur.TauDuSejourSecondes(etat);
+            var attendu = Constantes.ACQUIS_MAX + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-Constantes.SECONDES_DE_SEJOUR_PAR_TOUCHER / tau);
+            var (apres, _) = Reducteur.Toucher(etat);
+            Assert.That(apres.Cycle.AcquisDeSejour, Is.EqualTo(attendu).Within(1e-15));
+            Assert.That(apres.Cycle.AcquisDeSejour, Is.GreaterThan(etat.Cycle.AcquisDeSejour));
+            Assert.That(apres.Cycle.DureeSecondes, Is.EqualTo(etat.Cycle.DureeSecondes));
+            Assert.That(apres.TempsJeuSecondes, Is.EqualTo(etat.TempsJeuSecondes));
+            Assert.That(apres.Cycle.ProductionPicParSeconde.Eq(etat.Cycle.ProductionPicParSeconde), Is.True);
+            Assert.That(apres.Permanent, Is.SameAs(etat.Permanent), "ni Souffle, ni rien de permanent");
+        }
+
+        [Test, Description("le séjour d'un toucher : 0,25 s, plus 10 % par rang de l'amélioration, dix rangs au plus")]
+        public void Le_sejour_d_un_toucher_monte_de_dix_pour_cent_par_rang()
+        {
+            Assert.That(Constantes.SECONDES_DE_SEJOUR_PAR_TOUCHER, Is.EqualTo(0.25));
+            var etat = Reducteur.EtatInitial(1);
+            Assert.That(Economie.SejourDuToucher(etat), Is.EqualTo(0.25).Within(1e-12));
+            Assert.That(Economie.SejourDuToucher(AuRangDuToucher(etat, 3)), Is.EqualTo(0.325).Within(1e-12));
+            Assert.That(Economie.SejourDuToucher(AuRangDuToucher(etat, 10)), Is.EqualTo(0.5).Within(1e-12));
+            Assert.That(Economie.SejourDuToucher(AuRangDuToucher(etat, 12)), Is.EqualTo(0.5).Within(1e-12));
+        }
+
+        [Test, Description("mare pleine, le toucher fait porter plus, et remplit la place neuve")]
+        public void Mare_pleine_le_toucher_fait_porter_plus()
         {
             var etat = EtatDeTravail.Creer();
+            etat = AvecAcquis(etat with { Permanent = etat.Permanent with { ContenanceMana = new Decimal(1000) } }, 0);
+            var plein = AvecMana(etat, Economie.Contenance(etat));
+            var (apres, gain) = Reducteur.Toucher(plein);
+            Assert.That(apres, Is.Not.SameAs(plein));
+            Assert.That(Economie.Contenance(apres).Gt(Economie.Contenance(plein)), Is.True);
+            Comparateur.ComparerATolerance(apres.Cycle.ManaCourant, Economie.Contenance(apres));
+            Assert.That(gain.Gt(0), Is.True);
+        }
+
+        [Test, Description("mare pleine et acquis au plafond : l'état revient inchangé, gain nul")]
+        public void Acquis_au_plafond_et_mare_pleine_rien_ne_change()
+        {
+            var etat = AvecAcquis(EtatDeTravail.Creer(), Constantes.ACQUIS_MAX);
             var plein = AvecMana(etat, Economie.Contenance(etat));
             var (apres, gain) = Reducteur.Toucher(plein);
             Assert.That(apres, Is.SameAs(plein));
             Assert.That(gain.Eq(0), Is.True);
+        }
+
+        [Test, Description("l'amélioration du toucher s'arrête au rang 10")]
+        public void L_amelioration_du_toucher_s_arrete_au_rang_10()
+        {
+            var toucher = AmeliorationsDeRenaissance.ParId(AmeliorationsDeRenaissance.TOUCHER_ID);
+            var etat = Reducteur.EtatInitial(1);
+            etat = etat with { Permanent = etat.Permanent with { Souffle = Decimal.Parse("1e30") } };
+            Assert.That(Economie.AmeliorationAuMaximum(AuRangDuToucher(etat, 9), toucher), Is.False);
+            var auMax = AuRangDuToucher(etat, Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER);
+            Assert.That(Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER, Is.EqualTo(10));
+            Assert.That(Economie.AmeliorationAuMaximum(auMax, toucher), Is.True);
+            Assert.That(Reducteur.AcheterUneAmelioration(auMax, toucher.Id), Is.SameAs(auMax));
         }
 
         [Test, Description("n touchers d'un coup valent n touchers un à un : le simulateur n'a pas de règle à lui")]
@@ -152,6 +210,7 @@ namespace IdlePond.Tests
             }
             Comparateur.ComparerATolerance(unAUn.Cycle.ManaCourant, enUneFois.Cycle.ManaCourant);
             Comparateur.ComparerATolerance(somme, gain);
+            Assert.That(enUneFois.Cycle.AcquisDeSejour, Is.EqualTo(unAUn.Cycle.AcquisDeSejour).Within(1e-12));
         }
 
         [Test, Description("n touchers d'un coup restent plafonnés par la contenance")]
@@ -159,10 +218,11 @@ namespace IdlePond.Tests
         {
             var etat = EtatDeTravail.Creer();
             etat = etat with { Permanent = etat.Permanent with { ContenanceMana = new Decimal(1000) } };
-            var contenance = Economie.Contenance(etat);
             var valeur = Economie.ValeurDuToucher(etat);
+            // La contenance une fois les cinq touchers faits : le plafond se lit là.
+            var contenance = Economie.Contenance(Reducteur.Toucher(AvecMana(etat, new Decimal(0)), 5).Etat);
             var (apres, gain) = Reducteur.Toucher(AvecMana(etat, contenance.Sub(valeur.Mul(2.5))), 5);
-            Assert.That(apres.Cycle.ManaCourant.Eq(contenance), Is.True);
+            Comparateur.ComparerATolerance(apres.Cycle.ManaCourant, contenance);
             Comparateur.ComparerATolerance(valeur.Mul(2.5), gain);
         }
 

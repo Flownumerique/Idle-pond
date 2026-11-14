@@ -217,12 +217,20 @@ namespace IdlePond.Noyau
 
         /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────*/
 
+        /// Le rang de l'amélioration du toucher, borné à son dernier rang.
+        static int RangDuToucher(EtatJeu etat) =>
+            Math.Min(RangDAmelioration(etat, AmeliorationsDeRenaissance.TOUCHER_ID), Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER);
+
         /// Ce que l'amélioration du toucher fait à un toucher : `(1 + part) ^ rang`, 1 à rang 0.
         public static double MultiplicateurDuToucher(EtatJeu etat)
         {
-            var rang = RangDAmelioration(etat, AmeliorationsDeRenaissance.TOUCHER_ID);
+            var rang = RangDuToucher(etat);
             return rang <= 0 ? 1 : Math.Pow(1 + Constantes.PART_PAR_RANG_DU_TOUCHER, rang);
         }
+
+        /// Le séjour d'un toucher, en secondes (spec du 2026-11-14) : `0,25 × (1 + 0,1 × rang)`.
+        public static double SejourDuToucher(EtatJeu etat) =>
+            Constantes.SECONDES_DE_SEJOUR_PAR_TOUCHER * (1 + Constantes.PART_DE_SEJOUR_PAR_RANG_DU_TOUCHER * RangDuToucher(etat));
 
         /// <summary>
         /// Ce qu'un toucher rapporte, avant le plafond de la contenance : la même forme que
@@ -469,10 +477,19 @@ namespace IdlePond.Noyau
             return crans == 0 ? (0, CoutDeNiveau(etat, espece, vivante.Niveau)) : (crans, total);
         }
 
-        /// Seule l'amélioration de séjour a un dernier rang ; les autres s'empilent sans fin.
-        public static bool AmeliorationAuMaximum(EtatJeu etat, AmeliorationDeRenaissance amelioration) =>
-            amelioration.Portee == PorteeDAmelioration.Sejour
-            && RangDAmelioration(etat, amelioration.Id) >= Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR;
+        /// Le séjour et le toucher ont un dernier rang ; les autres s'empilent sans fin.
+        public static bool AmeliorationAuMaximum(EtatJeu etat, AmeliorationDeRenaissance amelioration)
+        {
+            switch (amelioration.Portee)
+            {
+                case PorteeDAmelioration.Sejour:
+                    return RangDAmelioration(etat, amelioration.Id) >= Constantes.RANG_MAX_DE_L_AMELIORATION_DE_SEJOUR;
+                case PorteeDAmelioration.Toucher:
+                    return RangDAmelioration(etat, amelioration.Id) >= Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER;
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Ce que l'amélioration de séjour fait au temps caractéristique de l'acquis :
