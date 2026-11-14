@@ -50,9 +50,14 @@ namespace IdlePond.Noyau
         ///   (assise V, comme le veut le §6.1), les autres vers les paliers 2, 5, 13 et 26.
         ///   Ce compteur ne se farme pas : recreuser les mêmes paliers n'ajoute presque rien.
         ///
-        ///   AMÉLIORATION (1,9 ; 140). Le mana dépensé en crans suit la production, donc la
-        ///   densité : il grossit de vie en vie même à profondeur égale. Visé : la main sûre
-        ///   au milieu de la première vie (~1e6 de mana dépensé), le dernier nœud vers 1e40.
+        ///   AMÉLIORATION (4,3 ; 20 000), réglé le 2026-11-14 sur la mesure. Le mana dépensé
+        ///   en crans suit la production, donc la densité : il grossit d'environ ×50 par vie,
+        ///   même à profondeur égale (4e6 à la fin de la vie 1, 6e20 à la fin de la vie 9).
+        ///   Deux ancres : la main sûre au milieu de la première vie (~1e6 de mana dépensé),
+        ///   et le dernier nœud vers 1,5e21, donc à la vie 10, en assise V — le §6.1 veut que
+        ///   le joueur finisse par tout avoir, « mais pas avant l'assise V ». Le premier
+        ///   couple (1,9 ; 140) visait 1e40 pour le dernier nœud : quinze vies n'en rendaient
+        ///   que 125 points sur 167, et « Tout le monde suit » ne tombait jamais.
         ///
         ///   ENTRETIEN (84 ; 100). Compteur en heures créditées : nœuds vers 6 h, 23 h, 65 h,
         ///   184 h et 640 h d'absence comptée.
@@ -63,7 +68,7 @@ namespace IdlePond.Noyau
             new Dictionary<BrancheTechnique, (double A, double B)>
             {
                 [BrancheTechnique.Creusement] = (3.8, 60),
-                [BrancheTechnique.Amelioration] = (1.9, 140),
+                [BrancheTechnique.Amelioration] = (4.3, 20000),
                 [BrancheTechnique.Entretien] = (84, 100),
             };
 
