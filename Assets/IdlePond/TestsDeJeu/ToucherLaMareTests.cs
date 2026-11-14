@@ -91,15 +91,11 @@ namespace IdlePond.TestsDeJeu
             yield return Doigt.ToucherEn(couche, new Vector2(cadre.x + cadre.width * 0.2f, cadre.y + cadre.height * 0.2f));
         }
 
-        /// La mare pleine, et qui le reste pendant que la boucle tourne en temps réel : sur une
-        /// contenance de base de 1, l'ambiant (0,05 /s) remplit plus vite que l'acquis ne monte.
+        /// La mare pleine, à appeler juste avant le toucher : la boucle tourne en temps réel, et
+        /// l'acquis qui monte la viderait d'une image à l'autre.
         void Remplir(double acquis)
         {
-            var etat = partie.Etat with
-            {
-                Cycle = partie.Etat.Cycle with { AcquisDeSejour = acquis },
-                Permanent = partie.Etat.Permanent with { ContenanceMana = new Noyau.Decimal(1) },
-            };
+            var etat = partie.Etat with { Cycle = partie.Etat.Cycle with { AcquisDeSejour = acquis } };
             partie.Remplacer(etat with { Cycle = etat.Cycle with { ManaCourant = Economie.Contenance(etat) } });
         }
 
@@ -115,6 +111,7 @@ namespace IdlePond.TestsDeJeu
             Assert.That(envols, Has.Count.EqualTo(1), "rien ne dit ce que le toucher a fait porter");
             var suffixe = Noyau.Donnees.Textes.Ecran.GAIN_A_PORTER.Substring(Noyau.Donnees.Textes.Ecran.GAIN_A_PORTER.IndexOf('}') + 1);
             Assert.That(envols[0].text, Does.StartWith("+").And.EndWith(suffixe));
+            Assert.That(envols[0].text, Does.Not.StartWith("+0.0").And.Not.StartWith("+0 "), "un zéro s'envole");
         }
 
         [UnityTest]

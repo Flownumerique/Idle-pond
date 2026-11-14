@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using IdlePond.Noyau;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -39,12 +40,23 @@ namespace IdlePond.Jeu.UI
             }
             racine.RegisterCallback<PointerDownEvent>(evenement =>
             {
-                // Mare pleine, ce qui compte est la place que le toucher a faite, pas le peu de mana
-                // qui l'a remplie : c'est elle qu'on dit. Sinon le mana ; sinon rien.
-                var gain = toucher();
-                if (gain.Plein && gain.APorter.Gt(0)) Envoler(Format.Remplir(E.GAIN_A_PORTER, Format.Montant(gain.APorter)), evenement.localPosition);
-                else if (gain.Mana.Gt(0)) Envoler(Format.Remplir(E.GAIN_DU_TOUCHER, Format.Montant(gain.Mana)), evenement.localPosition);
+                var texte = TexteDeLEnvol(toucher());
+                if (texte != null) Envoler(texte, evenement.localPosition);
             });
+        }
+
+        /// <summary>
+        /// Ce que dit l'envol d'un toucher, ou null. Mare pleine, ce qui compte est la place que
+        /// le toucher a faite, pas le peu de mana qui l'a remplie : c'est elle qu'on dit. Sinon
+        /// le mana. Un montant qui s'écrirait zéro (« 0.0 », acquis presque saturé) ne s'envole pas.
+        /// </summary>
+        public static string TexteDeLEnvol(GainDuToucher gain)
+        {
+            var montant = gain.Plein ? gain.APorter : gain.Mana;
+            if (!montant.Gt(0)) return null;
+            var ecrit = Format.Montant(montant);
+            if (double.TryParse(ecrit, NumberStyles.Float, CultureInfo.InvariantCulture, out var lu) && lu == 0) return null;
+            return Format.Remplir(gain.Plein ? E.GAIN_A_PORTER : E.GAIN_DU_TOUCHER, ecrit);
         }
 
         void Envoler(string texte, Vector2 point)

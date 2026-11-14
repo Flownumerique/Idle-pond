@@ -132,6 +132,17 @@ namespace IdlePond.Tests
             Assert.That(Format.Entier(1234567.9), Is.EqualTo("1 234 567"));
         }
 
+        [Test, Description("l'envol d'un toucher : mare pleine la place faite, sinon le mana ; jamais un zéro affiché")]
+        public void L_envol_d_un_toucher_ne_dit_jamais_zero()
+        {
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.1), new Decimal(10), plein: false)), Is.EqualTo("+0.1"));
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.1), new Decimal(10), plein: true)), Is.EqualTo("+10 à porter"));
+            // Acquis presque saturé : la place faite s'écrirait « 0.0 ».
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.001), new Decimal(0.001), plein: true)), Is.Null);
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.001), new Decimal(0), plein: false)), Is.Null);
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(GainDuToucher.Rien), Is.Null);
+        }
+
         [Test, Description("des secondes courtes, deux décimales au plus")]
         public void Des_secondes_courtes()
         {
