@@ -25,7 +25,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 | Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
 
-**Tests** : 492 EditMode et 33 PlayMode, tous verts (2026-11-14), plus trois mesures à la demande. Les références de
+**Tests** : 513 EditMode et 35 PlayMode, tous verts (2026-11-14), plus quatre mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -95,9 +95,11 @@ quitté l'onglet « Débloquer ».
 
 **Ce qui reste.**
 
-- **Resserrer deux branches.** « Galeries connues » tombe à la vie 11 et « Tout le monde suit »
-  jamais en quinze vies : les couples (A, B) de Creusement et d'Amélioration sont à régler
-  (`Technique.COUPLES_A_B`), puis `MesureDeLArbreTests` à relancer.
+- **Amélioration est réglée** (2026-11-14, `RESULTATS.md`, Finding 9) : « Tout le monde suit »
+  tombe à la vie 10, en assise V, et « L'élan » à la vie 5. Creusement n'a pas bougé :
+  « Galeries connues » tombe déjà en assise V, là où le noyau §6.1 le veut (« pas avant
+  l'assise V »). **À trancher si on veut ces deux verbes plus tôt** : il faudrait amender le
+  §6.1, pas régler un couple.
 - **Tous les verbes de l'arbre agissent** depuis le 2026-11-14 : « La file » (trois creux
   demandés d'avance, payés seuls dès que le mana arrive, même hors ligne), « Lire l'eau »
   (sous la jauge, ce que rentrer vaudrait), « Compter les siens » (les débits par espèce ;

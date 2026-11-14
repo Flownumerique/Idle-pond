@@ -9,7 +9,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9769970222236e11",
+     "manaCourant": "9.97848300565307e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -101,7 +101,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -112,6 +112,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -240,7 +241,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "1.4055896362407623e15",
-     "partDeContenance": 0.00070980866427750532,
+     "partDeContenance": 0.00070991438385533626,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -260,7 +261,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.97883816494773e11",
+     "manaCourant": "9.9803241483772e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -352,7 +353,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -363,6 +364,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -491,7 +493,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "4.3553668467586553e15",
-     "partDeContenance": 0.00022911590495239606,
+     "partDeContenance": 0.00022915002339710472,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -511,7 +513,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9791538613435e11",
+     "manaCourant": "9.98063984477297e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -603,7 +605,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -614,6 +616,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -742,7 +745,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "4.4971459029127239e15",
-     "partDeContenance": 0.00022189971321322208,
+     "partDeContenance": 0.00022193275602440829,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -762,7 +765,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -854,7 +857,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -865,6 +868,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte"
      ],
@@ -994,7 +998,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "partDeContenance": 0.00020552444765022524,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1014,7 +1018,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -1106,7 +1110,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1117,6 +1121,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte"
      ],
@@ -1246,7 +1251,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "partDeContenance": 0.00020552444765022524,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1266,7 +1271,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -1358,7 +1363,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1369,6 +1374,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte"
      ],
@@ -1498,7 +1504,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "partDeContenance": 0.00020552444765022524,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1596,7 +1602,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1607,6 +1613,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
       "renaissance-heure"
@@ -1725,7 +1732,7 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
+     "manaAmbiant": "9.98708383468944e11",
      "heuresHorsLigneCreditees": 8.3429352777777783,
      "ameliorations": {}
     },
@@ -1847,7 +1854,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1858,6 +1865,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
       "renaissance-heure"
@@ -1984,7 +1992,7 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
+     "manaAmbiant": "9.98708383468944e11",
      "heuresHorsLigneCreditees": 11.342935277777778,
      "ameliorations": {}
     },
@@ -2106,7 +2114,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -2117,6 +2125,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
       "renaissance-heure"
@@ -2243,7 +2252,7 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
+     "manaAmbiant": "9.98708383468944e11",
      "heuresHorsLigneCreditees": 17.342935277777777,
      "ameliorations": {}
     },

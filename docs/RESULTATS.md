@@ -218,7 +218,8 @@ chaque nœud tombe au simulateur, graine 7.
 | Branche | Rang 1 | Rang 2 | Rang 3 | Rang 4 | Rang 5 |
 |---|---|---|---|---|---|
 | Creusement | vie 1 | vie 1 | vie 2 (la file) | vie 5 | **vie 11** (galeries connues) |
-| Amélioration | vie 1 | vie 1 (la main sûre) | vie 4 | vie 10 (l'élan) | **jamais en 15 vies** (tout le monde suit) |
+| Amélioration (avant le 2026-11-14) | vie 1 | vie 1 (la main sûre) | vie 4 | vie 10 (l'élan) | **jamais en 15 vies** (tout le monde suit) |
+| Amélioration (réglée le 2026-11-14) | vie 1 | vie 1 (la main sûre) | vie 3 | vie 5 (l'élan) | vie 10 (tout le monde suit) |
 | Recrutement | vie 1 | vie 2 (les habitudes tiennent) | vie 3 | vie 4 | vie 5 |
 | Renaissance | vie 1 | vie 2 (lire l'eau) | vie 4 | vie 6 | vie 9 (le chemin connu) |
 | Entretien | — | — | — | — | — |
@@ -237,6 +238,14 @@ refuge est connu » à la vie 6 au lieu de 5.
 - **Deux verbes arrivent trop tard.** « Galeries connues » à la vie 11 et « Tout le monde suit »
   jamais : ce sont pourtant ceux qui soulagent la redescente. Les couples (A, B) de Creusement
   (3,8 ; 60) et d'Amélioration (1,9 ; 140) sont à resserrer.
+  **Réglé le 2026-11-14, pour Amélioration seule.** Le noyau §6.1 veut que « le joueur finisse
+  par tout avoir, mais pas avant l'assise V ». « Galeries connues » tombe au début de la vie 11,
+  vers le palier 52 : c'est l'assise V (paliers 43 à 54), donc Creusement est déjà à sa place
+  et ne bouge pas. Amélioration, elle, ne rendait que 125 points sur 167 en quinze vies. Son
+  compteur grossit d'environ ×50 par vie (4e6 à la fin de la vie 1, 6e20 à la fin de la vie 9) ;
+  le couple (4,3 ; 20 000) garde la main sûre vers 1e6 de mana dépensé et pose le dernier nœud
+  vers 1,5e21, à la vie 10. Les durées de vie ne bougent pas. Un test garde les deux derniers
+  nœuds en assise V (`BranchesDeLArbreTests`).
 - **Entretien n'est pas mesuré** : le simulateur ne s'absente jamais. Ses moments (6 h, 23 h,
   65 h, 184 h, 640 h d'absence créditée) ne viennent que du calcul.
 - **Construction est muette** : rien ne crédite son compteur tant que temples et portails
@@ -325,6 +334,7 @@ régénération n'a lieu que pour un changement voulu, noté ici.
 | 2026-11-13 | L'amélioration de séjour entre au registre (Finding 8) | `donnees.json` seul : une entrée `amelioration-sejour`, portée `sejour`. `parties.json`, `hors-ligne.json` et les autres sont régénérés identiques |
 | 2026-11-14 | Toucher la mare (spec `2026-10-11-toucher-la-mare-et-achat-groupe-design.md`) : le débit propre du héros devient un ambiant fixe, sans facteur de niveau ; `amelioration-toucher` entre au registre | `parties.json` seul. Le joueur scripté, qui ne touche jamais, a 1,31e4 mana à 30 min au lieu de 5,91e4, et le héros au niveau 8 au lieu de 9. Quinze cycles simulés : 331 260 s actives contre 331 320 (−60 s, le premier cycle passe de 11 340 à 11 280 s : sans débit propre, Grandir n'est plus estimé que par son multiplicateur, et l'ordre des achats bouge) ; Souffle final 1,574e135 contre 1,576e135. `hors-ligne.json` régénéré identique. `donnees.json` (une entrée `amelioration-toucher`, portée `toucher`) et `constantes.json` (`DEBIT_HEROS` renommé `DEBIT_AMBIANT`, même valeur) modifiés à la main avec le code |
 | 2026-11-14 | « Compter les siens » passe en tête de la branche Entretien (sans lui, les débits par espèce ne se lisent plus) ; la relève et la veille glissent d'un rang | `hors-ligne.json` seul : le premier nœud appris est `entretien-compte` au lieu d'`entretien-releve`, donc le plafond d'absence reste à 6 h une absence de plus. Le dernier scénario crédite 6 h au lieu de 12 (21 600 s contre 43 200), et le mana qui en sort passe de 9,37e6 à 5,62e6. `parties.json` ressort identique |
+| 2026-11-14 | Le couple (A, B) de la branche Amélioration passe de (1,9 ; 140) à (4,3 ; 20 000) : « Le geste appris » tombe à la vie 3 au lieu de 4, « L'élan » à la vie 5 au lieu de 10, « Tout le monde suit » à la vie 10 au lieu de jamais | `parties.json` et `hors-ligne.json`. Les durées des quinze cycles simulés sont identiques, à la seconde ; les nœuds acquis plus tôt baissent le prix des crans, et le Souffle final passe de 1,574e135 à 1,627e135. Dans `hors-ligne.json`, `amelioration-geste` figure désormais parmi les nœuds acquis des scénarios |
 | 2026-10-08 | Les insufflations deviennent les améliorations de renaissance (Codex v1.1) | Renommage seul, sans régénération : clef `insufflations` → `ameliorations`, identifiants `insufflation-*` → `amelioration-*`, constantes `*_INSUFFLATION_*` → `*_AMELIORATION_*`, termes `cout_insufflation`, `insufflation_globale`. Aucun chiffre ne bouge |
 
 ---

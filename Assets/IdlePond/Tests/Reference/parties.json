@@ -10,7 +10,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99254497879569e11",
+      "manaCourant": "9.99283017138723e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -102,7 +102,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -113,6 +113,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {},
@@ -132,7 +133,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1e14",
-      "partDeContenance": 0.0099925449787956911,
+      "partDeContenance": 0.00999283017138723,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "0e0"
@@ -145,7 +146,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99254499221545e11",
+      "manaCourant": "9.99283018480699e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -237,7 +238,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -248,6 +249,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -376,7 +378,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.0012716800322679e14",
-      "partDeContenance": 0.00997985381139854,
+      "partDeContenance": 0.0099801386417769766,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -389,7 +391,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99255304407212e11",
+      "manaCourant": "9.99283823666366e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -481,7 +483,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -492,6 +494,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -620,7 +623,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.7581867033218543e14",
-      "partDeContenance": 0.0056834425065282034,
+      "partDeContenance": 0.0056836047148937892,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -633,7 +636,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99255305749188e11",
+      "manaCourant": "9.99283825008342e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -725,7 +728,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -736,6 +739,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -864,7 +868,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1.759438127663131e14",
-      "partDeContenance": 0.00567940008823379,
+      "partDeContenance": 0.0056795621812264652,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -877,7 +881,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99303616889189e11",
+      "manaCourant": "9.99332136148343e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -969,7 +973,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -980,6 +984,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -1108,7 +1113,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "3.0697115013293734e15",
-      "partDeContenance": 0.00032553665595494213,
+      "partDeContenance": 0.00032554594648896837,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1121,7 +1126,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99303710827517e11",
+      "manaCourant": "9.99332230086671e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1213,7 +1218,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -1224,6 +1229,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -1352,7 +1358,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "3.0730564674961305e15",
-      "partDeContenance": 0.00032518234578414083,
+      "partDeContenance": 0.00032519162620558956,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1365,7 +1371,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99690199947523e11",
+      "manaCourant": "9.99718719206677e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1457,7 +1463,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -1468,6 +1474,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -1596,7 +1603,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.8591861989716438e15",
-      "partDeContenance": 0.00020573202157988697,
+      "partDeContenance": 0.00020573789072298747,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1609,7 +1616,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99690201289499e11",
+      "manaCourant": "9.99718720548653e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1701,7 +1708,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -1712,6 +1719,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -1840,7 +1848,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.8591862207131253e15",
-      "partDeContenance": 0.00020573202093555212,
+      "partDeContenance": 0.00020573789007862642,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -1853,7 +1861,7 @@
       "graine": 4242
      },
      "cycle": {
-      "manaCourant": "9.99702279074499e11",
+      "manaCourant": "9.99730798333653e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -1945,7 +1953,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -1956,6 +1964,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {
@@ -2084,7 +2093,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "4.859360144565394e15",
-      "partDeContenance": 0.0002057271429434069,
+      "partDeContenance": 0.00020573301187641567,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "1.15e2"
@@ -2368,29 +2377,29 @@
       "graine": 3
      },
      "cycle": {
-      "manaCourant": "1.30687954992795e4",
+      "manaCourant": "4.5495240471403e3",
       "paliersOuverts": 10,
       "especes": {
        "vairon": {
         "debloquee": true,
-        "niveau": 49
+        "niveau": 48
        },
        "loche": {
         "debloquee": true,
-        "niveau": 44
+        "niveau": 43
        },
        "epinoche": {
         "debloquee": true,
-        "niveau": 39
+        "niveau": 38
        },
        "chabot": {
         "debloquee": true,
-        "niveau": 34
+        "niveau": 22
        }
       },
-      "productionPicParSeconde": "8.03158655504125e4",
+      "productionPicParSeconde": "4.87056766933416e4",
       "dureeSecondes": 1800.0,
-      "acquisDeSejour": 19.983880774038674,
+      "acquisDeSejour": 19.989363660344239,
       "niveauDuHeros": 8
      },
      "permanent": {
@@ -2464,7 +2473,7 @@
       "profondeurMaxAtteinte": 10,
       "compteursTechnique": {
        "creusement": 81048.96170613615,
-       "amelioration": 1506307.1072619488,
+       "amelioration": 1087327.8151382438,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -2538,10 +2547,6 @@
         "obtenuAuCycle": 0,
         "registre": "pente"
        },
-       "seuil-chabot-25": {
-        "obtenuAuCycle": 0,
-        "registre": "pente"
-       },
        "seuil-mare-25": {
         "obtenuAuCycle": 0,
         "registre": "pente"
@@ -2593,13 +2598,13 @@
       },
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [],
-      "manaAmbiant": "3.26862056637511e5",
+      "manaAmbiant": "1.46183816171252e4",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
-      "secondesDepuisDernierSucces": 8.0,
+      "secondesDepuisDernierSucces": 0.0,
       "intervallesEntreSucces": [
        1.0,
        240.0,
@@ -2609,27 +2614,26 @@
        61.0,
        309.0,
        32.0,
-       118.0,
-       7.0,
-       43.0,
-       78.0,
-       17.0,
-       40.0,
+       128.0,
+       8.0,
+       29.0,
+       81.0,
+       26.0,
+       41.0,
        10.0,
        2.0,
        25.0,
        11.0,
-       50.0,
-       2.0
+       50.0
       ]
      },
      "derives": {
-      "production": "8.04582537885074e4",
-      "contenance": "5.9287962277477169e4",
-      "partDeContenance": 0.22042915622762413,
+      "production": "5.32621003123789e4",
+      "contenance": "5.9303453652021112e4",
+      "partDeContenance": 0.076716005004292834,
       "eauTroublee": false,
       "estBloque": true,
-      "gainDeSoufflePrevu": "2.83e2"
+      "gainDeSoufflePrevu": "2.2e2"
      }
     },
     {
@@ -2639,7 +2643,7 @@
       "graine": 3
      },
      "cycle": {
-      "manaCourant": "8.86191748771948e4",
+      "manaCourant": "8.86288428519131e4",
       "paliersOuverts": 10,
       "especes": {
        "vairon": {
@@ -2661,7 +2665,7 @@
       },
       "productionPicParSeconde": "1.11030343397218e5",
       "dureeSecondes": 3600.0,
-      "acquisDeSejour": 30.365122505199853,
+      "acquisDeSejour": 30.368544306540663,
       "niveauDuHeros": 9
      },
      "permanent": {
@@ -2735,7 +2739,7 @@
       "profondeurMaxAtteinte": 10,
       "compteursTechnique": {
        "creusement": 81048.96170613615,
-       "amelioration": 2590302.15527628,
+       "amelioration": 2593458.1230269931,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -2868,13 +2872,13 @@
       },
       "nombreDeRenaissances": 0,
       "especesAyantAtteintCent": [],
-      "manaAmbiant": "1.94948134723347e8",
+      "manaAmbiant": "1.93932000283773e8",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
      "telemetrie": {
       "cycles": [],
-      "secondesDepuisDernierSucces": 1794.0,
+      "secondesDepuisDernierSucces": 1785.0,
       "intervallesEntreSucces": [
        1.0,
        240.0,
@@ -2884,24 +2888,24 @@
        61.0,
        309.0,
        32.0,
-       118.0,
-       7.0,
-       43.0,
-       78.0,
-       17.0,
-       40.0,
+       128.0,
+       8.0,
+       29.0,
+       81.0,
+       26.0,
+       41.0,
        10.0,
        2.0,
        25.0,
        11.0,
        50.0,
        2.0,
-       14.0
+       13.0
       ]
      },
      "derives": {
       "production": "1.11030343397218e5",
-      "contenance": "8.86191748771948e4",
+      "contenance": "8.86288428519131e4",
       "partDeContenance": 0.99999999999999989,
       "eauTroublee": true,
       "estBloque": true,
@@ -2920,7 +2924,7 @@
       "graine": 777
      },
      "cycle": {
-      "manaCourant": "9.99254497879569e11",
+      "manaCourant": "9.99283017138723e11",
       "paliersOuverts": 7,
       "especes": {
        "vairon": {
@@ -3012,7 +3016,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745491657.58456337,
+       "amelioration": 716972398.43779564,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -3023,6 +3027,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche"
       ],
       "succes": {},
@@ -3042,7 +3047,7 @@
      "derives": {
       "production": "1.34197611113295e4",
       "contenance": "1e14",
-      "partDeContenance": 0.0099925449787956911,
+      "partDeContenance": 0.00999283017138723,
       "eauTroublee": false,
       "estBloque": false,
       "gainDeSoufflePrevu": "0e0"
@@ -3137,7 +3142,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745492619.38456333,
+       "amelioration": 716973360.23779559,
        "recrutement": 3.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -3148,6 +3153,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "renaissance-heure"
       ],
@@ -3265,7 +3271,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.9930280805777e11",
+      "manaAmbiant": "9.99331327316924e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {}
      },
@@ -3385,7 +3391,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745492619.38456333,
+       "amelioration": 716973360.23779559,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -3396,6 +3402,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "renaissance-heure"
       ],
@@ -3521,7 +3528,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.9930280805777e11",
+      "manaAmbiant": "9.99331327316924e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 1,
@@ -3639,7 +3646,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745493581.18456328,
+       "amelioration": 716974322.03779554,
        "recrutement": 4.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -3650,6 +3657,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "renaissance-heure",
        "renaissance-lire-l-eau"
@@ -3776,7 +3784,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99306510499163e11",
+      "manaAmbiant": "9.99335029758317e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 1,
@@ -3906,7 +3914,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745493581.18456328,
+       "amelioration": 716974322.03779554,
        "recrutement": 5.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -3917,6 +3925,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "renaissance-heure",
        "renaissance-lire-l-eau"
@@ -4047,7 +4056,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99306510499163e11",
+      "manaAmbiant": "9.99335029758317e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 2,
@@ -4172,7 +4181,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745494542.98456323,
+       "amelioration": 716975283.8377955,
        "recrutement": 5.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -4183,6 +4192,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "renaissance-heure",
        "renaissance-lire-l-eau"
@@ -4313,7 +4323,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99312827103704e11",
+      "manaAmbiant": "9.99341346362858e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 2,
@@ -4450,7 +4460,7 @@
       "profondeurMaxAtteinte": 9,
       "compteursTechnique": {
        "creusement": 7352.94336,
-       "amelioration": 745494542.98456323,
+       "amelioration": 716975283.8377955,
        "recrutement": 6.0,
        "entretien": 0.0,
        "construction": 0.0,
@@ -4461,6 +4471,7 @@
        "creusement-drainage",
        "amelioration-repetition",
        "amelioration-main-sure",
+       "amelioration-geste",
        "recrutement-approche",
        "recrutement-habitudes",
        "renaissance-heure",
@@ -4596,7 +4607,7 @@
       "especesAyantAtteintCent": [
        "vairon"
       ],
-      "manaAmbiant": "9.99312827103704e11",
+      "manaAmbiant": "9.99341346362858e11",
       "heuresHorsLigneCreditees": 0.0,
       "ameliorations": {
        "amelioration-globale": 3,
@@ -4660,70 +4671,70 @@
    },
    "permanent": {
     "densites": [
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177,
-     6.4932753320611064E+177
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177,
+     6.5014084429643674E+177
     ],
-    "souffle": "1.57353938671604e135",
+    "souffle": "1.62733719464594e135",
     "contenanceMana": "2.6584627796743172e28",
     "couches": [
      "noue",
@@ -4752,6 +4763,7 @@
      "amelioration-main-sure",
      "amelioration-geste",
      "amelioration-elan",
+     "amelioration-suite",
      "recrutement-approche",
      "recrutement-habitudes",
      "recrutement-memoire",
@@ -5005,7 +5017,7 @@
      "espece-6-2",
      "espece-6-3"
     ],
-    "manaAmbiant": "9.05435169835963e277",
+    "manaAmbiant": "9.07180522850175e277",
     "heuresHorsLigneCreditees": 0.0,
     "ameliorations": {
      "amelioration-globale": 225,
@@ -5052,99 +5064,99 @@
       "index": 2,
       "dureeEcouleeSecondes": 13620.0,
       "paliersOuverts": 19,
-      "productionPicParSeconde": "6.45306660057378e20",
-      "souffleGagne": "2.5402886844e10"
+      "productionPicParSeconde": "6.46502524041936e20",
+      "souffleGagne": "2.5426413904e10"
      },
      {
       "index": 3,
       "dureeEcouleeSecondes": 14940.0,
       "paliersOuverts": 24,
-      "productionPicParSeconde": "6.08394789999666e31",
-      "souffleGagne": "7.7999666024904624e15"
+      "productionPicParSeconde": "6.14075989152409e31",
+      "souffleGagne": "7.836300078177258e15"
      },
      {
       "index": 4,
       "dureeEcouleeSecondes": 16260.0,
       "paliersOuverts": 28,
-      "productionPicParSeconde": "3.98906758176068e44",
-      "souffleGagne": "1.99726502541868e22"
+      "productionPicParSeconde": "4.02133086173413e44",
+      "souffleGagne": "2.0053256248634859e22"
      },
      {
       "index": 5,
       "dureeEcouleeSecondes": 17880.0,
       "paliersOuverts": 33,
-      "productionPicParSeconde": "2.45004314898394e59",
-      "souffleGagne": "4.9497910551698441e29"
+      "productionPicParSeconde": "2.46720758070035e59",
+      "souffleGagne": "4.9670993353267567e29"
      },
      {
       "index": 6,
       "dureeEcouleeSecondes": 19740.0,
       "paliersOuverts": 38,
-      "productionPicParSeconde": "2.02261436470329e76",
-      "souffleGagne": "1.4221864732528187e38"
+      "productionPicParSeconde": "2.03488928064555e76",
+      "souffleGagne": "1.4264954541271941e38"
      },
      {
       "index": 7,
       "dureeEcouleeSecondes": 21480.0,
       "paliersOuverts": 42,
-      "productionPicParSeconde": "7.00973113722216e94",
-      "souffleGagne": "2.6475896844530422e47"
+      "productionPicParSeconde": "7.04658504533791e94",
+      "souffleGagne": "2.65454045841044e47"
      },
      {
       "index": 8,
       "dureeEcouleeSecondes": 23520.0,
       "paliersOuverts": 47,
-      "productionPicParSeconde": "2.92742887594584e115",
-      "souffleGagne": "5.41057194383906e57"
+      "productionPicParSeconde": "2.94076312883366e115",
+      "souffleGagne": "5.4228803498082643e57"
      },
      {
       "index": 9,
       "dureeEcouleeSecondes": 25620.0,
       "paliersOuverts": 51,
-      "productionPicParSeconde": "6.29203766507506e137",
-      "souffleGagne": "7.9322365478313e68"
+      "productionPicParSeconde": "6.31686865704543e137",
+      "souffleGagne": "7.947873084697207e68"
      },
      {
       "index": 10,
       "dureeEcouleeSecondes": 27780.0,
       "paliersOuverts": 55,
-      "productionPicParSeconde": "1.5874412874411219e162",
-      "souffleGagne": "1.2599370172517046e81"
+      "productionPicParSeconde": "1.5928692696460161e162",
+      "souffleGagne": "1.2620892478925634e81"
      },
      {
       "index": 11,
       "dureeEcouleeSecondes": 30480.0,
       "paliersOuverts": 60,
-      "productionPicParSeconde": "3.41622667970213e188",
-      "souffleGagne": "1.8483037303706689e94"
+      "productionPicParSeconde": "3.42634808075151e188",
+      "souffleGagne": "1.8510397296523675e94"
      },
      {
       "index": 12,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "1.6648368557158459e216",
-      "souffleGagne": "1.2902855713817178e108"
+      "productionPicParSeconde": "1.66911083128808e216",
+      "souffleGagne": "1.29194072282287e108"
      },
      {
       "index": 13,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "3.53051261865254e244",
-      "souffleGagne": "1.8789658375427e122"
+      "productionPicParSeconde": "3.53836634840058e244",
+      "souffleGagne": "1.8810545841098232e122"
      },
      {
       "index": 14,
       "dureeEcouleeSecondes": 32040.0,
       "paliersOuverts": 62,
-      "productionPicParSeconde": "3.1185706678385e273",
-      "souffleGagne": "5.5844164134119687e136"
+      "productionPicParSeconde": "3.12458214927485e273",
+      "souffleGagne": "5.5897961942049825e136"
      }
     ],
     "secondesDepuisDernierSucces": 331260.0,
     "intervallesEntreSucces": []
    },
    "derives": {
-    "production": "9.8728536673535174e235",
+    "production": "9.8893453489007186e235",
     "contenance": "5.3169255593486344e28",
     "partDeContenance": 6.7708301720910843E-28,
     "eauTroublee": false,
