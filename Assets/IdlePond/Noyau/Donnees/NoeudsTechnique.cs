@@ -61,9 +61,12 @@ namespace IdlePond.Noyau.Donnees
             Noeud("recrutement-refuge", BrancheTechnique.Recrutement, 5, Chiffre(TermeDeFormule.CoutDeblocage, 0.50 / 0.70)),
 
             /* — Entretien : heures hors ligne effectivement créditées ————————————— */
-            Noeud("entretien-releve", BrancheTechnique.Entretien, 1, Chiffre(TermeDeFormule.CapHorsLigne, 2)),
-            Noeud("entretien-veille", BrancheTechnique.Entretien, 2, Chiffre(TermeDeFormule.CapHorsLigne, 2)),
-            Noeud("entretien-compte", BrancheTechnique.Entretien, 3, Verbe(CapaciteId.LectureDebits)),
+            // Compter les siens en tête (2026-11-14) : sans lui, les débits par espèce ne se
+            // lisent pas, et à son ancien rang (~65 h d'absence) qui s'absente peu ne les
+            // aurait jamais vus. La relève et la veille glissent d'un rang.
+            Noeud("entretien-compte", BrancheTechnique.Entretien, 1, Verbe(CapaciteId.LectureDebits)),
+            Noeud("entretien-releve", BrancheTechnique.Entretien, 2, Chiffre(TermeDeFormule.CapHorsLigne, 2)),
+            Noeud("entretien-veille", BrancheTechnique.Entretien, 3, Chiffre(TermeDeFormule.CapHorsLigne, 2)),
             Noeud("entretien-peuple", BrancheTechnique.Entretien, 4, Verbe(CapaciteId.AutomatismesHorsLigne)),
             Noeud("entretien-rapport", BrancheTechnique.Entretien, 5, Verbe(CapaciteId.RapportDeRetour)),
 

@@ -212,11 +212,18 @@ namespace IdlePond.Tests
             // Quarante-huit heures d'horloge, six heures créditées : c'est ce qui compte.
             var retour = HorsLigne.Crediter(Depart(), DEPART, DEPART + 48 * H);
             Assert.That(Technique.CompteurDe(retour.Etat, BrancheTechnique.Entretien), Is.EqualTo(6).Within(1e-9));
-            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-releve"), "six heures ne suffisent pas tout à fait");
+            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-compte"), "six heures ne suffisent pas tout à fait");
 
-            // Une seconde absence fait tomber le premier nœud.
+            // Une seconde absence fait tomber le premier nœud : compter les siens (2026-11-14).
             var second = HorsLigne.Crediter(retour.Etat, DEPART, DEPART + 48 * H);
-            Assert.That(second.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-releve"));
+            Assert.That(second.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-compte"));
+        }
+
+        [Test, Description("compter les siens ouvre Entretien ; la relève et la veille suivent")]
+        public void Compter_les_siens_ouvre_Entretien()
+        {
+            var entretien = NoeudsTechnique.Tous.Where(n => n.Branche == BrancheTechnique.Entretien).OrderBy(n => n.Rang).Select(n => n.Id);
+            Assert.That(entretien, Is.EqualTo(new[] { "entretien-compte", "entretien-releve", "entretien-veille", "entretien-peuple", "entretien-rapport" }));
         }
 
         [Test, Description("le peuple continue : au retour, les verbes ont joué sur ce que l'absence a laissé")]

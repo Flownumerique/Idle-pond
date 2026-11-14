@@ -118,6 +118,18 @@ namespace IdlePond.TestsDeJeu
                     });
                     yield return new WaitForSeconds(0.6f);
                     Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-lire-l-eau.png"));
+
+                    // « Compter les siens » : une espèce convaincue, sa part en pente, puis son débit.
+                    partie.Convaincre(IdlePond.Noyau.Donnees.Especes.Toutes[0].Id);
+                    interfaceDeLaMare.Ouvrir(Tiroir.Especes);
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-pente.png"));
+                    partie.Remplacer(partie.Etat with
+                    {
+                        Permanent = partie.Etat.Permanent with { NoeudsTechnique = new[] { "renaissance-lire-l-eau", "entretien-compte" } },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-compte.png"));
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
                 }

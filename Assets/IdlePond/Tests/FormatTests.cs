@@ -151,6 +151,17 @@ namespace IdlePond.Tests
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, 2)), Is.EqualTo("amélioré 2 fois"));
         }
 
+        [Test, Description("sans « Compter les siens », la part d'une espèce se dit en pente, sans chiffre")]
+        public void La_part_d_une_espece_se_dit_en_pente()
+        {
+            Assert.That(Format.PenteDeLEspece(0), Is.EqualTo("rien encore"));
+            Assert.That(Format.PenteDeLEspece(0.01), Is.EqualTo("presque rien"));
+            Assert.That(Format.PenteDeLEspece(0.1), Is.EqualTo("un peu"));
+            Assert.That(Format.PenteDeLEspece(0.3), Is.EqualTo("une bonne part"));
+            Assert.That(Format.PenteDeLEspece(0.7), Is.EqualTo("l’essentiel"));
+            Assert.That(Format.PenteDeLEspece(0.7), Does.Not.Match("[0-9]"));
+        }
+
         [Test, Description("le héros est un alevin tant qu'il n'a pas grandi")]
         public void Le_heros_est_un_alevin_tant_qu_il_n_a_pas_grandi()
         {

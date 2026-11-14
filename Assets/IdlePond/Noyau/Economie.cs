@@ -188,6 +188,26 @@ namespace IdlePond.Noyau
             new LigneDeCaptation(TermeDeFormule.DebitAmbiant, Constantes.DEBIT_AMBIANT, new SourceDeTerme(QuoiSource.Profondeur, etat.Cycle.PaliersOuverts)),
         };
 
+        /* ─── Compter les siens — 2026-11-14 ────────────────────────────────────────
+         * Sans le nœud, l'écran ne dit de chaque espèce que sa part du tout, en pente ; avec,
+         * il montre son débit exact et le détail de sa captation.
+         */
+
+        /// Vrai quand le héros sait compter les siens (capacité `LectureDebits`).
+        public static bool LitLesDebits(EtatJeu etat) => Automatismes.Capacites(etat).Contains(CapaciteId.LectureDebits);
+
+        /// La part d'une espèce dans ce qui est capté, entre 0 et 1. Zéro si rien ne produit.
+        public static double PartDeLEspece(EtatJeu etat, Espece espece) => Part(etat, ProductionDeLEspece(etat, espece));
+
+        /// La part de l'ambiant : avec celles des espèces, elle fait le tout.
+        public static double PartDeLAmbiant(EtatJeu etat) => Part(etat, ProductionAmbiante(etat));
+
+        static double Part(EtatJeu etat, Decimal production)
+        {
+            var total = ProductionTotaleParSeconde(etat);
+            return total.Lte(0) ? 0 : production.Div(total).ToNumber();
+        }
+
         /// Ce que le niveau du héros fait à toute la production : son multiplicateur global.
         public static IReadOnlyList<LigneDeCaptation> DetailDuHeros(EtatJeu etat) => new[]
         {

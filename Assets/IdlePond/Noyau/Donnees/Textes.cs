@@ -472,6 +472,12 @@ namespace IdlePond.Noyau.Donnees
 
             /* — Le tiroir « Espèces » ———————————————————————————————————————————————— */
             public const string CRANS_ET_DEBIT = "{0} crans · ";
+            /// Sans « Compter les siens » : ce qu'une espèce donne, en pente (part du tout).
+            public const string PENTE_L_ESSENTIEL = "l’essentiel";
+            public const string PENTE_BONNE_PART = "une bonne part";
+            public const string PENTE_UN_PEU = "un peu";
+            public const string PENTE_PRESQUE_RIEN = "presque rien";
+            public const string PENTE_RIEN_ENCORE = "rien encore";
             public const string PROCHAIN_SEUIL = "×{0} au cran {1}";
             public const string TOUS_LES_SEUILS = "tous les seuils franchis";
             public const string CONVAINCUS_SUR = "{0} / {1}";

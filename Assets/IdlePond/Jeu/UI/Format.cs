@@ -126,6 +126,18 @@ namespace IdlePond.Jeu.UI
         public static string LibelleDuHeros(int niveau) =>
             niveau <= 1 ? E.ALEVIN : Remplir(E.GRANDI, niveau - 1);
 
+        /// <summary>
+        /// La part d'une espèce dans ce qui est capté, dite en pente, sans aucun chiffre — tant
+        /// que le héros ne sait pas compter les siens (2026-11-14).
+        /// </summary>
+        public static string PenteDeLEspece(double part)
+        {
+            if (part >= 0.5) return E.PENTE_L_ESSENTIEL;
+            if (part >= 0.2) return E.PENTE_BONNE_PART;
+            if (part >= 0.05) return E.PENTE_UN_PEU;
+            return part > 0 ? E.PENTE_PRESQUE_RIEN : E.PENTE_RIEN_ENCORE;
+        }
+
         /// La source d'un terme, mise en mots ici et pas dans le noyau.
         public static string SourceDuTerme(SourceDeTerme source)
         {

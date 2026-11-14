@@ -701,6 +701,12 @@
     border-bottom-color: var(--couleur-jour);
 }
 
+/* Sans « Compter les siens », la pente ne s'ouvre sur rien : elle n'a pas l'air d'un lien. */
+.lien.lien-muet,
+.lien.lien-muet:hover {
+    border-bottom-width: 0;
+}
+
 .renaissance-lignes {
     margin: 12px 0;
 }
