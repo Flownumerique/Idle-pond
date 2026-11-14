@@ -73,15 +73,14 @@ Les bonus de lieu ont été renchéris le même jour (Finding 7).
   il faut soit de la profondeur (chantier 4), soit un verbe qui les rachète (chantier 3).
 - **Une vraie partie.** Rien de tout cela n'a été joué ; `telemetrie.jsonl` est là pour ça.
 
-**Le toucher est mesuré, et il meurt à la deuxième vie** (`RESULTATS.md`, Finding 10). Le
-simulateur touche à la cadence qu'on lui donne (`Politique.ToucherParSeconde`) et
-`MesureDuToucherTests` balaie de 0 à 10 par seconde. Aucune cadence ne bouge le rythme. Le
-toucher fait jusqu'à un tiers du mana de la première demi-heure, puis plus rien : dès la vie 2,
-la contenance bloque la mare en 1 à 3 minutes. L'amélioration du toucher monte au rang 225 sans
-rien acheter de mesurable. **À trancher** : donner au toucher un rôle que la contenance ne
-borne pas, ou l'assumer comme geste de découverte (et alors revoir son amélioration). Le
-plancher de cadence suppose un toucher toutes les deux secondes ; un joueur qui ne touche jamais
-le troue de 9 s (`PlancherDeCadenceTests`).
+**Le toucher hâte le séjour** (tranché le 2026-11-14, `RESULTATS.md`, Finding 10). Mesuré seul,
+il mourait à la deuxième vie : la contenance bloquait la mare en 1 à 3 minutes. Un toucher fait
+désormais avancer l'acquis de 0,25 s (plus 10 % par rang de son amélioration, bornée à 10). À deux
+touchers par seconde, quinze vies prennent 47 h de jeu actif au lieu de 92 ; à la borne de dix
+par seconde, 16 h. **Ce qui reste** : la durée totale visée croise maintenant la cadence de
+toucher et l'amélioration de séjour ; décider si un autoclicker peut diviser la partie par six,
+ou borner le séjour gagné par seconde. Le plancher de cadence suppose un toucher toutes les deux
+secondes ; un joueur qui ne touche jamais le troue de 9 s (`PlancherDeCadenceTests`).
 
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.

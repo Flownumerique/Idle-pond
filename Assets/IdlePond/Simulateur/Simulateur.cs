@@ -405,6 +405,8 @@ namespace IdlePond.Simulateur
                     // Le séjour a sa propre politique ; le toucher ne sert à rien à qui ne touche pas.
                     if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
                     if (amelioration.Portee == PorteeDAmelioration.Toucher && !avecLeToucher) continue;
+                    // Le toucher a un dernier rang (2026-11-14) : le noyau refuserait le suivant.
+                    if (Economie.AmeliorationAuMaximum(courant, amelioration)) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration.Id, cout);

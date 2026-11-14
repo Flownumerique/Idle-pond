@@ -483,10 +483,11 @@ namespace IdlePond.Noyau
 
         /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────
          * Le héros est actif : un toucher rapporte `BASE × niveau × multiplicateurs
-         * globaux × multiplicateur du toucher`, plafonné par la contenance. Mesuré le
-         * 2026-11-14 (`RESULTATS.md`, Finding 10, `MesureDuToucherTests`) : aucune cadence
-         * ne bouge le rythme ; la base ne règle que la première demi-heure de la première
-         * vie, où le toucher fait jusqu'à un tiers du mana. Ensuite la contenance décide.
+         * globaux × multiplicateur du toucher`, plafonné par la contenance, et — spec du
+         * 2026-11-14 — il fait avancer l'acquis de séjour. Mesuré (`RESULTATS.md`, Finding 10,
+         * `MesureDuToucherTests`) : le mana du toucher ne règle que la première demi-heure de
+         * la première vie ; c'est le séjour qui donne au toucher son rôle ensuite (47 h au
+         * lieu de 92 h sur quinze vies, à deux touchers par seconde).
          */
 
         /// [P] graine — ce qu'un toucher rapporte au niveau 1, avant multiplicateurs. Le

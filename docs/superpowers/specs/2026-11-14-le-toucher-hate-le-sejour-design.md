@@ -4,6 +4,13 @@
 premier blocage de la première vie. Ensuite la contenance décide, et un toucher remplit une mare
 déjà pleine. L'utilisateur veut qu'il **gagne un rôle**.
 
+> **Implémenté le 2026-11-14** (plan `docs/superpowers/plans/2026-11-14-le-toucher-hate-le-sejour.md`).
+> Écarts : `donnees.json` ne porte pas de rang max et ne bouge pas ; l'envol « à porter » se
+> décide sur la mare pleine **avant** le toucher (`GainDuToucher.Plein`), car en début de vie un
+> toucher fait bien plus de place qu'il n'apporte de mana, et la mare n'est presque jamais pleine
+> après lui ; les secondes s'écrivent avec un point (`0.25`), comme tous les nombres de l'écran.
+> Mesure : Finding 10 de `RESULTATS.md`.
+
 ## Intention
 
 Ce qu'on attend pendant 94 à 98 % d'une vie, ce n'est pas du mana, c'est l'acquis de séjour qui

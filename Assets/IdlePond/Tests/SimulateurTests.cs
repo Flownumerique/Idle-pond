@@ -578,6 +578,26 @@ namespace IdlePond.Tests
             Assert.That(PremierBlocage(Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS), Is.LessThan(PremierBlocage(0) * 0.75));
         }
 
+        [Test, Description("qui touche s'arrête au dernier rang de l'amélioration du toucher, sans buter sur le refus du noyau")]
+        public void Qui_touche_s_arrete_au_dernier_rang_du_toucher()
+        {
+            var etat = Reducteur.EtatInitial(1);
+            etat = etat with { Permanent = etat.Permanent with { Souffle = Decimal.Parse("1e30") } };
+            var apres = AcheterAuMieuxEnTouchant(etat);
+            Assert.That(Economie.RangDAmelioration(apres, AmeliorationsDeRenaissance.TOUCHER_ID),
+                Is.EqualTo(Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER));
+        }
+
+        [Test, Description("toucher hâte le séjour : à deux touchers par seconde, la première vie raccourcit nettement")]
+        public void Toucher_raccourcit_la_premiere_vie()
+        {
+            // Spec du 2026-11-14 : 0,25 s de séjour par toucher, donc ×1,5 à deux par seconde —
+            // une vie d'environ deux tiers. La garde laisse de la marge : moins de 80 %.
+            var sans = Simuler(1, POLITIQUE_PAR_DEFAUT, 1).Cycles[0].DureeEcouleeSecondes;
+            var avec = Simuler(1, POLITIQUE_PAR_DEFAUT with { ToucherParSeconde = 2 }, 1).Cycles[0].DureeEcouleeSecondes;
+            Assert.That(avec, Is.LessThan(sans * 0.8));
+        }
+
         [Test, Description("la cadence de toucher est bornée : ni négative, ni au-delà de ce que le jeu accepte")]
         public void La_cadence_de_toucher_est_bornee()
         {

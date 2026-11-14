@@ -248,7 +248,7 @@ une vraie partie le dira (`telemetrie.jsonl`).
 
 ---
 
-## Finding 10 — le toucher ne compte qu'au début de la première vie (2026-11-14)
+## Finding 10 — le toucher ne comptait qu'au début de la première vie ; il hâte désormais le séjour (2026-11-14)
 
 Le simulateur sait toucher (`Politique.ToucherParSeconde`, 0 par défaut : la parité ne bouge
 pas). Une cadence donne autant de touchers par seconde ACTIVE, appliqués par
@@ -283,6 +283,30 @@ première demi-heure. Le plancher de cadence (un toucher toutes les deux seconde
 cohérent. Mais après la première vie, toucher ne sert à rien, et l'amélioration du toucher non
 plus. C'est une question de design, pas de réglage : un geste qui meurt à la vie 2 doit soit
 gagner un rôle que la contenance ne borne pas, soit assumer d'être un geste de découverte.
+
+**Tranché le 2026-11-14 : le toucher hâte le séjour** (spec
+`2026-11-14-le-toucher-hate-le-sejour-design.md`). Un toucher fait avancer l'acquis de 0,25 s par
+la courbe du temps, plus 10 % par rang de l'amélioration du toucher, bornée à 10 rangs. Même
+mesure, mêmes réglages :
+
+| Cadence | Vie 1 | Vie 2 | Vie 5 | Vie 15 | Jeu actif, 15 vies | Fond | Rang du toucher | Souffle, vie 15 |
+|---|---|---|---|---|---|---|---|---|
+| aucun toucher | 3,13 h | 3,48 h | 4,52 h | 8,90 h | 92,0 h | vie 13 | 0 | 5,58e136 |
+| 1 par seconde | 2,52 h | 2,63 h | 3,02 h | 5,93 h | 62,2 h | vie 13 | 10 | 7,08e136 |
+| 2 par seconde | 2,10 h | 2,12 h | 2,27 h | 4,45 h | 47,1 h | vie 13 | 10 | 7,08e136 |
+| 10 par seconde (la borne) | 0,90 h | 0,83 h | 0,77 h | 1,48 h | 16,1 h | vie 13 | 10 | 7,92e136 |
+
+- **Le toucher compte à chaque vie.** La première vie suit le dosage choisi (×1,49 à deux par
+  seconde) ; les suivantes vont plus vite encore, l'amélioration au rang 10 doublant le séjour
+  d'un toucher.
+- **Le fond ne bouge pas** (vie 13), et le Souffle ne baisse pas : il monte même un peu, parce
+  que le Souffle ne se dépense plus dans un puits.
+- **L'amélioration du toucher est tenue dès la deuxième vie** (dix rangs, ratio de prix 4) :
+  c'est un choix de la première renaissance, plus un puits.
+- **À la borne, quinze vies tiennent en 16 h de jeu actif.** Un autoclicker à dix touchers par
+  seconde divise la partie par près de six. C'est le prix de « hâter le séjour » ; si c'est
+  trop, le levier est `SECONDES_DE_SEJOUR_PAR_TOUCHER`, ou une borne propre au séjour gagné par
+  seconde, plus basse que celle des touchers.
 
 ---
 
