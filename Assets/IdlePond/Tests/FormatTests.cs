@@ -132,6 +132,14 @@ namespace IdlePond.Tests
             Assert.That(Format.Entier(1234567.9), Is.EqualTo("1 234 567"));
         }
 
+        [Test, Description("des secondes courtes, deux décimales au plus")]
+        public void Des_secondes_courtes()
+        {
+            Assert.That(Format.Secondes(0.25), Is.EqualTo("0.25"));
+            Assert.That(Format.Secondes(0.5), Is.EqualTo("0.5"));
+            Assert.That(Format.Secondes(0.325), Is.EqualTo("0.33"));
+        }
+
         [Test, Description("les crans d'une carte d'espèce s'accordent : un cran, des crans")]
         public void Les_crans_d_une_carte_s_accordent()
         {

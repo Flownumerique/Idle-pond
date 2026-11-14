@@ -2,7 +2,6 @@ using System;
 using IdlePond.Noyau;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Decimal = IdlePond.Noyau.Decimal;
 using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 
 namespace IdlePond.Jeu.UI
@@ -14,8 +13,9 @@ namespace IdlePond.Jeu.UI
     ///
     /// Le gain s'envole du point touché : `+gain` en couleur mana, qui monte d'environ 48 px
     /// et s'efface en 0,7 s (le .uss porte le mouvement ; mouvement réduit, il s'efface sans
-    /// monter). Six libellés réutilisés à tour de rôle : aucune allocation par toucher. Gain
-    /// nul — mare pleine, ou toucher ignoré par la cadence — : pas de chiffre.
+    /// monter). Six libellés réutilisés à tour de rôle : aucune allocation par toucher. Mare
+    /// pleine, il dit ce que le toucher a fait porter de plus (`+N à porter`, 2026-11-14) ;
+    /// toucher sans effet, ou ignoré par la cadence : pas de chiffre.
     /// </summary>
     public sealed class CoucheDuToucher
     {
@@ -26,7 +26,7 @@ namespace IdlePond.Jeu.UI
         readonly IVisualElementScheduledItem[] fins = new IVisualElementScheduledItem[LIBELLES];
         int prochain;
 
-        public CoucheDuToucher(VisualElement racine, Func<Decimal> toucher)
+        public CoucheDuToucher(VisualElement racine, Func<GainDuToucher> toucher)
         {
             racine.pickingMode = PickingMode.Position;
             for (var i = 0; i < LIBELLES; i++)
@@ -39,19 +39,22 @@ namespace IdlePond.Jeu.UI
             }
             racine.RegisterCallback<PointerDownEvent>(evenement =>
             {
+                // Mare pleine, ce qui compte est la place que le toucher a faite, pas le peu de mana
+                // qui l'a remplie : c'est elle qu'on dit. Sinon le mana ; sinon rien.
                 var gain = toucher();
-                if (gain.Gt(0)) Envoler(gain, evenement.localPosition);
+                if (gain.Plein && gain.APorter.Gt(0)) Envoler(Format.Remplir(E.GAIN_A_PORTER, Format.Montant(gain.APorter)), evenement.localPosition);
+                else if (gain.Mana.Gt(0)) Envoler(Format.Remplir(E.GAIN_DU_TOUCHER, Format.Montant(gain.Mana)), evenement.localPosition);
             });
         }
 
-        void Envoler(Decimal gain, Vector2 point)
+        void Envoler(string texte, Vector2 point)
         {
             var i = prochain;
             prochain = (prochain + 1) % LIBELLES;
             var envol = envols[i];
             fins[i]?.Pause();
             envol.RemoveFromClassList("envol-parti");
-            Elements.Poser(envol, Format.Remplir(E.GAIN_DU_TOUCHER, Format.Montant(gain)));
+            Elements.Poser(envol, texte);
             envol.style.left = point.x;
             envol.style.top = point.y;
             Elements.Montrer(envol, true);

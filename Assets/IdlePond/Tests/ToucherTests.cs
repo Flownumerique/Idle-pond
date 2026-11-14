@@ -288,9 +288,39 @@ namespace IdlePond.Tests
             var emis = 0;
             partie.EtatChange += _ => emis += 1;
             var gain = partie.Toucher();
-            Assert.That(gain.Eq(Economie.ValeurDuToucher(etat)), Is.True);
-            Assert.That(partie.Etat.Cycle.ManaCourant.Eq(gain), Is.True);
+            Assert.That(gain.Mana.Eq(Economie.ValeurDuToucher(etat)), Is.True);
+            Assert.That(gain.Plein, Is.False);
+            Assert.That(partie.Etat.Cycle.ManaCourant.Eq(gain.Mana), Is.True);
             Assert.That(emis, Is.EqualTo(1));
+        }
+
+        [Test, Description("mare pleine, Partie.Toucher rend ce qu'on porte de plus, et émet EtatChange")]
+        public void Partie_toucher_mare_pleine_rend_ce_qu_on_porte_de_plus()
+        {
+            var etat = AvecAcquis(EtatDeTravail.Creer(), 0);
+            etat = etat with { Permanent = etat.Permanent with { ContenanceMana = new Decimal(1000) } };
+            etat = AvecMana(etat, Economie.Contenance(etat));
+            var partie = new Partie(new HorlogeFigee(DEPART), etat);
+            var emis = 0;
+            partie.EtatChange += _ => emis += 1;
+            var gain = partie.Toucher();
+            Comparateur.ComparerATolerance(gain.APorter, Economie.Contenance(partie.Etat).Sub(Economie.Contenance(etat)));
+            Assert.That(gain.APorter.Gt(0), Is.True);
+            Assert.That(gain.Plein, Is.True);
+            Assert.That(emis, Is.EqualTo(1));
+        }
+
+        [Test, Description("acquis au plafond et mare pleine : Partie.Toucher ne rend rien et n'émet rien")]
+        public void Partie_toucher_sans_effet_ne_rend_rien()
+        {
+            var etat = AvecAcquis(EtatDeTravail.Creer(), Constantes.ACQUIS_MAX);
+            etat = AvecMana(etat, Economie.Contenance(etat));
+            var partie = new Partie(new HorlogeFigee(DEPART), etat);
+            var emis = 0;
+            partie.EtatChange += _ => emis += 1;
+            var gain = partie.Toucher();
+            Assert.That(gain.Mana.Eq(0) && gain.APorter.Eq(0), Is.True);
+            Assert.That(emis, Is.EqualTo(0));
         }
 
         [Test, Description("le 11e toucher dans la même seconde est ignoré ; la fenêtre glisse")]
@@ -300,18 +330,18 @@ namespace IdlePond.Tests
             var partie = new Partie(horloge, AvecMana(EtatDeTravail.Creer(), new Decimal(0)));
             for (var i = 0; i < 10; i++)
             {
-                Assert.That(partie.Toucher().Gt(0), Is.True, $"toucher {i + 1}");
+                Assert.That(partie.Toucher().Mana.Gt(0), Is.True, $"toucher {i + 1}");
                 horloge.AvancerMs(50);
             }
             var emis = 0;
             partie.EtatChange += _ => emis += 1;
             var mana = partie.Etat.Cycle.ManaCourant;
-            Assert.That(partie.Toucher().Eq(0), Is.True);
+            Assert.That(partie.Toucher().Mana.Eq(0), Is.True);
             Assert.That(partie.Etat.Cycle.ManaCourant.Eq(mana), Is.True);
             Assert.That(emis, Is.EqualTo(0));
             // Le premier toucher est à DEPART ; une seconde après lui, sa place se libère.
             horloge.AvancerMs(1000 - 500);
-            Assert.That(partie.Toucher().Gt(0), Is.True);
+            Assert.That(partie.Toucher().Mana.Gt(0), Is.True);
         }
     }
 }

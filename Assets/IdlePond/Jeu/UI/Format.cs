@@ -138,6 +138,9 @@ namespace IdlePond.Jeu.UI
             return part > 0 ? E.PENTE_PRESQUE_RIEN : E.PENTE_RIEN_ENCORE;
         }
 
+        /// Des secondes courtes (le séjour d'un toucher) : deux décimales au plus, « 0.25 ».
+        public static string Secondes(double secondes) => secondes.ToString("0.##", Inv);
+
         /// Les crans d'une carte d'espèce, avant son débit : « 1 cran · », « 12 crans · ».
         public static string CransDeLaCarte(int niveau) =>
             Remplir(niveau > 1 ? E.CRANS_ET_DEBIT : E.CRAN_ET_DEBIT, niveau.ToString(CultureInfo.InvariantCulture));

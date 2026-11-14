@@ -43,7 +43,9 @@ namespace IdlePond.TestsDeJeu
 
             ServicesDePartie.Oublier();
             SauvegardeDeTest.Rediriger();
-            var partie = new Partie(new HorlogeFigee(1_700_000_000_000L));
+            // Horloge figée : la fenêtre des dix touchers par seconde ne glisse que si on l'avance.
+            var horloge = new HorlogeFigee(1_700_000_000_000L);
+            var partie = new Partie(horloge);
             ServicesDePartie.Installer(partie);
             ServicesDePartie.DemanderLAccueil(premiereFois: false);
             var chargement = SceneManager.LoadSceneAsync("Mare");
@@ -98,7 +100,7 @@ namespace IdlePond.TestsDeJeu
                         interfaceDeLaMare.Ouvrir(vue.Tiroir);
                         yield return new WaitForSeconds(0.6f);
                         Ecrire(rt, Path.Combine(dossier, $"ui-{cadre.Nom}-{vue.Nom}.png"));
-                        if (vue.Tiroir == Tiroir.Aucun) yield return CapturerUnToucher(document, rt, Path.Combine(dossier, $"ui-{cadre.Nom}-toucher.png"));
+                        if (vue.Tiroir == Tiroir.Aucun) yield return CapturerUnToucher(document, horloge, rt, Path.Combine(dossier, $"ui-{cadre.Nom}-toucher.png"));
                     }
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
@@ -110,6 +112,27 @@ namespace IdlePond.TestsDeJeu
                     panneau.targetTexture = rt;
                     magasin.Modifier(r => r with { Affichage = CADRES[0].Format });
                     interfaceDeLaMare.Ouvrir(Tiroir.Aucun);
+                    // Mare pleine, trois touchers : chacun dit ce qu'il fait porter de plus (2026-11-14).
+                    // La mare est remplie juste avant chaque toucher : la boucle tourne en temps réel.
+                    partie.Remplacer(partie.Etat with
+                    {
+                        Cycle = partie.Etat.Cycle with { AcquisDeSejour = 0 },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    horloge.AvancerMs(2000);
+                    var couche = document.rootVisualElement.Q<VisualElement>("toucher");
+                    var bord = couche.worldBound;
+                    foreach (var (x, y) in new[] { (0.3f, 0.3f), (0.6f, 0.4f), (0.45f, 0.55f) })
+                    {
+                        partie.Remplacer(partie.Etat with
+                        {
+                            Cycle = partie.Etat.Cycle with { ManaCourant = IdlePond.Noyau.Economie.Contenance(partie.Etat) },
+                        });
+                        yield return Doigt.ToucherEn(couche, new Vector2(bord.x + bord.width * x, bord.y + bord.height * y));
+                    }
+                    yield return new WaitForSeconds(0.15f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-toucher-plein.png"));
+
                     var etat = partie.Etat;
                     partie.Remplacer(etat with
                     {
@@ -140,6 +163,7 @@ namespace IdlePond.TestsDeJeu
                     });
                     yield return new WaitForSeconds(0.6f);
                     Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-file.png"));
+
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
                 }
@@ -154,8 +178,9 @@ namespace IdlePond.TestsDeJeu
         }
 
         /// Trois touchers sur la mare, capturés en plein vol (spec du toucher, §2).
-        static IEnumerator CapturerUnToucher(UIDocument document, RenderTexture rt, string chemin)
+        static IEnumerator CapturerUnToucher(UIDocument document, HorlogeFigee horloge, RenderTexture rt, string chemin)
         {
+            horloge.AvancerMs(2000);
             var couche = document.rootVisualElement.Q<VisualElement>("toucher");
             var cadre = couche.worldBound;
             foreach (var (x, y) in new[] { (0.3f, 0.3f), (0.6f, 0.4f), (0.45f, 0.55f) })

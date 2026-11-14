@@ -11,6 +11,20 @@ namespace IdlePond.Jeu
     public sealed record AbsenceCreditee(double SecondesCreditees);
 
     /// <summary>
+    /// Ce qu'un toucher a fait (2026-11-14) : le mana gagné, ce qu'il a ajouté à ce qu'on peut
+    /// porter — l'acquis de séjour avance à chaque toucher —, et si la mare était pleine quand on
+    /// l'a touchée. Ignoré ou sans effet : zéro, zéro, non.
+    /// </summary>
+    public readonly struct GainDuToucher
+    {
+        public Decimal Mana { get; }
+        public Decimal APorter { get; }
+        public bool Plein { get; }
+        public GainDuToucher(Decimal mana, Decimal aPorter, bool plein) { Mana = mana; APorter = aPorter; Plein = plein; }
+        public static readonly GainDuToucher Rien = new GainDuToucher(Decimal.Zero, Decimal.Zero, false);
+    }
+
+    /// <summary>
     /// Ce que l'absence a rapporté, pour l'écran de retour (2026-11-13). Rien n'est calculé
     /// ici qui ne se lise sur les deux états, celui du départ et celui du retour.
     ///
@@ -161,22 +175,28 @@ namespace IdlePond.Jeu
         readonly Queue<long> derniersTouchers = new Queue<long>(TOUCHERS_PAR_SECONDE);
 
         /// <summary>
-        /// Toucher la mare (spec du 2026-10-11) : `Reducteur.Toucher`, et le gain, pour le
-        /// chiffre qui s'envole. Au-delà de dix touchers dans la même seconde, lue sur
-        /// l'horloge de la partie, le toucher est ignoré : gain nul, rien n'est émis. La
-        /// limite vit ici, pas dans le noyau, qui ne voit jamais le temps de mur.
+        /// Toucher la mare (specs du 2026-10-11 et du 2026-11-14) : `Reducteur.Toucher`, et ce
+        /// qu'il a fait, pour le chiffre qui s'envole. Au-delà de dix touchers dans la même
+        /// seconde, lue sur l'horloge de la partie, le toucher est ignoré : rien n'est rendu,
+        /// rien n'est émis. La limite vit ici, pas dans le noyau, qui ne voit jamais le temps
+        /// de mur. Un toucher compte dès qu'il change l'état, mare pleine comprise.
         /// </summary>
-        public Decimal Toucher()
+        public GainDuToucher Toucher()
         {
             var maintenant = horloge.MaintenantMs();
             while (derniersTouchers.Count > 0 && maintenant - derniersTouchers.Peek() >= 1000) derniersTouchers.Dequeue();
-            if (derniersTouchers.Count >= TOUCHERS_PAR_SECONDE) return Decimal.Zero;
-            var (apres, gain) = Reducteur.Toucher(Etat);
-            if (ReferenceEquals(apres, Etat)) return Decimal.Zero;
+            if (derniersTouchers.Count >= TOUCHERS_PAR_SECONDE) return GainDuToucher.Rien;
+            var avant = Etat;
+            var (apres, gain) = Reducteur.Toucher(avant);
+            if (ReferenceEquals(apres, avant)) return GainDuToucher.Rien;
             derniersTouchers.Enqueue(maintenant);
             Etat = apres;
             EtatChange?.Invoke(apres);
-            return gain;
+            // Plein : la mare l'était AVANT le toucher (le Tick plafonne le mana exactement sur la
+            // contenance). Après lui, elle ne l'est presque jamais : en début de vie, un toucher
+            // fait cent fois plus de place qu'il n'apporte de mana.
+            var plein = avant.Cycle.ManaCourant.Gte(Economie.Contenance(avant));
+            return new GainDuToucher(gain, Economie.Contenance(apres).Sub(Economie.Contenance(avant)), plein);
         }
 
         void Appliquer(Func<EtatJeu, EtatJeu> acte)

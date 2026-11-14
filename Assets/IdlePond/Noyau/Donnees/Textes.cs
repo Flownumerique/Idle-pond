@@ -114,7 +114,7 @@ namespace IdlePond.Noyau.Donnees
 
         /// L'amélioration du toucher (spec du 2026-10-11) : actif, le héros est un courant
         /// dans l'eau — il prend (Codex).
-        public static readonly TexteDAmelioration AMELIORATION_DU_TOUCHER = new("Prendre plus fort", "quand tu touches l’eau, le courant que tu fais emporte davantage");
+        public static readonly TexteDAmelioration AMELIORATION_DU_TOUCHER = new("Prendre plus fort", "quand tu touches l’eau, tu emportes davantage, et tu t’y fais plus vite");
 
         /// Les bonus de l'onglet « Débloquer » (spec du 2026-10-10), par identifiant de registre.
         static readonly IReadOnlyDictionary<string, TexteDeBonus> TEXTES_DE_BONUS = new Dictionary<string, TexteDeBonus>
@@ -323,6 +323,10 @@ namespace IdlePond.Noyau.Donnees
             public const string PAR_TOUCHER_AU_PROCHAIN = "+{0} par toucher en grandissant";
             /// Le chiffre qui s'envole quand on touche la mare.
             public const string GAIN_DU_TOUCHER = "+{0}";
+            /// Mare pleine : ce que le toucher a ajouté à ce qu'on peut porter (2026-11-14).
+            public const string GAIN_A_PORTER = "+{0} à porter";
+            /// Sous « Par toucher », dans la fiche : les secondes d'eau qu'un toucher fait gagner.
+            public const string SEJOUR_PAR_TOUCHER = "+{0} s à te faire à l’eau";
             /// « Lire l'eau » : à côté du Souffle, ce que rentrer rapporterait.
             public const string SOUFFLE_EN_RENTRANT = "+{0} de Souffle en rentrant";
 

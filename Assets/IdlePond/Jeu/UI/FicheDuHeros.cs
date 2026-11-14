@@ -29,6 +29,7 @@ namespace IdlePond.Jeu.UI
         readonly Label captation;
         readonly Label contenance;
         readonly Label parToucher;
+        readonly Label sejourParToucher;
         readonly Label retours;
         readonly Label bloque;
 
@@ -64,6 +65,8 @@ namespace IdlePond.Jeu.UI
             captation = Tuile(grille, E.FICHE_CAPTATION);
             contenance = Tuile(grille, E.FICHE_CONTENANCE);
             parToucher = Tuile(grille, E.FICHE_PAR_TOUCHER);
+            sejourParToucher = Elements.Texte("doux xs");
+            parToucher.parent.Add(sejourParToucher);
             retours = Tuile(grille, E.FICHE_RETOURS);
             racine.Add(grille);
 
@@ -107,6 +110,7 @@ namespace IdlePond.Jeu.UI
             Elements.Poser(captation, Format.Remplir(E.DEBIT, plein ? "0" : Format.Montant(Economie.ProductionTotaleParSeconde(etat))));
             Elements.Poser(contenance, Format.Montant(Economie.Contenance(etat)));
             Elements.Poser(parToucher, Format.Remplir(E.GAIN_DU_TOUCHER, Format.Montant(Economie.ValeurDuToucher(etat))));
+            Elements.Poser(sejourParToucher, Format.Remplir(E.SEJOUR_PAR_TOUCHER, Format.Secondes(Economie.SejourDuToucher(etat))));
             Elements.Poser(retours, etat.Permanent.NombreDeRenaissances.ToString(CultureInfo.InvariantCulture));
             Elements.Marquer(racine, "eau-trouble", Economie.EauTroublee(etat));
             Elements.Montrer(bloque, Economie.EstBloque(etat));
