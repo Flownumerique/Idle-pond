@@ -68,7 +68,13 @@ namespace IdlePond.Simulateur
         // plus cette part de son mana. Une part, et non un gain marginal : la plupart des
         // bonus baissent un coût, et un coût baissé n'a pas de « production ajoutée » à
         // comparer à celle d'un cran. Pour la MESURE, pas pour le jeu.
-        double PartDuManaPourUnBonus = 0);
+        double PartDuManaPourUnBonus = 0,
+        // Touchers par seconde devant l'écran (spec du toucher, 2026-10-11). 0, c'est la
+        // politique historique : le joueur ne touche jamais, et c'est ce que la parité fige.
+        // Au-dessus, chaque seconde ACTIVE porte autant de touchers — le premier pas de
+        // chaque relevé, jamais l'absence —, et les achats comptent ce qu'ils ajoutent au
+        // toucher. Au plus `TOUCHERS_PAR_SECONDE_AU_PLUS`, la borne du jeu. Pour la MESURE.
+        double ToucherParSeconde = 0);
 
     /// Les quatre achats du noyau v1.0, chacun avec son coût et la production qu'il ajoute.
     public enum TypeDAchat { Creuser, Grandir, Debloquer, Niveau }
@@ -96,7 +102,9 @@ namespace IdlePond.Simulateur
         int CyclesAcheves,
         int? CycleNonConvergent,
         double SecondesActives,
-        double SecondesEcoulees);
+        double SecondesEcoulees,
+        long Touchers,
+        Decimal ManaTouche);
 
     public static class Simulateur
     {
@@ -144,7 +152,7 @@ namespace IdlePond.Simulateur
         /// le palier ouvre ; c'est la règle du harnais de RESULTATS.md, et creuser y
         /// entre dans la comparaison sans traitement de faveur.
         /// </summary>
-        public static IReadOnlyList<Achat> AchatsDisponibles(EtatJeu etat, Decimal? budget = null)
+        public static IReadOnlyList<Achat> AchatsDisponibles(EtatJeu etat, Decimal? budget = null, double toucherParSeconde = 0)
         {
             var achats = new List<Achat>();
             bool HorsDePortee(Decimal cout) => budget.HasValue && cout.Gt(budget.Value);
@@ -158,6 +166,18 @@ namespace IdlePond.Simulateur
             Decimal ProductionTotale() { production ??= Economie.ProductionTotaleParSeconde(etat); return production.Value; }
             Decimal? globaux = null;
             Decimal Multiplicateurs() { globaux ??= Economie.MultiplicateursGlobaux(etat); return globaux.Value; }
+            // En touchant, une seconde devant l'écran rapporte la production PLUS ses
+            // touchers : `R = P + t·V`. Un toucher porte les multiplicateurs globaux comme la
+            // production — ce qui les change (creuser, le drapeau des cent) agit sur `R`
+            // entier —, et le niveau du héros en facteur propre, compté à part pour Grandir.
+            Decimal? rendement = null;
+            Decimal Rendement()
+            {
+                rendement ??= toucherParSeconde > 0
+                    ? ProductionTotale().Add(Economie.ValeurDuToucher(etat).Mul(toucherParSeconde))
+                    : ProductionTotale();
+                return rendement.Value;
+            }
 
             if (!Economie.EstBloque(etat))
             {
@@ -168,7 +188,7 @@ namespace IdlePond.Simulateur
                     var ouvert = etat with { Cycle = etat.Cycle with { PaliersOuverts = cible + 1 } };
                     achats.Add(new Achat(
                         TypeDAchat.Creuser, null, cout,
-                        ProductionTotale().Mul(Economie.MultiplicateursGlobaux(ouvert).Div(Multiplicateurs()).Sub(1))));
+                        Rendement().Mul(Economie.MultiplicateursGlobaux(ouvert).Div(Multiplicateurs()).Sub(1))));
                 }
             }
 
@@ -176,11 +196,20 @@ namespace IdlePond.Simulateur
             // multipliée par (1 + b) — l'ambiant compris, qui ne porte plus de facteur de
             // niveau depuis la spec du toucher (2026-10-11) :
             //   P' = (S + A) · M · (1 + b)  avec  P = (S + A) · M,  donc  P' − P = P·b.
-            // Ce que le niveau ajoute au toucher n'entre pas : le simulateur ne touche jamais.
+            // En touchant, s'y ajoute ce que le niveau suivant donne à chaque toucher — le
+            // multiplicateur ET le facteur de niveau —, lu sur le noyau, pas recalculé.
             {
                 var cout = Economie.CoutDeCroissance(etat, etat.Cycle.NiveauDuHeros);
                 if (!HorsDePortee(cout))
-                    achats.Add(new Achat(TypeDAchat.Grandir, null, cout, ProductionTotale().Mul(Constantes.BONUS_PAR_NIVEAU_DU_HEROS)));
+                {
+                    var gain = ProductionTotale().Mul(Constantes.BONUS_PAR_NIVEAU_DU_HEROS);
+                    if (toucherParSeconde > 0)
+                    {
+                        var grandi = etat with { Cycle = etat.Cycle with { NiveauDuHeros = etat.Cycle.NiveauDuHeros + 1 } };
+                        gain = gain.Add(Economie.ValeurDuToucher(grandi).Sub(Economie.ValeurDuToucher(etat)).Mul(toucherParSeconde));
+                    }
+                    achats.Add(new Achat(TypeDAchat.Grandir, null, cout, gain));
+                }
             }
 
             foreach (var espece in Especes.Toutes)
@@ -206,7 +235,7 @@ namespace IdlePond.Simulateur
                 var poseLeDrapeau =
                     n + 1 >= Constantes.SEUIL_DU_DRAPEAU_PERMANENT && !etat.Permanent.EspecesAyantAtteintCent.Contains(espece.Id);
                 var gainNiveau = poseLeDrapeau
-                    ? propreNiveau.Add(ProductionTotale().Add(propreNiveau).Mul(Constantes.BONUS_GLOBAL_A_CENT_INDIVIDUS / Economie.MultiplicateurDesDrapeaux(etat)))
+                    ? propreNiveau.Add(Rendement().Add(propreNiveau).Mul(Constantes.BONUS_GLOBAL_A_CENT_INDIVIDUS / Economie.MultiplicateurDesDrapeaux(etat)))
                     : propreNiveau;
                 achats.Add(new Achat(TypeDAchat.Niveau, espece, coutNiveau, gainNiveau));
             }
@@ -219,13 +248,13 @@ namespace IdlePond.Simulateur
         /// le plus bas. C'est la règle du harnais qui a produit RESULTATS.md : le joueur
         /// optimal ne met rien de côté, il achète le meilleur rapport dès qu'il le peut.
         /// </summary>
-        static Achat MeilleurAchat(EtatJeu etat)
+        static Achat MeilleurAchat(EtatJeu etat, double toucherParSeconde)
         {
             Achat meilleur = null;
             Decimal? meilleurRetour = null;
             // Le mana EST le budget : `AchatsDisponibles` ne rend déjà que ce qu'il paie.
             // Le test de portée n'est écrit qu'une fois, et il est écrit là-bas.
-            foreach (var achat in AchatsDisponibles(etat, etat.Cycle.ManaCourant))
+            foreach (var achat in AchatsDisponibles(etat, etat.Cycle.ManaCourant, toucherParSeconde))
             {
                 if (achat.Gain.Lte(0)) continue;
                 var retour = achat.Cout.Div(achat.Gain);
@@ -256,7 +285,7 @@ namespace IdlePond.Simulateur
         /// croît de ×1,15. La borne n'est là que contre un défaut du noyau, et elle
         /// CRIE : un relevé tronqué en silence fausserait toute mesure sans le dire.
         /// </summary>
-        static EtatJeu Depenser(EtatJeu etat, double partDuManaPourUnBonus = 0)
+        static EtatJeu Depenser(EtatJeu etat, double partDuManaPourUnBonus = 0, double toucherParSeconde = 0)
         {
             var courant = etat;
             for (var achats = 0; ; achats += 1)
@@ -275,7 +304,7 @@ namespace IdlePond.Simulateur
                         continue;
                     }
                 }
-                var achat = MeilleurAchat(courant);
+                var achat = MeilleurAchat(courant, toucherParSeconde);
                 if (achat == null) return courant;
                 var suivant = Appliquer(courant, achat);
                 // Même symptôme que la borne ci-dessus, donc même traitement : la politique
@@ -355,7 +384,15 @@ namespace IdlePond.Simulateur
         /// Appelée juste après `Renaitre` : c'est là que le Souffle est crédité. Elle
         /// termine d'elle-même — chaque rang multiplie le prix par le ratio.
         /// </summary>
-        public static EtatJeu AcheterAuMieux(EtatJeu etat)
+        public static EtatJeu AcheterAuMieux(EtatJeu etat) => AcheterLaMoinsChere(etat, avecLeToucher: false);
+
+        /// <summary>
+        /// `AcheterAuMieux`, l'amélioration du toucher comprise : la politique de qui touche
+        /// (`Politique.ToucherParSeconde`). Le séjour reste à part, comme dans l'historique.
+        /// </summary>
+        public static EtatJeu AcheterAuMieuxEnTouchant(EtatJeu etat) => AcheterLaMoinsChere(etat, avecLeToucher: true);
+
+        static EtatJeu AcheterLaMoinsChere(EtatJeu etat, bool avecLeToucher)
         {
             var courant = etat;
             for (var garde = 0; garde < 10_000; garde += 1)
@@ -366,7 +403,8 @@ namespace IdlePond.Simulateur
                     // La politique historique, celle que la parité fige, date d'avant
                     // l'amélioration de séjour : elle ne l'achète pas. Voir `AcheterLeSejourDAbord`.
                     // Le séjour a sa propre politique ; le toucher ne sert à rien à qui ne touche pas.
-                    if (amelioration.Portee == PorteeDAmelioration.Sejour || amelioration.Portee == PorteeDAmelioration.Toucher) continue;
+                    if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
+                    if (amelioration.Portee == PorteeDAmelioration.Toucher && !avecLeToucher) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration.Id, cout);
@@ -471,19 +509,23 @@ namespace IdlePond.Simulateur
                 throw new InvalidOperationException($"Le pas de la politique doit être positif (reçu {politique.Pas.ToString("R", CultureInfo.InvariantCulture)})");
             if (!(politique.SecondesEntreReleves >= 0))
                 throw new InvalidOperationException($"L'intervalle entre relevés ne peut pas être négatif (reçu {politique.SecondesEntreReleves.ToString("R", CultureInfo.InvariantCulture)})");
+            if (!(politique.ToucherParSeconde >= 0 && politique.ToucherParSeconde <= Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS))
+                throw new InvalidOperationException($"La cadence de toucher doit être entre 0 et {Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS} par seconde (reçu {politique.ToucherParSeconde.ToString("R", CultureInfo.InvariantCulture)})");
             var intervalle = politique.SecondesEntreReleves > 0 ? politique.SecondesEntreReleves : politique.Pas;
 
             var etat = Reducteur.EtatInitial(graine, limiteDeContenu ?? Constantes.NOMBRE_DE_PALIERS, reglage);
             double secondesActives = 0;
             int? cycleNonConvergent = null;
             var acheves = 0;
+            long touchers = 0;
+            var manaTouche = Decimal.Zero;
 
             for (var cycle = 0; cycle < cycles; cycle += 1)
             {
                 while (true)
                 {
                     // ── Un relevé : le joueur est là ────────────────────────────────────
-                    etat = Depenser(etat, politique.PartDuManaPourUnBonus);
+                    etat = Depenser(etat, politique.PartDuManaPourUnBonus, politique.ToucherParSeconde);
                     observer?.Invoke(etat);
                     if (DoitRenaitre(etat, politique)) break;
                     if (etat.Cycle.DureeSecondes >= politique.DureeMaxParCycleSecondes)
@@ -505,6 +547,16 @@ namespace IdlePond.Simulateur
                     for (var reste = intervalle; reste > 1e-9; present = false)
                     {
                         var dt = Math.Min(politique.Pas, reste);
+                        // Les touchers de ce pas, d'un coup, avant qu'il s'écoule : leur mana se
+                        // dépense au relevé suivant, comme la production du pas.
+                        if (present && politique.ToucherParSeconde > 0)
+                        {
+                            var fois = (int)Math.Round(politique.ToucherParSeconde * dt);
+                            var (touche, gain) = Reducteur.Toucher(etat, fois);
+                            etat = touche;
+                            touchers += fois;
+                            manaTouche = manaTouche.Add(gain);
+                        }
                         etat = Reducteur.Tick(etat, dt);
                         if (present) secondesActives += dt;
                         reste -= dt;
@@ -526,7 +578,9 @@ namespace IdlePond.Simulateur
                 CyclesAcheves: acheves,
                 CycleNonConvergent: cycleNonConvergent,
                 SecondesActives: secondesActives,
-                SecondesEcoulees: etat.TempsJeuSecondes);
+                SecondesEcoulees: etat.TempsJeuSecondes,
+                Touchers: touchers,
+                ManaTouche: manaTouche);
         }
     }
 }

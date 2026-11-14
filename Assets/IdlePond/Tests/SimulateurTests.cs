@@ -510,5 +510,95 @@ namespace IdlePond.Tests
             Assert.That(Economie.RangDAmelioration(resultat.Etat, AmeliorationsDeRenaissance.SEJOUR_ID), Is.EqualTo(0));
             Assert.That(resultat.Etat.Permanent.Souffle.Lt(moinsChere), Is.True);
         }
+
+        /* ─── le toucher dans le simulateur (roadmap, chantier 2) ────────────────── */
+
+        [Test, Description("en touchant, le gain d'un achat compte aussi ce qu'il ajoute au toucher")]
+        public void En_touchant_le_gain_d_un_achat_compte_ce_qu_il_ajoute_au_toucher()
+        {
+            // Le même contrôle que le gain sans toucher, sur le rendement d'une seconde
+            // devant l'écran : la production, plus ce que rapportent les touchers de cette
+            // seconde. Creuser, Grandir et le drapeau des cent changent la valeur d'un toucher.
+            const double PAR_SECONDE = 2;
+            var (etat, _, _) = EtatAuxTroisAchats();
+            Decimal Rendement(EtatJeu e) =>
+                Economie.ProductionTotaleParSeconde(e).Add(Economie.ValeurDuToucher(e).Mul(PAR_SECONDE));
+            EtatJeu AppliquerAchat(Achat achat)
+            {
+                if (achat.Type == TypeDAchat.Creuser) return Reducteur.Creuser(etat);
+                if (achat.Type == TypeDAchat.Grandir) return Reducteur.Grandir(etat);
+                if (achat.Type == TypeDAchat.Debloquer) return Reducteur.Debloquer(etat, achat.Espece.Id);
+                return Reducteur.Ameliorer(etat, achat.Espece.Id);
+            }
+
+            var avant = Rendement(etat);
+            var achats = AchatsDisponibles(etat, toucherParSeconde: PAR_SECONDE);
+            Assert.That(achats.Count, Is.EqualTo(AchatsDisponibles(etat).Count));
+            foreach (var achat in achats)
+            {
+                var reel = Rendement(AppliquerAchat(achat)).Sub(avant);
+                Assert.That(achat.Gain.Div(reel).ToNumber(), Is.EqualTo(1).Within(0.5e-9), $"{achat.Type} {achat.Espece?.Id}");
+            }
+            var grandir = achats.Single(a => a.Type == TypeDAchat.Grandir);
+            Assert.That(grandir.Gain.Gt(AchatsDisponibles(etat).Single(a => a.Type == TypeDAchat.Grandir).Gain), Is.True,
+                "le toucher est bien compté");
+        }
+
+        [Test, Description("le simulateur ne touche que devant l'écran, à la cadence de la politique")]
+        public void Le_simulateur_touche_devant_l_ecran_a_la_cadence_de_la_politique()
+        {
+            foreach (var releves in new[] { 0.0, 600.0 })
+            {
+                var r = Simuler(1, POLITIQUE_PAR_DEFAUT with { SecondesEntreReleves = releves, ToucherParSeconde = 1.5 }, 1);
+                Assert.That(r.Touchers, Is.EqualTo((long)Math.Round(r.SecondesActives * 1.5)), $"relevés toutes les {releves} s");
+                Assert.That(r.ManaTouche.Gt(0), Is.True);
+            }
+            var sans = Simuler(1, POLITIQUE_PAR_DEFAUT, 1);
+            Assert.That(sans.Touchers, Is.EqualTo(0));
+            Assert.That(sans.ManaTouche.Eq(0), Is.True);
+        }
+
+        [Test, Description("toucher avance le premier blocage de la première vie")]
+        public void Toucher_avance_le_premier_blocage()
+        {
+            // Pas la durée de la vie : le joueur ne rentre qu'acquis saturé, et l'acquis monte
+            // avec le temps, pas avec le mana (mesuré le 2026-11-14 : 11 280 s sans toucher,
+            // 11 460 s à dix par seconde). Ce que le toucher change, c'est la descente d'avant
+            // le blocage — 30 min sans toucher, 10 min à dix par seconde (`MesureDuToucherTests`).
+            double PremierBlocage(double cadence)
+            {
+                double? bloque = null;
+                Simuler(1, POLITIQUE_PAR_DEFAUT with { ToucherParSeconde = cadence, DureeMaxParCycleSecondes = 3600 }, 1, etat =>
+                {
+                    if (bloque == null && Economie.EstBloque(etat)) bloque = etat.Cycle.DureeSecondes;
+                });
+                Assert.That(bloque, Is.Not.Null, $"bloqué dans l'heure à {cadence} /s");
+                return bloque.Value;
+            }
+            Assert.That(PremierBlocage(Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS), Is.LessThan(PremierBlocage(0) * 0.75));
+        }
+
+        [Test, Description("la cadence de toucher est bornée : ni négative, ni au-delà de ce que le jeu accepte")]
+        public void La_cadence_de_toucher_est_bornee()
+        {
+            Assert.Throws<InvalidOperationException>(() => Simuler(1, POLITIQUE_PAR_DEFAUT with { ToucherParSeconde = -1 }));
+            Assert.Throws<InvalidOperationException>(() =>
+                Simuler(1, POLITIQUE_PAR_DEFAUT with { ToucherParSeconde = Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS + 1 }));
+        }
+
+        [Test, Description("qui touche achète aussi l'amélioration du toucher")]
+        public void Qui_touche_achete_aussi_l_amelioration_du_toucher()
+        {
+            var etat = Reducteur.EtatInitial(1);
+            etat = etat with { Permanent = etat.Permanent with { Souffle = new Decimal(1000) } };
+            Assert.That(Economie.RangDAmelioration(AcheterAuMieux(etat), AmeliorationsDeRenaissance.TOUCHER_ID), Is.EqualTo(0));
+            var apres = AcheterAuMieuxEnTouchant(etat);
+            Assert.That(Economie.RangDAmelioration(apres, AmeliorationsDeRenaissance.TOUCHER_ID), Is.GreaterThan(0));
+            Assert.That(Economie.RangDAmelioration(apres, AmeliorationsDeRenaissance.SEJOUR_ID), Is.EqualTo(0));
+            var moinsChere = AmeliorationsDeRenaissance.Toutes
+                .Where(b => b.Portee != PorteeDAmelioration.Sejour)
+                .Select(b => Economie.CoutDAmelioration(apres, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
+            Assert.That(apres.Permanent.Souffle.Lt(moinsChere), Is.True);
+        }
     }
 }

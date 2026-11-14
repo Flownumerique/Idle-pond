@@ -156,7 +156,7 @@ namespace IdlePond.Jeu
         public void Renaitre() => Appliquer(Renaissance.Renaitre);
 
         /// Au plus ce nombre de touchers dans une fenêtre glissante d'une seconde.
-        public const int TOUCHERS_PAR_SECONDE = 10;
+        public const int TOUCHERS_PAR_SECONDE = Constantes.TOUCHERS_PAR_SECONDE_AU_PLUS;
 
         readonly Queue<long> derniersTouchers = new Queue<long>(TOUCHERS_PAR_SECONDE);
 

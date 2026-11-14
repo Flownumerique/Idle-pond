@@ -73,10 +73,15 @@ Les bonus de lieu ont été renchéris le même jour (Finding 7).
   il faut soit de la profondeur (chantier 4), soit un verbe qui les rachète (chantier 3).
 - **Une vraie partie.** Rien de tout cela n'a été joué ; `telemetrie.jsonl` est là pour ça.
 
-**Le toucher n'est pas mesuré.** `BASE_DU_TOUCHER` et l'amélioration du toucher (2026-11-14)
-sont des graines : le simulateur ne touche jamais. Il faut une politique de toucher (N touchers
-par minute de jeu actif) pour les régler. Le plancher de cadence, lui, suppose un toucher toutes
-les deux secondes ; un joueur qui ne touche jamais le troue de 9 s (`PlancherDeCadenceTests`).
+**Le toucher est mesuré, et il meurt à la deuxième vie** (`RESULTATS.md`, Finding 10). Le
+simulateur touche à la cadence qu'on lui donne (`Politique.ToucherParSeconde`) et
+`MesureDuToucherTests` balaie de 0 à 10 par seconde. Aucune cadence ne bouge le rythme. Le
+toucher fait jusqu'à un tiers du mana de la première demi-heure, puis plus rien : dès la vie 2,
+la contenance bloque la mare en 1 à 3 minutes. L'amélioration du toucher monte au rang 225 sans
+rien acheter de mesurable. **À trancher** : donner au toucher un rôle que la contenance ne
+borne pas, ou l'assumer comme geste de découverte (et alors revoir son amélioration). Le
+plancher de cadence suppose un toucher toutes les deux secondes ; un joueur qui ne touche jamais
+le troue de 9 s (`PlancherDeCadenceTests`).
 
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.

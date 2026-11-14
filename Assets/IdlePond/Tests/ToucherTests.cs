@@ -137,6 +137,44 @@ namespace IdlePond.Tests
             Assert.That(gain.Eq(0), Is.True);
         }
 
+        [Test, Description("n touchers d'un coup valent n touchers un à un : le simulateur n'a pas de règle à lui")]
+        public void N_touchers_d_un_coup_valent_n_touchers_un_a_un()
+        {
+            var etat = AvecMana(AuNiveau(EtatDeTravail.Creer(), 3), new Decimal(100));
+            var (enUneFois, gain) = Reducteur.Toucher(etat, 5);
+            var unAUn = etat;
+            var somme = new Decimal(0);
+            for (var i = 0; i < 5; i++)
+            {
+                var (apres, g) = Reducteur.Toucher(unAUn);
+                unAUn = apres;
+                somme = somme.Add(g);
+            }
+            Comparateur.ComparerATolerance(unAUn.Cycle.ManaCourant, enUneFois.Cycle.ManaCourant);
+            Comparateur.ComparerATolerance(somme, gain);
+        }
+
+        [Test, Description("n touchers d'un coup restent plafonnés par la contenance")]
+        public void N_touchers_d_un_coup_restent_plafonnes()
+        {
+            var etat = EtatDeTravail.Creer();
+            etat = etat with { Permanent = etat.Permanent with { ContenanceMana = new Decimal(1000) } };
+            var contenance = Economie.Contenance(etat);
+            var valeur = Economie.ValeurDuToucher(etat);
+            var (apres, gain) = Reducteur.Toucher(AvecMana(etat, contenance.Sub(valeur.Mul(2.5))), 5);
+            Assert.That(apres.Cycle.ManaCourant.Eq(contenance), Is.True);
+            Comparateur.ComparerATolerance(valeur.Mul(2.5), gain);
+        }
+
+        [Test, Description("zéro toucher : l'état revient inchangé, gain nul")]
+        public void Zero_toucher_rien_ne_change()
+        {
+            var etat = AvecMana(EtatDeTravail.Creer(), new Decimal(0));
+            var (apres, gain) = Reducteur.Toucher(etat, 0);
+            Assert.That(apres, Is.SameAs(etat));
+            Assert.That(gain.Eq(0), Is.True);
+        }
+
         [Test, Description("un toucher n'est pas une dépense : aucun compteur de technique ne bouge")]
         public void Toucher_ne_credite_aucun_compteur()
         {

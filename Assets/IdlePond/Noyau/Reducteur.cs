@@ -216,12 +216,17 @@ namespace IdlePond.Noyau
         /// Ce n'est pas une dépense : aucun compteur de technique n'est crédité, rien ne se
         /// déclenche, et le crédit hors ligne ne touche jamais. La cadence (dix par seconde
         /// au plus) vit dans le jeu, `Partie.Toucher` : le noyau ne voit pas le temps de mur.
+        ///
+        /// `fois` : autant de touchers d'un coup, pour le simulateur, qui touche par pas
+        /// d'une minute. Un toucher ne change pas la valeur du suivant ; seul le plafond
+        /// compte, et il est le même : n touchers d'un coup valent n touchers un à un.
         /// </summary>
-        public static (EtatJeu Etat, Decimal Gain) Toucher(EtatJeu etat)
+        public static (EtatJeu Etat, Decimal Gain) Toucher(EtatJeu etat, int fois = 1)
         {
+            if (fois <= 0) return (etat, Decimal.Zero);
             var reste = Economie.Contenance(etat).Sub(etat.Cycle.ManaCourant);
             if (reste.Lte(0)) return (etat, Decimal.Zero);
-            var valeur = Economie.ValeurDuToucher(etat);
+            var valeur = Economie.ValeurDuToucher(etat).Mul(fois);
             var gain = valeur.Lt(reste) ? valeur : reste;
             return (etat with { Cycle = etat.Cycle with { ManaCourant = etat.Cycle.ManaCourant.Add(gain) } }, gain);
         }

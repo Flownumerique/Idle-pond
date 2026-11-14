@@ -483,16 +483,20 @@ namespace IdlePond.Noyau
 
         /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────
          * Le héros est actif : un toucher rapporte `BASE × niveau × multiplicateurs
-         * globaux × multiplicateur du toucher`, plafonné par la contenance. Le simulateur
-         * ne touche jamais : ces graines ne sont ni mesurées ni simulées. Il faudra une
-         * politique de toucher (N touchers par minute de jeu actif) pour les régler sans
-         * casser le rythme mesuré dans `RESULTATS.md`.
+         * globaux × multiplicateur du toucher`, plafonné par la contenance. Mesuré le
+         * 2026-11-14 (`RESULTATS.md`, Finding 10, `MesureDuToucherTests`) : aucune cadence
+         * ne bouge le rythme ; la base ne règle que la première demi-heure de la première
+         * vie, où le toucher fait jusqu'à un tiers du mana. Ensuite la contenance décide.
          */
 
         /// [P] graine — ce qu'un toucher rapporte au niveau 1, avant multiplicateurs. Le
         /// double de l'ancien débit du héros par seconde : quelques touchers valent une
         /// minute d'ambiant au départ, et rien dès que le vairon monte.
         public const double BASE_DU_TOUCHER = 0.1;
+
+        /// Au plus ce nombre de touchers par seconde. La fenêtre glissante qui l'applique vit
+        /// dans le jeu (`Partie.Toucher`) ; le simulateur s'y borne aussi (`Politique`).
+        public const int TOUCHERS_PAR_SECONDE_AU_PLUS = 10;
 
         /// [P] graine — part ajoutée à la valeur d'un toucher par rang de l'amélioration du
         /// toucher : `(1 + part) ^ rang`. Sans borne, comme la globale.

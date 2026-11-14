@@ -248,6 +248,44 @@ une vraie partie le dira (`telemetrie.jsonl`).
 
 ---
 
+## Finding 10 — le toucher ne compte qu'au début de la première vie (2026-11-14)
+
+Le simulateur sait toucher (`Politique.ToucherParSeconde`, 0 par défaut : la parité ne bouge
+pas). Une cadence donne autant de touchers par seconde ACTIVE, appliqués par
+`Reducteur.Toucher(etat, fois)`, la même règle que le jeu ; les achats comptent ce qu'ils
+ajoutent au toucher. Mesuré par `MesureDuToucherTests` (à la demande), graine 7,
+`BASE_DU_TOUCHER = 0,1`, achat continu. La valeur d'un toucher étant linéaire en la base, le
+tableau se lit aussi comme un balayage de la base à cadence fixe.
+
+| Cadence | Paliers à 15 min | Premier blocage, vie 1 | Part du toucher, 15 premières min | Durée de la vie 1 | Premier blocage, vies 2 / 5 / 15 | Jeu actif, 15 vies |
+|---|---|---|---|---|---|---|
+| aucun toucher | 3 | 30 min | 0 % | 3,13 h | 3 / 1 / 1 min | 92,0 h |
+| 1 par seconde | 3 | 24 min | 23 % | 3,15 h | 3 / 1 / 1 min | 92,0 h |
+| 2 par seconde | 5 | 19 min | 29 % | 3,17 h | 3 / 1 / 1 min | 92,1 h |
+| 10 par seconde (la borne du jeu) | 9 | 10 min | 8 % | 3,18 h | 3 / 1 / 1 min | 92,1 h |
+
+**Trois constats.**
+
+- **Le rythme ne bouge pas, à aucune cadence.** Les durées de vie et le fond (vie 13) sont
+  ceux du Finding 9. Même cause qu'aux Findings 6 et 7 : la vie dure ce que dure l'acquis de
+  séjour. La première vie s'allonge même de 2 à 3 minutes, parce que le joueur, plus riche plus
+  tôt, creuse un palier de plus avant d'être bloqué.
+- **Le toucher ne compte qu'avant le premier blocage de la première vie.** Il y fait jusqu'à
+  un tiers du mana et avance le blocage de 30 à 10 minutes. Ensuite la contenance décide, pas
+  le mana : dès la vie 2, la mare est bloquée en 1 à 3 minutes, et un toucher ne remplit qu'une
+  mare déjà pleine. La part retombe aux fortes cadences pour la même raison : plus vite pleine.
+- **L'amélioration du toucher est un puits de Souffle.** Achetée « la moins chère d'abord »,
+  elle monte au rang 225 en quinze vies (ratio de prix 4) et n'achète rien de mesurable ; le
+  Souffle de la vie 15 baisse de 0,5 %.
+
+**Conséquence.** `BASE_DU_TOUCHER` ne peut pas casser le rythme mesuré : elle ne règle que la
+première demi-heure. Le plancher de cadence (un toucher toutes les deux secondes) y est
+cohérent. Mais après la première vie, toucher ne sert à rien, et l'amélioration du toucher non
+plus. C'est une question de design, pas de réglage : un geste qui meurt à la vie 2 doit soit
+gagner un rôle que la contenance ne borne pas, soit assumer d'être un geste de découverte.
+
+---
+
 ## Journal des références de parité
 
 Les références de parité (`Assets/IdlePond/Tests/Reference/`) venaient du TypeScript
