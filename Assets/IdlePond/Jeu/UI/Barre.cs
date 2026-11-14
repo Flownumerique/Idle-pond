@@ -2,12 +2,14 @@ using System;
 using IdlePond.Noyau;
 using UnityEngine.UIElements;
 using E = IdlePond.Noyau.Donnees.Textes.Ecran;
+using NoyauRenaissance = IdlePond.Noyau.Renaissance;
 
 namespace IdlePond.Jeu.UI
 {
     /// <summary>
     /// La barre du haut (spec du 2026-10-07, §1) : ce que l'écran garde toujours sous les
-    /// yeux. Le mana et son débit, le Souffle, la jauge de contenance.
+    /// yeux. Le mana et son débit, le Souffle, la jauge de contenance — et, une fois « Lire
+    /// l'eau » appris, ce que rentrer vaudrait.
     ///
     /// La jauge porte en fantôme, à sa droite, la part de la contenance que l'acquis de séjour
     /// ajoute — `Contenance = ContenanceMana × (1 + AcquisDeSejour)` : ce que rester a déjà
@@ -19,6 +21,7 @@ namespace IdlePond.Jeu.UI
         readonly Label mana;
         readonly Label debit;
         readonly Label souffle;
+        readonly Label enRentrant;
         readonly VisualElement remplissage;
         readonly VisualElement fantome;
 
@@ -43,6 +46,7 @@ namespace IdlePond.Jeu.UI
             souffle =Elements.Texte("chiffre souffle base", "", "souffle-valeur");
             pastille.Add(souffle);
             pastille.Add(Elements.Texte("souffle-doux xs", E.SOUFFLE));
+
             var droite = Elements.Conteneur("barre-droite");
             droite.Add(pastille);
             var roue = Elements.Conteneur("barre-reglages", "roue-reglages");
@@ -58,6 +62,12 @@ namespace IdlePond.Jeu.UI
             rail.Add(fantome);
             rail.Add(remplissage);
             racine.Add(rail);
+
+            // « Lire l'eau » : ce que rentrer vaudrait, sous la jauge, toujours sous les yeux une
+            // fois le nœud appris. Pas dans la pastille : un Souffle à cent chiffres la ferait déborder.
+            enRentrant = Elements.Texte("souffle xs barre-en-rentrant", "", "souffle-en-rentrant");
+            Elements.Montrer(enRentrant, false);
+            racine.Add(enRentrant);
         }
 
         public void Rafraichir(EtatJeu etat)
@@ -71,6 +81,9 @@ namespace IdlePond.Jeu.UI
                 : Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionTotaleParSeconde(etat))));
             Elements.Marquer(debit, "trouble", plein);
             Elements.Poser(souffle, Format.Montant(etat.Permanent.Souffle));
+            var lisible = NoyauRenaissance.GainLisible(etat);
+            Elements.Montrer(enRentrant, lisible.HasValue);
+            if (lisible.HasValue) Elements.Poser(enRentrant, Format.Remplir(E.SOUFFLE_EN_RENTRANT, Format.Montant(lisible.Value)));
 
             Elements.RegleLaLargeur(remplissage, Economie.PartDeContenance(etat));
             Elements.Marquer(remplissage, "eau-trouble", trouble);

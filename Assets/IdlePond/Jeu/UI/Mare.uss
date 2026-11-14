@@ -74,6 +74,11 @@
 
 /* Les deux compteurs de la barre du haut, en gras : ils se lisent d'un coup d'œil. */
 .barre-valeur,
+.barre-en-rentrant {
+    align-self: flex-end;
+    margin-top: 6px;
+}
+
 .pastille-souffle > .chiffre {
     -unity-font: url("../Polices/Nunito-Bold.ttf");
 }

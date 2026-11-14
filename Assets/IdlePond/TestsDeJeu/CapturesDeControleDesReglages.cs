@@ -43,7 +43,8 @@ namespace IdlePond.TestsDeJeu
 
             ServicesDePartie.Oublier();
             SauvegardeDeTest.Rediriger();
-            ServicesDePartie.Installer(new Partie(new HorlogeFigee(1_700_000_000_000L)));
+            var partie = new Partie(new HorlogeFigee(1_700_000_000_000L));
+            ServicesDePartie.Installer(partie);
             ServicesDePartie.DemanderLAccueil(premiereFois: false);
             var chargement = SceneManager.LoadSceneAsync("Mare");
             while (!chargement.isDone) yield return null;
@@ -99,6 +100,24 @@ namespace IdlePond.TestsDeJeu
                         Ecrire(rt, Path.Combine(dossier, $"ui-{cadre.Nom}-{vue.Nom}.png"));
                         if (vue.Tiroir == Tiroir.Aucun) yield return CapturerUnToucher(document, rt, Path.Combine(dossier, $"ui-{cadre.Nom}-toucher.png"));
                     }
+                    panneau.targetTexture = null;
+                    Object.Destroy(rt);
+                }
+
+                // « Lire l'eau » appris, un pic de production : la pastille dit ce que rentrer vaudrait.
+                {
+                    var rt = new RenderTexture(CADRES[0].Largeur, CADRES[0].Hauteur, 24, RenderTextureFormat.ARGB32);
+                    panneau.targetTexture = rt;
+                    magasin.Modifier(r => r with { Affichage = CADRES[0].Format });
+                    interfaceDeLaMare.Ouvrir(Tiroir.Aucun);
+                    var etat = partie.Etat;
+                    partie.Remplacer(etat with
+                    {
+                        Cycle = etat.Cycle with { ProductionPicParSeconde = IdlePond.Noyau.Decimal.Parse("1e6") },
+                        Permanent = etat.Permanent with { NoeudsTechnique = new[] { "renaissance-lire-l-eau" } },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-lire-l-eau.png"));
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
                 }

@@ -39,6 +39,14 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
+        /// Ce que l'écran peut montrer en permanence du gain prévu : rien sans « Lire l'eau »
+        /// (le gain ne se lit alors qu'au moment de décider, tiroir de l'œuf ouvert), le gain
+        /// prévu avec — zéro compris : savoir que rentrer ne vaudrait rien encore, c'est lire.
+        /// </summary>
+        public static Decimal? GainLisible(EtatJeu etat) =>
+            Automatismes.Capacites(etat).Contains(CapaciteId.LectureEau) ? GainDeSoufflePrevu(etat) : (Decimal?)null;
+
+        /// <summary>
         /// L'état de cycle d'un départ d'œuf. Aucun acquis permanent n'y figure.
         ///
         /// Le mana courant part chargé — `MANA_A_LA_SORTIE_DE_L_OEUF` — et pas de

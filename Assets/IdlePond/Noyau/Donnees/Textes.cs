@@ -323,6 +323,8 @@ namespace IdlePond.Noyau.Donnees
             public const string PAR_TOUCHER_AU_PROCHAIN = "+{0} par toucher en grandissant";
             /// Le chiffre qui s'envole quand on touche la mare.
             public const string GAIN_DU_TOUCHER = "+{0}";
+            /// « Lire l'eau » : à côté du Souffle, ce que rentrer rapporterait.
+            public const string SOUFFLE_EN_RENTRANT = "+{0} de Souffle en rentrant";
 
             /* — La captation ———————————————————————————————————————————————————— */
             public const string FERMER = "fermer";

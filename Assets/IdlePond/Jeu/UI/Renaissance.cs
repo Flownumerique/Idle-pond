@@ -13,8 +13,8 @@ namespace IdlePond.Jeu.UI
     /// Une contrainte non évidente commande cet écran : le gain prévu ne s'affiche PAS en
     /// permanence. « Lire l'eau » est un nœud verbe de la branche Renaissance (§7.3), donc
     /// du contenu v0.4 ; l'afficher tout le temps dès maintenant viderait ce nœud de sa
-    /// substance avant même de l'avoir écrit. Il se lit donc ici, au moment de décider —
-    /// tiroir ouvert — et nulle part ailleurs : tiroir fermé, il n'est même pas calculé.
+    /// substance. Sans ce nœud, il se lit donc ici, au moment de décider — tiroir ouvert — et
+    /// nulle part ailleurs ; avec, la `Barre` le montre en permanence (`GainLisible`).
     ///
     /// Ce que le tiroir montre, en plus du Souffle : ce que la contenance gardera (l'acquis
     /// de séjour, que `Renaitre` fixe dans `ContenanceMana`), et ce qu'on emporte et laisse.
