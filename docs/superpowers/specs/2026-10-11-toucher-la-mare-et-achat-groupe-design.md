@@ -13,7 +13,13 @@ Récits, Bestiaire, popups) est un chantier séparé.
 > améliorer » dans le tiroir de l'œuf. L'utilisateur a choisi de **garder ces deux puces** : le
 > sélecteur ×1 / ×10 / ×25 / MAX, `AmeliorerPlusieurs`, `GrandirPlusieurs` et le réglage
 > `AchatGroupe` décrits plus bas **ne sont pas à construire**. Le reste de la spec — toucher la
-> mare, l'ambiant, l'amélioration du toucher — tient, et n'est pas encore implémenté.
+> mare, l'ambiant, l'amélioration du toucher — tient.
+>
+> **Implémenté le 2026-11-14.** Écarts : `Partie.Toucher()` lit l'horloge de la partie au lieu de
+> recevoir l'instant ; `amelioration-toucher` est en **queue** du registre (après le séjour), pour
+> ne décaler aucune entrée existante ; un terme `BaseDuToucher` s'ajoute à `MultiplicateurDuToucher`.
+> Le plancher de cadence (§8.4) suppose désormais un toucher toutes les deux secondes : sans
+> toucher, il se troue de 9 s (mesure dans `PlancherDeCadenceTests`).
 
 ## Intention
 

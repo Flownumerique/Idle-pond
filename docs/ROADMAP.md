@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-13
+**Tenue à jour le** : 2026-11-14
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -23,8 +23,9 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Succès | 54 | — |
 | Axes permanents | améliorations de renaissance (dont le séjour), densité, succès, arbre de technique (5 branches sur 6 actives) | la branche Construction |
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
+| Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
 
-**Tests** : 460 EditMode et 32 PlayMode, tous verts (2026-11-13), plus trois mesures à la demande. Les références de
+**Tests** : 475 EditMode et 33 PlayMode, tous verts (2026-11-14), plus trois mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -71,6 +72,11 @@ Les bonus de lieu ont été renchéris le même jour (Finding 7).
 - **Les bonus après la troisième vie.** Tout est tenu dès la quatrième, quel que soit le prix :
   il faut soit de la profondeur (chantier 4), soit un verbe qui les rachète (chantier 3).
 - **Une vraie partie.** Rien de tout cela n'a été joué ; `telemetrie.jsonl` est là pour ça.
+
+**Le toucher n'est pas mesuré.** `BASE_DU_TOUCHER` et l'amélioration du toucher (2026-11-14)
+sont des graines : le simulateur ne touche jamais. Il faut une politique de toucher (N touchers
+par minute de jeu actif) pour les régler. Le plancher de cadence, lui, suppose un toucher toutes
+les deux secondes ; un joueur qui ne touche jamais le troue de 9 s (`PlancherDeCadenceTests`).
 
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.
@@ -160,7 +166,7 @@ Aucune ne mérite un chantier : **elles montent dans celui qui touche le fichier
 **`plancher-de-cadence.test.ts`, le test `PARQUÉ`.** Il échoue, c'est voulu, et il ne
 ferme qu'à une « tâche 13 » qui résoudra les nombres décidant de l'atteignabilité des
 succès — hors de tout ce qui est listé ici. Son propre commentaire démontre par la mesure
-qu'aucune valeur de `DEBIT_HEROS` ne peut le satisfaire, et que jouer *mieux* aggrave le
+qu'aucune valeur de `DEBIT_HEROS` (aujourd'hui `DEBIT_AMBIANT`) ne peut le satisfaire, et que jouer *mieux* aggrave le
 trou au lieu de le combler. **Ne pas le « réparer ».**
 
 ---

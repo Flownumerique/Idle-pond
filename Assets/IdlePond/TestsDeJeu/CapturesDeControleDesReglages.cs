@@ -32,7 +32,7 @@ namespace IdlePond.TestsDeJeu
 
         static readonly (string Nom, Tiroir Tiroir)[] VUES =
         {
-            ("mare", Tiroir.Aucun), ("especes", Tiroir.Especes), ("reglages", Tiroir.Reglages),
+            ("mare", Tiroir.Aucun), ("toi", Tiroir.Toi), ("especes", Tiroir.Especes), ("reglages", Tiroir.Reglages),
         };
 
         [UnityTest]
@@ -77,19 +77,27 @@ namespace IdlePond.TestsDeJeu
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
                 }
-                yield return Doigt.Toucher(document.rootVisualElement.Q<VisualElement>("accueil-principal"));
-                yield return new WaitForSeconds(0.6f);
-
+                var entre = false;
                 foreach (var cadre in CADRES)
                 {
                     var rt = new RenderTexture(cadre.Largeur, cadre.Hauteur, 24, RenderTextureFormat.ARGB32);
                     panneau.targetTexture = rt;
                     magasin.Modifier(r => r with { Affichage = cadre.Format });
+                    if (!entre)
+                    {
+                        // On entre dans la mare panneau posé sur sa texture : détaché, le doigt
+                        // ne trouvait pas « Continuer », et l'accueil restait sur toutes les vues.
+                        yield return new WaitForSeconds(0.6f);
+                        yield return Doigt.Toucher(document.rootVisualElement.Q<VisualElement>("accueil-principal"));
+                        yield return new WaitForSeconds(0.6f);
+                        entre = true;
+                    }
                     foreach (var vue in VUES)
                     {
                         interfaceDeLaMare.Ouvrir(vue.Tiroir);
                         yield return new WaitForSeconds(0.6f);
                         Ecrire(rt, Path.Combine(dossier, $"ui-{cadre.Nom}-{vue.Nom}.png"));
+                        if (vue.Tiroir == Tiroir.Aucun) yield return CapturerUnToucher(document, rt, Path.Combine(dossier, $"ui-{cadre.Nom}-toucher.png"));
                     }
                     panneau.targetTexture = null;
                     Object.Destroy(rt);
@@ -102,6 +110,18 @@ namespace IdlePond.TestsDeJeu
                 panneau.colorClearValue = couleur;
                 ServicesDePartie.Oublier();
             }
+        }
+
+        /// Trois touchers sur la mare, capturés en plein vol (spec du toucher, §2).
+        static IEnumerator CapturerUnToucher(UIDocument document, RenderTexture rt, string chemin)
+        {
+            var couche = document.rootVisualElement.Q<VisualElement>("toucher");
+            var cadre = couche.worldBound;
+            foreach (var (x, y) in new[] { (0.3f, 0.3f), (0.6f, 0.4f), (0.45f, 0.55f) })
+                yield return Doigt.ToucherEn(couche, new Vector2(cadre.x + cadre.width * x, cadre.y + cadre.height * y));
+            yield return new WaitForSeconds(0.15f);
+            Ecrire(rt, chemin);
+            yield return new WaitForSeconds(0.8f);
         }
 
         static void Ecrire(RenderTexture rt, string chemin)

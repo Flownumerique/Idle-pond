@@ -20,7 +20,8 @@ qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires
 générés par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
-jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de cinq boutons
+jauge), la mare au centre — on la touche, et le héros prend : le gain s'envole du
+doigt —, « Creuser plus bas » posé dessus, un dock de cinq boutons
 (Toi, Espèces, Débloquer, L'œuf, Journal) qui ouvrent des tiroirs. Débloquer montre les
 lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. Le tiroir Toi
 liste ce que le héros a appris pour toujours (l'arbre de technique : trente nœuds, appris par
@@ -54,7 +55,7 @@ outils/unity.sh tests EditMode PariteTests     # un filtre
 outils/unity.sh tests PlayMode                 # la mare se joue
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
-outils/unity.sh captures                                              # 18 PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
+outils/unity.sh captures                                              # les PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
 ```
 
 Menus de l'éditeur : « IdlePond ▸ Générer les scènes », « Générer les sprites
