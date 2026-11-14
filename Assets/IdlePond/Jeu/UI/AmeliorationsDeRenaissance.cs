@@ -116,7 +116,7 @@ namespace IdlePond.Jeu.UI
                 var rang = Economie.RangDAmelioration(etat, carte.AmeliorationDeRenaissance.Id);
                 var prix = Economie.CoutDAmelioration(etat, carte.AmeliorationDeRenaissance);
                 Elements.Poser(carte.Rang, rang == 0 ? E.JAMAIS : Format.Remplir(E.FOIS, rang.ToString(CultureInfo.InvariantCulture)));
-                // Seule l'amélioration de séjour a un dernier rang : le prix cède la place à « max ».
+                // Le séjour et le toucher ont un dernier rang : le prix cède alors la place à « max ».
                 if (Economie.AmeliorationAuMaximum(etat, carte.AmeliorationDeRenaissance))
                 {
                     Elements.Poser(carte.Achat.Cout, E.AU_MAXIMUM);

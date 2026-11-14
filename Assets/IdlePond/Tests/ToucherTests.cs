@@ -182,6 +182,15 @@ namespace IdlePond.Tests
             Assert.That(gain.Eq(0), Is.True);
         }
 
+        [Test, Description("au-delà du dernier rang (vieille save), le détail dit le rang qui compte, pas le rang brut")]
+        public void Le_detail_du_toucher_dit_le_rang_borne()
+        {
+            var ligne = Economie.DetailDuToucher(AuRangDuToucher(Reducteur.EtatInitial(1), 25))
+                .Single(l => l.Terme == TermeDeFormule.MultiplicateurDuToucher);
+            Assert.That(ligne.Source.Valeur, Is.EqualTo(Constantes.RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER));
+            Assert.That(ligne.Valeur, Is.EqualTo(Math.Pow(1 + Constantes.PART_PAR_RANG_DU_TOUCHER, 10)).Within(1e-9));
+        }
+
         [Test, Description("l'amélioration du toucher s'arrête au rang 10")]
         public void L_amelioration_du_toucher_s_arrete_au_rang_10()
         {

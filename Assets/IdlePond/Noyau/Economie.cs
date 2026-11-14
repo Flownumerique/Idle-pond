@@ -266,7 +266,7 @@ namespace IdlePond.Noyau
                     new SourceDeTerme(QuoiSource.DrapeauxPermanents, etat.Permanent.EspecesAyantAtteintCent.Count)),
                 new LigneDeCaptation(
                     TermeDeFormule.MultiplicateurDuToucher, MultiplicateurDuToucher(etat),
-                    new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, RangDAmelioration(etat, AmeliorationsDeRenaissance.TOUCHER_ID))),
+                    new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, RangDuToucher(etat))),
             };
         }
 
