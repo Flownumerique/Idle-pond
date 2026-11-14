@@ -9,8 +9,8 @@ namespace IdlePond.Jeu.UI
     /// <summary>
     /// Toi — le héros. Le quatrième achat (spec 2026-09-17), `Heros.tsx`.
     ///
-    /// Même gabarit que la carte d'une espèce dans `Mare` : un nom, ce que ça donne par
-    /// seconde, un bouton avec son coût. Le héros n'a pas de nom propre (GDD : « aucun nom
+    /// Même gabarit que la carte d'une espèce dans `Mare` : ce que grandir ajoute à un
+    /// toucher (spec du 2026-10-11 : le héros ne capte plus par seconde), un bouton avec son coût. Le héros n'a pas de nom propre (GDD : « aucun nom
     /// propre définitif ») ; l'écran dit « toi ».
     /// </summary>
     public sealed class Heros
@@ -44,7 +44,10 @@ namespace IdlePond.Jeu.UI
             var payable = etat.Cycle.ManaCourant.Gte(prix) && prix.Lte(Economie.Contenance(etat));
             var pourcentage = (int)Decimal.JsRound((Economie.MultiplicateurDuHeros(etat) - 1) * 100);
 
-            Elements.Poser(production, Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionDuHeros(etat))));
+            // Ce que grandir ajoute à un toucher : le niveau ET le multiplicateur global montent.
+            var grandi = etat with { Cycle = etat.Cycle with { NiveauDuHeros = niveauDuHeros + 1 } };
+            var ajout = Economie.ValeurDuToucher(grandi).Sub(Economie.ValeurDuToucher(etat));
+            Elements.Poser(production, Format.Remplir(E.PAR_TOUCHER_AU_PROCHAIN, Format.Montant(ajout)));
             Elements.Montrer(bonus, pourcentage > 0);
             if (pourcentage > 0) Elements.Poser(bonus, Format.Remplir(E.BONUS_DU_HEROS, pourcentage));
             Elements.Poser(grandir.Cout, Format.Cout(prix));

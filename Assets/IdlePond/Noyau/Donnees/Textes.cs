@@ -112,6 +112,10 @@ namespace IdlePond.Noyau.Donnees
         /// L'amélioration de séjour (2026-11-13) : la seule qui raccourcit une vie.
         public static readonly TexteDAmelioration AMELIORATION_DE_SEJOUR = new("Apprendre à porter", "tu te fais à l’eau plus vite : ce que tu peux porter monte plus tôt");
 
+        /// L'amélioration du toucher (spec du 2026-10-11) : actif, le héros est un courant
+        /// dans l'eau — il prend (Codex).
+        public static readonly TexteDAmelioration AMELIORATION_DU_TOUCHER = new("Prendre plus fort", "quand tu touches l’eau, le courant que tu fais emporte davantage");
+
         /// Les bonus de l'onglet « Débloquer » (spec du 2026-10-10), par identifiant de registre.
         static readonly IReadOnlyDictionary<string, TexteDeBonus> TEXTES_DE_BONUS = new Dictionary<string, TexteDeBonus>
         {
@@ -316,6 +320,9 @@ namespace IdlePond.Noyau.Donnees
             public const string GRANDI = "grandi {0} fois";
             public const string BONUS_DU_HEROS = "et tout ce que tu convaincs donne +{0} %";
             public const string GRANDIR = "Grandir";
+            public const string PAR_TOUCHER_AU_PROCHAIN = "+{0} par toucher en grandissant";
+            /// Le chiffre qui s'envole quand on touche la mare.
+            public const string GAIN_DU_TOUCHER = "+{0}";
 
             /* — La captation ———————————————————————————————————————————————————— */
             public const string FERMER = "fermer";
@@ -458,7 +465,7 @@ namespace IdlePond.Noyau.Donnees
             public const string POURCENT_DE_CONTENANCE = "+{0} % de ce que tu peux porter";
             public const string FICHE_CAPTATION = "Ce que tu captes";
             public const string FICHE_CONTENANCE = "Ce que tu peux porter";
-            public const string FICHE_DEBIT_PROPRE = "Toi seul";
+            public const string FICHE_PAR_TOUCHER = "Par toucher";
             public const string FICHE_RETOURS = "Retours dans l’œuf";
 
             /* — Le tiroir « Espèces » ———————————————————————————————————————————————— */
@@ -543,6 +550,8 @@ namespace IdlePond.Noyau.Donnees
             yield return ("amélioration amelioration-ciblee.effet", AMELIORATION_CIBLEE.Effet);
             yield return ("amélioration amelioration-sejour.nom", AMELIORATION_DE_SEJOUR.Nom);
             yield return ("amélioration amelioration-sejour.effet", AMELIORATION_DE_SEJOUR.Effet);
+            yield return ("amélioration amelioration-toucher.nom", AMELIORATION_DU_TOUCHER.Nom);
+            yield return ("amélioration amelioration-toucher.effet", AMELIORATION_DU_TOUCHER.Effet);
 
             foreach (var noeud in NoeudsTechnique.Tous)
             {

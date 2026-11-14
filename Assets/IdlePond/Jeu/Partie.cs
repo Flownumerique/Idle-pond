@@ -154,6 +154,30 @@ namespace IdlePond.Jeu
 
         public void Renaitre() => Appliquer(Renaissance.Renaitre);
 
+        /// Au plus ce nombre de touchers dans une fenêtre glissante d'une seconde.
+        public const int TOUCHERS_PAR_SECONDE = 10;
+
+        readonly Queue<long> derniersTouchers = new Queue<long>(TOUCHERS_PAR_SECONDE);
+
+        /// <summary>
+        /// Toucher la mare (spec du 2026-10-11) : `Reducteur.Toucher`, et le gain, pour le
+        /// chiffre qui s'envole. Au-delà de dix touchers dans la même seconde, lue sur
+        /// l'horloge de la partie, le toucher est ignoré : gain nul, rien n'est émis. La
+        /// limite vit ici, pas dans le noyau, qui ne voit jamais le temps de mur.
+        /// </summary>
+        public Decimal Toucher()
+        {
+            var maintenant = horloge.MaintenantMs();
+            while (derniersTouchers.Count > 0 && maintenant - derniersTouchers.Peek() >= 1000) derniersTouchers.Dequeue();
+            if (derniersTouchers.Count >= TOUCHERS_PAR_SECONDE) return Decimal.Zero;
+            var (apres, gain) = Reducteur.Toucher(Etat);
+            if (ReferenceEquals(apres, Etat)) return Decimal.Zero;
+            derniersTouchers.Enqueue(maintenant);
+            Etat = apres;
+            EtatChange?.Invoke(apres);
+            return gain;
+        }
+
         void Appliquer(Func<EtatJeu, EtatJeu> acte)
         {
             var apres = acte(Etat);

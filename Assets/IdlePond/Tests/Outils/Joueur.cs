@@ -51,13 +51,14 @@ namespace IdlePond.Tests.Outils
         }
 
         /// Les trente premières minutes, seconde par seconde, sur l'assise I livrée.
-        public static IReadOnlyList<(string Id, double InstantSecondes)> JoueUneDemiHeure(long graine = 1)
+        public static IReadOnlyList<(string Id, double InstantSecondes)> JoueUneDemiHeure(long graine = 1, int secondesEntreTouchers = 0)
         {
             var etat = Reducteur.EtatInitial(graine, Assises.PALIERS_LIVRES);
             var releve = new List<(string Id, double InstantSecondes)>();
             etat = Depenser(etat);
             for (var instant = 1; instant <= Constantes.FENETRE_DU_PLANCHER_DE_CADENCE_SECONDES; instant += 1)
             {
+                if (secondesEntreTouchers > 0 && instant % secondesEntreTouchers == 0) etat = Reducteur.Toucher(etat).Etat;
                 var resultat = Reducteur.TickDetaille(etat, 1);
                 etat = Depenser(resultat.Etat);
                 foreach (var id in resultat.Declenches) releve.Add((id, instant));

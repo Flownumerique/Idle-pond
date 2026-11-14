@@ -12,9 +12,11 @@ namespace IdlePond.TestsDeJeu
     /// </summary>
     static class Doigt
     {
-        public static IEnumerator Toucher(VisualElement element)
+        public static IEnumerator Toucher(VisualElement element) => ToucherEn(element, element.worldBound.center);
+
+        /// Le même toucher, en un point donné du panneau plutôt qu'au centre de l'élément.
+        public static IEnumerator ToucherEn(VisualElement element, Vector2 centre)
         {
-            var centre = element.worldBound.center;
             var arbre = element.panel.visualTree;
             using (var e = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, mousePosition = centre, button = 0, clickCount = 1 }))
                 arbre.SendEvent(e);

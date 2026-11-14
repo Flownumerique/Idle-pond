@@ -147,56 +147,98 @@ namespace IdlePond.Noyau
         }
 
         /// <summary>
-        /// Ce que le débit du héros apporte RÉELLEMENT à la production, multiplicateurs
-        /// globaux compris — §7.5 règle 3 : même un débit qui n'appartient à aucune
-        /// espèce doit cibler un `TermeDeFormule`, jamais flotter hors du registre.
-        /// `DEBIT_HEROS` brut (voir `DetailDuHeros` plus bas) ne suffit pas à expliquer
-        /// l'écart entre le total affiché et la somme des espèces à l'écran — c'est
-        /// cette valeur, multipliée, qui le fait.
+        /// Ce que l'ambiant apporte RÉELLEMENT à la production, multiplicateurs globaux
+        /// compris — §7.5 règle 3 : même un débit qui n'appartient à aucune espèce doit
+        /// cibler un `TermeDeFormule`, jamais flotter hors du registre. Aucun facteur de
+        /// niveau : depuis la spec du toucher (2026-10-11), ce que le héros capte, il le
+        /// capte quand on touche (`ValeurDuToucher`). Le multiplicateur global du niveau,
+        /// lui, s'applique à l'ambiant comme à tout ce qui produit.
         /// </summary>
-        public static Decimal ProductionDuHeros(EtatJeu etat) =>
-            new Decimal(Constantes.DEBIT_HEROS).Mul(etat.Cycle.NiveauDuHeros).Mul(MultiplicateursGlobaux(etat));
+        public static Decimal ProductionAmbiante(EtatJeu etat) =>
+            new Decimal(Constantes.DEBIT_AMBIANT).Mul(MultiplicateursGlobaux(etat));
 
         /// <summary>
-        /// La somme des espèces débloquées, PLUS le débit propre du héros — noyau v1.0
-        /// §10 : un seul canal pour le bestiaire, et sa mutation à lui pour empêcher
-        /// l'état DÉGÉNÉRÉ où plus rien ne produirait jamais (RESULTATS.md, finding 3,
-        /// tâche 9). Le premier achat, lui, est tenu par la charge de départ
-        /// (`MANA_A_LA_SORTIE_DE_L_OEUF`, voir son commentaire dans `Constantes.cs`) —
-        /// les deux mécanismes répondent à des besoins différents et ne se remplacent
-        /// pas l'un l'autre.
+        /// La somme des espèces débloquées, PLUS l'ambiant — noyau v1.0 §10 : un seul
+        /// canal pour le bestiaire, et l'ambiant pour empêcher l'état DÉGÉNÉRÉ où plus
+        /// rien ne produirait jamais (RESULTATS.md, finding 3, tâche 9). Le premier
+        /// achat, lui, est tenu par la charge de départ (`MANA_A_LA_SORTIE_DE_L_OEUF`,
+        /// voir son commentaire dans `Constantes.cs`) — les deux mécanismes répondent à
+        /// des besoins différents et ne se remplacent pas l'un l'autre.
         ///
-        /// Construite à partir de `ProductionDeLEspece` et `ProductionDuHeros`, pas
+        /// Construite à partir de `ProductionDeLEspece` et `ProductionAmbiante`, pas
         /// d'un second calcul de l'assiette : deux formules tenues manuellement en
         /// synchronisation sont exactement ce qui avait fait nourrir le multiplicateur
-        /// de densité de deux grandeurs différentes — une somme sur les paliers d'un
-        /// côté, un maximum de l'autre. Un seul
-        /// calcul, appelé une fois par espèce plus une fois pour le héros, ne peut plus
-        /// diverger de lui-même.
+        /// de densité de deux grandeurs différentes. Un seul calcul, appelé une fois par
+        /// espèce plus une fois pour l'ambiant, ne peut plus diverger de lui-même.
         /// </summary>
         public static Decimal ProductionTotaleParSeconde(EtatJeu etat)
         {
             var especes = new Decimal(0);
             foreach (var espece in Especes.Toutes) especes = especes.Add(ProductionDeLEspece(etat, espece));
-            return especes.Add(ProductionDuHeros(etat));
+            return especes.Add(ProductionAmbiante(etat));
         }
 
         /// <summary>
-        /// Ce que le débit BRUT du héros vaut, nommé — `DEBIT_HEROS` avant tout
-        /// multiplicateur. Vit ICI, à côté du total qu'il explique
-        /// (`ProductionTotaleParSeconde`, juste au-dessus), plutôt que dans
-        /// `DetailDeCaptation` plus bas : ce dernier est attributable à UNE espèce, et
-        /// le héros n'en porte aucune. La valeur RÉELLEMENT captée — celle à afficher —
-        /// est `ProductionDuHeros`, pas la valeur brute d'ici : §8.2 veut la
-        /// contrepartie d'un effet, pas son seul nom.
+        /// Ce que l'ambiant vaut BRUT, nommé — `DEBIT_AMBIANT` avant tout multiplicateur.
+        /// Vit ICI, à côté du total qu'il explique, plutôt que dans `DetailDeCaptation` :
+        /// ce dernier est attributable à UNE espèce, et l'ambiant n'en porte aucune.
         /// </summary>
-        public static IReadOnlyList<LigneDeCaptation> DetailDuHeros(EtatJeu etat)
+        public static IReadOnlyList<LigneDeCaptation> DetailDeLAmbiant(EtatJeu etat) => new[]
         {
-            var source = new SourceDeTerme(QuoiSource.Heros, etat.Cycle.NiveauDuHeros);
+            new LigneDeCaptation(TermeDeFormule.DebitAmbiant, Constantes.DEBIT_AMBIANT, new SourceDeTerme(QuoiSource.Profondeur, etat.Cycle.PaliersOuverts)),
+        };
+
+        /// Ce que le niveau du héros fait à toute la production : son multiplicateur global.
+        public static IReadOnlyList<LigneDeCaptation> DetailDuHeros(EtatJeu etat) => new[]
+        {
+            new LigneDeCaptation(
+                TermeDeFormule.MultiplicateurHeros, MultiplicateurDuHeros(etat), new SourceDeTerme(QuoiSource.Heros, etat.Cycle.NiveauDuHeros)),
+        };
+
+        /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────*/
+
+        /// Ce que l'amélioration du toucher fait à un toucher : `(1 + part) ^ rang`, 1 à rang 0.
+        public static double MultiplicateurDuToucher(EtatJeu etat)
+        {
+            var rang = RangDAmelioration(etat, AmeliorationsDeRenaissance.TOUCHER_ID);
+            return rang <= 0 ? 1 : Math.Pow(1 + Constantes.PART_PAR_RANG_DU_TOUCHER, rang);
+        }
+
+        /// <summary>
+        /// Ce qu'un toucher rapporte, avant le plafond de la contenance : la même forme que
+        /// l'ancien débit du héros — base × niveau × multiplicateurs globaux — plus le
+        /// multiplicateur de l'amélioration du toucher.
+        /// </summary>
+        public static Decimal ValeurDuToucher(EtatJeu etat) =>
+            new Decimal(Constantes.BASE_DU_TOUCHER)
+                .Mul(etat.Cycle.NiveauDuHeros)
+                .Mul(MultiplicateursGlobaux(etat))
+                .Fois(MultiplicateurDuToucher(etat));
+
+        /// <summary>
+        /// Le détail d'un toucher (§8.2), pour la fiche du héros : le produit de ses lignes
+        /// est `ValeurDuToucher`. Les multiplicateurs globaux y sont dépliés terme à terme,
+        /// comme dans `DetailDeCaptation`.
+        /// </summary>
+        public static IReadOnlyList<LigneDeCaptation> DetailDuToucher(EtatJeu etat)
+        {
+            var niveau = etat.Cycle.NiveauDuHeros;
+            var heros = new SourceDeTerme(QuoiSource.Heros, niveau);
+            var densite = Densite.DuSejour(etat);
             return new[]
             {
-                new LigneDeCaptation(TermeDeFormule.DebitHeros, Constantes.DEBIT_HEROS, source),
-                new LigneDeCaptation(TermeDeFormule.MultiplicateurHeros, MultiplicateurDuHeros(etat), source),
+                new LigneDeCaptation(TermeDeFormule.BaseDuToucher, Constantes.BASE_DU_TOUCHER, heros),
+                new LigneDeCaptation(TermeDeFormule.Niveau, niveau, heros),
+                new LigneDeCaptation(
+                    TermeDeFormule.MultiplicateurProfondeur, MultiplicateurDeProfondeur(etat).ToNumber(), new SourceDeTerme(QuoiSource.Profondeur, etat.Cycle.PaliersOuverts)),
+                new LigneDeCaptation(TermeDeFormule.MultiplicateurDensite, Densite.Multiplicateur(densite), new SourceDeTerme(QuoiSource.Densite, densite)),
+                new LigneDeCaptation(TermeDeFormule.MultiplicateurHeros, MultiplicateurDuHeros(etat), heros),
+                new LigneDeCaptation(
+                    TermeDeFormule.MultiplicateurDrapeau, MultiplicateurDesDrapeaux(etat),
+                    new SourceDeTerme(QuoiSource.DrapeauxPermanents, etat.Permanent.EspecesAyantAtteintCent.Count)),
+                new LigneDeCaptation(
+                    TermeDeFormule.MultiplicateurDuToucher, MultiplicateurDuToucher(etat),
+                    new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, RangDAmelioration(etat, AmeliorationsDeRenaissance.TOUCHER_ID))),
             };
         }
 
@@ -352,6 +394,10 @@ namespace IdlePond.Noyau
                 case PorteeDAmelioration.Sejour:
                     @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_DE_SEJOUR;
                     ratio = Constantes.RATIO_COUT_D_AMELIORATION_DE_SEJOUR;
+                    break;
+                case PorteeDAmelioration.Toucher:
+                    @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_DU_TOUCHER;
+                    ratio = Constantes.RATIO_COUT_D_AMELIORATION_DU_TOUCHER;
                     break;
                 default:
                     @base = Constantes.SOUFFLE_COUT_D_AMELIORATION_CIBLEE;

@@ -173,19 +173,14 @@ namespace IdlePond.Simulateur
             }
 
             // Grandir — spec 2026-09-17 [D2]. Après l'achat, TOUTE la production est
-            // multipliée par (1 + b), et le débit propre du héros passe de n à n + 1 :
-            //   P' = (S + D·(n+1)) · M · (1 + b)  avec  P = (S + D·n) · M
-            //   P' − P = P·b + D·M·(1 + b)
-            // où M est `MultiplicateursGlobaux` de l'état courant (héros compris).
+            // multipliée par (1 + b) — l'ambiant compris, qui ne porte plus de facteur de
+            // niveau depuis la spec du toucher (2026-10-11) :
+            //   P' = (S + A) · M · (1 + b)  avec  P = (S + A) · M,  donc  P' − P = P·b.
+            // Ce que le niveau ajoute au toucher n'entre pas : le simulateur ne touche jamais.
             {
                 var cout = Economie.CoutDeCroissance(etat, etat.Cycle.NiveauDuHeros);
                 if (!HorsDePortee(cout))
-                {
-                    var propre = new Decimal(Constantes.DEBIT_HEROS).Mul(Multiplicateurs()).Mul(1 + Constantes.BONUS_PAR_NIVEAU_DU_HEROS);
-                    achats.Add(new Achat(
-                        TypeDAchat.Grandir, null, cout,
-                        ProductionTotale().Mul(Constantes.BONUS_PAR_NIVEAU_DU_HEROS).Add(propre)));
-                }
+                    achats.Add(new Achat(TypeDAchat.Grandir, null, cout, ProductionTotale().Mul(Constantes.BONUS_PAR_NIVEAU_DU_HEROS)));
             }
 
             foreach (var espece in Especes.Toutes)
@@ -370,7 +365,8 @@ namespace IdlePond.Simulateur
                 {
                     // La politique historique, celle que la parité fige, date d'avant
                     // l'amélioration de séjour : elle ne l'achète pas. Voir `AcheterLeSejourDAbord`.
-                    if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
+                    // Le séjour a sa propre politique ; le toucher ne sert à rien à qui ne touche pas.
+                    if (amelioration.Portee == PorteeDAmelioration.Sejour || amelioration.Portee == PorteeDAmelioration.Toucher) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration.Id, cout);
@@ -442,7 +438,8 @@ namespace IdlePond.Simulateur
                 (AmeliorationDeRenaissance AmeliorationDeRenaissance, Decimal Cout)? choix = null;
                 foreach (var amelioration in AmeliorationsDeRenaissance.Toutes)
                 {
-                    if (amelioration.Portee == PorteeDAmelioration.Sejour) continue;
+                    // Le séjour a sa propre politique ; le toucher ne sert à rien à qui ne touche pas.
+                    if (amelioration.Portee == PorteeDAmelioration.Sejour || amelioration.Portee == PorteeDAmelioration.Toucher) continue;
                     var cout = Economie.CoutDAmelioration(courant, amelioration);
                     if (cout.Gt(courant.Permanent.Souffle) || !permise(courant, amelioration, cout)) continue;
                     if (choix == null || cout.Lt(choix.Value.Cout)) choix = (amelioration, cout);

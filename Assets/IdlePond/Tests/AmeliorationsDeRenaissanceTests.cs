@@ -41,7 +41,7 @@ namespace IdlePond.Tests
                 Assert.That(ciblee.Espece, Is.EqualTo(espece.Id));
                 Assert.That(AmeliorationsDeRenaissance.ParId(ciblee.Id), Is.SameAs(ciblee));
             }
-            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(Especes.Toutes.Count + 2));
+            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(Especes.Toutes.Count + 3));
         }
 
         [Test, Description("les graines sont positives, et le coût croît")]

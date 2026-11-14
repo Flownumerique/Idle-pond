@@ -14,6 +14,8 @@
         <ui:VisualElement name="centre" class="centre">
             <!-- La texture du rendu pixel y est posée en fond par SceneDeLaMare. -->
             <ui:VisualElement name="scene" class="scene" picking-mode="Ignore" />
+            <!-- Toucher la mare : au-dessus de la scène, sous tout le reste (CoucheDuToucher). -->
+            <ui:VisualElement name="toucher" class="toucher" />
             <ui:VisualElement name="lieu" class="lieu" picking-mode="Ignore" />
             <ui:VisualElement name="retour" class="retour" />
             <ui:VisualElement name="annonces" picking-mode="Ignore" />

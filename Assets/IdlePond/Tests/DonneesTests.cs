@@ -46,7 +46,7 @@ namespace IdlePond.Tests
         {
             Egal("ameliorations", AmeliorationsDeRenaissance.Toutes.Select(i => new JObject
             {
-                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDAmelioration.Globale ? "globale" : i.Portee == PorteeDAmelioration.Sejour ? "sejour" : "ciblee", ["espece"] = Chaine(i.Espece),
+                ["id"] = i.Id, ["portee"] = i.Portee == PorteeDAmelioration.Globale ? "globale" : i.Portee == PorteeDAmelioration.Sejour ? "sejour" : i.Portee == PorteeDAmelioration.Toucher ? "toucher" : "ciblee", ["espece"] = Chaine(i.Espece),
             }), Reference["ameliorations"]);
         }
 

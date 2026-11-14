@@ -72,6 +72,10 @@ namespace IdlePond.Jeu.UI
                         nom = Textes.AMELIORATION_DE_SEJOUR.Nom;
                         effet = Textes.AMELIORATION_DE_SEJOUR.Effet;
                         break;
+                    case PorteeDAmelioration.Toucher:
+                        nom = Textes.AMELIORATION_DU_TOUCHER.Nom;
+                        effet = Textes.AMELIORATION_DU_TOUCHER.Effet;
+                        break;
                     default:
                         nom = Format.Remplir(E.AMELIORER_UNE_ESPECE, Format.NomDeLEspece(amelioration.Espece));
                         effet = Textes.AMELIORATION_CIBLEE.Effet;

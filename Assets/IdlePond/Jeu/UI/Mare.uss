@@ -283,6 +283,39 @@
     color: var(--couleur-jour-doux);
 }
 
+/* ─── Toucher la mare (spec du 2026-10-11) ──────────────────────────────────────── */
+
+/* Toute la mare, sous ses boutons : CoucheDuToucher y reçoit les touchers. */
+.toucher {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+/* Le gain qui s'envole : posé au point touché, centré sur lui. Pas de transition au repos,
+   pour qu'un libellé réutilisé en plein vol revienne d'un coup à son départ. */
+.envol {
+    position: absolute;
+    translate: -50% -24px;
+    opacity: 1;
+    -unity-font-style: bold;
+}
+
+.envol.envol-parti {
+    translate: -50% -72px;
+    opacity: 0;
+    transition-property: translate, opacity;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* Mouvement réduit : il ne monte pas, il s'efface seulement. */
+.mouvement-reduit .envol.envol-parti {
+    translate: -50% -24px;
+}
+
 /* ─── Les tiroirs ───────────────────────────────────────────────────────────────── */
 
 .voile-du-tiroir {

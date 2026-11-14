@@ -208,6 +208,24 @@ namespace IdlePond.Noyau
             return ReferenceEquals(apres, etat) ? etat : Technique.Apprendre(apres, BrancheTechnique.Amelioration);
         }
 
+        /// <summary>
+        /// Toucher la mare — spec du 2026-10-11. Ajoute `ValeurDuToucher`, plafonnée par la
+        /// place qui reste sous la contenance, et rend ce qui a été réellement gagné. Mare
+        /// pleine : l'état revient inchangé, la même référence, gain nul.
+        ///
+        /// Ce n'est pas une dépense : aucun compteur de technique n'est crédité, rien ne se
+        /// déclenche, et le crédit hors ligne ne touche jamais. La cadence (dix par seconde
+        /// au plus) vit dans le jeu, `Partie.Toucher` : le noyau ne voit pas le temps de mur.
+        /// </summary>
+        public static (EtatJeu Etat, Decimal Gain) Toucher(EtatJeu etat)
+        {
+            var reste = Economie.Contenance(etat).Sub(etat.Cycle.ManaCourant);
+            if (reste.Lte(0)) return (etat, Decimal.Zero);
+            var valeur = Economie.ValeurDuToucher(etat);
+            var gain = valeur.Lt(reste) ? valeur : reste;
+            return (etat with { Cycle = etat.Cycle with { ManaCourant = etat.Cycle.ManaCourant.Add(gain) } }, gain);
+        }
+
         /* ─── Actes du joueur ───────────────────────────────────────────────────────
          * Des réducteurs purs, comme le tick. Un acte qui n'est pas payable rend l'état
          * inchangé : c'est au-dessus du noyau de ne pas le proposer.

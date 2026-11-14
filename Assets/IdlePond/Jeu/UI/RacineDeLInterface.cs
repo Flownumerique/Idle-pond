@@ -179,6 +179,8 @@ namespace IdlePond.Jeu.UI
                 () => dock.Choisir(dock.Actif == Tiroir.Reglages ? Tiroir.Aucun : Tiroir.Reglages));
             lieu = new Lieu(racine.Q<VisualElement>("lieu"));
             creusement = new Creusement(racine.Q<VisualElement>("creuser"), () => p.Creuser());
+            // Rien à rafraîchir : la couche ne fait que rendre le toucher à la partie.
+            _ = new CoucheDuToucher(racine.Q<VisualElement>("toucher"), () => p.Toucher());
             retour = new Retour(racine.Q<VisualElement>("retour"), () => p.OublierRetour());
             fiche = new FicheDuHeros(racine.Q<VisualElement>("fiche-du-heros"));
             heros = new Heros(racine.Q<VisualElement>("heros"), () => p.Grandir());
