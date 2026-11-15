@@ -153,7 +153,7 @@ namespace IdlePond.Tests
             Assert.That(rapport.SecondesCreditees, Is.EqualTo(3 * 3600.0));
             Assert.That(rapport.SecondesAbsentes, Is.EqualTo(3 * 3600.0));
             Assert.That(rapport.Plafonnee, Is.False);
-            Assert.That(rapport.ContenanceGagnee.Gt(0), Is.True, "trois heures de séjour relèvent la contenance");
+            Assert.That(rapport.ContenanceGagnee.Eq(Decimal.Zero), Is.True, "absent, on ne se fait pas à l'eau : la contenance ne bouge pas");
             var gagne = partie.Etat.Cycle.ManaCourant.Sub(depart.Cycle.ManaCourant);
             Assert.That(rapport.ManaGagne.ToString(), Is.EqualTo((gagne.Gt(0) ? gagne : Decimal.Zero).ToString()));
             Assert.That(rapport.StockPlein, Is.EqualTo(Economie.EstSature(partie.Etat)));

@@ -300,7 +300,7 @@ namespace IdlePond.Noyau.Donnees
             public const string RETOUR_PLAFONNE = "Tu es resté loin {0} ; au-delà de {1}, l’eau ne compte plus.";
             public const string RETOUR_MANA = "+{0} de mana";
             public const string RETOUR_CONTENANCE = "Tu peux porter {0} de plus.";
-            public const string RETOUR_STOCK_PLEIN = "Tu es plein : le reste s’est perdu dans l’eau.";
+            public const string RETOUR_STOCK_PLEIN = "Tu es plein : le reste s’est perdu dans l’eau. Reste auprès d’elle pour porter plus.";
             public const string RETOUR_DESCENTE_ROUVERTE = "La roche d’en dessous est de nouveau à ta portée.";
             public const string RETOUR_PEUT_CREUSER = "Tu as de quoi creuser plus bas.";
             public const string RETOUR_SUCCES = "{0} choses consignées au journal.";

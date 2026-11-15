@@ -275,13 +275,20 @@ namespace IdlePond.Tests
             // d'autant plus qu'il est long. Le test dit maintenant cela, et le dit sur
             // deux points au lieu d'un : un compteur qui ignorerait l'intervalle rend
             // les trois valeurs égales et tombe sur les deux assertions.
-            var optimale = Simuler(13, POLITIQUE_PAR_DEFAUT, 1);
-            double Ecoule(double heures) =>
-                Simuler(13, POLITIQUE_PAR_DEFAUT with { SecondesEntreReleves = heures * 3600 }, 1).SecondesEcoulees;
-            var a4 = Ecoule(4);
-            var a24 = Ecoule(24);
-            Assert.That(a4, Is.GreaterThan(optimale.SecondesEcoulees * 1.3), "une absence de 4 h coûte du temps calendaire");
-            Assert.That(a24, Is.GreaterThan(a4 * 2), "et six fois plus d’absence en coûte davantage");
+            //
+            // 2026-11-15 : absent, le séjour ne bouge plus. Le joueur relâché ne se fait à
+            // l'eau que pendant ses relevés (un pas chacun) : l'intervalle gonfle le calendrier
+            // bien plus qu'avant, et une vie entière à un relevé par jour ne converge plus dans
+            // le garde-fou. Le test tient donc sur deux vies et des intervalles courts.
+            var optimale = Simuler(2, POLITIQUE_PAR_DEFAUT, 1);
+            ResultatDeSimulation Relache(double heures) =>
+                Simuler(2, POLITIQUE_PAR_DEFAUT with { SecondesEntreReleves = heures * 3600 }, 1);
+            var a1 = Relache(1);
+            var a4 = Relache(4);
+            Assert.That(a1.CyclesAcheves, Is.EqualTo(2));
+            Assert.That(a4.CyclesAcheves, Is.EqualTo(2));
+            Assert.That(a1.SecondesEcoulees, Is.GreaterThan(optimale.SecondesEcoulees * 1.3), "une absence d’une heure coûte du temps calendaire");
+            Assert.That(a4.SecondesEcoulees, Is.GreaterThan(a1.SecondesEcoulees * 2), "et quatre fois plus d’absence en coûte davantage");
         }
 
         [Test, Description("le gain de chaque achat est la production qu’il ajoute réellement")]

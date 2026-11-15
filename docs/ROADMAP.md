@@ -24,6 +24,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Axes permanents | améliorations de renaissance (dont le séjour), densité, succès, arbre de technique (5 branches sur 6 actives) | la branche Construction |
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 | Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
+| Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 
 **Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
@@ -82,6 +83,15 @@ toucher et l'amélioration de séjour ; décider si un autoclicker peut diviser 
 ou borner le séjour gagné par seconde. Le plancher de cadence suppose un toucher toutes les deux
 secondes ; un joueur qui ne touche jamais le troue de 9 s (`PlancherDeCadenceTests`).
 
+**Absent, le séjour ne bouge plus** (tranché le 2026-11-15, `RESULTATS.md`, Finding 11). Avant,
+une vie se finissait pendant une absence, et quinze vies demandaient trois à huit heures de
+présence. Maintenant la mare se remplit à ce qu'on portait en partant, et il faut être là pour
+porter plus. **Ce qui reste, et c'est le plus gros point ouvert du jeu** : l'absence ne vaut plus
+que quelques minutes de production ; quinze vies demandent 92 h de présence (47 h à deux touchers
+par seconde), soit 281 jours à deux sessions de dix minutes par jour ; et cette présence se passe
+devant une mare pleine. Soit on dose (le séjour avance en absence à une fraction de sa vitesse),
+soit on donne quelque chose à faire pendant qu'on attend.
+
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.
 
@@ -105,12 +115,10 @@ quitté l'onglet « Débloquer ».
   (sous la jauge, ce que rentrer vaudrait), « Compter les siens » (les débits par espèce ;
   sans lui, une pente sans chiffre). « Compter les siens » est passé en tête d'Entretien ;
   ces calendriers restent des graines non mesurées.
-- **Entretien est mesurée et réglée** (2026-11-15, `RESULTATS.md`, Finding 11) : un joueur qui
-  part et revient, avec le vrai crédit d'absence. Les deux derniers nœuds étaient hors
-  d'atteinte (182 h et 630 h créditées, pour une partie qui en crédite 93 à 324) ; ils tombent
-  maintenant à 51 h et 100 h. **À trancher** : le compteur est l'absence, pas la profondeur —
-  qui revient une fois par jour a « Ce qui s'est passé pendant » dès la vie 7, en assise IV ;
-  qui revient toutes les heures ne l'a pas en quinze vies.
+- **Entretien est mesurée, pas réglée** (2026-11-15, `RESULTATS.md`, Finding 11) : son compteur
+  est l'absence créditée, qui a changé d'échelle avec le séjour figé. Le dernier nœud tombe
+  avant l'assise V pour trois rythmes de joueur sur quatre. À régler quand la règle d'absence
+  sera arrêtée (`MesureDeLEntretienTests`).
 - **Mesurer tout l'arbre en vraie partie.**
 - **La branche Construction** est muette tant que temples et portails n'existent pas (chantier 5).
 - **Les ~4 verbes réservés aux succès** (budget de 15, dont 11 à l'arbre) ne sont pas alloués.

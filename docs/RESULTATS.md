@@ -319,44 +319,62 @@ mesure, mêmes réglages :
 
 ---
 
-## Finding 11 — Entretien, mesuré : la partie entière ne crédite pas 200 h d'absence (2026-11-15)
+## Finding 11 — l'absence finissait les vies à la place du joueur ; elle ne fait plus avancer le séjour (2026-11-15)
 
-`MesureDeLEntretienTests` fait ce que le simulateur ne fait pas : un joueur part et revient. Une
-présence (`Simulateur.JouerUnePresence`, la politique par défaut), puis le vrai crédit du jeu
-(`HorsLigne.Crediter`), en boucle, jusqu'à quinze renaissances. Graine 7, monde entier.
+`MesureDeLEntretienTests` fait ce que le simulateur ne faisait pas : un joueur part et revient. Une
+présence (`Simulateur.JouerUnePresence`, la politique par défaut, sans toucher), puis le vrai
+crédit du jeu (`HorsLigne.Crediter`), en boucle, jusqu'à quinze renaissances. Graine 7, monde entier.
 
-**Ce que la mesure dit de la partie.** L'absence créditée fait avancer le séjour comme une
-présence : une vie de trois à six heures tient donc dans une absence, et le joueur qui revient
-rarement finit à peu près une vie par retour.
+**Avant.** L'absence créditée faisait avancer le séjour comme une présence. Une vie de trois à
+six heures tenait dans une absence : le joueur finissait à peu près une vie par retour.
 
-| Profil | Quinze vies en | Présence | Absence créditée | Perdue au plafond |
-|---|---|---|---|---|
-| Toutes les heures (5 min, puis 1 h) | 4,2 jours | 7,7 h | 93 h | 0 h |
-| Quatre fois par jour (10 min, puis 6 h) | 5,7 jours | 3,7 h | 132 h | 0 h |
-| Deux fois par jour (10 min, puis 12 h) | 8,1 jours | 2,7 h | 180 h | 12 h |
-| Une fois par jour (15 min, puis 24 h) | 16,2 jours | 4,0 h | 324 h | 60 h |
+| Profil | Quinze vies en | Présence |
+|---|---|---|
+| Toutes les heures (5 min, puis 1 h) | 4,2 jours | 7,7 h |
+| Quatre fois par jour (10 min, puis 6 h) | 5,7 jours | 3,7 h |
+| Deux fois par jour (10 min, puis 12 h) | 8,1 jours | 2,7 h |
+| Une fois par jour (15 min, puis 24 h) | 16,2 jours | 4,0 h |
 
-**Ce qu'elle disait de la branche.** Le premier couple, (84 ; 100), posait les nœuds à 6, 22, 65,
-182 et 630 h créditées. « Le peuple continue » ne tombait que pour le joueur d'une fois par jour,
-à la vie 13 ; « Ce qui s'est passé pendant », pour personne.
+**La décision** (utilisateur, 2026-11-15) : le jeu doit garder une vraie phase active. Absent, le
+mana monte, mais **le séjour ne bouge plus** (`Reducteur.TickDetaille(…, absent: true)`) : la
+mare se remplit jusqu'à ce qu'on portait en partant, et pas plus. Le mur de fin de vie ne
+s'atteint qu'en jouant. Le simulateur s'absente de la même façon entre deux relevés.
 
-**Le réglage.** (1750 ; 1000) : nœuds à 3, 10, 24, 51 et 100 h. Le logarithme est presque une
-droite, et c'est forcé : `c5 / c1 ≥ 167 / 5`, donc un dernier nœud à 100 h veut un premier nœud
-avant 3 h.
+**Après.** La présence nécessaire ne dépend plus du rythme : c'est le séjour, 92 h sans toucher.
 
-| Profil | Compter les siens | La relève (12 h) | La veille (24 h) | Le peuple continue | Ce qui s'est passé pendant |
-|---|---|---|---|---|---|
-| Toutes les heures | vie 1 | vie 3 | vie 6 | vie 11 | — |
-| Quatre fois par jour | vie 1 | vie 2 | vie 5 | vie 9 | vie 13, assise VI |
-| Deux fois par jour | vie 1 | vie 2 | vie 4 | vie 6 | vie 10, assise V |
-| Une fois par jour | vie 1 | vie 2 | vie 4 | vie 5 | vie 7, assise IV |
+| Profil | Quinze vies en | Présence | Absence créditée |
+|---|---|---|---|
+| Toutes les heures (5 min, puis 1 h) | 50 jours | 92 h | 1 108 h |
+| Quatre fois par jour (10 min, puis 6 h) | 142 jours | 92 h | 3 324 h |
+| Deux fois par jour (10 min, puis 12 h) | 281 jours | 92 h | 6 624 h |
+| Une fois par jour (15 min, puis 24 h) | plus d'un an (14 vies en 366 jours) | 90 h | 8 568 h |
 
-**Ce qui reste ouvert.** Le compteur est l'absence, pas la profondeur : aucun couple ne tient le
-« pas avant l'assise V » du §6.1 pour tous les rythmes. L'ancre est le joueur à deux relevés par
-jour. Qui revient une fois par jour a le dernier verbe en assise IV ; qui revient toutes les
-heures ne l'a pas en quinze vies (93 h créditées), mais c'est aussi celui à qui un rapport de
-retour sert le moins. Et un constat qui dépasse la branche : avec des absences, quinze vies
-tiennent en quatre à seize jours pour trois à huit heures de présence.
+**Ce que ça ouvre, et c'est une décision de design.**
+
+- **L'absence ne vaut presque plus rien.** La mare est pleine en une à trois minutes (Finding 10) :
+  six heures dehors rapportent ce que rapportent trois minutes. Le jeu n'est plus un idle au sens
+  du calendrier ; c'est 92 h devant l'écran, 47 h à deux touchers par seconde.
+- **Être présent, c'est encore attendre.** La mare est bloquée 94 à 98 % d'une vie (Finding 10) :
+  la présence que la règle exige se passe devant une mare pleine, à toucher. La phase active
+  demandée n'existe que si quelque chose s'y joue.
+- **Le levier, s'il faut doser** : faire avancer le séjour en absence à une fraction de sa vitesse
+  au lieu de zéro. Non mesuré.
+
+**La branche Entretien.** Son compteur est l'absence créditée, qui a changé d'échelle. Avec le
+couple d'origine (84 ; 100), nœuds à 6, 22, 65, 182 et 630 h :
+
+| Profil | Le peuple continue | Ce qui s'est passé pendant |
+|---|---|---|
+| Toutes les heures | vie 5 | vie 11, assise VI |
+| Quatre fois par jour | vie 2 | vie 5, assise III |
+| Deux fois par jour | vie 1 | vie 3, assise III |
+| Une fois par jour | vie 2 | vie 3, assise III |
+
+Le dernier nœud tombe donc avant l'assise V pour trois profils sur quatre (§6.1). Un couple
+(1750 ; 1000), réglé le même jour sous l'ancienne règle, faisait tout tomber dans la première vie
+sous la nouvelle : il a été retiré. **Entretien reste à régler**, une fois la règle d'absence
+arrêtée — et aucun couple ne tiendra le §6.1 pour tous les rythmes, puisque le compteur mesure
+l'absence et non la profondeur.
 
 ---
 
@@ -376,7 +394,7 @@ régénération n'a lieu que pour un changement voulu, noté ici.
 | 2026-11-14 | Toucher la mare (spec `2026-10-11-toucher-la-mare-et-achat-groupe-design.md`) : le débit propre du héros devient un ambiant fixe, sans facteur de niveau ; `amelioration-toucher` entre au registre | `parties.json` seul. Le joueur scripté, qui ne touche jamais, a 1,31e4 mana à 30 min au lieu de 5,91e4, et le héros au niveau 8 au lieu de 9. Quinze cycles simulés : 331 260 s actives contre 331 320 (−60 s, le premier cycle passe de 11 340 à 11 280 s : sans débit propre, Grandir n'est plus estimé que par son multiplicateur, et l'ordre des achats bouge) ; Souffle final 1,574e135 contre 1,576e135. `hors-ligne.json` régénéré identique. `donnees.json` (une entrée `amelioration-toucher`, portée `toucher`) et `constantes.json` (`DEBIT_HEROS` renommé `DEBIT_AMBIANT`, même valeur) modifiés à la main avec le code |
 | 2026-11-14 | « Compter les siens » passe en tête de la branche Entretien (sans lui, les débits par espèce ne se lisent plus) ; la relève et la veille glissent d'un rang | `hors-ligne.json` seul : le premier nœud appris est `entretien-compte` au lieu d'`entretien-releve`, donc le plafond d'absence reste à 6 h une absence de plus. Le dernier scénario crédite 6 h au lieu de 12 (21 600 s contre 43 200), et le mana qui en sort passe de 9,37e6 à 5,62e6. `parties.json` ressort identique |
 | 2026-11-14 | Le couple (A, B) de la branche Amélioration passe de (1,9 ; 140) à (4,3 ; 20 000) : « Le geste appris » tombe à la vie 3 au lieu de 4, « L'élan » à la vie 5 au lieu de 10, « Tout le monde suit » à la vie 10 au lieu de jamais | `parties.json` et `hors-ligne.json`. Les durées des quinze cycles simulés sont identiques, à la seconde ; les nœuds acquis plus tôt baissent le prix des crans, et le Souffle final passe de 1,574e135 à 1,627e135. Dans `hors-ligne.json`, `amelioration-geste` figure désormais parmi les nœuds acquis des scénarios |
-| 2026-11-15 | Le couple (A, B) de la branche Entretien passe de (84 ; 100) à (1750 ; 1000) (Finding 11) : nœuds à 3, 10, 24, 51 et 100 h créditées au lieu de 6, 22, 65, 182 et 630 | `hors-ligne.json` seul. « Compter les siens » tombe dès la première absence pleine et « La relève » à la deuxième : le dernier scénario crédite de nouveau 12 h (43 200 s) au lieu de 6, et `entretien-releve` figure parmi les nœuds acquis. `parties.json` ressort identique : le simulateur ne s'absente pas |
+| 2026-11-15 | Absent, le séjour ne bouge plus (Finding 11, décision de l'utilisateur) : `HorsLigne.Crediter` et les absences du simulateur passent par `TickDetaille(…, absent: true)` | `hors-ligne.json` seul : l'acquis de séjour reste celui du départ dans tous les scénarios (13,06 au lieu de 42,55 au deuxième pas), donc contenance et mana au retour baissent. `parties.json` ressort identique : la politique de référence joue en continu. Le couple d'Entretien, essayé à (1750 ; 1000) puis remis à (84 ; 100) le même jour, ne laisse aucune trace |
 | 2026-10-08 | Les insufflations deviennent les améliorations de renaissance (Codex v1.1) | Renommage seul, sans régénération : clef `insufflations` → `ameliorations`, identifiants `insufflation-*` → `amelioration-*`, constantes `*_INSUFFLATION_*` → `*_AMELIORATION_*`, termes `cout_insufflation`, `insufflation_globale`. Aucun chiffre ne bouge |
 
 ---

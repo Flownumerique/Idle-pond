@@ -590,7 +590,8 @@ namespace IdlePond.Simulateur
                             touchers += fois;
                             manaTouche = manaTouche.Add(gain);
                         }
-                        etat = Reducteur.Tick(etat, dt);
+                        // Hors de l'écran, le simulateur s'absente comme le jeu : séjour figé.
+                        etat = present ? Reducteur.Tick(etat, dt) : Reducteur.TickAbsent(etat, dt);
                         if (present) secondesActives += dt;
                         reste -= dt;
                         observer?.Invoke(etat);

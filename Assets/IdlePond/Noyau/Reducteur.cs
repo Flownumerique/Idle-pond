@@ -126,8 +126,15 @@ namespace IdlePond.Noyau
         /// surplus qui expire vers l'ambiant est le même qu'on le calcule en un pas ou
         /// en quatre cent quatre-vingts. C'est ce qui rend l'équivalence de pas triviale
         /// au lieu de délicate, et pourquoi il n'y a plus de `prochaineCoupure`.
+        ///
+        /// `absent` (décision de l'utilisateur, 2026-11-15) : le joueur n'est pas là. Le mana
+        /// monte comme toujours, mais on ne se fait pas à l'eau de loin : l'acquis de séjour
+        /// ne bouge pas, donc la mare se remplit jusqu'à ce qu'on portait en partant et pas
+        /// plus. Mesuré (RESULTATS.md, Finding 11) : quand l'absence faisait avancer le séjour,
+        /// une vie entière se finissait pendant une absence, et quinze vies demandaient trois
+        /// heures de présence. Le mur de fin de vie ne s'atteint désormais qu'en jouant.
         /// </summary>
-        public static ResultatDeTick TickDetaille(EtatJeu etat, double dt)
+        public static ResultatDeTick TickDetaille(EtatJeu etat, double dt, bool absent = false)
         {
             // Écrit tel quel, et non `dt <= 0` : c'est ce qui rejette aussi NaN.
             if (!(dt > 0)) return new ResultatDeTick(etat, Array.Empty<string>());
@@ -145,8 +152,9 @@ namespace IdlePond.Noyau
             // la renaissance, et la contenance dégénérait en forfait. La saturation borne la
             // VALEUR de l'acquis, pas le TEMPS pour l'atteindre. `τ₀` jauge une durée de
             // cycle constante par construction : il doit l'être aussi.
-            var acquisDeSejour =
-                Constantes.ACQUIS_MAX + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-dt / TauDuSejourSecondes(etat));
+            var acquisDeSejour = absent
+                ? etat.Cycle.AcquisDeSejour
+                : Constantes.ACQUIS_MAX + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-dt / TauDuSejourSecondes(etat));
 
             // La contenance limite le stock, pas la production, et elle monte PENDANT le
             // cycle avec l'acquis : le plafond se lit donc à la FIN du pas.
@@ -182,6 +190,9 @@ namespace IdlePond.Noyau
 
         /// Le contrat du §5.1. `TickDetaille` en rend en plus les succès déclenchés.
         public static EtatJeu Tick(EtatJeu etat, double dt) => TickDetaille(etat, dt).Etat;
+
+        /// Le pas d'une absence : le mana monte, le séjour ne bouge pas (voir `TickDetaille`).
+        public static EtatJeu TickAbsent(EtatJeu etat, double dt) => TickDetaille(etat, dt, absent: true).Etat;
 
         /* ─── L'usage apprend (arbre de technique, 2026-11-13) ───────────────────────
          * Creuser, monter et grandir font monter un compteur d'usage ; si les points de la

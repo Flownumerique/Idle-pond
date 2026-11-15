@@ -14,6 +14,9 @@ namespace IdlePond.Jeu
     /// que garantit le filtre du §5.2 » (§10). Il n'y a donc rien à rattraper, aucune
     /// boucle de rattrapage, aucune approximation : le même réducteur, un seul pas.
     ///
+    /// Absent, le mana monte mais le séjour ne bouge pas (2026-11-15) : la mare se remplit
+    /// jusqu'à ce qu'on portait en partant. Pour porter plus, il faut être là.
+    ///
     /// On ne punit jamais l'absence. Le plafond borne ce que l'absence RAPPORTE ; il ne
     /// retire rien, et rien ne se dégrade pendant qu'on n'est pas là.
     /// </summary>
@@ -71,7 +74,7 @@ namespace IdlePond.Jeu
             var secondes = Horloge.SecondesHorsLigneCreditees(dernierInstantMs, maintenantMs, CapHorsLigneCourantHeures(etat));
             if (secondes <= 0) return new RetourDeHorsLigne(etat, 0);
 
-            var resultat = Reducteur.TickDetaille(etat, secondes);
+            var resultat = Reducteur.TickDetaille(etat, secondes, absent: true);
             var avance = resultat.Etat;
             var credite = avance with
             {

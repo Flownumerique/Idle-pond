@@ -279,7 +279,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 8400.0,
-     "acquisDeSejour": 42.553668467586554,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -492,8 +492,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.3553668467586553e15",
-     "partDeContenance": 0.00022915002339710472,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.00071004537107071265,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -531,7 +531,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 9634.567,
-     "acquisDeSejour": 43.971459029127239,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -744,8 +744,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.4971459029127239e15",
-     "partDeContenance": 0.00022193275602440829,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.00071006783113925821,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -783,7 +783,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -997,8 +997,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020552444765022524,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1036,7 +1036,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1250,8 +1250,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020552444765022524,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1289,7 +1289,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1503,8 +1503,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020552444765022524,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1594,7 +1594,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -1751,8 +1751,8 @@
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "4.8595676469661093e15",
-     "partDeContenance": 7.4080664403293711E-15,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 1.0170372901521831E-14,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "0e0"
@@ -1777,7 +1777,7 @@
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
      "dureeSecondes": 10800.0,
-     "acquisDeSejour": 44.942276908830358,
+     "acquisDeSejour": 0.0,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1846,7 +1846,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -1868,7 +1868,6 @@
       "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
-      "entretien-releve",
       "renaissance-heure"
      ],
      "succes": {
@@ -2012,8 +2011,8 @@
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "2.2325960249411017e17",
-     "partDeContenance": 8.3935189435851321E-12,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 5.29405681970383E-10,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"
@@ -2024,21 +2023,21 @@
    "etape": "absence",
    "dernierInstantMs": 1700126934567,
    "maintenantMs": 1700486934567,
-   "capHeures": 12.0,
-   "secondesCreditees": 43200.0,
+   "capHeures": 6.0,
+   "secondesCreditees": 21600.0,
    "instant": {
-    "tempsJeuSecondes": 88834.567,
+    "tempsJeuSecondes": 67234.567,
     "limiteDeContenu": 62,
     "prng": {
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.36952451435799e6",
+     "manaCourant": "5.62172910861479e6",
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
-     "dureeSecondes": 54000.0,
-     "acquisDeSejour": 47.599974170212242,
+     "dureeSecondes": 32400.0,
+     "acquisDeSejour": 0.0,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -2107,7 +2106,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -2129,7 +2128,6 @@
       "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
-      "entretien-releve",
       "renaissance-heure"
      ],
      "succes": {
@@ -2255,7 +2253,7 @@
       "vairon"
      ],
      "manaAmbiant": "9.98708383468944e11",
-     "heuresHorsLigneCreditees": 23.342935277777777,
+     "heuresHorsLigneCreditees": 17.342935277777777,
      "ameliorations": {}
     },
     "telemetrie": {
@@ -2268,13 +2266,13 @@
        "souffleGagne": "1.59e2"
       }
      ],
-     "secondesDepuisDernierSucces": 88834.567,
+     "secondesDepuisDernierSucces": 67234.567,
      "intervallesEntreSucces": []
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "2.36174862120952e17",
-     "partDeContenance": 3.9671980456411071E-11,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 1.5881967051653431E-09,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"
