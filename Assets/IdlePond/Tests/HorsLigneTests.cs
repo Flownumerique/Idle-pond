@@ -20,13 +20,14 @@ namespace IdlePond.Tests
         public void Un_seul_appel_a_tick_suffit_pour_toute_l_absence()
         {
             var depart = EtatDeTravail.Creer();
-            var credit = HorsLigne.Crediter(depart, 0, 3 * H);
-            Assert.That(credit.SecondesCreditees, Is.EqualTo(3 * 3600.0));
+            // Deux heures : en deçà du premier nœud d'Entretien, que le crédit apprendrait en plus.
+            var credit = HorsLigne.Crediter(depart, 0, 2 * H);
+            Assert.That(credit.SecondesCreditees, Is.EqualTo(2 * 3600.0));
             var sansCompteur = credit.Etat with
             {
                 Permanent = credit.Etat.Permanent with { HeuresHorsLigneCreditees = 0 },
             };
-            Comparateur.ComparerATolerance(Instantane.De(sansCompteur), Instantane.De(Reducteur.Tick(depart, 3 * 3600)), 0);
+            Comparateur.ComparerATolerance(Instantane.De(sansCompteur), Instantane.De(Reducteur.Tick(depart, 2 * 3600)), 0);
         }
 
         [Test, Description("le plafond borne ce que l’absence rapporte, il ne retire rien")]

@@ -495,6 +495,37 @@ namespace IdlePond.Simulateur
             throw new InvalidOperationException("La politique d'amélioration ne termine pas");
         }
 
+        /// <summary>
+        /// Une présence : le joueur est devant l'écran pendant `secondes`, et joue comme dans
+        /// `Simuler` — il dépense à chaque pas, touche s'il touche, et rentre dans l'œuf dès que
+        /// `DoitRenaitre` le dit. Rend l'état à la fin de la présence.
+        ///
+        /// Le simulateur ne s'absente pas : il ne connaît que le noyau, et le crédit d'absence
+        /// vit dans le jeu (`HorsLigne.Crediter`). Qui veut mesurer un joueur qui part et
+        /// revient alterne donc ceci et le vrai crédit du jeu — `MesureDeLEntretienTests`.
+        /// </summary>
+        public static EtatJeu JouerUnePresence(EtatJeu etat, Politique politique, double secondes)
+        {
+            EtatJeu Relever(EtatJeu e)
+            {
+                var releve = Depenser(e, politique.PartDuManaPourUnBonus, politique.ToucherParSeconde);
+                if (!DoitRenaitre(releve, politique)) return releve;
+                var rene = (politique.AcheterLesAmeliorations ?? AcheterAuMieux)(Renaissance.Renaitre(releve));
+                return Depenser(rene, politique.PartDuManaPourUnBonus, politique.ToucherParSeconde);
+            }
+
+            var courant = Relever(etat);
+            for (var reste = secondes; reste > 1e-9;)
+            {
+                var dt = Math.Min(politique.Pas, reste);
+                if (politique.ToucherParSeconde > 0)
+                    courant = Reducteur.Toucher(courant, (int)Math.Round(politique.ToucherParSeconde * dt)).Etat;
+                courant = Relever(Reducteur.Tick(courant, dt));
+                reste -= dt;
+            }
+            return courant;
+        }
+
         // `reglage` : le réglage de la courbe, pour le calibreur — il balaie des
         // valeurs, et le §5.1 lui interdit de muter un module pour le faire. Par
         // défaut : le canon. La tâche 13 y ajoutera `θ` et l'échelle.

@@ -209,14 +209,15 @@ namespace IdlePond.Tests
         public void S_absenter_apprend_a_s_absenter()
         {
             Assert.That(Technique.CompteurDe(Depart(), BrancheTechnique.Entretien), Is.EqualTo(0));
-            // Quarante-huit heures d'horloge, six heures créditées : c'est ce qui compte.
+            // Une heure d'absence ne suffit pas.
+            var court = HorsLigne.Crediter(Depart(), DEPART, DEPART + 1 * H);
+            Assert.That(court.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-compte"));
+
+            // Quarante-huit heures d'horloge, six heures créditées : c'est ce qui compte. Et une
+            // absence pleine fait tomber le premier nœud, compter les siens (réglé le 2026-11-15).
             var retour = HorsLigne.Crediter(Depart(), DEPART, DEPART + 48 * H);
             Assert.That(Technique.CompteurDe(retour.Etat, BrancheTechnique.Entretien), Is.EqualTo(6).Within(1e-9));
-            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-compte"), "six heures ne suffisent pas tout à fait");
-
-            // Une seconde absence fait tomber le premier nœud : compter les siens (2026-11-14).
-            var second = HorsLigne.Crediter(retour.Etat, DEPART, DEPART + 48 * H);
-            Assert.That(second.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-compte"));
+            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-compte"));
         }
 
         [Test, Description("compter les siens ouvre Entretien ; la relève et la veille suivent")]
@@ -257,6 +258,19 @@ namespace IdlePond.Tests
             // Tout le monde suit, rang 5 : 167 points. L'assise V se joue entre 1e19 et 3e22.
             Assert.That(Points(3e20), Is.LessThan(167));
             Assert.That(Points(3e21), Is.GreaterThanOrEqualTo(167));
+        }
+
+        [Test, Description("Entretien : le premier nœud à la première absence pleine, le dernier vers cent heures créditées")]
+        public void Le_calendrier_d_entretien()
+        {
+            int Points(double heures) => Technique.PointsDeBranche(BrancheTechnique.Entretien, heures);
+            // Compter les siens, rang 1 : 5 points. Une absence au plafond de départ suffit.
+            Assert.That(Points(Constantes.CAP_HORS_LIGNE_HEURES_INITIAL), Is.GreaterThanOrEqualTo(5));
+            // Ce qui s'est passé pendant, rang 5 : 167 points. Une partie de quinze vies crédite
+            // de 93 à 264 h selon le rythme du joueur (`MesureDeLEntretienTests`) ; à deux
+            // relevés par jour, l'assise V s'ouvre vers 100 h.
+            Assert.That(Points(80), Is.LessThan(167));
+            Assert.That(Points(130), Is.GreaterThanOrEqualTo(167));
         }
 
         [Test, Description("noyau §6.1 : le joueur finit par tout avoir, mais pas avant l'assise V")]

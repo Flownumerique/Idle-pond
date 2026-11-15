@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-14
+**Tenue à jour le** : 2026-11-15
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -25,7 +25,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 | Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
 
-**Tests** : 513 EditMode et 35 PlayMode, tous verts (2026-11-14), plus quatre mesures à la demande. Les références de
+**Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -105,7 +105,13 @@ quitté l'onglet « Débloquer ».
   (sous la jauge, ce que rentrer vaudrait), « Compter les siens » (les débits par espèce ;
   sans lui, une pente sans chiffre). « Compter les siens » est passé en tête d'Entretien ;
   ces calendriers restent des graines non mesurées.
-- **Mesurer Entretien**, que le simulateur ne voit pas, et tout l'arbre en vraie partie.
+- **Entretien est mesurée et réglée** (2026-11-15, `RESULTATS.md`, Finding 11) : un joueur qui
+  part et revient, avec le vrai crédit d'absence. Les deux derniers nœuds étaient hors
+  d'atteinte (182 h et 630 h créditées, pour une partie qui en crédite 93 à 324) ; ils tombent
+  maintenant à 51 h et 100 h. **À trancher** : le compteur est l'absence, pas la profondeur —
+  qui revient une fois par jour a « Ce qui s'est passé pendant » dès la vie 7, en assise IV ;
+  qui revient toutes les heures ne l'a pas en quinze vies.
+- **Mesurer tout l'arbre en vraie partie.**
 - **La branche Construction** est muette tant que temples et portails n'existent pas (chantier 5).
 - **Les ~4 verbes réservés aux succès** (budget de 15, dont 11 à l'arbre) ne sont pas alloués.
 

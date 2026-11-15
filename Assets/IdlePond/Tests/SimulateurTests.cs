@@ -620,5 +620,16 @@ namespace IdlePond.Tests
                 .Select(b => Economie.CoutDAmelioration(apres, b)).Aggregate((a, b) => a.Lt(b) ? a : b);
             Assert.That(apres.Permanent.Souffle.Lt(moinsChere), Is.True);
         }
+
+        [Test, Description("une présence joue comme la simulation : mêmes relevés, même renaissance, même durée de vie")]
+        public void Une_presence_joue_comme_la_simulation()
+        {
+            var reference = Simuler(1, POLITIQUE_PAR_DEFAUT, 7).Cycles[0].DureeEcouleeSecondes;
+            var etat = Reducteur.EtatInitial(7);
+            for (var garde = 0; etat.Permanent.NombreDeRenaissances == 0 && garde < 10_000; garde += 1)
+                etat = JouerUnePresence(etat, POLITIQUE_PAR_DEFAUT, 600);
+            Assert.That(etat.Permanent.NombreDeRenaissances, Is.EqualTo(1));
+            Assert.That(etat.Telemetrie.Cycles[0].DureeEcouleeSecondes, Is.EqualTo(reference));
+        }
     }
 }

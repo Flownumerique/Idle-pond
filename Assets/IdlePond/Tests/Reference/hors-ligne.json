@@ -1868,6 +1868,7 @@
       "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
+      "entretien-releve",
       "renaissance-heure"
      ],
      "succes": {
@@ -2023,21 +2024,21 @@
    "etape": "absence",
    "dernierInstantMs": 1700126934567,
    "maintenantMs": 1700486934567,
-   "capHeures": 6.0,
-   "secondesCreditees": 21600.0,
+   "capHeures": 12.0,
+   "secondesCreditees": 43200.0,
    "instant": {
-    "tempsJeuSecondes": 67234.567,
+    "tempsJeuSecondes": 88834.567,
     "limiteDeContenu": 62,
     "prng": {
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "5.62172910861479e6",
+     "manaCourant": "9.36952451435799e6",
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
-     "dureeSecondes": 32400.0,
-     "acquisDeSejour": 47.591714565589179,
+     "dureeSecondes": 54000.0,
+     "acquisDeSejour": 47.599974170212242,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -2128,6 +2129,7 @@
       "amelioration-geste",
       "recrutement-approche",
       "entretien-compte",
+      "entretien-releve",
       "renaissance-heure"
      ],
      "succes": {
@@ -2253,7 +2255,7 @@
       "vairon"
      ],
      "manaAmbiant": "9.98708383468944e11",
-     "heuresHorsLigneCreditees": 17.342935277777777,
+     "heuresHorsLigneCreditees": 23.342935277777777,
      "ameliorations": {}
     },
     "telemetrie": {
@@ -2266,13 +2268,13 @@
        "souffleGagne": "1.59e2"
       }
      ],
-     "secondesDepuisDernierSucces": 67234.567,
+     "secondesDepuisDernierSucces": 88834.567,
      "intervallesEntreSucces": []
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "2.3613472401354905e17",
-     "partDeContenance": 2.3807295314568908E-11,
+     "contenance": "2.36174862120952e17",
+     "partDeContenance": 3.9671980456411071E-11,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"
