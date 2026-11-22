@@ -219,7 +219,7 @@ namespace IdlePond.Jeu.UI
                 });
             accueil = new Accueil(racine.Q<VisualElement>("accueil"), EffacerLaPartie,
                 () => dock.Choisir(Tiroir.Reglages),
-                !AffichageDeLApplication.Mobile, Application.Quit, Application.version,
+                AffichageDeLApplication.QuitterPossible, Application.Quit, Application.version,
                 () => reglages != null && reglages.Courants.MouvementReduit,
                 AfficherLesAnnonces);
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));

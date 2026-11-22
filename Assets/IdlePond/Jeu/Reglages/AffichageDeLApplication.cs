@@ -11,8 +11,15 @@ namespace IdlePond.Jeu
     {
         public static bool Mobile => Application.isMobilePlatform;
 
+        /// Dans un navigateur, la page décide de la fenêtre ; le jeu ne la ferme pas, et un plein
+        /// écran demandé au démarrage tomberait au premier toucher, sans qu'on l'ait voulu.
+        static bool Navigateur => Application.platform == RuntimePlatform.WebGLPlayer;
+
         /// Le plein écran ne se règle que sur PC : un téléphone l'est toujours.
-        public static bool PleinEcranReglable => !Application.isMobilePlatform && !Application.isEditor;
+        public static bool PleinEcranReglable => !Application.isMobilePlatform && !Application.isEditor && !Navigateur;
+
+        /// « Quitter » n'a de sens que pour une application de bureau.
+        public static bool QuitterPossible => !Application.isMobilePlatform && !Navigateur;
 
         /// <summary>
         /// Le plein écran à imposer, ou null pour laisser la fenêtre telle qu'elle est. Il ne

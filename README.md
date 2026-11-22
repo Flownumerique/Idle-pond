@@ -56,7 +56,19 @@ outils/unity.sh tests PlayMode                 # la mare se joue
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
 outils/unity.sh captures                                              # les PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
+outils/unity.sh build webgl                                           # prototype navigateur → Build/webgl/
+outils/unity.sh build windows                                         # prototype PC → Build/windows/IdlePond.exe
+outils/unity.sh build android                                         # APK → Build/android/ (module Android requis)
 ```
+
+**Tester le prototype sur téléphone** (sans module Android) : `outils/unity.sh build webgl`,
+puis `python -m http.server 8080 --bind 0.0.0.0` dans `Build/webgl/`, et ouvrir
+`http://<IP du PC>:8080` dans le navigateur du téléphone, sur le même Wi-Fi. Le gabarit
+`Assets/WebGLTemplates/IdlePond/` met la toile plein écran ; la save vit dans le stockage du
+navigateur (IndexedDB) et survit au rechargement. « Ajouter à l'écran d'accueil » l'ouvre
+sans barre d'adresse. Un build modifie au passage `DefaultVolumeProfile.asset`,
+`PipelineIdlePond.asset` et `UniversalRenderPipelineGlobalSettings.asset` (préfiltrage URP
+recalculé) : à ne pas versionner, `git checkout --` les remet.
 
 Menus de l'éditeur : « IdlePond ▸ Générer les scènes », « Générer les sprites
 provisoires », « Parité ▸ Régénérer les références » (changement voulu seulement).

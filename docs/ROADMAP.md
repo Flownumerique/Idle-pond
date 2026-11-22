@@ -54,7 +54,10 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 - **Le budget de lumières** : la spec DA vise quatre lumières à l'écran au plus ; quand
   toute la Noue est ouverte en portrait, six bandes sont visibles, donc six lumières.
   À mesurer sur un vrai téléphone avant de trancher.
-- **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub.
+- **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub. En
+  attendant, un **prototype WebGL** se joue dans le navigateur du téléphone
+  (`outils/unity.sh build webgl`, voir le README) ; l'APK sort de `outils/unity.sh build android`
+  dès que le module est ajouté.
 
 ---
 

@@ -4,6 +4,7 @@
 #   outils/unity.sh tests [EditMode|PlayMode] [filtre]
 #   outils/unity.sh methode Espace.Classe.Methode
 #   outils/unity.sh captures
+#   outils/unity.sh build webgl|windows|android
 #
 # Unity refuse d'ouvrir en batch un projet déjà ouvert : fermer l'éditeur avant.
 set -uo pipefail
@@ -50,6 +51,21 @@ for cas in racine.iter('test-case'):
         print(f"ÉCHEC {cas.get('fullname')}\n    {message[:2000]}")
 sys.exit(1 if echecs or racine.get('result', '').startswith('Failed') else 0)
 PY
+    ;;
+  build)
+    # Les builds de prototype : webgl | windows | android → Build/<cible>/
+    case "${2:-}" in
+      webgl)   METHODE=IdlePond.Editeur.Constructeur.WebGL;   CIBLE=WebGL ;;
+      windows) METHODE=IdlePond.Editeur.Constructeur.Windows; CIBLE=Win64 ;;
+      android) METHODE=IdlePond.Editeur.Constructeur.Android; CIBLE=Android ;;
+      *) echo "usage : outils/unity.sh build webgl|windows|android" >&2; exit 2 ;;
+    esac
+    "$UNITY" -batchmode -nographics -quit -projectPath "$PROJET" -buildTarget "$CIBLE" \
+      -executeMethod "$METHODE" -logFile "$(cd "$SORTIE" && pwd -W 2>/dev/null || pwd)/unity.log"
+    CODE=$?
+    grep "\[Constructeur\]" "$JOURNAL" 2>/dev/null
+    [ $CODE -ne 0 ] && erreurs_de_compilation
+    exit $CODE
     ;;
   methode)
     "$UNITY" -batchmode -nographics -quit -projectPath "$PROJET" -executeMethod "$2" \

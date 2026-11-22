@@ -98,8 +98,7 @@ namespace IdlePond.Jeu
                 var cible = Chemin;
                 var temporaire = cible + SUFFIXE_TEMPORAIRE;
                 File.WriteAllText(temporaire, Reglages.Serialiser(Courants), new UTF8Encoding(false));
-                if (File.Exists(cible)) File.Replace(temporaire, cible, null);
-                else File.Move(temporaire, cible);
+                Fichiers.Remplacer(temporaire, cible);
             }
             catch
             {

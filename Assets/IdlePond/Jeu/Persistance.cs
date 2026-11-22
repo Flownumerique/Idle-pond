@@ -462,8 +462,7 @@ namespace IdlePond.Jeu
             var texte = ComposerLeFichier(Serialiser(etat), dernierInstantMs).ToString(Formatting.Indented);
             // Sans BOM : un fichier JSON qui en porte un déroute certains lecteurs.
             File.WriteAllText(temporaire, texte, new UTF8Encoding(false));
-            if (File.Exists(cible)) File.Replace(temporaire, cible, null);
-            else File.Move(temporaire, cible);
+            Fichiers.Remplacer(temporaire, cible);
         }
 
         /// <summary>
