@@ -1,6 +1,6 @@
 # IdlePond — le Codex
 
-**Version** : 1.1 — 2026-10-08
+**Version** : 1.2 — 2026-11-22
 **Objet** : la fiction et le lexique. Ce que le monde est, ce que le héros devient, et
 comment chaque chose s'appelle — à l'écran comme dans le code.
 **Remplace** : `idlepond-histoire-v0.1.md`, absorbé et archivé.
@@ -72,6 +72,41 @@ renaissances sans rien perdre.
 
 **Règle dure, qui ne se négocie pas** : le Souffle n'achète jamais de creusement. Il ouvre
 une catégorie d'actions séparée — ce qui reste quand tout le reste a régressé.
+
+### Un monde parallèle (2026-11-22)
+
+**Décision de l'auteur.** Le monde du héros est un **monde parallèle** au nôtre, où la
+fantaisie existe : des peuples nombreux, une magie, des dieux. Ce n'est pas notre eau douce
+avec un mystère au fond ; c'est un monde merveilleux, qui ressemble au nôtre parce qu'il en
+partage les formes.
+
+- **Le vivant est dérivé du réel.** Chaque espèce part d'une espèce réelle, reconnaissable à
+  sa silhouette et à ses mœurs, et s'en écarte par une dérivation visible : couleurs
+  franches, ornements, organes en plus, une affinité avec un mana. Le joueur doit pouvoir
+  dire « c'est une sorte de vairon » et voir aussitôt que ce n'en est pas un.
+- **Les noms partent de la racine réelle.** Les noms déjà fixés (le vairon, la loche,
+  l'épinoche, le chabot, la lamproie, l'ombre ; la Noue, le Gour) restent du canon : leur
+  dérivation se dit par l'aspect et par le texte, pas par un renommage, tant que l'auteur
+  n'en décide pas autrement. Une espèce nouvelle peut porter un nom composé ou dérivé.
+- **La magie est déjà là.** Le mana, ce qu'il prend aux morts, et le Souffle, ce que le
+  vivant exhale, sont les deux faces de la magie de ce monde. Elle n'ajoute aucune monnaie ;
+  elle se voit (lueurs, sillages, eau qui répond) et se raconte. Le narrateur ne l'explique
+  pas (§6).
+- **Les dieux et les peuples existent, et l'arc les révèle à son rythme.** La mare montre
+  dès le début un monde merveilleux ; ce qu'il y a au-delà — l'extérieur, les autres bassins,
+  les autres peuples, la place des dieux — reste caché jusqu'à l'acte VIII (§4, « Ce que le
+  jeu ne dit jamais »). Les divinités de seconde zone du GDD (temples et alliés) y trouvent
+  leur place naturelle.
+- **Le merveilleux croît avec la profondeur.** La surface part du réel reconnaissable ; chaque
+  lieu plus bas s'en éloigne davantage, plus étrange, plus lumineux.
+- **La couleur.** Les palettes sont franches et plus saturées que l'eau douce réelle, dès la
+  Noue. `docs/da/gabarits.md` est à revoir en conséquence.
+
+**Ce qui reste à écrire** (rien de ceci n'est encore canon) : quels peuples, et lequel est le
+peuple de la mare ; ce que la magie permet et ce qu'elle coûte dans la fiction ; le panthéon
+et la place qu'y prennent la marraine, l'esprit et le héros devenu demi-dieu ; la dérivation
+de chacune des six espèces livrées ; ce que devient la charte phonétique (§6) pour les lieux
+plus bas.
 
 ---
 
@@ -524,6 +559,11 @@ descend avant de le lire. L'assise I n'invente rien — voyelles claires, lexiqu
 français d'eau douce. Le monde n'est pas exotique, il est **vieux**. Les assises suivantes
 s'assombrissent phonétiquement à mesure qu'on descend.
 
+**Amendé le 2026-11-22** (§2, « Un monde parallèle ») : le monde est **merveilleux et
+vieux**. La règle phonétique tient pour les noms de lieux ; « n'invente rien » vaut pour les
+racines, pas pour l'aspect : les espèces de la Noue gardent leurs noms réels et se montrent
+dérivées.
+
 **Les noms sont du canon, les phrases sont provisoires.** Le lieu, le vairon, la loche,
 l'épinoche sont fixés. Toutes les phrases affichées vivent dans
 `src/donnees/textes-provisoires.ts`, à un seul endroit, et aucune n'entre dans un
@@ -563,6 +603,13 @@ système et vivant comme terme de fiction. Aucun identifiant ne le porte.
 ---
 
 ## Journal
+
+**v1.2 — 2026-11-22.** Le monde devient un **monde parallèle** où la fantaisie existe —
+peuples, magie, dieux —, sur décision de l'auteur, qui trouvait que le jeu avait perdu
+l'esprit, les couleurs et la diversité de sa première version. Le vivant est dérivé du réel ;
+les noms fixés restent ; la magie, c'est le mana et le Souffle ; l'arc garde ses révélations
+(l'extérieur à l'acte VIII). §2 gagne « Un monde parallèle », §6 est amendé. Aucun identifiant
+ni aucune sauvegarde ne change. Les peuples, la magie et le panthéon restent à écrire.
 
 **v1.1 — 2026-10-08.** Les insufflations deviennent **les améliorations de
 renaissance**, sur décision de l'utilisateur : un nom plus simple, qui dit ce que l'achat

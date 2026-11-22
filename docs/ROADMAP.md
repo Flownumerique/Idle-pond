@@ -49,7 +49,19 @@ références).
 Le socle est posé (scène en pixel art, gabarits, sprites provisoires), l'écran mobile
 aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 
-- **L'esprit : fantaisie, couleur, diversité — une décision à prendre AVANT le vrai dessin.**
+- **Tranché le 2026-11-22 : un monde parallèle** (Codex v1.2, §2). La fantaisie existe —
+  peuples, magie, dieux — et le vivant est **dérivé du réel** : reconnaissable, mais pas
+  réel. Couleurs franches dès la Noue, merveilleux qui croît avec la profondeur, révélations
+  de l'arc inchangées. **Ce qui reste, dans l'ordre** :
+  1. **La bible du monde** : les peuples (et lequel est le peuple de la mare), ce que la
+     magie permet et coûte, le panthéon et la place de la marraine, de l'esprit et du héros.
+  2. **La dérivation des six espèces livrées** (vairon, loche, épinoche, chabot, lamproie,
+     ombre) : ce qui les écarte du réel, à l'aspect et au texte.
+  3. **Les palettes** de la Noue, du Gour, du héros et des espèces, dans `docs/da/gabarits.md`.
+  4. **La faune d'ambiance** (ce qui vit dans la mare sans produire) et **une mare qui change
+     à chaque renaissance** (chantier 6).
+  Le constat qui a mené à la décision est gardé ci-dessous.
+- **L'esprit : fantaisie, couleur, diversité — le constat du 2026-11-22.**
   Constat de l'auteur (2026-11-22) : le jeu a perdu l'esprit fantaisiste, les couleurs et la
   diversité de la première version (l'Étang des Merveilles, web, juin 2026 : 42 espèces sur
   douze profondeurs, du Lac de Surface à la Dimension Quantique, poissons Rubis, Saphir,
@@ -74,7 +86,7 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
     3. *Retour à l'Étang des Merveilles* — créatures fantastiques, pierres précieuses,
        profondeurs magiques. Contredit le Codex (§2, §6, mots morts) : il faudrait le
        réécrire.
-  - **Recommandation** : 2 puis 1 — de la couleur et de la vie dès la surface, et le
+  - **Recommandation (avant décision)** : 2 puis 1 — de la couleur et de la vie dès la surface, et le
     merveilleux qui grandit à mesure qu'on descend. Tant que ce n'est pas tranché, le vrai
     dessin attend : il dessinerait la mauvaise palette.
   - **Ce qui peut revenir de la version web sans casser le canon** : le bestiaire en
