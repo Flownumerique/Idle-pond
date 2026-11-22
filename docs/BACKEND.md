@@ -56,7 +56,7 @@ Trois contraintes d'architecture tiennent tout le reste :
 | Creuser | `Creuser` | mana | `60 × 2,4^creux`, moins les remises | Ouvre le creux suivant ; refusé au-delà de la contenance ou du contenu livré |
 | Convaincre | `Debloquer` | mana | 0,6 × le coût du creux de l'espèce | Une fois par espèce et par vie |
 | Monter | `Ameliorer` | mana | ×1,15 par cran | +1 cran ; paliers ×2 / ×4 / ×8 / ×16 aux crans 10 / 25 / 50 / 100 ; à 100, +3 % global définitif |
-| Grandir | `Grandir` | mana | `60 × 1,75 × 2,4^(n−1)` | Niveau du héros : ×1,15 par niveau sur toute la production, plus son débit propre |
+| Grandir | `Grandir` | mana | `60 × 1,75 × 2,4^(n−1)` | Niveau du héros : ×1,15 par niveau sur toute la production, et ce que rapporte un toucher |
 | Bonus de lieu / technique | `AcheterUnBonus` | mana | coût du creux d'ancrage × `2^rang` | Voir 2.5 |
 | Améliorer | `AcheterUneAmelioration` | **Souffle** | `3 × 4^rang` (ciblée), `2 × 4^rang` (globale) | Voir 2.4 |
 | Renaître | `Renaissance.Renaitre` | — | — | Voir 2.3 |
@@ -65,7 +65,7 @@ Trois contraintes d'architecture tiennent tout le reste :
 
 - **Production** (`Economie.cs`) : par espèce, débit de base × cran × palier de cran ×
   amélioration ciblée × bonus de lieu ; puis, globalement, × profondeur × densité × héros ×
-  drapeaux des cent. Le héros produit seul (`DEBIT_HEROS`), ce qui amorce la partie.
+  drapeaux des cent. L'eau donne un ambiant fixe (`DEBIT_AMBIANT`), ce qui amorce la partie ; le héros, lui, prend quand on touche la mare (`Reducteur.Toucher`, `Economie.ValeurDuToucher`).
 - **Détail de captation** : `Economie.DetailDeCaptation` rend, par espèce, chaque terme actif et
   sa source. C'est une structure, pas un texte : l'écran la met en phrases.
 - **Contenance** : `contenance = contenance gardée × (1 + acquis de séjour)`. L'acquis sature
@@ -318,9 +318,9 @@ Pour travailler le frontend sans ouvrir le noyau.
 
 | Besoin | Appel |
 |---|---|
-| Faire une action | `Partie.Creuser()`, `Convaincre(id)`, `Monter(id)`, `Grandir()`, `AcheterUnBonus(id)`, `AcheterUneAmelioration(id)`, `Renaitre()` |
+| Faire une action | `Partie.Creuser()`, `Convaincre(id)`, `Monter(id)`, `Grandir()`, `AcheterUnBonus(id)`, `AcheterUneAmelioration(id)`, `Renaitre()`, `Toucher()` (rend le gain ; dix par seconde au plus) ; `Creuser()` passe par `Reducteur.DemanderUnCreux` (avec « La file », met le creux en attente) |
 | Débit total, par espèce | `Economie.ProductionTotaleParSeconde`, `ProductionDeLEspece` |
-| D'où vient un débit | `Economie.DetailDeCaptation`, `DetailDuHeros` |
+| D'où vient un débit | `Economie.DetailDeCaptation`, `DetailDuHeros`, `DetailDeLAmbiant`, `DetailDuToucher` |
 | Tous les prix | `Economie.CoutDeDescente`, `CoutDeDeblocage`, `CoutDeNiveau`, `CoutDeCroissance`, `CoutDeBonus`, `CoutDAmelioration` |
 | La jauge | `Economie.Contenance`, `PartDeContenance`, `EauTroublee`, `EstSature`, `EstBloque`, `ToutEstCreuse` |
 | Ce que renaître rapporterait | `Renaissance.GainDeSoufflePrevu` |

@@ -9,7 +9,7 @@ namespace IdlePond.Noyau
     {
         // production
         TauxBase, Niveau, MultiplicateurJalon, MultiplicateurDrapeau, MultiplicateurProfondeur,
-        MultiplicateurDensite, DebitHeros, MultiplicateurHeros, MultiplicateurAmelioration, AmeliorationGlobale,
+        MultiplicateurDensite, DebitAmbiant, MultiplicateurHeros, MultiplicateurAmelioration, AmeliorationGlobale,
         // coût
         CoutCreuser, CoutNiveau, CoutDeblocage, CoutCroissance, CoutAmelioration, CoutTemple, CoutPortail, CoutReouverture,
         // confort
@@ -22,6 +22,9 @@ namespace IdlePond.Noyau
         // confort, ajouté le 2026-11-13 : le nœud « Pondre à l'heure » de l'arbre. Le facteur
         // multiplie `α`, l'exposant du gain de densité.
         GainDeDensite,
+        // production, ajouté le 2026-11-14 : toucher la mare (spec du 2026-10-11). `DebitAmbiant`,
+        // plus haut, est l'ancien `DebitHeros` renommé à sa place : sa valeur ne bouge pas.
+        BaseDuToucher, MultiplicateurDuToucher,
     }
 
     public enum CapaciteId
@@ -87,7 +90,7 @@ namespace IdlePond.Noyau
     public sealed record Espece(string Id, string Assise, int Rang, int Palier);
     public sealed record Palier(int Index, string Assise, string Espece);
 
-    public enum PorteeDAmelioration { Ciblee, Globale, Sejour }
+    public enum PorteeDAmelioration { Ciblee, Globale, Sejour, Toucher }
 
     /// Noyau v1.0 §4.2 : la ciblée MULTIPLIE une espèce, la globale ADDITIONNE
     /// au débit de base de toutes. `Espece` est null pour la globale.
@@ -138,7 +141,10 @@ namespace IdlePond.Noyau
         double DureeSecondes,
         double AcquisDeSejour,
         int NiveauDuHeros,
-        IReadOnlyDictionary<string, int> Bonus);
+        IReadOnlyDictionary<string, int> Bonus,
+        // « La file » (2026-11-14) : les creux demandés d'avance, payés seuls dès que le mana
+        // arrive. Du cycle : la renaissance les oublie avec la roche qu'ils devaient ouvrir.
+        int CreuxDemandes);
 
     public sealed record EtatPermanent(
         IReadOnlyList<double> Densites,

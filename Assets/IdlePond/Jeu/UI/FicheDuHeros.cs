@@ -14,8 +14,8 @@ namespace IdlePond.Jeu.UI
     /// vignette, ce que rester lui a déjà gagné, et quatre chiffres en grille.
     ///
     /// Elle remplace l'ancien panneau de contenance : le mana et sa jauge vivent dans la
-    /// `Barre`. La règle du §8.2 tient toujours — la tuile « Toi seul » rend au héros sa part
-    /// du débit total, que la table de captation des espèces ne porte pas.
+    /// `Barre`. La tuile « Par toucher » dit ce que le héros prend quand on touche la mare
+    /// (spec du 2026-10-11) : depuis, il ne capte plus rien de lui-même.
     ///
     /// « Rester t'a gagné » est l'acquis de séjour : la part que la contenance prendra à la
     /// renaissance (`Contenance = ContenanceMana × (1 + AcquisDeSejour)`). Une valeur, pas
@@ -28,7 +28,8 @@ namespace IdlePond.Jeu.UI
         readonly Label sejour;
         readonly Label captation;
         readonly Label contenance;
-        readonly Label debitPropre;
+        readonly Label parToucher;
+        readonly Label sejourParToucher;
         readonly Label retours;
         readonly Label bloque;
 
@@ -63,7 +64,9 @@ namespace IdlePond.Jeu.UI
             var grille = Elements.Conteneur("grille");
             captation = Tuile(grille, E.FICHE_CAPTATION);
             contenance = Tuile(grille, E.FICHE_CONTENANCE);
-            debitPropre = Tuile(grille, E.FICHE_DEBIT_PROPRE);
+            parToucher = Tuile(grille, E.FICHE_PAR_TOUCHER);
+            sejourParToucher = Elements.Texte("doux xs");
+            parToucher.parent.Add(sejourParToucher);
             retours = Tuile(grille, E.FICHE_RETOURS);
             racine.Add(grille);
 
@@ -106,7 +109,8 @@ namespace IdlePond.Jeu.UI
             // Saturé, on ne capte plus rien : le débit dit zéro, comme la barre du haut.
             Elements.Poser(captation, Format.Remplir(E.DEBIT, plein ? "0" : Format.Montant(Economie.ProductionTotaleParSeconde(etat))));
             Elements.Poser(contenance, Format.Montant(Economie.Contenance(etat)));
-            Elements.Poser(debitPropre, Format.Remplir(E.DEBIT, plein ? "0" : Format.Montant(Economie.ProductionDuHeros(etat))));
+            Elements.Poser(parToucher, Format.Remplir(E.GAIN_DU_TOUCHER, Format.Montant(Economie.ValeurDuToucher(etat))));
+            Elements.Poser(sejourParToucher, Format.Remplir(E.SEJOUR_PAR_TOUCHER, Format.Secondes(Economie.SejourDuToucher(etat))));
             Elements.Poser(retours, etat.Permanent.NombreDeRenaissances.ToString(CultureInfo.InvariantCulture));
             Elements.Marquer(racine, "eau-trouble", Economie.EauTroublee(etat));
             Elements.Montrer(bloque, Economie.EstBloque(etat));

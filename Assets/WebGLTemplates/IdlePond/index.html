@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <!-- Plein écran, sans zoom ni défilement : la toile est tout l'écran du téléphone. -->
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#030b10">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="{{{ PRODUCT_NAME }}}">
+  <title>{{{ PRODUCT_NAME }}} — prototype {{{ PRODUCT_VERSION }}}</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #030b10; }
+    body { position: fixed; inset: 0; touch-action: none; -webkit-user-select: none; user-select: none;
+           -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+    #toile { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+    #chargement { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+                  justify-content: center; gap: 18px; color: #6fe0cf; font: 600 18px/1.3 system-ui, sans-serif; }
+    #jauge { width: 60%; max-width: 280px; height: 6px; border-radius: 3px; background: #12302e; overflow: hidden; }
+    #jauge > div { width: 0; height: 100%; background: #6fe0cf; transition: width .2s; }
+    #erreur { display: none; max-width: 80%; color: #f3b7a5; font-size: 14px; text-align: center; }
+  </style>
+</head>
+<body>
+  <canvas id="toile" tabindex="-1"></canvas>
+  <div id="chargement">
+    <div>{{{ PRODUCT_NAME }}}</div>
+    <div id="jauge"><div></div></div>
+    <div id="erreur"></div>
+  </div>
+  <script>
+    var chargement = document.getElementById("chargement");
+    var barre = document.querySelector("#jauge > div");
+    var erreur = document.getElementById("erreur");
+    var dossier = "Build";
+    var config = {
+      dataUrl: dossier + "/{{{ DATA_FILENAME }}}",
+      frameworkUrl: dossier + "/{{{ FRAMEWORK_FILENAME }}}",
+      codeUrl: dossier + "/{{{ CODE_FILENAME }}}",
+#if MEMORY_FILENAME
+      memoryUrl: dossier + "/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+      symbolsUrl: dossier + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+      productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+      productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+      // La scène est en pixel art (~240 px de large) : au-delà de 2, le téléphone
+      // chauffe pour rien.
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      matchWebGLToCanvasSize: true,
+      // Sans elle, une save écrite dans persistentDataPath reste en mémoire et se perd au
+      // rechargement de la page : chaque écriture part dans IndexedDB.
+      autoSyncPersistentDataPath: true,
+      showBanner: function (message, type) {
+        if (type === "error") { erreur.style.display = "block"; erreur.textContent = message; }
+        else console.warn(message);
+      },
+    };
+    var script = document.createElement("script");
+    script.src = dossier + "/{{{ LOADER_FILENAME }}}";
+    script.onload = function () {
+      createUnityInstance(document.getElementById("toile"), config, function (p) {
+        barre.style.width = (100 * p) + "%";
+      }).then(function () {
+        chargement.style.display = "none";
+      }).catch(function (message) {
+        erreur.style.display = "block";
+        erreur.textContent = message;
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

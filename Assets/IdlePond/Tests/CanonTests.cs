@@ -106,8 +106,8 @@ namespace IdlePond.Tests
                     Assert.That(Termes.DE_COUT, Has.No.Member(TermeDeFormule.TempsDuSejour));
                     continue;
                 }
-                var terme = amelioration.Portee == PorteeDAmelioration.Ciblee
-                    ? TermeDeFormule.MultiplicateurAmelioration
+                var terme = amelioration.Portee == PorteeDAmelioration.Ciblee ? TermeDeFormule.MultiplicateurAmelioration
+                    : amelioration.Portee == PorteeDAmelioration.Toucher ? TermeDeFormule.MultiplicateurDuToucher
                     : TermeDeFormule.AmeliorationGlobale;
                 Assert.That(Termes.DE_PRODUCTION, Has.Member(terme));
                 Assert.That(Termes.DE_COUT, Has.No.Member(terme));
@@ -126,7 +126,10 @@ namespace IdlePond.Tests
             var sejours = AmeliorationsDeRenaissance.Toutes.Where(i => i.Portee == PorteeDAmelioration.Sejour).ToList();
             Assert.That(sejours, Has.Count.EqualTo(1));
             Assert.That(sejours[0].Espece, Is.Null);
-            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(ciblees.Count + 2));
+            var touchers = AmeliorationsDeRenaissance.Toutes.Where(i => i.Portee == PorteeDAmelioration.Toucher).ToList();
+            Assert.That(touchers, Has.Count.EqualTo(1));
+            Assert.That(touchers[0].Espece, Is.Null);
+            Assert.That(AmeliorationsDeRenaissance.Toutes, Has.Count.EqualTo(ciblees.Count + 3));
         }
 
         [Test, Description("aucun succès ne monte une production (amendement v1.1 §2.D)")]

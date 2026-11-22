@@ -20,7 +20,8 @@ qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires
 générés par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
-jauge), la mare au centre, « Creuser plus bas » posé dessus, un dock de cinq boutons
+jauge), la mare au centre — on la touche, et le héros prend : le gain s'envole du
+doigt —, « Creuser plus bas » posé dessus, un dock de cinq boutons
 (Toi, Espèces, Débloquer, L'œuf, Journal) qui ouvrent des tiroirs. Débloquer montre les
 lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. Le tiroir Toi
 liste ce que le héros a appris pour toujours (l'arbre de technique : trente nœuds, appris par
@@ -54,8 +55,20 @@ outils/unity.sh tests EditMode PariteTests     # un filtre
 outils/unity.sh tests PlayMode                 # la mare se joue
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeScenes.Generer
 outils/unity.sh methode IdlePond.Editeur.GenerateurDeSprites.Generer   # les sprites provisoires
-outils/unity.sh captures                                              # 18 PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
+outils/unity.sh captures                                              # les PNG de contrôle dans Logs/captures/ (dont portrait-surface.png et portrait-mue.png)
+outils/unity.sh build webgl                                           # prototype navigateur → Build/webgl/
+outils/unity.sh build windows                                         # prototype PC → Build/windows/IdlePond.exe
+outils/unity.sh build android                                         # APK → Build/android/ (module Android requis)
 ```
+
+**Tester le prototype sur téléphone** (sans module Android) : `outils/unity.sh build webgl`,
+puis `python -m http.server 8080 --bind 0.0.0.0` dans `Build/webgl/`, et ouvrir
+`http://<IP du PC>:8080` dans le navigateur du téléphone, sur le même Wi-Fi. Le gabarit
+`Assets/WebGLTemplates/IdlePond/` met la toile plein écran ; la save vit dans le stockage du
+navigateur (IndexedDB) et survit au rechargement. « Ajouter à l'écran d'accueil » l'ouvre
+sans barre d'adresse. Un build modifie au passage `DefaultVolumeProfile.asset`,
+`PipelineIdlePond.asset` et `UniversalRenderPipelineGlobalSettings.asset` (préfiltrage URP
+recalculé) : à ne pas versionner, `git checkout --` les remet.
 
 Menus de l'éditeur : « IdlePond ▸ Générer les scènes », « Générer les sprites
 provisoires », « Parité ▸ Régénérer les références » (changement voulu seulement).

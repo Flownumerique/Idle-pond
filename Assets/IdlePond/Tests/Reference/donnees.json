@@ -599,6 +599,11 @@
    "id": "amelioration-sejour",
    "portee": "sejour",
    "espece": null
+  },
+  {
+   "id": "amelioration-toucher",
+   "portee": "toucher",
+   "espece": null
   }
  ],
  "succes": [

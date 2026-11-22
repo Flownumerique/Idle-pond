@@ -106,7 +106,17 @@ namespace IdlePond.Jeu
         /// se tait si le joueur l'a demandé. `AudioListener.pause` suspend tout, musique comme
         /// effets, et reprend où l'on en était.
         /// </summary>
-        void OnApplicationFocus(bool aLeFocus) => Taire(!aLeFocus);
+        void OnApplicationFocus(bool aLeFocus)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // Le navigateur n'envoie jamais `OnApplicationPause` : un onglet caché ou un
+            // téléphone verrouillé n'arrive ici qu'en perte de focus. On le traite comme une
+            // pause — écrire en partant, créditer l'absence au retour.
+            OnApplicationPause(!aLeFocus);
+#else
+            Taire(!aLeFocus);
+#endif
+        }
 
         void Taire(bool enArrierePlan) =>
             AudioListener.pause = enArrierePlan && reglages != null && reglages.Courants.MuetEnArrierePlan;

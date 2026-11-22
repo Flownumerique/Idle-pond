@@ -20,7 +20,8 @@ namespace IdlePond.Jeu.UI
     ///
     /// Trois états par espèce :
     ///   - atteinte et convaincue : son nom, ses crans, son débit (qui ouvre la table de
-    ///     captation), la barre vers le prochain seuil de jalon, et « Monter » ;
+    ///     captation) — en pente, sans chiffre, tant que le héros ne sait pas compter les
+    ///     siens —, la barre vers le prochain seuil de jalon, et « Monter » ;
     ///   - atteinte, pas encore convaincue : « un banc s'attarde », et « Convaincre » ;
     ///   - plus bas : grisée, sans nom, avec la profondeur où on la trouvera.
     /// Sous le lieu, le suivant, verrouillé : on voit qu'il y a de la suite, pas ce qu'elle est.
@@ -40,6 +41,7 @@ namespace IdlePond.Jeu.UI
             public VisualElement Detail;
             public Label Crans;
             public Label Production;
+            public VisualElement Lien;
             public VisualElement Remplissage;
             public Label Seuil;
             public Label Indice;
@@ -185,8 +187,12 @@ namespace IdlePond.Jeu.UI
                 if (niveau == 0) Elements.Poser(carte.Indice, Format.Profondeur(espece.Palier));
                 else
                 {
-                    Elements.Poser(carte.Crans, Format.Remplir(E.CRANS_ET_DEBIT, niveau.ToString(CultureInfo.InvariantCulture)));
-                    Elements.Poser(carte.Production, Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionDeLEspece(etat, espece))));
+                    Elements.Poser(carte.Crans, Format.CransDeLaCarte(niveau));
+                    var compte = Economie.LitLesDebits(etat);
+                    Elements.Poser(carte.Production, compte
+                        ? Format.Remplir(E.DEBIT, Format.Montant(Economie.ProductionDeLEspece(etat, espece)))
+                        : Format.PenteDeLEspece(Economie.PartDeLEspece(etat, espece)));
+                    Elements.Marquer(carte.Lien, "lien-muet", !compte);
                     var prochain = Constantes.SEUILS_DE_JALON.FirstOrDefault(s => s.Seuil > niveau);
                     Elements.RegleLaLargeur(carte.Remplissage, prochain == null ? 1 : niveau / (double)prochain.Seuil);
                     Elements.Poser(carte.Seuil, prochain == null
@@ -262,7 +268,12 @@ namespace IdlePond.Jeu.UI
             carte.Production = Elements.Texte("chiffre mana sm");
             var captation = Elements.Conteneur("lien");
             captation.Add(carte.Production);
-            captation.AddManipulator(new Clickable(() => surCaptation(espece.Id)));
+            // Le détail de captation ne s'ouvre qu'à qui sait compter les siens.
+            captation.AddManipulator(new Clickable(() =>
+            {
+                if (dernier != null && Economie.LitLesDebits(dernier)) surCaptation(espece.Id);
+            }));
+            carte.Lien = captation;
             ligne.Add(carte.Crans);
             ligne.Add(captation);
             carte.Detail.Add(ligne);

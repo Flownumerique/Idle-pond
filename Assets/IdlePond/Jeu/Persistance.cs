@@ -229,6 +229,7 @@ namespace IdlePond.Jeu
                     ["acquisDeSejour"] = N(c.AcquisDeSejour),
                     ["niveauDuHeros"] = c.NiveauDuHeros,
                     ["bonus"] = bonus,
+                    ["creuxDemandes"] = c.CreuxDemandes,
                 },
                 ["permanent"] = new JObject
                 {
@@ -422,7 +423,8 @@ namespace IdlePond.Jeu
                     DureeSecondes: Nombre(cycle["dureeSecondes"], cycleRepli.DureeSecondes),
                     AcquisDeSejour: Nombre(cycle["acquisDeSejour"], cycleRepli.AcquisDeSejour),
                     NiveauDuHeros: Entier(cycle["niveauDuHeros"], cycleRepli.NiveauDuHeros),
-                    Bonus: bonus),
+                    Bonus: bonus,
+                    CreuxDemandes: Entier(cycle["creuxDemandes"], cycleRepli.CreuxDemandes)),
                 Permanent: new EtatPermanent(
                     Densites: densites,
                     Souffle: DeserialiserDecimal(permanent["souffle"], permanentRepli.Souffle),
@@ -460,8 +462,7 @@ namespace IdlePond.Jeu
             var texte = ComposerLeFichier(Serialiser(etat), dernierInstantMs).ToString(Formatting.Indented);
             // Sans BOM : un fichier JSON qui en porte un déroute certains lecteurs.
             File.WriteAllText(temporaire, texte, new UTF8Encoding(false));
-            if (File.Exists(cible)) File.Replace(temporaire, cible, null);
-            else File.Move(temporaire, cible);
+            Fichiers.Remplacer(temporaire, cible);
         }
 
         /// <summary>

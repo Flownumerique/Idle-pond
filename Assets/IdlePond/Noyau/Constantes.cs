@@ -429,7 +429,7 @@ namespace IdlePond.Noyau
         ///   qui bootstrappe puis cesse de compter : une fois dépensée, elle
         ///   n'influence plus jamais le rythme du jeu.
         ///
-        ///   `DEBIT_HEROS`, plus bas, tient `RESULTATS.md` finding 3 — mais le
+        ///   `DEBIT_AMBIANT`, plus bas, tient `RESULTATS.md` finding 3 — mais le
         ///   contenu réel de finding 3 est l'état DÉGÉNÉRÉ (production exactement
         ///   nulle, donc plus rien n'est jamais affordable après que la charge
         ///   ci-dessus a été dépensée), pas la vitesse du premier achat. Un débit
@@ -458,8 +458,11 @@ namespace IdlePond.Noyau
         public static readonly double MANA_A_LA_SORTIE_DE_L_OEUF = COUT_CREUSER_AU_PALIER_1 * COUT_DEBLOCAGE_RATIO;
 
         /// <summary>
-        /// [P] graine — débit propre du héros, mana/s. C'est sa mutation : il capte
-        /// l'ambiant tout seul, sans attendre aucune espèce.
+        /// [P] graine — débit AMBIANT, mana/s. L'eau donne un peu d'elle-même, sans espèce
+        /// ni toucher. Jusqu'au 2026-11-14 c'était le débit propre du héros (`DEBIT_HEROS`),
+        /// multiplié par son niveau ; la spec du toucher (2026-10-11) en a fait un ambiant
+        /// FIXE, au même chiffre : ce que le héros capte, il le capte désormais quand on
+        /// touche la mare (`BASE_DU_TOUCHER`).
         ///
         /// Ferme le TROU DÉGÉNÉRÉ de `RESULTATS.md` finding 3 : une fois la charge de
         /// `MANA_A_LA_SORTIE_DE_L_OEUF` dépensée, si plus aucune production
@@ -470,10 +473,54 @@ namespace IdlePond.Noyau
         /// son commentaire pour la mesure qui sépare les deux rôles.
         ///
         /// Le terme devient négligeable dès que la première espèce est montée de
-        /// quelques niveaux (`tests/amorcage.test.ts`). À remesurer en v0.3, comme
-        /// `TAUX_BASE_AU_PALIER_0`.
+        /// quelques niveaux (`AmorcageTests`). À remesurer, comme `TAUX_BASE_AU_PALIER_0`.
         /// </summary>
-        public const double DEBIT_HEROS = 0.05;
+        public const double DEBIT_AMBIANT = 0.05;
+
+        /// [P] graine — « La file » (arbre, Creusement) : les creux qu'on peut demander d'avance.
+        /// Décidé le 2026-11-14 ; trois, pour que la file soulage sans creuser à la place du joueur.
+        public const int CREUX_EN_ATTENTE_AU_PLUS = 3;
+
+        /* ─── Toucher la mare — spec du 2026-10-11 ──────────────────────────────────
+         * Le héros est actif : un toucher rapporte `BASE × niveau × multiplicateurs
+         * globaux × multiplicateur du toucher`, plafonné par la contenance, et — spec du
+         * 2026-11-14 — il fait avancer l'acquis de séjour. Mesuré (`RESULTATS.md`, Finding 10,
+         * `MesureDuToucherTests`) : le mana du toucher ne règle que la première demi-heure de
+         * la première vie ; c'est le séjour qui donne au toucher son rôle ensuite (47 h au
+         * lieu de 92 h sur quinze vies, à deux touchers par seconde).
+         */
+
+        /// [P] graine — ce qu'un toucher rapporte au niveau 1, avant multiplicateurs. Le
+        /// double de l'ancien débit du héros par seconde : quelques touchers valent une
+        /// minute d'ambiant au départ, et rien dès que le vairon monte.
+        public const double BASE_DU_TOUCHER = 0.1;
+
+        /// Au plus ce nombre de touchers par seconde. La fenêtre glissante qui l'applique vit
+        /// dans le jeu (`Partie.Toucher`) ; le simulateur s'y borne aussi (`Politique`).
+        public const int TOUCHERS_PAR_SECONDE_AU_PLUS = 10;
+
+        /// [P] graine — le séjour d'un toucher, en secondes (spec du 2026-11-14, « le toucher
+        /// hâte le séjour »). À deux touchers par seconde, l'acquis monte ×1,5 ; à la borne,
+        /// ×3,5. Il avance par la courbe du temps, donc il sature avec lui.
+        public const double SECONDES_DE_SEJOUR_PAR_TOUCHER = 0.25;
+
+        /// [P] graine — part ajoutée au séjour d'un toucher par rang de l'amélioration du
+        /// toucher : `1 + part × rang`.
+        public const double PART_DE_SEJOUR_PAR_RANG_DU_TOUCHER = 0.1;
+
+        /// [P] graine — dernier rang de l'amélioration du toucher (2026-11-14). Sans borne, elle
+        /// montait au rang 225 en quinze vies sans rien acheter (`RESULTATS.md`, Finding 10).
+        public const int RANG_MAX_DE_L_AMELIORATION_DU_TOUCHER = 10;
+
+        /// [P] graine — part ajoutée à la valeur d'un toucher par rang de l'amélioration du
+        /// toucher : `(1 + part) ^ rang`. Sans borne, comme la globale.
+        public const double PART_PAR_RANG_DU_TOUCHER = 0.5;
+
+        /// [P] graine — coût du premier rang de l'amélioration du toucher, en Souffle.
+        public const double SOUFFLE_COUT_D_AMELIORATION_DU_TOUCHER = 1;
+
+        /// [P] graine — chaque rang coûte ce facteur de plus que le précédent.
+        public const double RATIO_COUT_D_AMELIORATION_DU_TOUCHER = 4;
 
         /// <summary>
         /// [P] — échelle globale de production, neutre à 1. Elle ne règle que la DURÉE

@@ -126,6 +126,25 @@ namespace IdlePond.Jeu.UI
         public static string LibelleDuHeros(int niveau) =>
             niveau <= 1 ? E.ALEVIN : Remplir(E.GRANDI, niveau - 1);
 
+        /// <summary>
+        /// La part d'une espèce dans ce qui est capté, dite en pente, sans aucun chiffre — tant
+        /// que le héros ne sait pas compter les siens (2026-11-14).
+        /// </summary>
+        public static string PenteDeLEspece(double part)
+        {
+            if (part >= 0.5) return E.PENTE_L_ESSENTIEL;
+            if (part >= 0.2) return E.PENTE_BONNE_PART;
+            if (part >= 0.05) return E.PENTE_UN_PEU;
+            return part > 0 ? E.PENTE_PRESQUE_RIEN : E.PENTE_RIEN_ENCORE;
+        }
+
+        /// Des secondes courtes (le séjour d'un toucher) : deux décimales au plus, « 0.25 ».
+        public static string Secondes(double secondes) => secondes.ToString("0.##", Inv);
+
+        /// Les crans d'une carte d'espèce, avant son débit : « 1 cran · », « 12 crans · ».
+        public static string CransDeLaCarte(int niveau) =>
+            Remplir(niveau > 1 ? E.CRANS_ET_DEBIT : E.CRAN_ET_DEBIT, niveau.ToString(CultureInfo.InvariantCulture));
+
         /// La source d'un terme, mise en mots ici et pas dans le noyau.
         public static string SourceDuTerme(SourceDeTerme source)
         {
@@ -133,7 +152,7 @@ namespace IdlePond.Jeu.UI
             switch (source.Quoi)
             {
                 case QuoiSource.Niveau:
-                    return valeur == 0 ? E.PERSONNE_ENCORE : Remplir(E.CRANS_TENUS, valeur);
+                    return valeur == 0 ? E.PERSONNE_ENCORE : Remplir(valeur > 1 ? E.CRANS_TENUS : E.CRAN_TENU, valeur);
                 case QuoiSource.Palier:
                     return Profondeur(valeur);
                 case QuoiSource.DrapeauxPermanents:

@@ -81,18 +81,10 @@ namespace IdlePond.Tests
             Assert.That(Economie.MultiplicateurDuHeros(cinq), Is.EqualTo(Math.Pow(1 + Constantes.BONUS_PAR_NIVEAU_DU_HEROS, 4)).Within(0.5e-12));
             var rapport = Economie.MultiplicateursGlobaux(cinq).Div(Economie.MultiplicateursGlobaux(un)).ToNumber();
             Assert.That(rapport, Is.EqualTo(Math.Pow(1 + Constantes.BONUS_PAR_NIVEAU_DU_HEROS, 4)).Within(0.5e-9));
-            // La production TOTALE suit le même rapport, espèces comprises.
+            // La production TOTALE suit exactement le même rapport, espèces et ambiant compris :
+            // depuis la spec du toucher, rien d'autre ne monte avec le niveau.
             var total = Economie.ProductionTotaleParSeconde(cinq).Div(Economie.ProductionTotaleParSeconde(un)).ToNumber();
-            Assert.That(total, Is.GreaterThan(rapport)); // > : son débit propre monte aussi avec le niveau
-        }
-
-        [Test, Description("son débit propre monte avec le niveau, multiplicateurs compris")]
-        public void Son_debit_propre_monte_avec_le_niveau_multiplicateurs_compris()
-        {
-            var un = AuNiveau(Reducteur.EtatInitial(1), 1);
-            var trois = AuNiveau(Reducteur.EtatInitial(1), 3);
-            Assert.That(Economie.ProductionDuHeros(un).Eq(new Decimal(Constantes.DEBIT_HEROS).Mul(Economie.MultiplicateursGlobaux(un))), Is.True);
-            Assert.That(Economie.ProductionDuHeros(trois).Eq(new Decimal(Constantes.DEBIT_HEROS).Mul(3).Mul(Economie.MultiplicateursGlobaux(trois))), Is.True);
+            Assert.That(total, Is.EqualTo(rapport).Within(0.5e-9));
         }
 
         [Test, Description("le coût de croissance suit g, en fraction du coût du palier de même rang")]
@@ -105,13 +97,13 @@ namespace IdlePond.Tests
                 Is.EqualTo(Constantes.G_COUT_PALIER).Within(0.5e-9));
         }
 
-        [Test, Description("le détail du héros nomme ses deux termes, et sa source porte le niveau")]
-        public void Le_detail_du_heros_nomme_ses_deux_termes_et_sa_source_porte_le_niveau()
+        [Test, Description("le détail du héros nomme son multiplicateur, et sa source porte le niveau")]
+        public void Le_detail_du_heros_nomme_son_multiplicateur_et_sa_source_porte_le_niveau()
         {
             var lignes = Economie.DetailDuHeros(AuNiveau(Reducteur.EtatInitial(1), 4));
-            Assert.That(lignes.Select(l => l.Terme), Is.EqualTo(new[] { TermeDeFormule.DebitHeros, TermeDeFormule.MultiplicateurHeros }));
+            Assert.That(lignes.Select(l => l.Terme), Is.EqualTo(new[] { TermeDeFormule.MultiplicateurHeros }));
             Assert.That(lignes[0].Source, Is.EqualTo(new SourceDeTerme(QuoiSource.Heros, 4)));
-            Assert.That(lignes[1].Valeur, Is.EqualTo(Math.Pow(1 + Constantes.BONUS_PAR_NIVEAU_DU_HEROS, 3)).Within(0.5e-12));
+            Assert.That(lignes[0].Valeur, Is.EqualTo(Math.Pow(1 + Constantes.BONUS_PAR_NIVEAU_DU_HEROS, 3)).Within(0.5e-12));
         }
 
         /* ─── A3 — grandir ────────────────────────────────────────────────────── */

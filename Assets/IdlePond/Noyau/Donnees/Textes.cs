@@ -112,6 +112,10 @@ namespace IdlePond.Noyau.Donnees
         /// L'amélioration de séjour (2026-11-13) : la seule qui raccourcit une vie.
         public static readonly TexteDAmelioration AMELIORATION_DE_SEJOUR = new("Apprendre à porter", "tu te fais à l’eau plus vite : ce que tu peux porter monte plus tôt");
 
+        /// L'amélioration du toucher (spec du 2026-10-11) : actif, le héros est un courant
+        /// dans l'eau — il prend (Codex).
+        public static readonly TexteDAmelioration AMELIORATION_DU_TOUCHER = new("Prendre plus fort", "quand tu touches l’eau, tu emportes davantage, et tu t’y fais plus vite");
+
         /// Les bonus de l'onglet « Débloquer » (spec du 2026-10-10), par identifiant de registre.
         static readonly IReadOnlyDictionary<string, TexteDeBonus> TEXTES_DE_BONUS = new Dictionary<string, TexteDeBonus>
         {
@@ -296,7 +300,7 @@ namespace IdlePond.Noyau.Donnees
             public const string RETOUR_PLAFONNE = "Tu es resté loin {0} ; au-delà de {1}, l’eau ne compte plus.";
             public const string RETOUR_MANA = "+{0} de mana";
             public const string RETOUR_CONTENANCE = "Tu peux porter {0} de plus.";
-            public const string RETOUR_STOCK_PLEIN = "Tu es plein : le reste s’est perdu dans l’eau.";
+            public const string RETOUR_STOCK_PLEIN = "Tu es plein : le reste s’est perdu dans l’eau. Reste auprès d’elle pour porter plus.";
             public const string RETOUR_DESCENTE_ROUVERTE = "La roche d’en dessous est de nouveau à ta portée.";
             public const string RETOUR_PEUT_CREUSER = "Tu as de quoi creuser plus bas.";
             public const string RETOUR_SUCCES = "{0} choses consignées au journal.";
@@ -316,6 +320,15 @@ namespace IdlePond.Noyau.Donnees
             public const string GRANDI = "grandi {0} fois";
             public const string BONUS_DU_HEROS = "et tout ce que tu convaincs donne +{0} %";
             public const string GRANDIR = "Grandir";
+            public const string PAR_TOUCHER_AU_PROCHAIN = "+{0} par toucher en grandissant";
+            /// Le chiffre qui s'envole quand on touche la mare.
+            public const string GAIN_DU_TOUCHER = "+{0}";
+            /// Mare pleine : ce que le toucher a ajouté à ce qu'on peut porter (2026-11-14).
+            public const string GAIN_A_PORTER = "+{0} à porter";
+            /// Sous « Par toucher », dans la fiche : les secondes d'eau qu'un toucher fait gagner.
+            public const string SEJOUR_PAR_TOUCHER = "+{0} s à te faire à l’eau";
+            /// « Lire l'eau » : à côté du Souffle, ce que rentrer rapporterait.
+            public const string SOUFFLE_EN_RENTRANT = "+{0} de Souffle en rentrant";
 
             /* — La captation ———————————————————————————————————————————————————— */
             public const string FERMER = "fermer";
@@ -333,6 +346,8 @@ namespace IdlePond.Noyau.Donnees
             public const string MONTER_JUSQU_AU_SEUIL = "jusqu’au seuil";
             public const string FACON_DE_MONTER = "Monter";
             public const string CREUSER = "Creuser plus bas";
+            /// « La file » : des creux demandés d'avance attendent leur mana.
+            public const string CREUSER_EN_ATTENTE = "Creuser plus bas · {0} en attente";
             public const string PLUS_DE_ROCHE = "Il n’y a plus de roche à ouvrir ici";
 
             /* — La renaissance ———————————————————————————————————————————————————— */
@@ -458,11 +473,18 @@ namespace IdlePond.Noyau.Donnees
             public const string POURCENT_DE_CONTENANCE = "+{0} % de ce que tu peux porter";
             public const string FICHE_CAPTATION = "Ce que tu captes";
             public const string FICHE_CONTENANCE = "Ce que tu peux porter";
-            public const string FICHE_DEBIT_PROPRE = "Toi seul";
+            public const string FICHE_PAR_TOUCHER = "Par toucher";
             public const string FICHE_RETOURS = "Retours dans l’œuf";
 
             /* — Le tiroir « Espèces » ———————————————————————————————————————————————— */
+            public const string CRAN_ET_DEBIT = "{0} cran · ";
             public const string CRANS_ET_DEBIT = "{0} crans · ";
+            /// Sans « Compter les siens » : ce qu'une espèce donne, en pente (part du tout).
+            public const string PENTE_L_ESSENTIEL = "l’essentiel";
+            public const string PENTE_BONNE_PART = "une bonne part";
+            public const string PENTE_UN_PEU = "un peu";
+            public const string PENTE_PRESQUE_RIEN = "presque rien";
+            public const string PENTE_RIEN_ENCORE = "rien encore";
             public const string PROCHAIN_SEUIL = "×{0} au cran {1}";
             public const string TOUS_LES_SEUILS = "tous les seuils franchis";
             public const string CONVAINCUS_SUR = "{0} / {1}";
@@ -500,6 +522,7 @@ namespace IdlePond.Noyau.Donnees
             public const string BRASSE = "{0} brasse";
             public const string BRASSES = "{0} brasses";
             public const string PERSONNE_ENCORE = "personne encore";
+            public const string CRAN_TENU = "{0} cran tenu";
             public const string CRANS_TENUS = "{0} crans tenus";
             public const string AUCUNE_ESPECE_AU_COMPLET = "aucune espèce au complet";
             public const string ESPECE_AU_COMPLET = "{0} espèce déjà au complet";
@@ -543,6 +566,8 @@ namespace IdlePond.Noyau.Donnees
             yield return ("amélioration amelioration-ciblee.effet", AMELIORATION_CIBLEE.Effet);
             yield return ("amélioration amelioration-sejour.nom", AMELIORATION_DE_SEJOUR.Nom);
             yield return ("amélioration amelioration-sejour.effet", AMELIORATION_DE_SEJOUR.Effet);
+            yield return ("amélioration amelioration-toucher.nom", AMELIORATION_DU_TOUCHER.Nom);
+            yield return ("amélioration amelioration-toucher.effet", AMELIORATION_DU_TOUCHER.Effet);
 
             foreach (var noeud in NoeudsTechnique.Tous)
             {

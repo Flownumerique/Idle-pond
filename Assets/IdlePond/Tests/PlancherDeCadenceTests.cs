@@ -20,10 +20,26 @@ namespace IdlePond.Tests
     /// Ce n'est pas une intention de design, c'est une garantie chiffrée : elle se
     /// mesure, ou elle n'existe pas. Le test joue les trente premières minutes avec
     /// un joueur qui achète le moins cher dès qu'il peut, et relève les instants.
+    ///
+    /// Depuis le 2026-11-14 (spec du toucher), ce joueur TOUCHE LA MARE une fois toutes les
+    /// deux secondes : la première demi-heure est du jeu actif, et c'est le point où le
+    /// toucher rend exactement l'ancien débit propre du héros (`BASE_DU_TOUCHER` × n ÷ 2 =
+    /// 0,05 × n). Mesuré le même jour, graine 1, assise I :
+    ///
+    /// | toucher        | succès | pire écart | silence de fin |
+    /// |----------------|--------|------------|----------------|
+    /// | jamais         | 28     | **309 s**  | 8 s            |
+    /// | toutes les 4 s | 29     | 297 s      | 92 s           |
+    /// | toutes les 2 s | 29     | 287 s      | 176 s          |
+    /// | chaque seconde | 29     | 267 s      | 231 s          |
+    ///
+    /// Le joueur qui ne touche jamais troue la cadence de 9 s (avant « le dixième niveau ») :
+    /// le héros ne capte plus rien de lui-même. Il progresse quand même — le jeu reste un
+    /// idle —, mais la garantie chiffrée du §8.4 suppose quelqu'un devant l'écran.
     /// </summary>
     public class PlancherDeCadenceTests
     {
-        static readonly IReadOnlyList<(string Id, double InstantSecondes)> Releve = Joueur.JoueUneDemiHeure();
+        static readonly IReadOnlyList<(string Id, double InstantSecondes)> Releve = Joueur.JoueUneDemiHeure(secondesEntreTouchers: 2);
 
         [Test, Description("le premier succès tombe en moins de deux minutes")]
         public void Le_premier_succes_tombe_en_moins_de_deux_minutes()

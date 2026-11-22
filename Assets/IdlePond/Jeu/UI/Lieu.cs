@@ -57,7 +57,11 @@ namespace IdlePond.Jeu.UI
             var cout = Economie.CoutDeDescente(etat, etat.Cycle.PaliersOuverts);
             Elements.Poser(bouton.Cout, Format.Cout(cout));
             bouton.Progresser(etat.Cycle.ManaCourant, cout);
-            bouton.Regler(etat.Cycle.ManaCourant.Gte(cout) && cout.Lte(Economie.Contenance(etat)));
+            // Allumé quand le geste fait quelque chose : creuser, ou, avec « La file », demander
+            // le creux d'avance. Le réducteur tranche, l'écran ne recopie pas sa règle.
+            bouton.Regler(!ReferenceEquals(Reducteur.DemanderUnCreux(etat), etat));
+            var demandes = etat.Cycle.CreuxDemandes;
+            Elements.Poser(bouton.Libelle, demandes > 0 ? Format.Remplir(E.CREUSER_EN_ATTENTE, demandes) : E.CREUSER);
         }
     }
 }

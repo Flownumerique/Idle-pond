@@ -126,8 +126,15 @@ namespace IdlePond.Noyau
         /// surplus qui expire vers l'ambiant est le même qu'on le calcule en un pas ou
         /// en quatre cent quatre-vingts. C'est ce qui rend l'équivalence de pas triviale
         /// au lieu de délicate, et pourquoi il n'y a plus de `prochaineCoupure`.
+        ///
+        /// `absent` (décision de l'utilisateur, 2026-11-15) : le joueur n'est pas là. Le mana
+        /// monte comme toujours, mais on ne se fait pas à l'eau de loin : l'acquis de séjour
+        /// ne bouge pas, donc la mare se remplit jusqu'à ce qu'on portait en partant et pas
+        /// plus. Mesuré (RESULTATS.md, Finding 11) : quand l'absence faisait avancer le séjour,
+        /// une vie entière se finissait pendant une absence, et quinze vies demandaient trois
+        /// heures de présence. Le mur de fin de vie ne s'atteint désormais qu'en jouant.
         /// </summary>
-        public static ResultatDeTick TickDetaille(EtatJeu etat, double dt)
+        public static ResultatDeTick TickDetaille(EtatJeu etat, double dt, bool absent = false)
         {
             // Écrit tel quel, et non `dt <= 0` : c'est ce qui rejette aussi NaN.
             if (!(dt > 0)) return new ResultatDeTick(etat, Array.Empty<string>());
@@ -145,8 +152,9 @@ namespace IdlePond.Noyau
             // la renaissance, et la contenance dégénérait en forfait. La saturation borne la
             // VALEUR de l'acquis, pas le TEMPS pour l'atteindre. `τ₀` jauge une durée de
             // cycle constante par construction : il doit l'être aussi.
-            var acquisDeSejour =
-                Constantes.ACQUIS_MAX + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-dt / TauDuSejourSecondes(etat));
+            var acquisDeSejour = absent
+                ? etat.Cycle.AcquisDeSejour
+                : Constantes.ACQUIS_MAX + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-dt / TauDuSejourSecondes(etat));
 
             // La contenance limite le stock, pas la production, et elle monte PENDANT le
             // cycle avec l'acquis : le plafond se lit donc à la FIN du pas.
@@ -183,6 +191,9 @@ namespace IdlePond.Noyau
         /// Le contrat du §5.1. `TickDetaille` en rend en plus les succès déclenchés.
         public static EtatJeu Tick(EtatJeu etat, double dt) => TickDetaille(etat, dt).Etat;
 
+        /// Le pas d'une absence : le mana monte, le séjour ne bouge pas (voir `TickDetaille`).
+        public static EtatJeu TickAbsent(EtatJeu etat, double dt) => TickDetaille(etat, dt, absent: true).Etat;
+
         /* ─── L'usage apprend (arbre de technique, 2026-11-13) ───────────────────────
          * Creuser, monter et grandir font monter un compteur d'usage ; si les points de la
          * branche paient son prochain nœud, il est appris dans le même geste. Les trois
@@ -206,6 +217,60 @@ namespace IdlePond.Noyau
         {
             var apres = GrandirSansApprendre(etat);
             return ReferenceEquals(apres, etat) ? etat : Technique.Apprendre(apres, BrancheTechnique.Amelioration);
+        }
+
+        /// <summary>
+        /// Toucher la mare — specs du 2026-10-11 et du 2026-11-14. Deux effets, dans cet ordre :
+        ///   1. l'acquis de séjour avance de `SejourDuToucher` secondes, par la courbe même du
+        ///      temps (`A∞ + (A − A∞)·exp(−s/τ)`) : il sature avec lui, et toucher ne passe
+        ///      jamais le plafond d'une vie. Ni le temps de jeu, ni la durée du cycle, ni le pic
+        ///      ne bougent : on s'est fait à l'eau plus vite, le temps n'a pas passé ;
+        ///   2. le mana gagne `ValeurDuToucher`, plafonnée par la contenance APRÈS l'avance —
+        ///      mare pleine, le toucher remplit la place qu'il vient de faire.
+        /// Rend le mana réellement gagné. Si rien n'a bougé (acquis au plafond, mare pleine),
+        /// l'état revient inchangé, la même référence, gain nul.
+        ///
+        /// Ce n'est pas une dépense : aucun compteur de technique n'est crédité, rien ne se
+        /// déclenche, et le crédit hors ligne ne touche jamais. La cadence (dix par seconde
+        /// au plus) vit dans le jeu, `Partie.Toucher` : le noyau ne voit pas le temps de mur.
+        ///
+        /// `fois` : autant de touchers d'un coup, pour le simulateur, qui touche par pas
+        /// d'une minute. Un toucher ne change pas la valeur du suivant, et l'acquis se compose
+        /// exactement (la courbe est exponentielle) : n touchers d'un coup valent n touchers un
+        /// à un. Seule nuance, le plafond est lu une fois, à la fin : si un toucher vaut moins
+        /// de mana que la contenance qu'il ajoute, le lot remplit un peu plus que la série.
+        /// </summary>
+        public static (EtatJeu Etat, Decimal Gain) Toucher(EtatJeu etat, int fois = 1)
+        {
+            if (fois <= 0) return (etat, Decimal.Zero);
+            var acquis = Constantes.ACQUIS_MAX
+                + (etat.Cycle.AcquisDeSejour - Constantes.ACQUIS_MAX) * Math.Exp(-fois * Economie.SejourDuToucher(etat) / TauDuSejourSecondes(etat));
+            var avance = acquis == etat.Cycle.AcquisDeSejour ? etat : etat with { Cycle = etat.Cycle with { AcquisDeSejour = acquis } };
+            var reste = Economie.Contenance(avance).Sub(avance.Cycle.ManaCourant);
+            if (reste.Lte(0)) return (avance, Decimal.Zero);
+            var valeur = Economie.ValeurDuToucher(avance).Mul(fois);
+            var gain = valeur.Lt(reste) ? valeur : reste;
+            return (avance with { Cycle = avance.Cycle with { ManaCourant = avance.Cycle.ManaCourant.Add(gain) } }, gain);
+        }
+
+        /// <summary>
+        /// Le geste « Creuser » du joueur — « La file », 2026-11-14. Payable : c'est `Creuser`.
+        /// Sinon, si le héros sait la file, le creux se met en attente, sans rien payer :
+        /// `CREUX_EN_ATTENTE_AU_PLUS` au plus, jamais plus qu'il ne reste de roche, et jamais si
+        /// la contenance ne porte pas le prochain (il attendrait jusqu'à la renaissance). Les
+        /// automatismes le creusent dès que le mana le paie (`Automatismes`).
+        /// </summary>
+        public static EtatJeu DemanderUnCreux(EtatJeu etat)
+        {
+            var creuse = Creuser(etat);
+            if (!ReferenceEquals(creuse, etat)) return creuse;
+            if (!Automatismes.Capacites(etat).Contains(CapaciteId.FileDeDescente)) return etat;
+            var demandes = etat.Cycle.CreuxDemandes;
+            if (demandes >= Constantes.CREUX_EN_ATTENTE_AU_PLUS) return etat;
+            var reste = Math.Min(etat.LimiteDeContenu, Constantes.NOMBRE_DE_PALIERS) - etat.Cycle.PaliersOuverts;
+            if (demandes >= reste) return etat;
+            if (Economie.CoutDeDescente(etat, etat.Cycle.PaliersOuverts).Gt(Economie.Contenance(etat))) return etat;
+            return etat with { Cycle = etat.Cycle with { CreuxDemandes = demandes + 1 } };
         }
 
         /* ─── Actes du joueur ───────────────────────────────────────────────────────

@@ -9,7 +9,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9769970222236e11",
+     "manaCourant": "9.97848300565307e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -101,7 +101,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -112,6 +112,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -240,7 +241,7 @@
     "derives": {
      "production": "2.55714267240567e4",
      "contenance": "1.4055896362407623e15",
-     "partDeContenance": 0.00070980866427750532,
+     "partDeContenance": 0.00070991438385533626,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -260,7 +261,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.97883816494773e11",
+     "manaCourant": "9.9803241483772e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -278,7 +279,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 8400.0,
-     "acquisDeSejour": 42.553668467586554,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -352,7 +353,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -363,6 +364,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -490,8 +492,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.3553668467586553e15",
-     "partDeContenance": 0.00022911590495239606,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.00071004537107071265,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -511,7 +513,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9791538613435e11",
+     "manaCourant": "9.98063984477297e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -529,7 +531,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 9634.567,
-     "acquisDeSejour": 43.971459029127239,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -603,7 +605,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -614,6 +616,7 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche"
      ],
      "succes": {
@@ -741,8 +744,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.4971459029127239e15",
-     "partDeContenance": 0.00022189971321322208,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.00071006783113925821,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -762,7 +765,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -780,7 +783,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -854,7 +857,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -865,8 +868,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve"
+      "entretien-compte"
      ],
      "succes": {
       "acte-premiere-conviction": {
@@ -993,8 +997,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1005,7 +1009,7 @@
    "etape": "absence",
    "dernierInstantMs": 1700116434567,
    "maintenantMs": 1700116134567,
-   "capHeures": 12.0,
+   "capHeures": 6.0,
    "secondesCreditees": 0.0,
    "instant": {
     "tempsJeuSecondes": 31234.567,
@@ -1014,7 +1018,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -1032,7 +1036,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1106,7 +1110,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1117,8 +1121,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve"
+      "entretien-compte"
      ],
      "succes": {
       "acte-premiere-conviction": {
@@ -1245,8 +1250,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1257,7 +1262,7 @@
    "etape": "absence",
    "dernierInstantMs": 1700116134567,
    "maintenantMs": 1700116134567,
-   "capHeures": 12.0,
+   "capHeures": 6.0,
    "secondesCreditees": 0.0,
    "instant": {
     "tempsJeuSecondes": 31234.567,
@@ -1266,7 +1271,7 @@
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.9846772895159e11",
+     "manaCourant": "9.98616327294537e11",
      "paliersOuverts": 8,
      "especes": {
       "vairon": {
@@ -1284,7 +1289,7 @@
      },
      "productionPicParSeconde": "2.55714267240567e4",
      "dureeSecondes": 31234.567,
-     "acquisDeSejour": 47.588688047178046,
+     "acquisDeSejour": 13.055896362407623,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1358,7 +1363,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323673901.7144275,
+      "amelioration": 2175075558.77517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1369,8 +1374,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve"
+      "entretien-compte"
      ],
      "succes": {
       "acte-premiere-conviction": {
@@ -1497,8 +1503,8 @@
     },
     "derives": {
      "production": "2.55714267240567e4",
-     "contenance": "4.8588688047178046e15",
-     "partDeContenance": 0.00020549386474113276,
+     "contenance": "1.4055896362407623e15",
+     "partDeContenance": 0.000710460792785388,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.59e2"
@@ -1588,7 +1594,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -1596,7 +1602,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1607,8 +1613,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve",
+      "entretien-compte",
       "renaissance-heure"
      ],
      "succes": {
@@ -1725,7 +1732,7 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
+     "manaAmbiant": "9.98708383468944e11",
      "heuresHorsLigneCreditees": 8.3429352777777783,
      "ameliorations": {}
     },
@@ -1744,8 +1751,8 @@
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "4.8595676469661093e15",
-     "partDeContenance": 7.4080664403293711E-15,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 1.0170372901521831E-14,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "0e0"
@@ -1756,7 +1763,7 @@
    "etape": "absence",
    "dernierInstantMs": 1700116134567,
    "maintenantMs": 1700126934567,
-   "capHeures": 12.0,
+   "capHeures": 6.0,
    "secondesCreditees": 10800.0,
    "instant": {
     "tempsJeuSecondes": 45634.566999999995,
@@ -1770,7 +1777,7 @@
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
      "dureeSecondes": 10800.0,
-     "acquisDeSejour": 44.942276908830358,
+     "acquisDeSejour": 0.0,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -1839,7 +1846,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -1847,7 +1854,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -1858,8 +1865,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve",
+      "entretien-compte",
       "renaissance-heure"
      ],
      "succes": {
@@ -1984,7 +1992,7 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
+     "manaAmbiant": "9.98708383468944e11",
      "heuresHorsLigneCreditees": 11.342935277777778,
      "ameliorations": {}
     },
@@ -2003,8 +2011,8 @@
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "2.2325960249411017e17",
-     "partDeContenance": 8.3935189435851321E-12,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 5.29405681970383E-10,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"
@@ -2015,21 +2023,21 @@
    "etape": "absence",
    "dernierInstantMs": 1700126934567,
    "maintenantMs": 1700486934567,
-   "capHeures": 12.0,
-   "secondesCreditees": 43200.0,
+   "capHeures": 6.0,
+   "secondesCreditees": 21600.0,
    "instant": {
-    "tempsJeuSecondes": 88834.567,
+    "tempsJeuSecondes": 67234.567,
     "limiteDeContenu": 62,
     "prng": {
      "graine": 9001
     },
     "cycle": {
-     "manaCourant": "9.36952451435799e6",
+     "manaCourant": "5.62172910861479e6",
      "paliersOuverts": 1,
      "especes": {},
      "productionPicParSeconde": "1.7350904656218495e2",
-     "dureeSecondes": 54000.0,
-     "acquisDeSejour": 47.599974170212242,
+     "dureeSecondes": 32400.0,
+     "acquisDeSejour": 0.0,
      "niveauDuHeros": 1
     },
     "permanent": {
@@ -2098,7 +2106,7 @@
       7.9300000000000006
      ],
      "souffle": "1.59e2",
-     "contenanceMana": "4.8595676469661093e15",
+     "contenanceMana": "3.5396932195684956e15",
      "couches": [
       "noue",
       "gour"
@@ -2106,7 +2114,7 @@
      "profondeurMaxAtteinte": 9,
      "compteursTechnique": {
       "creusement": 15478.724892001719,
-      "amelioration": 2323674863.5144277,
+      "amelioration": 2175076520.57517,
       "recrutement": 3.0,
       "entretien": 0.0,
       "construction": 0.0,
@@ -2117,9 +2125,9 @@
       "creusement-drainage",
       "amelioration-repetition",
       "amelioration-main-sure",
+      "amelioration-geste",
       "recrutement-approche",
-      "entretien-releve",
-      "entretien-veille",
+      "entretien-compte",
       "renaissance-heure"
      ],
      "succes": {
@@ -2244,8 +2252,8 @@
      "especesAyantAtteintCent": [
       "vairon"
      ],
-     "manaAmbiant": "9.98559785125997e11",
-     "heuresHorsLigneCreditees": 23.342935277777777,
+     "manaAmbiant": "9.98708383468944e11",
+     "heuresHorsLigneCreditees": 17.342935277777777,
      "ameliorations": {}
     },
     "telemetrie": {
@@ -2258,13 +2266,13 @@
        "souffleGagne": "1.59e2"
       }
      ],
-     "secondesDepuisDernierSucces": 88834.567,
+     "secondesDepuisDernierSucces": 67234.567,
      "intervallesEntreSucces": []
     },
     "derives": {
      "production": "1.7350904656218495e2",
-     "contenance": "2.36174862120952e17",
-     "partDeContenance": 3.9671980456411071E-11,
+     "contenance": "3.5396932195684956e15",
+     "partDeContenance": 1.5881967051653431E-09,
      "eauTroublee": false,
      "estBloque": false,
      "gainDeSoufflePrevu": "1.3e1"

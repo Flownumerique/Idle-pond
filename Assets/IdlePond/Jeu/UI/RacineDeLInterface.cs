@@ -179,6 +179,8 @@ namespace IdlePond.Jeu.UI
                 () => dock.Choisir(dock.Actif == Tiroir.Reglages ? Tiroir.Aucun : Tiroir.Reglages));
             lieu = new Lieu(racine.Q<VisualElement>("lieu"));
             creusement = new Creusement(racine.Q<VisualElement>("creuser"), () => p.Creuser());
+            // Rien à rafraîchir : la couche ne fait que rendre le toucher à la partie.
+            _ = new CoucheDuToucher(racine.Q<VisualElement>("toucher"), () => p.Toucher());
             retour = new Retour(racine.Q<VisualElement>("retour"), () => p.OublierRetour());
             fiche = new FicheDuHeros(racine.Q<VisualElement>("fiche-du-heros"));
             heros = new Heros(racine.Q<VisualElement>("heros"), () => p.Grandir());
@@ -217,7 +219,7 @@ namespace IdlePond.Jeu.UI
                 });
             accueil = new Accueil(racine.Q<VisualElement>("accueil"), EffacerLaPartie,
                 () => dock.Choisir(Tiroir.Reglages),
-                !AffichageDeLApplication.Mobile, Application.Quit, Application.version,
+                AffichageDeLApplication.QuitterPossible, Application.Quit, Application.version,
                 () => reglages != null && reglages.Courants.MouvementReduit,
                 AfficherLesAnnonces);
             ConstruireLaTeteDuTiroir(racine.Q<VisualElement>("tiroir-tete"));

@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-13
+**Tenue à jour le** : 2026-11-15
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -23,8 +23,10 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Succès | 54 | — |
 | Axes permanents | améliorations de renaissance (dont le séjour), densité, succès, arbre de technique (5 branches sur 6 actives) | la branche Construction |
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
+| Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
+| Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 
-**Tests** : 460 EditMode et 32 PlayMode, tous verts (2026-11-13), plus trois mesures à la demande. Les références de
+**Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -52,7 +54,10 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 - **Le budget de lumières** : la spec DA vise quatre lumières à l'écran au plus ; quand
   toute la Noue est ouverte en portrait, six bandes sont visibles, donc six lumières.
   À mesurer sur un vrai téléphone avant de trancher.
-- **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub.
+- **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub. En
+  attendant, un **prototype WebGL** se joue dans le navigateur du téléphone
+  (`outils/unity.sh build webgl`, voir le README) ; l'APK sort de `outils/unity.sh build android`
+  dès que le module est ajouté.
 
 ---
 
@@ -72,6 +77,24 @@ Les bonus de lieu ont été renchéris le même jour (Finding 7).
   il faut soit de la profondeur (chantier 4), soit un verbe qui les rachète (chantier 3).
 - **Une vraie partie.** Rien de tout cela n'a été joué ; `telemetrie.jsonl` est là pour ça.
 
+**Le toucher hâte le séjour** (tranché le 2026-11-14, `RESULTATS.md`, Finding 10). Mesuré seul,
+il mourait à la deuxième vie : la contenance bloquait la mare en 1 à 3 minutes. Un toucher fait
+désormais avancer l'acquis de 0,25 s (plus 10 % par rang de son amélioration, bornée à 10). À deux
+touchers par seconde, quinze vies prennent 47 h de jeu actif au lieu de 92 ; à la borne de dix
+par seconde, 16 h. **Ce qui reste** : la durée totale visée croise maintenant la cadence de
+toucher et l'amélioration de séjour ; décider si un autoclicker peut diviser la partie par six,
+ou borner le séjour gagné par seconde. Le plancher de cadence suppose un toucher toutes les deux
+secondes ; un joueur qui ne touche jamais le troue de 9 s (`PlancherDeCadenceTests`).
+
+**Absent, le séjour ne bouge plus** (tranché le 2026-11-15, `RESULTATS.md`, Finding 11). Avant,
+une vie se finissait pendant une absence, et quinze vies demandaient trois à huit heures de
+présence. Maintenant la mare se remplit à ce qu'on portait en partant, et il faut être là pour
+porter plus. **Ce qui reste, et c'est le plus gros point ouvert du jeu** : l'absence ne vaut plus
+que quelques minutes de production ; quinze vies demandent 92 h de présence (47 h à deux touchers
+par seconde), soit 281 jours à deux sessions de dix minutes par jour ; et cette présence se passe
+devant une mare pleine. Soit on dose (le séjour avance en absence à une fraction de sa vitesse),
+soit on donne quelque chose à faire pendant qu'on attend.
+
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.
 
@@ -85,12 +108,21 @@ quitté l'onglet « Débloquer ».
 
 **Ce qui reste.**
 
-- **Resserrer deux branches.** « Galeries connues » tombe à la vie 11 et « Tout le monde suit »
-  jamais en quinze vies : les couples (A, B) de Creusement et d'Amélioration sont à régler
-  (`Technique.COUPLES_A_B`), puis `MesureDeLArbreTests` à relancer.
-- **Trois verbes sans effet** : la file de descente, compter les siens, lire l'eau. Ce sont des
-  capacités que rien ne lit encore ; l'écran doit s'en servir.
-- **Mesurer Entretien**, que le simulateur ne voit pas, et tout l'arbre en vraie partie.
+- **Amélioration est réglée** (2026-11-14, `RESULTATS.md`, Finding 9) : « Tout le monde suit »
+  tombe à la vie 10, en assise V, et « L'élan » à la vie 5. Creusement n'a pas bougé :
+  « Galeries connues » tombe déjà en assise V, là où le noyau §6.1 le veut (« pas avant
+  l'assise V »). **À trancher si on veut ces deux verbes plus tôt** : il faudrait amender le
+  §6.1, pas régler un couple.
+- **Tous les verbes de l'arbre agissent** depuis le 2026-11-14 : « La file » (trois creux
+  demandés d'avance, payés seuls dès que le mana arrive, même hors ligne), « Lire l'eau »
+  (sous la jauge, ce que rentrer vaudrait), « Compter les siens » (les débits par espèce ;
+  sans lui, une pente sans chiffre). « Compter les siens » est passé en tête d'Entretien ;
+  ces calendriers restent des graines non mesurées.
+- **Entretien est mesurée, pas réglée** (2026-11-15, `RESULTATS.md`, Finding 11) : son compteur
+  est l'absence créditée, qui a changé d'échelle avec le séjour figé. Le dernier nœud tombe
+  avant l'assise V pour trois rythmes de joueur sur quatre. À régler quand la règle d'absence
+  sera arrêtée (`MesureDeLEntretienTests`).
+- **Mesurer tout l'arbre en vraie partie.**
 - **La branche Construction** est muette tant que temples et portails n'existent pas (chantier 5).
 - **Les ~4 verbes réservés aux succès** (budget de 15, dont 11 à l'arbre) ne sont pas alloués.
 
@@ -160,7 +192,7 @@ Aucune ne mérite un chantier : **elles montent dans celui qui touche le fichier
 **`plancher-de-cadence.test.ts`, le test `PARQUÉ`.** Il échoue, c'est voulu, et il ne
 ferme qu'à une « tâche 13 » qui résoudra les nombres décidant de l'atteignabilité des
 succès — hors de tout ce qui est listé ici. Son propre commentaire démontre par la mesure
-qu'aucune valeur de `DEBIT_HEROS` ne peut le satisfaire, et que jouer *mieux* aggrave le
+qu'aucune valeur de `DEBIT_HEROS` (aujourd'hui `DEBIT_AMBIANT`) ne peut le satisfaire, et que jouer *mieux* aggrave le
 trou au lieu de le combler. **Ne pas le « réparer ».**
 
 ---

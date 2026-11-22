@@ -24,25 +24,27 @@ namespace IdlePond.Tests
     {
         /* ─── la production totale ne double-compte aucun multiplicateur global ─── */
 
-        [Test, Description("somme des productions par espèce, plus le débit du héros, égale le total")]
-        public void Somme_des_productions_par_espece_plus_le_debit_du_heros_egale_le_total()
+        [Test, Description("somme des productions par espèce, plus l'ambiant, égale le total")]
+        public void Somme_des_productions_par_espece_plus_l_ambiant_egale_le_total()
         {
             // État non trivial : plusieurs paliers ouverts, plusieurs espèces à des
             // niveaux différents, des densités inégales — un état plat ne prouverait
-            // rien, tous les multiplicateurs y valant 1.
+            // rien, tous les multiplicateurs y valant 1. Le héros a grandi : l'ambiant ne
+            // doit pas porter son niveau.
             var etat = EtatDeTravail.Creer();
+            etat = etat with { Cycle = etat.Cycle with { NiveauDuHeros = 4 } };
 
-            // Le terme du héros vient du détail PUBLIÉ, pas d'une valeur refabriquée
-            // ici : une copie à la main de `DEBIT_HEROS` et des multiplicateurs
+            // Le terme de l'ambiant vient du détail PUBLIÉ, pas d'une valeur refabriquée
+            // ici : une copie à la main de `DEBIT_AMBIANT` et des multiplicateurs
             // globaux est exactement ce qui avait laissé la densité de côté (revue de
             // qualité de la tâche 9) sans que ce test s'en aperçoive. En passant par
-            // `DetailDuHeros` et par `MultiplicateursGlobaux` — la même fonction que
+            // `DetailDeLAmbiant` et par `MultiplicateursGlobaux` — la même fonction que
             // `ProductionTotaleParSeconde` utilise —, un multiplicateur global ajouté
             // demain sans y être répercuté fait diverger ce test, pas seulement la
             // production réelle.
-            var ligneDebitHeros = Economie.DetailDuHeros(etat).FirstOrDefault(ligne => ligne.Terme == TermeDeFormule.DebitHeros);
-            if (ligneDebitHeros == null) throw new InvalidOperationException("le détail publié ne porte plus debit_heros");
-            var termeDuHeros = new Decimal(ligneDebitHeros.Valeur).Mul(Economie.MultiplicateursGlobaux(etat));
+            var ligneAmbiante = Economie.DetailDeLAmbiant(etat).FirstOrDefault(ligne => ligne.Terme == TermeDeFormule.DebitAmbiant);
+            if (ligneAmbiante == null) throw new InvalidOperationException("le détail publié ne porte plus debit_ambiant");
+            var termeDuHeros = new Decimal(ligneAmbiante.Valeur).Mul(Economie.MultiplicateursGlobaux(etat));
 
             var sommeDesEspeces = Especes.Toutes.Aggregate(
                 new Decimal(0),

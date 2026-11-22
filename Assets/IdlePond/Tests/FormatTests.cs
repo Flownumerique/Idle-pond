@@ -132,11 +132,38 @@ namespace IdlePond.Tests
             Assert.That(Format.Entier(1234567.9), Is.EqualTo("1 234 567"));
         }
 
+        [Test, Description("l'envol d'un toucher : mare pleine la place faite, sinon le mana ; jamais un zéro affiché")]
+        public void L_envol_d_un_toucher_ne_dit_jamais_zero()
+        {
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.1), new Decimal(10), plein: false)), Is.EqualTo("+0.1"));
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.1), new Decimal(10), plein: true)), Is.EqualTo("+10 à porter"));
+            // Acquis presque saturé : la place faite s'écrirait « 0.0 ».
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.001), new Decimal(0.001), plein: true)), Is.Null);
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(new GainDuToucher(new Decimal(0.001), new Decimal(0), plein: false)), Is.Null);
+            Assert.That(CoucheDuToucher.TexteDeLEnvol(GainDuToucher.Rien), Is.Null);
+        }
+
+        [Test, Description("des secondes courtes, deux décimales au plus")]
+        public void Des_secondes_courtes()
+        {
+            Assert.That(Format.Secondes(0.25), Is.EqualTo("0.25"));
+            Assert.That(Format.Secondes(0.5), Is.EqualTo("0.5"));
+            Assert.That(Format.Secondes(0.325), Is.EqualTo("0.33"));
+        }
+
+        [Test, Description("les crans d'une carte d'espèce s'accordent : un cran, des crans")]
+        public void Les_crans_d_une_carte_s_accordent()
+        {
+            Assert.That(Format.CransDeLaCarte(1), Is.EqualTo("1 cran · "));
+            Assert.That(Format.CransDeLaCarte(12), Is.EqualTo("12 crans · "));
+        }
+
         [Test, Description("la source d'un terme se met en mots ici, pas dans le noyau")]
         public void La_source_d_un_terme_se_met_en_mots()
         {
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 0)), Is.EqualTo("personne encore"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 7)), Is.EqualTo("7 crans tenus"));
+            Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Niveau, 1)), Is.EqualTo("1 cran tenu"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Palier, 2)), Is.EqualTo("2 brasses"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.DrapeauxPermanents, 0)), Is.EqualTo("aucune espèce au complet"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.DrapeauxPermanents, 1)), Is.EqualTo("1 espèce déjà au complet"));
@@ -149,6 +176,17 @@ namespace IdlePond.Tests
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.Heros, 4)), Is.EqualTo("toi, grandi 3 fois"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, 0)), Is.EqualTo("aucune amélioration"));
             Assert.That(Format.SourceDuTerme(new SourceDeTerme(QuoiSource.AmeliorationDeRenaissance, 2)), Is.EqualTo("amélioré 2 fois"));
+        }
+
+        [Test, Description("sans « Compter les siens », la part d'une espèce se dit en pente, sans chiffre")]
+        public void La_part_d_une_espece_se_dit_en_pente()
+        {
+            Assert.That(Format.PenteDeLEspece(0), Is.EqualTo("rien encore"));
+            Assert.That(Format.PenteDeLEspece(0.01), Is.EqualTo("presque rien"));
+            Assert.That(Format.PenteDeLEspece(0.1), Is.EqualTo("un peu"));
+            Assert.That(Format.PenteDeLEspece(0.3), Is.EqualTo("une bonne part"));
+            Assert.That(Format.PenteDeLEspece(0.7), Is.EqualTo("l’essentiel"));
+            Assert.That(Format.PenteDeLEspece(0.7), Does.Not.Match("[0-9]"));
         }
 
         [Test, Description("le héros est un alevin tant qu'il n'a pas grandi")]

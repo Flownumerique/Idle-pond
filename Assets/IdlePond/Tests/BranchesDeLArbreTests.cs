@@ -212,11 +212,18 @@ namespace IdlePond.Tests
             // Quarante-huit heures d'horloge, six heures créditées : c'est ce qui compte.
             var retour = HorsLigne.Crediter(Depart(), DEPART, DEPART + 48 * H);
             Assert.That(Technique.CompteurDe(retour.Etat, BrancheTechnique.Entretien), Is.EqualTo(6).Within(1e-9));
-            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-releve"), "six heures ne suffisent pas tout à fait");
+            Assert.That(retour.Etat.Permanent.NoeudsTechnique, Has.No.Member("entretien-compte"), "six heures ne suffisent pas tout à fait");
 
-            // Une seconde absence fait tomber le premier nœud.
+            // Une seconde absence fait tomber le premier nœud : compter les siens (2026-11-14).
             var second = HorsLigne.Crediter(retour.Etat, DEPART, DEPART + 48 * H);
-            Assert.That(second.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-releve"));
+            Assert.That(second.Etat.Permanent.NoeudsTechnique, Has.Member("entretien-compte"));
+        }
+
+        [Test, Description("compter les siens ouvre Entretien ; la relève et la veille suivent")]
+        public void Compter_les_siens_ouvre_Entretien()
+        {
+            var entretien = NoeudsTechnique.Tous.Where(n => n.Branche == BrancheTechnique.Entretien).OrderBy(n => n.Rang).Select(n => n.Id);
+            Assert.That(entretien, Is.EqualTo(new[] { "entretien-compte", "entretien-releve", "entretien-veille", "entretien-peuple", "entretien-rapport" }));
         }
 
         [Test, Description("le peuple continue : au retour, les verbes ont joué sur ce que l'absence a laissé")]
@@ -236,6 +243,38 @@ namespace IdlePond.Tests
             Assert.That(suivi.TempsJeuSecondes, Is.EqualTo(seul.TempsJeuSecondes));
             // Et sans aucun verbe à faire jouer, le nœud seul ne change rien.
             Assert.That(HorsLigne.LePeupleContinue(sansLePeuple), Is.SameAs(sansLePeuple));
+        }
+
+        /* ─── le calendrier des branches non bornées (réglé le 2026-11-14) ────────── */
+
+        [Test, Description("Amélioration : la main sûre vers 1e6 de mana dépensé en crans, le dernier nœud vers 1e21")]
+        public void Le_calendrier_d_amelioration()
+        {
+            int Points(double compteur) => Technique.PointsDeBranche(BrancheTechnique.Amelioration, compteur);
+            // La main sûre, rang 2 : 5 + 12 = 17 points. Milieu de la première vie.
+            Assert.That(Points(5e5), Is.LessThan(17));
+            Assert.That(Points(2e6), Is.GreaterThanOrEqualTo(17));
+            // Tout le monde suit, rang 5 : 167 points. L'assise V se joue entre 1e19 et 3e22.
+            Assert.That(Points(3e20), Is.LessThan(167));
+            Assert.That(Points(3e21), Is.GreaterThanOrEqualTo(167));
+        }
+
+        [Test, Description("noyau §6.1 : le joueur finit par tout avoir, mais pas avant l'assise V")]
+        public void Les_derniers_noeuds_tombent_en_assise_V_pas_avant_et_tombent()
+        {
+            var assiseV = Assises.Toutes[4].IndexPremierPalier;
+            var profondeurs = new Dictionary<string, int>();
+            IdlePond.Simulateur.Simulateur.Simuler(15, null, 7, etat =>
+            {
+                foreach (var id in new[] { "creusement-galeries", "amelioration-suite" })
+                    if (!profondeurs.ContainsKey(id) && etat.Permanent.NoeudsTechnique.Contains(id))
+                        profondeurs[id] = Math.Max(etat.Permanent.ProfondeurMaxAtteinte, etat.Cycle.PaliersOuverts);
+            });
+            foreach (var id in new[] { "creusement-galeries", "amelioration-suite" })
+            {
+                Assert.That(profondeurs.ContainsKey(id), Is.True, $"{id} n'est jamais appris en quinze vies");
+                Assert.That(profondeurs[id], Is.GreaterThan(assiseV), $"{id} tombe avant l'assise V");
+            }
         }
     }
 }

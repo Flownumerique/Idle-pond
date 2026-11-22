@@ -20,13 +20,25 @@ namespace IdlePond.Tests
         public void Un_seul_appel_a_tick_suffit_pour_toute_l_absence()
         {
             var depart = EtatDeTravail.Creer();
-            var credit = HorsLigne.Crediter(depart, 0, 3 * H);
-            Assert.That(credit.SecondesCreditees, Is.EqualTo(3 * 3600.0));
+            // Deux heures : en deçà du premier nœud d'Entretien, que le crédit apprendrait en plus.
+            var credit = HorsLigne.Crediter(depart, 0, 2 * H);
+            Assert.That(credit.SecondesCreditees, Is.EqualTo(2 * 3600.0));
             var sansCompteur = credit.Etat with
             {
                 Permanent = credit.Etat.Permanent with { HeuresHorsLigneCreditees = 0 },
             };
-            Comparateur.ComparerATolerance(Instantane.De(sansCompteur), Instantane.De(Reducteur.Tick(depart, 3 * 3600)), 0);
+            Comparateur.ComparerATolerance(Instantane.De(sansCompteur), Instantane.De(Reducteur.TickDetaille(depart, 2 * 3600, absent: true).Etat), 0);
+        }
+
+        [Test, Description("absent, on ne se fait pas à l’eau : le séjour n’avance pas, la mare se remplit à ce qu’on portait en partant")]
+        public void L_absence_ne_fait_pas_avancer_le_sejour()
+        {
+            var depart = EtatDeTravail.Creer();
+            var credit = HorsLigne.Crediter(depart, 0, 6 * H);
+            Assert.That(credit.Etat.Cycle.AcquisDeSejour, Is.EqualTo(depart.Cycle.AcquisDeSejour));
+            Assert.That(credit.Etat.Cycle.ManaCourant.Lte(Economie.Contenance(depart)), Is.True);
+            // Présent, le même temps fait monter ce qu'on peut porter.
+            Assert.That(Reducteur.Tick(depart, 6 * 3600).Cycle.AcquisDeSejour, Is.GreaterThan(depart.Cycle.AcquisDeSejour));
         }
 
         [Test, Description("le plafond borne ce que l’absence rapporte, il ne retire rien")]

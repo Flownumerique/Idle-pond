@@ -218,7 +218,8 @@ chaque nœud tombe au simulateur, graine 7.
 | Branche | Rang 1 | Rang 2 | Rang 3 | Rang 4 | Rang 5 |
 |---|---|---|---|---|---|
 | Creusement | vie 1 | vie 1 | vie 2 (la file) | vie 5 | **vie 11** (galeries connues) |
-| Amélioration | vie 1 | vie 1 (la main sûre) | vie 4 | vie 10 (l'élan) | **jamais en 15 vies** (tout le monde suit) |
+| Amélioration (avant le 2026-11-14) | vie 1 | vie 1 (la main sûre) | vie 4 | vie 10 (l'élan) | **jamais en 15 vies** (tout le monde suit) |
+| Amélioration (réglée le 2026-11-14) | vie 1 | vie 1 (la main sûre) | vie 3 | vie 5 (l'élan) | vie 10 (tout le monde suit) |
 | Recrutement | vie 1 | vie 2 (les habitudes tiennent) | vie 3 | vie 4 | vie 5 |
 | Renaissance | vie 1 | vie 2 (lire l'eau) | vie 4 | vie 6 | vie 9 (le chemin connu) |
 | Entretien | — | — | — | — | — |
@@ -237,6 +238,14 @@ refuge est connu » à la vie 6 au lieu de 5.
 - **Deux verbes arrivent trop tard.** « Galeries connues » à la vie 11 et « Tout le monde suit »
   jamais : ce sont pourtant ceux qui soulagent la redescente. Les couples (A, B) de Creusement
   (3,8 ; 60) et d'Amélioration (1,9 ; 140) sont à resserrer.
+  **Réglé le 2026-11-14, pour Amélioration seule.** Le noyau §6.1 veut que « le joueur finisse
+  par tout avoir, mais pas avant l'assise V ». « Galeries connues » tombe au début de la vie 11,
+  vers le palier 52 : c'est l'assise V (paliers 43 à 54), donc Creusement est déjà à sa place
+  et ne bouge pas. Amélioration, elle, ne rendait que 125 points sur 167 en quinze vies. Son
+  compteur grossit d'environ ×50 par vie (4e6 à la fin de la vie 1, 6e20 à la fin de la vie 9) ;
+  le couple (4,3 ; 20 000) garde la main sûre vers 1e6 de mana dépensé et pose le dernier nœud
+  vers 1,5e21, à la vie 10. Les durées de vie ne bougent pas. Un test garde les deux derniers
+  nœuds en assise V (`BranchesDeLArbreTests`).
 - **Entretien n'est pas mesuré** : le simulateur ne s'absente jamais. Ses moments (6 h, 23 h,
   65 h, 184 h, 640 h d'absence créditée) ne viennent que du calcul.
 - **Construction est muette** : rien ne crédite son compteur tant que temples et portails
@@ -245,6 +254,127 @@ refuge est connu » à la vie 6 au lieu de 5.
 **Ce que la mesure ne dit pas.** Le simulateur achète en continu et ne fait pas tourner les
 verbes : il mesure QUAND un nœud tombe, pas ce que le verbe change pour un joueur. Ça, seule
 une vraie partie le dira (`telemetrie.jsonl`).
+
+---
+
+## Finding 10 — le toucher ne comptait qu'au début de la première vie ; il hâte désormais le séjour (2026-11-14)
+
+Le simulateur sait toucher (`Politique.ToucherParSeconde`, 0 par défaut : la parité ne bouge
+pas). Une cadence donne autant de touchers par seconde ACTIVE, appliqués par
+`Reducteur.Toucher(etat, fois)`, la même règle que le jeu ; les achats comptent ce qu'ils
+ajoutent au toucher. Mesuré par `MesureDuToucherTests` (à la demande), graine 7,
+`BASE_DU_TOUCHER = 0,1`, achat continu. La valeur d'un toucher étant linéaire en la base, le
+tableau se lit aussi comme un balayage de la base à cadence fixe.
+
+| Cadence | Paliers à 15 min | Premier blocage, vie 1 | Part du toucher, 15 premières min | Durée de la vie 1 | Premier blocage, vies 2 / 5 / 15 | Jeu actif, 15 vies |
+|---|---|---|---|---|---|---|
+| aucun toucher | 3 | 30 min | 0 % | 3,13 h | 3 / 1 / 1 min | 92,0 h |
+| 1 par seconde | 3 | 24 min | 23 % | 3,15 h | 3 / 1 / 1 min | 92,0 h |
+| 2 par seconde | 5 | 19 min | 29 % | 3,17 h | 3 / 1 / 1 min | 92,1 h |
+| 10 par seconde (la borne du jeu) | 9 | 10 min | 8 % | 3,18 h | 3 / 1 / 1 min | 92,1 h |
+
+**Trois constats.**
+
+- **Le rythme ne bouge pas, à aucune cadence.** Les durées de vie et le fond (vie 13) sont
+  ceux du Finding 9. Même cause qu'aux Findings 6 et 7 : la vie dure ce que dure l'acquis de
+  séjour. La première vie s'allonge même de 2 à 3 minutes, parce que le joueur, plus riche plus
+  tôt, creuse un palier de plus avant d'être bloqué.
+- **Le toucher ne compte qu'avant le premier blocage de la première vie.** Il y fait jusqu'à
+  un tiers du mana et avance le blocage de 30 à 10 minutes. Ensuite la contenance décide, pas
+  le mana : dès la vie 2, la mare est bloquée en 1 à 3 minutes, et un toucher ne remplit qu'une
+  mare déjà pleine. La part retombe aux fortes cadences pour la même raison : plus vite pleine.
+- **L'amélioration du toucher est un puits de Souffle.** Achetée « la moins chère d'abord »,
+  elle monte au rang 225 en quinze vies (ratio de prix 4) et n'achète rien de mesurable ; le
+  Souffle de la vie 15 baisse de 0,5 %.
+
+**Conséquence.** `BASE_DU_TOUCHER` ne peut pas casser le rythme mesuré : elle ne règle que la
+première demi-heure. Le plancher de cadence (un toucher toutes les deux secondes) y est
+cohérent. Mais après la première vie, toucher ne sert à rien, et l'amélioration du toucher non
+plus. C'est une question de design, pas de réglage : un geste qui meurt à la vie 2 doit soit
+gagner un rôle que la contenance ne borne pas, soit assumer d'être un geste de découverte.
+
+**Tranché le 2026-11-14 : le toucher hâte le séjour** (spec
+`2026-11-14-le-toucher-hate-le-sejour-design.md`). Un toucher fait avancer l'acquis de 0,25 s par
+la courbe du temps, plus 10 % par rang de l'amélioration du toucher, bornée à 10 rangs. Même
+mesure, mêmes réglages :
+
+| Cadence | Vie 1 | Vie 2 | Vie 5 | Vie 15 | Jeu actif, 15 vies | Fond | Rang du toucher | Souffle, vie 15 |
+|---|---|---|---|---|---|---|---|---|
+| aucun toucher | 3,13 h | 3,48 h | 4,52 h | 8,90 h | 92,0 h | vie 13 | 0 | 5,58e136 |
+| 1 par seconde | 2,52 h | 2,63 h | 3,02 h | 5,93 h | 62,2 h | vie 13 | 10 | 7,08e136 |
+| 2 par seconde | 2,10 h | 2,12 h | 2,27 h | 4,45 h | 47,1 h | vie 13 | 10 | 7,08e136 |
+| 10 par seconde (la borne) | 0,90 h | 0,83 h | 0,77 h | 1,48 h | 16,1 h | vie 13 | 10 | 7,92e136 |
+
+- **Le toucher compte à chaque vie.** La première vie suit le dosage choisi (×1,49 à deux par
+  seconde) ; les suivantes vont plus vite encore, l'amélioration au rang 10 doublant le séjour
+  d'un toucher.
+- **Le fond ne bouge pas** (vie 13), et le Souffle ne baisse pas : il monte même un peu, parce
+  que le Souffle ne se dépense plus dans un puits.
+- **L'amélioration du toucher est tenue dès la deuxième vie** (dix rangs, ratio de prix 4) :
+  c'est un choix de la première renaissance, plus un puits.
+- **À la borne, quinze vies tiennent en 16 h de jeu actif.** Un autoclicker à dix touchers par
+  seconde divise la partie par près de six. C'est le prix de « hâter le séjour » ; si c'est
+  trop, le levier est `SECONDES_DE_SEJOUR_PAR_TOUCHER`, ou une borne propre au séjour gagné par
+  seconde, plus basse que celle des touchers.
+
+---
+
+## Finding 11 — l'absence finissait les vies à la place du joueur ; elle ne fait plus avancer le séjour (2026-11-15)
+
+`MesureDeLEntretienTests` fait ce que le simulateur ne faisait pas : un joueur part et revient. Une
+présence (`Simulateur.JouerUnePresence`, la politique par défaut, sans toucher), puis le vrai
+crédit du jeu (`HorsLigne.Crediter`), en boucle, jusqu'à quinze renaissances. Graine 7, monde entier.
+
+**Avant.** L'absence créditée faisait avancer le séjour comme une présence. Une vie de trois à
+six heures tenait dans une absence : le joueur finissait à peu près une vie par retour.
+
+| Profil | Quinze vies en | Présence |
+|---|---|---|
+| Toutes les heures (5 min, puis 1 h) | 4,2 jours | 7,7 h |
+| Quatre fois par jour (10 min, puis 6 h) | 5,7 jours | 3,7 h |
+| Deux fois par jour (10 min, puis 12 h) | 8,1 jours | 2,7 h |
+| Une fois par jour (15 min, puis 24 h) | 16,2 jours | 4,0 h |
+
+**La décision** (utilisateur, 2026-11-15) : le jeu doit garder une vraie phase active. Absent, le
+mana monte, mais **le séjour ne bouge plus** (`Reducteur.TickDetaille(…, absent: true)`) : la
+mare se remplit jusqu'à ce qu'on portait en partant, et pas plus. Le mur de fin de vie ne
+s'atteint qu'en jouant. Le simulateur s'absente de la même façon entre deux relevés.
+
+**Après.** La présence nécessaire ne dépend plus du rythme : c'est le séjour, 92 h sans toucher.
+
+| Profil | Quinze vies en | Présence | Absence créditée |
+|---|---|---|---|
+| Toutes les heures (5 min, puis 1 h) | 50 jours | 92 h | 1 108 h |
+| Quatre fois par jour (10 min, puis 6 h) | 142 jours | 92 h | 3 324 h |
+| Deux fois par jour (10 min, puis 12 h) | 281 jours | 92 h | 6 624 h |
+| Une fois par jour (15 min, puis 24 h) | plus d'un an (14 vies en 366 jours) | 90 h | 8 568 h |
+
+**Ce que ça ouvre, et c'est une décision de design.**
+
+- **L'absence ne vaut presque plus rien.** La mare est pleine en une à trois minutes (Finding 10) :
+  six heures dehors rapportent ce que rapportent trois minutes. Le jeu n'est plus un idle au sens
+  du calendrier ; c'est 92 h devant l'écran, 47 h à deux touchers par seconde.
+- **Être présent, c'est encore attendre.** La mare est bloquée 94 à 98 % d'une vie (Finding 10) :
+  la présence que la règle exige se passe devant une mare pleine, à toucher. La phase active
+  demandée n'existe que si quelque chose s'y joue.
+- **Le levier, s'il faut doser** : faire avancer le séjour en absence à une fraction de sa vitesse
+  au lieu de zéro. Non mesuré.
+
+**La branche Entretien.** Son compteur est l'absence créditée, qui a changé d'échelle. Avec le
+couple d'origine (84 ; 100), nœuds à 6, 22, 65, 182 et 630 h :
+
+| Profil | Le peuple continue | Ce qui s'est passé pendant |
+|---|---|---|
+| Toutes les heures | vie 5 | vie 11, assise VI |
+| Quatre fois par jour | vie 2 | vie 5, assise III |
+| Deux fois par jour | vie 1 | vie 3, assise III |
+| Une fois par jour | vie 2 | vie 3, assise III |
+
+Le dernier nœud tombe donc avant l'assise V pour trois profils sur quatre (§6.1). Un couple
+(1750 ; 1000), réglé le même jour sous l'ancienne règle, faisait tout tomber dans la première vie
+sous la nouvelle : il a été retiré. **Entretien reste à régler**, une fois la règle d'absence
+arrêtée — et aucun couple ne tiendra le §6.1 pour tous les rythmes, puisque le compteur mesure
+l'absence et non la profondeur.
 
 ---
 
@@ -261,6 +391,10 @@ régénération n'a lieu que pour un changement voulu, noté ici.
 | 2026-11-13 | L'arbre de technique entier (Finding 9) : trente nœuds, six branches ; la main sûre et la sonde quittent l'onglet « Débloquer » pour l'arbre | `parties.json` et `hors-ligne.json` régénérés : `noeudsTechnique` se remplit, les remises de creusement, de cran et de conviction, « rentrer à l'heure » (`α` 0,60 → 0,65) et la coquille épaisse déplacent mana, compteurs et densités. Quinze cycles : 331 320 s actives contre 327 300 (+1,2 %). `constantes.json` modifié À LA MAIN, il ne se régénère pas : `BUDGET_DE_VERBES_ARBRE` 10 → 11 (« Le peuple continue » compte comme verbe ; le total reste 15) |
 | 2026-11-13 | L'arbre de technique s'ouvre : branche Recrutement, cinq nœuds appris par l'usage (`NoeudsTechnique.cs`, calendrier 3 / 6 / 12 / 20 / 30 espèces convaincues) | `parties.json` et `hors-ligne.json` : `noeudsTechnique` n'est plus vide, les remises de conviction (−15 / −30 / −50 %) et de cran (−5 %) déplacent les compteurs et les densités d'environ 0,5 % sur quinze cycles (5,878e115 → 5,847e115). Durées de cycle inchangées au dixième d'heure (3,1 / 4,5 / 7,0 / 8,9 h, fond au cycle 13) |
 | 2026-11-13 | L'amélioration de séjour entre au registre (Finding 8) | `donnees.json` seul : une entrée `amelioration-sejour`, portée `sejour`. `parties.json`, `hors-ligne.json` et les autres sont régénérés identiques |
+| 2026-11-14 | Toucher la mare (spec `2026-10-11-toucher-la-mare-et-achat-groupe-design.md`) : le débit propre du héros devient un ambiant fixe, sans facteur de niveau ; `amelioration-toucher` entre au registre | `parties.json` seul. Le joueur scripté, qui ne touche jamais, a 1,31e4 mana à 30 min au lieu de 5,91e4, et le héros au niveau 8 au lieu de 9. Quinze cycles simulés : 331 260 s actives contre 331 320 (−60 s, le premier cycle passe de 11 340 à 11 280 s : sans débit propre, Grandir n'est plus estimé que par son multiplicateur, et l'ordre des achats bouge) ; Souffle final 1,574e135 contre 1,576e135. `hors-ligne.json` régénéré identique. `donnees.json` (une entrée `amelioration-toucher`, portée `toucher`) et `constantes.json` (`DEBIT_HEROS` renommé `DEBIT_AMBIANT`, même valeur) modifiés à la main avec le code |
+| 2026-11-14 | « Compter les siens » passe en tête de la branche Entretien (sans lui, les débits par espèce ne se lisent plus) ; la relève et la veille glissent d'un rang | `hors-ligne.json` seul : le premier nœud appris est `entretien-compte` au lieu d'`entretien-releve`, donc le plafond d'absence reste à 6 h une absence de plus. Le dernier scénario crédite 6 h au lieu de 12 (21 600 s contre 43 200), et le mana qui en sort passe de 9,37e6 à 5,62e6. `parties.json` ressort identique |
+| 2026-11-14 | Le couple (A, B) de la branche Amélioration passe de (1,9 ; 140) à (4,3 ; 20 000) : « Le geste appris » tombe à la vie 3 au lieu de 4, « L'élan » à la vie 5 au lieu de 10, « Tout le monde suit » à la vie 10 au lieu de jamais | `parties.json` et `hors-ligne.json`. Les durées des quinze cycles simulés sont identiques, à la seconde ; les nœuds acquis plus tôt baissent le prix des crans, et le Souffle final passe de 1,574e135 à 1,627e135. Dans `hors-ligne.json`, `amelioration-geste` figure désormais parmi les nœuds acquis des scénarios |
+| 2026-11-15 | Absent, le séjour ne bouge plus (Finding 11, décision de l'utilisateur) : `HorsLigne.Crediter` et les absences du simulateur passent par `TickDetaille(…, absent: true)` | `hors-ligne.json` seul : l'acquis de séjour reste celui du départ dans tous les scénarios (13,06 au lieu de 42,55 au deuxième pas), donc contenance et mana au retour baissent. `parties.json` ressort identique : la politique de référence joue en continu. Le couple d'Entretien, essayé à (1750 ; 1000) puis remis à (84 ; 100) le même jour, ne laisse aucune trace |
 | 2026-10-08 | Les insufflations deviennent les améliorations de renaissance (Codex v1.1) | Renommage seul, sans régénération : clef `insufflations` → `ameliorations`, identifiants `insufflation-*` → `amelioration-*`, constantes `*_INSUFFLATION_*` → `*_AMELIORATION_*`, termes `cout_insufflation`, `insufflation_globale`. Aucun chiffre ne bouge |
 
 ---
