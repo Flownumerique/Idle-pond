@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-15
+**Tenue à jour le** : 2026-11-22
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -25,6 +25,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Achats d'une vie | creuser, convaincre, monter, grandir, bonus de lieu, techniques au mana | — |
 | Gestes | toucher la mare (le héros prend ; dix touchers par seconde au plus) | — |
 | Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
+| Prototype | WebGL dans le navigateur du téléphone, Windows | APK Android (module absent) |
 
 **Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
@@ -43,11 +44,44 @@ références).
 
 ## Les chantiers, dans l'ordre
 
-### 0. La direction artistique, ce qui reste
+### 0. La direction artistique et l'esprit du jeu
 
 Le socle est posé (scène en pixel art, gabarits, sprites provisoires), l'écran mobile
 aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
 
+- **L'esprit : fantaisie, couleur, diversité — une décision à prendre AVANT le vrai dessin.**
+  Constat de l'auteur (2026-11-22) : le jeu a perdu l'esprit fantaisiste, les couleurs et la
+  diversité de la première version (l'Étang des Merveilles, web, juin 2026 : 42 espèces sur
+  douze profondeurs, du Lac de Surface à la Dimension Quantique, poissons Rubis, Saphir,
+  Cristal, un premium et un légendaire par profondeur, l'étang qui change à chaque prestige).
+  Aujourd'hui : deux lieux, six espèces, une palette de verts, de bruns et de vase
+  (`docs/da/gabarits.md`), et le Codex §6 qui veut un monde « pas exotique, **vieux** ».
+  - **Ce que le canon permet déjà, et que l'écran ne montre pas.** Le merveilleux est dans
+    la fiction mais caché jusqu'à la fin : une pierre qui fait de l'eau « comme un miracle »,
+    une marraine qui voit presque tout, un esprit sorti d'un œuf, une mer scellée, des
+    égarés remontés de l'en-dessous, des marques de luminescence et de minéralisation. Et
+    l'eau douce réelle n'est pas terne : gorge rouge de l'épinoche au frai, ventre rouge du
+    vairon mâle, dorsale irisée de l'ombre, libellules, martin-pêcheur.
+  - **Trois directions** :
+    1. *Le merveilleux monte des profondeurs* — la surface reste réelle et sobre, chaque
+       assise plus bas est plus étrange, plus lumineuse, plus saturée (luminescence au
+       III, minéral au IV, chaleur au V, mer relique au VI). Garde le Codex intact ; mais
+       les 18 paliers jouables aujourd'hui restent sobres.
+    2. *Le réel, vu par un conte* — on garde les vraies espèces et les noms, mais en
+       couleurs franches dès la Noue, une faune d'ambiance qui ne produit rien
+       (libellules, gerris, grenouilles, écrevisses), et une mare qui change à chaque
+       renaissance. Demande d'amender le Codex sur la palette, pas sur les mots.
+    3. *Retour à l'Étang des Merveilles* — créatures fantastiques, pierres précieuses,
+       profondeurs magiques. Contredit le Codex (§2, §6, mots morts) : il faudrait le
+       réécrire.
+  - **Recommandation** : 2 puis 1 — de la couleur et de la vie dès la surface, et le
+    merveilleux qui grandit à mesure qu'on descend. Tant que ce n'est pas tranché, le vrai
+    dessin attend : il dessinerait la mauvaise palette.
+  - **Ce qui peut revenir de la version web sans casser le canon** : le bestiaire en
+    silhouettes (la bibliothèque du GDD §14.8), une mare qui change visiblement à chaque
+    renaissance (les strates de la version web, proches des couches et des marques), plus
+    d'espèces par lieu sous forme de faune d'ambiance, et les saisons cosmétiques (frai, gel,
+    crue) décidées le 2026-11-18.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
   réguliers, sont les premiers à reprendre.
@@ -58,6 +92,17 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   attendant, un **prototype WebGL** se joue dans le navigateur du téléphone
   (`outils/unity.sh build webgl`, voir le README) ; l'APK sort de `outils/unity.sh build android`
   dès que le module est ajouté.
+
+---
+
+### 1. Jouer et mesurer une vraie partie
+
+**Aucune vraie partie n'a été jouée.** Tout ce qui précède vient du simulateur. Le
+prototype WebGL existe depuis le 2026-11-22 : le jouer sur un téléphone jusqu'à la
+première renaissance, puis sur plusieurs jours, et lire `telemetrie.jsonl`. C'est la
+condition de l'assise III (règle d'engagement), du réglage du séjour, de la règle
+d'absence, de la cadence de toucher et de l'arbre. À relever aussi : la lisibilité sur
+téléphone (encoche, barre de geste, taille des boutons) et le budget de lumières.
 
 ---
 
@@ -93,7 +138,11 @@ porter plus. **Ce qui reste, et c'est le plus gros point ouvert du jeu** : l'abs
 que quelques minutes de production ; quinze vies demandent 92 h de présence (47 h à deux touchers
 par seconde), soit 281 jours à deux sessions de dix minutes par jour ; et cette présence se passe
 devant une mare pleine. Soit on dose (le séjour avance en absence à une fraction de sa vitesse),
-soit on donne quelque chose à faire pendant qu'on attend.
+soit on donne quelque chose à faire pendant qu'on attend. Les **expéditions** (décidées le
+2026-11-18, chantier 6) sont faites pour la seconde piste ; elles ne règlent pas la première.
+**Conséquence pour la publicité** (décidée le 2026-11-19 : une avance rapide « calculée comme une
+absence ») : sous la règle actuelle, une absence ne vaut presque rien, donc l'avance rapide non
+plus. Elle est à redéfinir en même temps que la règle d'absence.
 
 **L'outil est en place** : `MesurePolitiquesDAmeliorationTests` et `MesureDesBonusTests`, à
 relancer après tout réglage.
@@ -168,6 +217,25 @@ Conçus, jamais construits. Le GDD les porte ; aucun n'est bloquant.
 | **Découplage des chapitres** | Séparer le récit de la profondeur | Repoussé depuis la phase 4 |
 | **Miracles** | Ce que le Souffle achetait dans l'ancienne conception | **Gelé** `[P26]`. Coexisteront avec les améliorations de renaissance le jour où ils seront tranchés |
 | **Défiscalisation** | — | Le moins spécifié des cinq |
+
+---
+
+### 6. Les fonctionnalités qui restent à construire
+
+Hors économie et hors contenu des lieux. Elles peuvent avancer en parallèle des chantiers
+1 à 4, sauf mention contraire.
+
+| Fonctionnalité | Ce que c'est | Dépend de |
+|---|---|---|
+| **Expéditions** (décidé 2026-11-18) | Une espèce convaincue part explorer un palier déjà ouvert pendant l'absence et cesse de produire le temps du voyage ; elle rapporte du récit et des points d'arbre, jamais de mana. À calculer en un seul pas | Le récit dans l'état ; la règle d'absence (chantier 2) |
+| **Le récit dans l'état** (BACKEND lot 3) | Les chapitres, le relais qui ouvre `Dialogue`, la pierre trouvée, l'esprit venu ; le journal qui raconte, séparé de la bibliothèque qui inventorie | — |
+| **La bibliothèque / le bestiaire** | Les espèces en silhouette puis en fiche, la faune rencontrée, les textes des égarés | Le récit dans l'état ; la direction du chantier 0 |
+| **La fin** (BACKEND lot 5, D3 et D6) | La pierre : offrandes de mana jusqu'à la contenance, qui font avancer les actes VII à IX ; décider l'après-acte IX | Le lieu VI |
+| **Les saisons cosmétiques** (décidé 2026-11-18) | Frai, gel, crue changent l'aspect de la mare, sans rien à gagner ni à rater | Le chantier 0 |
+| **Une mare qui change à chaque renaissance** | Des changements visuels permanents et cumulés (végétation, lumière, particules), lus sur le nombre de renaissances | Le chantier 0 |
+| **Les retours visuels et le son** | Brancher le flux `Partie.EvenementsDeJeu` : chiffres qui jaillissent, roche qui cède, éclat d'un seuil, eau troublée plus visible ; puis l'audio (une ambiance par lieu, cinq ou six effets) | — |
+| **Le confort d'application** (BACKEND lot 6) | Export et import de la save, copie tournante, notifications locales qui ne punissent pas l'absence, rapport de retour détaillé | — |
+| **La monétisation** | Modèle à choisir (premium, cosmétique F2P, épisodique) ; jamais de puissance ; une seule exception décidée le 2026-11-19, la pub contre avance rapide, plafonnée et obtenable sans pub — à redéfinir avec la règle d'absence. Le GDD §17 n'est pas encore amendé | La durée totale (chantier 2), une vraie partie (chantier 1) |
 
 ---
 
