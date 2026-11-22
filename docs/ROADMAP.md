@@ -53,7 +53,7 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   peuples, magie, dieux — et le vivant est **dérivé du réel** : reconnaissable, mais pas
   réel. Couleurs franches dès la Noue, merveilleux qui croît avec la profondeur, révélations
   de l'arc inchangées. **Ce qui reste, dans l'ordre** :
-  1. **La bible du monde** : les peuples (et lequel est le peuple de la mare), ce que la
+  1. **La bible du monde** (proposition v0.1 dans `docs/BIBLE-DU-MONDE.md`, à valider) : les peuples (et lequel est le peuple de la mare), ce que la
      magie permet et coûte, le panthéon et la place de la marraine, de l'esprit et du héros.
   2. **La dérivation des six espèces livrées** (vairon, loche, épinoche, chabot, lamproie,
      ombre) : ce qui les écarte du réel, à l'aspect et au texte.
@@ -208,7 +208,7 @@ et l'interface (un groupe par lieu livré) suivent `PALIERS_LIVRES` sans changem
   sombre). `[P] P3` reste ouvert pour elles.
 - **La typologie du mana.** `mana-typologie.md` (Tier 1) **n'est toujours pas dans le
   dépôt** ; les types restent provisoires (`type-mana-2`…), y compris pour le Gour.
-- **Quatorze espèces** et leurs succès ; les marques luminescence, minéralisation,
+- **Quinze espèces** (21 moins les 6 livrées) et leurs succès ; les marques luminescence, minéralisation,
   épaississement (GDD §15.1).
 
 **La règle d'engagement** : « *aucune assise n'est produite avant que la précédente ait
