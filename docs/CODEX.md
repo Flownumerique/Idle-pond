@@ -1,6 +1,6 @@
 # IdlePond — le Codex
 
-**Version** : 1.2 — 2026-11-22
+**Version** : 1.3 — 2026-11-22
 **Objet** : la fiction et le lexique. Ce que le monde est, ce que le héros devient, et
 comment chaque chose s'appelle — à l'écran comme dans le code.
 **Remplace** : `idlepond-histoire-v0.1.md`, absorbé et archivé.
@@ -102,11 +102,110 @@ partage les formes.
 - **La couleur.** Les palettes sont franches et plus saturées que l'eau douce réelle, dès la
   Noue. `docs/da/gabarits.md` est à revoir en conséquence.
 
-**Ce qui reste à écrire** (rien de ceci n'est encore canon) : quels peuples, et lequel est le
-peuple de la mare ; ce que la magie permet et ce qu'elle coûte dans la fiction ; le panthéon
-et la place qu'y prennent la marraine, l'esprit et le héros devenu demi-dieu ; la dérivation
-de chacune des six espèces livrées ; ce que devient la charte phonétique (§6) pour les lieux
-plus bas.
+**Validé le 2026-11-22** : les six magies, les tribus, les quinze espèces à venir, les peuples
+de l'eau, le panthéon et la faune d'ambiance, ci-dessous (venus de la bible du monde v0.1).
+**Ce qui reste à écrire** : la dérivation à l'écran de chacune des six espèces livrées ; les
+noms définitifs des quinze espèces à venir et des lieux III à VI (charte phonétique, §6) ; ce
+que fait chaque petit dieu à son temple.
+
+**Quatre règles tiennent tout ce qui suit.** Chaque merveille a une racine réelle, poussée
+jusqu'au merveilleux. L'étrangeté croît vers le bas. L'arc garde ses secrets : l'extérieur se
+devine, il ne se rencontre qu'à l'acte VIII. La mécanique ne bouge pas : une espèce est un
+générateur, aucune monnaie nouvelle.
+
+### Les six magies
+
+La magie, ce sont le mana et le Souffle. Chaque lieu a son mana, et c'est sa magie : c'est la
+typologie du mana que le code nomme encore `type-mana-N`.
+
+| Lieu | La magie | Ce qu'elle fait | Sa couleur | La marque sur le héros |
+|---|---|---|---|---|
+| I · la Noue | **la Sève** | faire pousser, guérir, respirer | vert tendre, or de pollen | les branchies |
+| II · le Gour | **le Courant** | porter, pousser, se souvenir du chemin | bleu clair, écume | les membranes |
+| III · le récif fossile | **l'Éclat** | la lumière et la foudre, la décharge | violet électrique, blanc | la luminescence |
+| IV · la fosse | **le Gel** | figer, cristalliser, faire taire | bleu glacier, argent | la minéralisation |
+| V · la faille chaude | **la Braise** | changer, fondre, forger | rouge sang, orange, soufre | l'épaississement |
+| VI · la mer relique | **le Sel** | conserver, sceller, se rappeler | nacre, vert-de-gris, noir | — (la pierre) |
+
+**Ce qu'elle coûte** : le mana est pris aux morts, la magie de ce monde a toujours un prix payé
+par quelqu'un d'autre. Le Souffle ne se prend pas : il se dépose. Le narrateur n'en dit pas
+plus.
+
+### Les tribus
+
+Chaque espèce qu'on convainc est une **tribu** qui existait avant le héros, avec ses mœurs,
+son métier et sa magie. *Convaincre*, c'est rallier un peuple, pas le capturer. Ces tribus sont
+le peuple du §3 : organisées, savantes, et pourtant des rejetés — aucune n'a jamais franchi.
+
+| Lieu | Tribu | Racine réelle | Ce qu'elle est |
+|---|---|---|---|
+| Noue | **le Chœur des vairons** | le vairon vit en troupe serrée, le mâle rougit au frai | cent corps, une seule voix ; leurs ventres rougeoient quand ils captent la Sève |
+| Noue | **les Loches devineresses** | la loche d'étang s'agite avant l'orage | des oracles de la vase, qui sentent venir les crues, les prédateurs et la magie |
+| Gour | **la Garde des épinoches** | le mâle bâtit un nid et le défend | bâtisseurs et soldats : nids-forteresses de plantes tressées, épines de verre rouge |
+| Gour | **les Chabots-gardiens** | le chabot père garde les œufs sous une pierre | des ermites qui gardent les pierres et ce qu'on y cache ; menacés, ils se pétrifient |
+| Gour | **les Lamproies pèlerines** | la lamproie grimpe les chutes avec sa ventouse | des moines errants qui boivent un peu du mana des autres ; craints, tolérés, sages |
+| Gour | **les Ombres-hérauts** | l'ombre a une dorsale immense et irisée, et sent le thym | aristocrates et poètes ; leur dorsale-étendard projette des mirages |
+
+**La Cour des Brochets** : les anciens seigneurs de la mare, qui régnaient par la peur avant
+lui. Il n'en reste que des ruines d'herbes coupées et des récits. Ils sont **endormis plus
+bas** — personne ne sait où — et forment un fil de récit qui court jusqu'aux lieux profonds.
+Jamais un combat : le héros n'a jamais rien détruit.
+
+### Les quinze espèces à venir (noms provisoires)
+
+Retenues le 2026-11-22. Leurs noms se fixent lieu par lieu, au moment de produire le lieu.
+
+| Lieu | Espèce | Racine réelle | Ce qu'elle est |
+|---|---|---|---|
+| III | le Torpillon | anguille électrique, poisson-chat électrique | il stocke la foudre dans ses flancs et la relâche en arcs |
+| III | les Néonelles | tétra néon | minuscules, elles s'assemblent en constellations et écrivent avec leur lumière |
+| III | l'Archer | poisson-archer | la sentinelle du récif, qui crache des traits d'eau chargés de lumière |
+| III | l'Hachette-miroir | poisson-hachette | ventre-miroir, bonds en éclairs ; on dit qu'il voit l'autre côté de la surface |
+| IV | le Givrin | poissons des glaces, au sang blanc | un poisson de verre qui laisse un sillage de givre ; sa tribu taille des cités de glace |
+| IV | l'Aveugle-qui-chante | poisson cavernicole sans yeux | il voit par le son ; ses chants sont des cartes |
+| IV | le Silure dormeur | silure géant | un ancêtre colossal et presque immobile ; il répond aux questions dans cent ans |
+| IV | l'Esturgeon de quartz | esturgeon, cuirassé et immémorial | un vieillard cuirassé de cristal, qui garde la mémoire des eaux |
+| V | le Cyprin de braise | cyprinodon des sources chaudes | un petit poisson incandescent qui nage dans l'eau bouillante |
+| V | la Salamandre de faille | axolotl, salamandre des légendes | branchies de flamme ; elle repousse tout ce qu'on lui prend |
+| V | le Dormeur de boue | poisson-poumon | il se scelle dans un œuf de boue cuite et se réveille changé, comme le héros |
+| V | le Bichir-dragon | bichir, le « poisson-dragon » | un dragonnet à crête qui crache de la vapeur |
+| VI | le Cœlacanthe | cœlacanthe, fossile vivant | le gardien de la mer close, qui marche sur le fond |
+| VI | la Chimère | chimère aux yeux d'argent | à demi transparente, elle semble appartenir à deux mondes |
+| VI | la Myxine | myxine, la plus ancienne bête sans mâchoire | pâle et primitive, elle scelle ce qu'elle touche et garde l'accès à la pierre |
+
+Les **égarés** (§3) arrivent dans la fosse ; le premier pourrait être un cœlacanthe perdu.
+
+### Les peuples de l'eau
+
+Ils vivent à la lisière ou au-dehors. Avant l'acte VIII, **on ne voit que des indices** ; on
+ne leur parle qu'à l'acte VIII.
+
+| Peuple | Inspiration | Ce qu'il est | Avant l'acte VIII |
+|---|---|---|---|
+| **les Tritons** | le triton, amphibien et dieu marin | passeurs, messagers, marchands entre l'eau et la terre | une silhouette sur la berge |
+| **les Ondins** | ondines et nixes des rivières | des esprits de l'eau courante, faits de remous et de chant | des voix dans le Gour |
+| **les Carapaces** | tortues d'eau, kappas | un peuple lent et savant ; ses écailles sont la mémoire écrite des bassins, et la bibliothèque est la sienne | rien |
+| **le peuple Loutre** | la loutre | riverains rusés, joueurs, voleurs et marchands | rien |
+| **les Néréides** | les néréides | un peuple ancien et oublié de la mer relique | des statues de sel en ruine |
+
+### Le panthéon
+
+| Rang | Qui | Ce qu'il est |
+|---|---|---|
+| L'origine | **la pierre** | ce qui fait l'eau pure, au fond de tout ; ni dieu ni personne : la cause |
+| Les très anciens | **la marraine** | immense, muette, elle voit par tout ce qui vit ; elle décline |
+| Les esprits | **six esprits**, un par magie | Sève, Courant, Éclat, Gel, Braise, Sel ; celui qui vient au héros est l'esprit du Sel, sorti de l'œuf dont la pierre est le reste |
+| Les petits dieux | **le Vieux de la Mare**, **la Dame Grise** (le héron, la peur qui vient d'en haut), **l'Éclair Bleu** (le martin-pêcheur, messager du ciel), **la Mère des Crues**, **le Dormeur** (le silure géant, vénéré dans la fosse) | des divinités locales à temple : chacune accorde quelque chose contre une part permanente du Souffle (les temples et alliés du GDD) |
+| Le devenir | **le demi-dieu**, puis le dieu | le héros aux actes VII à IX ; le dieu reste hors du jeu (§4) |
+
+### La faune d'ambiance
+
+Ce qui vit dans la mare sans produire, et la rend vivante : les **libellules-lanternes**, dont
+les ailes s'allument au crépuscule ; les **gerris-scribes**, qui tracent des runes à la
+surface ; les **grenouilles-chantres**, plus fortes à chaque renaissance ; les **écrevisses
+porte-bannière**, en procession quand une tribu est ralliée ; les **méduses d'eau douce**,
+cloches de lumière du Gour ; l'**hydre**, qui ne vieillit pas et repousse coupée en deux ; les
+**jardins de la Sève**, qui fleurissent et grandissent à chaque renaissance.
 
 ---
 
@@ -603,6 +702,12 @@ système et vivant comme terme de fiction. Aucun identifiant ne le porte.
 ---
 
 ## Journal
+
+**v1.3 — 2026-11-22.** L'auteur valide les sept blocs de la bible du monde v0.1, qui passent
+ici (§2) : les six magies (la typologie du mana), les tribus — chaque espèce est un peuple
+rallié —, la Cour des Brochets endormie plus bas, les quinze espèces à venir sous noms
+provisoires, les peuples de l'eau (des indices seulement avant l'acte VIII), le panthéon et la
+faune d'ambiance. Aucun identifiant ni aucune sauvegarde ne change.
 
 **v1.2 — 2026-11-22.** Le monde devient un **monde parallèle** où la fantaisie existe —
 peuples, magie, dieux —, sur décision de l'auteur, qui trouvait que le jeu avait perdu
