@@ -29,7 +29,12 @@ font foi au Codex v1.5 (§2, « Les lieux et le héros à l'écran ») et dans `
 `da-3-eveil.png` (les quatre éveils). Elles font la direction ; les maquettes en pixels en sont
 tirées.
 
-**Sprites tirés des références** : `docs/da/apercu-sprites-v04.png`, un PNG par sujet dans
+**Inspirations** : `docs/da/inspirations/_parcours.png` (le parcours du héros, de l'œuf à
+l'aura) et `_planche.png` (les quatorze sujets) — les références découpées proprement et passées
+en pixel art détaillé, sans la contrainte des gabarits ; découpes HD dans `hd/`, pixels dans
+`pixels/`, produits par `outils/da/inspirations.py`. C'est la cible de détail du dessin.
+
+**Premier essai à l'échelle du jeu** : `docs/da/apercu-sprites-v04.png`, un PNG par sujet dans
 `docs/da/sprites-v04/`, produits par `outils/da/pixeliser.py` (réduction, alpha tranché, palette
 du héros, lissage, contour). **C'est une base à reprendre à la main, pas un dessin fini** :
 le grain des illustrations reste visible, l'œuf et la larve sont trop petits pour la méthode,
