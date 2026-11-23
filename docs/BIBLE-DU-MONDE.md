@@ -147,6 +147,12 @@ chose. Comparaison : `docs/da/apercu-finesse-scene.png`.
 | **Une scène plus fine** (320 ou 360 px de large) | Les poissons gardent leur taille à l'écran mais gagnent du détail : à 360, un poisson de troupe a 24 px, un représentant 60, le héros adulte ~95 | Tout l'art se redessine à la nouvelle échelle (décor, bandes, héros, marques) — mais il est provisoire et doit l'être de toute façon. Une constante et les gabarits à revoir ; à mesurer sur téléphone (texture plus grande, mêmes lumières) |
 | **Des poissons plus gros à l'écran** (×1,5 à 240 px) | Chaque poisson prend plus de place : plus lisible, plus « mignon » | On en voit beaucoup moins : une troupe de cinq remplit la bande, le représentant touche le héros, la mare paraît encombrée (dernier panneau de la comparaison) |
 
+**Retenu par l'auteur le 2026-11-23 : le niveau de détail de la scène à 360 px**, avec des
+poissons dessinés à cette échelle (≈ 24 px pour la troupe, ≈ 60 px pour un représentant ;
+maquettes : `docs/da/apercu-poissons-v3.png`). Leur **taille à l'écran reste réglable** à part,
+par les gabarits : on la réduira si la mare paraît encombrée. À vérifier sur un vrai téléphone ;
+si la texture coûte trop cher, repli sur 320 px.
+
 **Recommandation** : **la scène plus fine, à 320 px**, et des poissons un peu plus gros à l'écran
 (×1,25). Ça donne environ 26 px pour un poisson de troupe et 65 px pour un représentant, sans
 étouffer la mare. 360 px est possible si le téléphone le tient ; au-delà, le pixel art perd son

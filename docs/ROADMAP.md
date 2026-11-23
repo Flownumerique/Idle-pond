@@ -58,6 +58,10 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   2. **La dérivation des six espèces livrées** (vairon, loche, épinoche, chabot, lamproie,
      ombre) : ce qui les écarte du réel, à l'aspect et au texte.
   3. **Les palettes** de la Noue, du Gour, du héros et des espèces, dans `docs/da/gabarits.md`.
+  - **Retenu le 2026-11-23 : une scène plus fine, à 360 px de large** au lieu de 240
+    (`Gabarits.LARGEUR_VISEE`), pour dessiner des poissons détaillés (≈ 24 px la troupe, ≈ 60 px
+    un représentant) dont la taille à l'écran reste réglable. Tout l'art provisoire se refait à
+    cette échelle ; à mesurer sur un vrai téléphone, repli sur 320 px.
   4. **La faune d'ambiance** (ce qui vit dans la mare sans produire) et **une mare qui change
      à chaque renaissance** (chantier 6).
   Le constat qui a mené à la décision est gardé ci-dessous.
