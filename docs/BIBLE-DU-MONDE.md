@@ -132,6 +132,43 @@ Couleurs en `#RRGGBB`, à régler à l'œil sur le fond de chaque lieu. Le conto
   l'image tramée du nouveau venu, qui s'efface. Ils portent la nouvelle.
 - **Le texte** : « On les voit passer, jamais arriver. Leur voile dit ce qui vient d'avoir lieu. »
 
+### Le représentant de chaque tribu (idée de l'auteur, 2026-11-23)
+
+**L'idée.** Chaque tribu a un **représentant** : un chef, un ancien, dessiné en **grand**. Les
+petits sprites (7 à 12 px) font la foule ; le représentant porte le détail qu'ils ne peuvent pas
+montrer — la feuille de la queue, les runes, les épines de verre, la voile-vitrail. C'est le
+moyen le plus direct d'améliorer le rendu sans grossir toute la mare.
+
+**Ce que ce n'est pas.** Pas un héros : le Codex §3 le dit, « aucun héros parmi eux ». Le
+représentant est une figure de sa tribu, pas un rival du joueur ; il reste plus petit que le
+héros adulte, et le héros reste au centre de l'écran.
+
+| Tribu | Le représentant | Ce que le grand dessin montre |
+|---|---|---|
+| le Chœur des vairons | **le Coryphée**, qui donne le ton au chœur | la queue-feuille nervurée, le ventre de braise, des notes de lumière quand il chante |
+| les Loches devineresses | **la Doyenne**, la plus vieille de la vase | le bronze patiné, les runes turquoise lisibles, les barbillons qui crépitent |
+| la Garde des épinoches | **le Capitaine de la Garde** | les épines de verre en entier, la gorge carmin, l'œil bleu, une herbe tressée en écharpe |
+| les Chabots-gardiens | **le Vieux Gardien**, à demi pierre | la tête de roche fendue, le lichen d'or, une pierre sous lui |
+| les Lamproies pèlerines | **la Mère pèlerine** | l'anneau de bouche gravé, le corps lilas en spirale, le fil de mana qu'elle boit |
+| les Ombres-hérauts | **le Grand Héraut** | la voile-étendard qui change de couleur, les reflets du mirage |
+
+**Où on le voit.**
+
+1. **Dans la fiche de l'espèce** (tiroir Espèces) : le portrait remplace la vignette. C'est là que
+   le gain de rendu est le plus grand, et le coût le plus faible.
+2. **À la conviction** : le représentant entre en scène, traverse le palier et rallie sa troupe.
+   C'est le moment « la tribu accepte ».
+3. **Dans la scène, avec sa troupe** : il nage en tête et mène les comportements (il lance la vague
+   du Chœur, il bâtit le premier nid de la Garde, il se pétrifie le premier).
+4. **Dans la bibliothèque** (chantier 6) : la fiche de la tribu.
+
+**Le gabarit proposé** : `Especes/representants/{id}-i{0..3}.png`, **24 px de long, cadre
+26 × 15**, quatre images de nage comme le héros (seules la queue et les nageoires bougent).
+C'est la taille du héros au stade 0, plus petit que le héros dès le stade 1. Palette : celle de
+l'espèce, plus son accent, plus deux nuances au plus. **Un seul représentant par tribu à
+l'écran**, et seulement sur le palier où se tient sa troupe, pour tenir le budget de lumières et
+la lisibilité.
+
 ### Ce que la proposition demande au code (sans changer l'économie)
 
 | Demande | Où | Taille |
@@ -140,6 +177,7 @@ Couleurs en `#RRGGBB`, à régler à l'œil sur le fond de chaque lieu. Le conto
 | Un quatrième champ `Accent`, dessiné par le générateur de provisoires | `CouleursDePoisson`, `GenerateurDeSprites` | S |
 | Les comportements : unisson, vague, pétrification, agitation, fil de mana, mirage, nids | la scène, abonnée à `Partie.EvenementsDeJeu` et à `PartDeContenance` | M |
 | Les sillages de la Sève et du Courant | la scène | S |
+| Les représentants : un gabarit de plus (26 × 15, quatre images), des provisoires générés, le portrait dans la fiche, l'entrée à la conviction, la tête de troupe | `Gabarits.cs`, `RegistreDArt.cs`, `GenerateurDeSprites`, la fiche du tiroir Espèces, la scène | M |
 | Les textes de bibliothèque | `Textes.cs`, quand la bibliothèque existera (chantier 6) | S |
 
 Aucune constante, aucun test de parité, aucune sauvegarde n'est touché. `LexiqueTests` doit
@@ -148,4 +186,5 @@ rester vert sur les nouveaux textes.
 ### Ce que l'auteur doit trancher
 
 Pour chaque espèce : garder, modifier ou rejeter — la couleur, l'accent, le comportement, le
-texte. Puis : la règle « un accent est une couleur, la lumière seulement en éclair ».
+texte. Puis : la règle « un accent est une couleur, la lumière seulement en éclair ». Enfin, les
+représentants : leurs noms, leur taille (26 × 15), et les quatre endroits où on les voit.
