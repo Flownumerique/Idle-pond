@@ -31,6 +31,7 @@ namespace IdlePond.Jeu.Scene
         readonly List<Eclat> eclats = new List<Eclat>();
         SpriteRenderer corps;
         Light2D eclair;
+        Light2D sienne;
         bool muePendante;
         double debutDeLaMue = -10.0;
         int stade;
@@ -40,6 +41,8 @@ namespace IdlePond.Jeu.Scene
         public int MuesJouees { get; private set; }
         public int NombreDeMarques => marques.Count;
         public bool EclairAllume => eclair != null && eclair.enabled;
+        /// L'intensité de sa lumière propre ; 0 si elle est éteinte (près du jour).
+        public float IntensiteDeSaLumiere => sienne != null && sienne.enabled ? sienne.intensity : 0f;
 
         public HerosEnPixels(Transform parent, CatalogueDArt catalogue)
         {
@@ -71,6 +74,8 @@ namespace IdlePond.Jeu.Scene
             x = Gabarits.X_DU_HEROS - cadre.Largeur / 2;
             y = -(bandeDuBas + 1) * Gabarits.HAUTEUR_DE_BANDE + (Gabarits.HAUTEUR_DE_BANDE - cadre.Hauteur) / 2;
 
+            PoserSaLumiere(vue, bandeDuBas, cadre);
+
             var teinte = Color.white;
             var rang = 0;
             foreach (var assise in heros.Couches ?? new string[0])
@@ -86,6 +91,27 @@ namespace IdlePond.Jeu.Scene
                 rang += 1;
             }
             corps.color = teinte;
+        }
+
+        /// Sa lumière propre : elle comble ce qui manque à sa bande pour qu'il reste d'or. Pleine
+        /// sur tout le corps, elle déborde un peu sur l'eau autour de lui — un halo chaud, plus
+        /// visible à mesure que la mare s'assombrit.
+        void PoserSaLumiere(VueDeScene vue, int bandeDuBas, Cadre cadre)
+        {
+            if (sienne == null)
+            {
+                var go = new GameObject("Sa lumiere");
+                go.transform.SetParent(racine, false);
+                sienne = go.AddComponent<Light2D>();
+                sienne.lightType = Light2D.LightType.Point;
+                sienne.color = Briques.Couleur(RegistreDArt.LUMIERE_DU_HEROS);
+            }
+            var lumiereDeSaBande = vue.Paliers.Count > 0 ? RegistreDArt.LumiereDuPalier(vue.Paliers[bandeDuBas].Index) : 1.0;
+            sienne.intensity = (float)RegistreDArt.IntensiteDuHeros(lumiereDeSaBande);
+            sienne.enabled = sienne.intensity > 0f;
+            sienne.transform.localPosition = new Vector3(cadre.Largeur / 2f, cadre.Hauteur / 2f, 0f);
+            sienne.pointLightInnerRadius = cadre.Largeur * 0.8f;
+            sienne.pointLightOuterRadius = cadre.Largeur * 1.5f;
         }
 
         Light2D Lueur(string assise, MarqueDArt art)

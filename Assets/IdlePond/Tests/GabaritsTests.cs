@@ -57,6 +57,20 @@ namespace IdlePond.Tests
             Assert.That(lumieres.All(l => l > 0 && l + RegistreDArt.LUMIERE_AMBIANTE <= 1.0), Is.True);
         }
 
+        [Test, Description("la lumière du héros comble sa bande jusqu'à 1 : il reste d'or partout, jamais surexposé")]
+        public void La_lumiere_du_heros_le_garde_d_or()
+        {
+            for (var palier = 0; palier < 18; palier++)
+            {
+                var bande = RegistreDArt.LumiereDuPalier(palier);
+                var total = bande + RegistreDArt.LUMIERE_AMBIANTE + RegistreDArt.IntensiteDuHeros(bande);
+                Assert.That(total, Is.EqualTo(1.0).Within(1e-9), $"palier {palier}");
+            }
+            Assert.That(RegistreDArt.IntensiteDuHeros(1.0), Is.EqualTo(0.0), "en plein jour, il n'ajoute rien");
+            Assert.That(RegistreDArt.IntensiteDuHeros(RegistreDArt.LumiereDuPalier(17)),
+                Is.GreaterThan(RegistreDArt.IntensiteDuHeros(RegistreDArt.LumiereDuPalier(0))), "plus on descend, plus il brille");
+        }
+
         [Test, Description("une assise sans dessin emprunte le décor de la Noue, plus sombre, sans erreur")]
         public void Une_assise_sans_dessin_emprunte_la_Noue_assombrie()
         {

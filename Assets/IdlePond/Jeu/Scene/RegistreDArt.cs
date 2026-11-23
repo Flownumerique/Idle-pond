@@ -205,6 +205,14 @@ namespace IdlePond.Jeu.Scene
             };
         }
 
+        /// La lumière propre du héros : chaude, à peine dorée. Elle complète celle de sa bande
+        /// jusqu'à 1, pour qu'il reste d'or au fond comme en surface (bible v0.3 : « la seule
+        /// chose chaude de la mare »), sans jamais le surexposer près du jour.
+        public const int LUMIERE_DU_HEROS = 0xFFF0D8;
+
+        public static double IntensiteDuHeros(double lumiereDeSaBande) =>
+            Math.Max(0.0, 1.0 - lumiereDeSaBande - LUMIERE_AMBIANTE);
+
         public static MarqueDArt MarqueDe(string assise) =>
             assise != null && MARQUES.TryGetValue(assise, out var marque) ? marque : null;
 
