@@ -135,6 +135,23 @@ Couleurs en `#RRGGBB`, à régler à l'œil sur le fond de chaque lieu. Le conto
   l'image tramée du nouveau venu, qui s'efface. Ils portent la nouvelle.
 - **Le texte** : « On les voit passer, jamais arriver. Leur voile dit ce qui vient d'avoir lieu. »
 
+### Agrandir encore : deux leviers (2026-11-23)
+
+L'auteur demande s'il faut agrandir encore. La scène est rendue dans une image d'environ
+**240 × 170 pixels** en portrait (`Gabarits.LARGEUR_VISEE = 240`), agrandie d'un facteur entier
+à l'écran. Il y a deux façons d'avoir des poissons plus beaux, et elles ne coûtent pas la même
+chose. Comparaison : `docs/da/apercu-finesse-scene.png`.
+
+| Levier | Ce qui change | Ce que ça coûte |
+|---|---|---|
+| **Une scène plus fine** (320 ou 360 px de large) | Les poissons gardent leur taille à l'écran mais gagnent du détail : à 360, un poisson de troupe a 24 px, un représentant 60, le héros adulte ~95 | Tout l'art se redessine à la nouvelle échelle (décor, bandes, héros, marques) — mais il est provisoire et doit l'être de toute façon. Une constante et les gabarits à revoir ; à mesurer sur téléphone (texture plus grande, mêmes lumières) |
+| **Des poissons plus gros à l'écran** (×1,5 à 240 px) | Chaque poisson prend plus de place : plus lisible, plus « mignon » | On en voit beaucoup moins : une troupe de cinq remplit la bande, le représentant touche le héros, la mare paraît encombrée (dernier panneau de la comparaison) |
+
+**Recommandation** : **la scène plus fine, à 320 px**, et des poissons un peu plus gros à l'écran
+(×1,25). Ça donne environ 26 px pour un poisson de troupe et 65 px pour un représentant, sans
+étouffer la mare. 360 px est possible si le téléphone le tient ; au-delà, le pixel art perd son
+grain.
+
 ### Le représentant de chaque tribu (idée de l'auteur, 2026-11-23)
 
 **L'idée.** Chaque tribu a un **représentant** : un chef, un ancien, dessiné en **grand**. Les
