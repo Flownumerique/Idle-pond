@@ -1,0 +1,97 @@
+# Le prototype WebGL, construit par Unity (game-ci) et publié sur Vercel.
+#
+# Vercel n'a pas Unity : il ne peut pas construire le jeu lui-même. Ce workflow le construit
+# (IdlePond.Editeur.Constructeur.WebGL → Build/webgl), puis envoie le dossier tout prêt à
+# Vercel (« prebuilt ») : Vercel ne fait que servir des fichiers statiques. Le build est en
+# gzip avec décompression dans le navigateur : aucun en-tête à régler.
+#
+# Secrets du dépôt nécessaires :
+#   UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD — les mêmes que le workflow « Unity » ;
+#   VERCEL_TOKEN — un jeton (Vercel ▸ Account Settings ▸ Tokens) ;
+#   VERCEL_ORG_ID, VERCEL_PROJECT_ID — Vercel ▸ projet ▸ Settings ▸ General (Project ID),
+#     et l'identifiant de l'équipe ou du compte (Team ID / Your ID).
+# S'il en manque un, le job ne lance rien et le dit par un avertissement : il ne passe pas
+# au rouge.
+#
+# Les déploiements automatiques de Vercel à chaque push sont coupés par `vercel.json` à la
+# racine : ils construisaient l'ancienne version web, qui n'est plus à la racine.
+name: WebGL sur Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+      - '.github/workflows/webgl-vercel.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: webgl-vercel
+  cancel-in-progress: true
+
+jobs:
+  construire-et-publier:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Secrets fournis ?
+        id: secrets
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          manque=""
+          [ -z "$UNITY_LICENSE" ] && manque="$manque UNITY_LICENSE"
+          [ -z "$VERCEL_TOKEN" ] && manque="$manque VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ] && manque="$manque VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && manque="$manque VERCEL_PROJECT_ID"
+          if [ -z "$manque" ]; then
+            echo "presents=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presents=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=WebGL non publié::secrets absents :$manque (voir l'en-tête du workflow)."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.presents == 'true'
+
+      - uses: actions/cache@v4
+        if: steps.secrets.outputs.presents == 'true'
+        with:
+          path: Library
+          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-WebGL-
+
+      - name: Construire le WebGL
+        if: steps.secrets.outputs.presents == 'true'
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+          buildMethod: IdlePond.Editeur.Constructeur.WebGL
+
+      - name: Préparer la sortie pour Vercel
+        if: steps.secrets.outputs.presents == 'true'
+        run: |
+          test -f Build/webgl/index.html || { echo "::error::Build/webgl/index.html introuvable"; exit 1; }
+          mkdir -p .vercel/output/static
+          cp -r Build/webgl/. .vercel/output/static/
+          echo '{ "version": 3 }' > .vercel/output/config.json
+
+      - name: Publier sur Vercel
+        if: steps.secrets.outputs.presents == 'true'
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          adresse=$(npx --yes vercel@39.1.1 deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}")
+          echo "Publié : $adresse"
+          echo "### Prototype WebGL publié : $adresse" >> "$GITHUB_STEP_SUMMARY"
