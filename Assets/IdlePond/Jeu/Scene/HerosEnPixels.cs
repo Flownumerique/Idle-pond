@@ -8,7 +8,8 @@ namespace IdlePond.Jeu.Scene
     /// IdlePond — le héros (spec DA §3) : son corps au stade de son niveau, et par-dessus une
     /// marque par assise traversée, dans l'ordre. Une marque peut teinter tout le corps et
     /// émettre une lumière. Quand le stade monte, il mue : un éclair et des écailles qui
-    /// tombent. Il ne mue ni au chargement ni à la renaissance (`VueDeScene.EstUneMue`).
+    /// tombent. Il ne mue ni au chargement ni à la renaissance (`VueDeScene.EstUneMue`) :
+    /// à la renaissance, il rentre dans son œuf et en ressort (le renouveau).
     /// </summary>
     public sealed class HerosEnPixels
     {
@@ -16,6 +17,19 @@ namespace IdlePond.Jeu.Scene
         const float DUREE_DE_L_ECLAIR = 0.4f;
         const float DUREE_DES_ECLATS = 0.8f;
         const float INTENSITE_DE_L_ECLAIR = 3f;
+
+        /// Le renouveau (bible v0.4, d'après da-1 ; Codex, acte III), joué à chaque renaissance, jamais au
+        /// chargement : l'œuf tremble, se fend, éclate ; la larve nage ; l'alevin paraît.
+        public enum PhaseDuRenouveau { Oeuf, OeufFendu, Larve, Finie }
+        public const float FIN_DE_L_OEUF = 1.2f;
+        public const float ECLATEMENT = 1.7f;
+        public const float DUREE_DU_RENOUVEAU = 3.1f;
+
+        public static PhaseDuRenouveau PhaseA(float age) =>
+            age < FIN_DE_L_OEUF ? PhaseDuRenouveau.Oeuf
+            : age < ECLATEMENT ? PhaseDuRenouveau.OeufFendu
+            : age < DUREE_DU_RENOUVEAU ? PhaseDuRenouveau.Larve
+            : PhaseDuRenouveau.Finie;
 
         sealed class Eclat
         {
@@ -33,6 +47,10 @@ namespace IdlePond.Jeu.Scene
         readonly List<SpriteRenderer> etoiles = new List<SpriteRenderer>();
         SpriteRenderer corps;
         SpriteRenderer rubans;
+        SpriteRenderer renouveau;
+        bool renouveauPendant;
+        double debutDuRenouveau = -10.0;
+        bool larveSortie;
         Light2D eclair;
         Light2D sienne;
         bool muePendante;
@@ -42,6 +60,11 @@ namespace IdlePond.Jeu.Scene
 
         public int? StadeAffiche { get; private set; }
         public int MuesJouees { get; private set; }
+        public int? RenaissancesAffichees { get; private set; }
+        public int RenouveauxJoues { get; private set; }
+        /// Pendant le renouveau, l'œuf puis la larve tiennent sa place : son corps, ses marques
+        /// et son éveil sont cachés.
+        public bool EnRenouveau { get; private set; }
         public int NombreDeMarques => marques.Count;
         /// Son éveil (bible v0.4) : 0 à 4, porté par ses renaissances.
         public int Eveil { get; private set; }
@@ -68,6 +91,13 @@ namespace IdlePond.Jeu.Scene
                 muePendante = true;
             }
             StadeAffiche = heros.Stade;
+            if (RenaissancesAffichees.HasValue && heros.Renaissances > RenaissancesAffichees.Value)
+            {
+                RenouveauxJoues += 1;
+                renouveauPendant = true;
+                EnRenouveau = true;
+            }
+            RenaissancesAffichees = heros.Renaissances;
             stade = heros.Stade;
 
             foreach (var m in marques) if (m != null) Object.Destroy(m.gameObject);
@@ -100,6 +130,72 @@ namespace IdlePond.Jeu.Scene
             }
             corps.color = teinte;
             PoserSonEveil(heros.Renaissances);
+            if (EnRenouveau) Montrer(false);
+        }
+
+        /// Son corps, ses marques et son éveil : cachés pendant le renouveau.
+        void Montrer(bool visible)
+        {
+            if (corps != null) corps.enabled = visible;
+            foreach (var m in marques) if (m != null) m.enabled = visible;
+            foreach (var r in eveil) if (r != null) r.enabled = visible;
+            foreach (var e in etoiles) if (e != null) e.enabled = visible;
+        }
+
+        void AnimerLeRenouveau(double horloge)
+        {
+            if (renouveauPendant)
+            {
+                renouveauPendant = false;
+                debutDuRenouveau = horloge;
+                larveSortie = false;
+                if (renouveau == null) renouveau = Briques.Poser(racine, "Renouveau", null, 0, 0, OrdreDeRendu.CORPS);
+            }
+            if (!EnRenouveau) return;
+            var age = (float)(horloge - debutDuRenouveau);
+            var phase = PhaseA(age);
+            if (phase == PhaseDuRenouveau.Finie)
+            {
+                EnRenouveau = false;
+                renouveau.enabled = false;
+                Montrer(true);
+                // L'alevin paraît dans un éclair, sans écailles.
+                Eclater(horloge, false);
+                return;
+            }
+            Montrer(false);
+            if (phase == PhaseDuRenouveau.Larve && !larveSortie)
+            {
+                larveSortie = true;
+                Eclater(horloge, true); // la coquille éclate
+            }
+            Sprite sprite;
+            var dx = 0;
+            switch (phase)
+            {
+                case PhaseDuRenouveau.Oeuf:
+                    sprite = catalogue != null ? catalogue.Oeuf : null;
+                    // Il tremble d'un pixel, de plus en plus souvent.
+                    if (age > 0.5f) dx = (int)(age * 6) % 2;
+                    break;
+                case PhaseDuRenouveau.OeufFendu:
+                    sprite = catalogue != null ? catalogue.OeufFendu : null;
+                    dx = (int)(age * 12) % 2;
+                    break;
+                default:
+                    var larves = catalogue != null ? catalogue.Larve : null;
+                    sprite = larves != null && larves.Length > 0 ? larves[(int)(age * 6) % larves.Length] : null;
+                    // Elle nage de quatre pixels vers l'avant.
+                    dx = Mathf.RoundToInt(4f * (age - ECLATEMENT) / (DUREE_DU_RENOUVEAU - ECLATEMENT)) - 4;
+                    break;
+            }
+            renouveau.enabled = sprite != null;
+            renouveau.sprite = sprite;
+            if (sprite == null) return;
+            var c = Gabarits.CadreDuCorps(stade);
+            var w = Mathf.RoundToInt(sprite.rect.width);
+            var h = Mathf.RoundToInt(sprite.rect.height);
+            renouveau.transform.localPosition = new Vector3((c.Largeur - w) / 2 + dx, (c.Hauteur - h) / 2, 0f);
         }
 
         /// Son éveil (bible v0.4, d'après da-3) : I les runes sur lui ; II les rubans du voile
@@ -200,6 +296,7 @@ namespace IdlePond.Jeu.Scene
             var monte = Mathf.Repeat(secondes, 2.2f) < 1.1f ? 1 : 0;
             racine.localPosition = new Vector3(x, y + monte, 0f);
             AnimerLEveil(secondes);
+            AnimerLeRenouveau(horloge);
             AnimerLaMue(horloge);
         }
 
@@ -210,29 +307,41 @@ namespace IdlePond.Jeu.Scene
             if (muePendante)
             {
                 muePendante = false;
-                debutDeLaMue = secondes;
-                var cadre = Gabarits.CadreDuCorps(stade);
-                if (eclair == null)
-                {
-                    var go = new GameObject("Eclair");
-                    go.transform.SetParent(racine, false);
-                    eclair = go.AddComponent<Light2D>();
-                    eclair.lightType = Light2D.LightType.Point;
-                    eclair.color = Color.white;
-                }
-                eclair.enabled = true;
-                eclair.transform.localPosition = new Vector3(cadre.Largeur / 2f, cadre.Hauteur / 2f, 0f);
-                eclair.pointLightOuterRadius = cadre.Largeur;
-                foreach (var e in eclats) if (e.Rendu != null) Object.Destroy(e.Rendu.gameObject);
-                eclats.Clear();
-                for (var i = 0; i < ECLATS; i++)
-                {
-                    // Des écailles réparties sur le dos, sans hasard : (7i + 3) mod largeur.
-                    var depart = new Vector2Int((i * 7 + 3) % cadre.Largeur, cadre.Hauteur / 2 + (i * 5) % (cadre.Hauteur / 2));
-                    var rendu = Briques.Poser(racine, "Eclat", catalogue != null ? catalogue.Eclat : null, depart.x, depart.y, OrdreDeRendu.PARTICULES);
-                    eclats.Add(new Eclat { Rendu = rendu, Depart = depart, Sens = i % 2 == 0 ? -1 : 1 });
-                }
+                Eclater(secondes, true);
             }
+            AnimerLEclair(secondes);
+        }
+
+        /// Un éclair blanc sur lui ; avec des éclats, des écailles (ou des bouts de coquille) qui
+        /// tombent. La mue, l'œuf qui éclate et l'alevin qui paraît le partagent.
+        void Eclater(double secondes, bool avecDesEclats)
+        {
+            debutDeLaMue = secondes;
+            var cadre = Gabarits.CadreDuCorps(stade);
+            if (eclair == null)
+            {
+                var go = new GameObject("Eclair");
+                go.transform.SetParent(racine, false);
+                eclair = go.AddComponent<Light2D>();
+                eclair.lightType = Light2D.LightType.Point;
+                eclair.color = Color.white;
+            }
+            eclair.enabled = true;
+            eclair.transform.localPosition = new Vector3(cadre.Largeur / 2f, cadre.Hauteur / 2f, 0f);
+            eclair.pointLightOuterRadius = cadre.Largeur;
+            foreach (var e in eclats) if (e.Rendu != null) Object.Destroy(e.Rendu.gameObject);
+            eclats.Clear();
+            for (var i = 0; avecDesEclats && i < ECLATS; i++)
+            {
+                // Des écailles réparties sur le dos, sans hasard : (7i + 3) mod largeur.
+                var depart = new Vector2Int((i * 7 + 3) % cadre.Largeur, cadre.Hauteur / 2 + (i * 5) % (cadre.Hauteur / 2));
+                var rendu = Briques.Poser(racine, "Eclat", catalogue != null ? catalogue.Eclat : null, depart.x, depart.y, OrdreDeRendu.PARTICULES);
+                eclats.Add(new Eclat { Rendu = rendu, Depart = depart, Sens = i % 2 == 0 ? -1 : 1 });
+            }
+        }
+
+        void AnimerLEclair(double secondes)
+        {
             var age = (float)(secondes - debutDeLaMue);
             // L'éclair éteint ne coûte plus rien au rendu ; le prochain réveille la lumière.
             if (eclair != null) eclair.enabled = age < DUREE_DE_L_ECLAIR;

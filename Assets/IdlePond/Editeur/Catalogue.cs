@@ -42,6 +42,9 @@ namespace IdlePond.Editeur
                 Aura = S(Chemins.Aura(s)),
             }).ToArray();
             catalogue.Etoile = S(Chemins.ETOILE);
+            catalogue.Oeuf = S(Chemins.OEUF);
+            catalogue.OeufFendu = S(Chemins.OEUF_FENDU);
+            catalogue.Larve = Enumerable.Range(0, 2).Select(i => S(Chemins.Larve(i))).ToArray();
             catalogue.Marques =RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.MarqueDAssise
             {
                 Assise = a,

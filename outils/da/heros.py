@@ -72,13 +72,13 @@ def lisser(im):
             px[x, y] = max(compte, key=compte.get)
 
 
-def contourner(im):
+def contourner(im, couleur=CONTOUR):
     px = im.load()
     bord = [(x, y) for y in range(im.height) for x in range(im.width) if px[x, y][3] and any(
         not (0 <= x + dx < im.width and 0 <= y + dy < im.height) or px[x + dx, y + dy][3] == 0
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
     for x, y in bord:
-        if sum(px[x, y][:3]) > 200: px[x, y] = CONTOUR + (255,)
+        if sum(px[x, y][:3]) > 200: px[x, y] = couleur + (255,)
 
 
 def pedoncule(im):
@@ -232,8 +232,8 @@ def toile_d_eveil(im, s):
 
 
 def runes(im, s, queue, ox, oy, tronc):
-    """I · les runes : une spirale turquoise sur le flanc, et des traits turquoise sur les
-    nageoires (une colonne sur trois, à côté des membranes du Gour). Même cadre que le corps."""
+    """I · les runes : une spirale turquoise sur le flanc, et une ligne de points le long du
+    dos — sur le corps seulement, les nageoires sont aux membranes du Gour. Même cadre que le corps."""
     px = im.load(); pt = tronc.resize(im.size, Image.BOX).load()
     out = Image.new("RGBA", im.size, (0, 0, 0, 0)); po = out.load()
     def corps(x, y): return 0 <= x < im.width and 0 <= y < im.height and px[x, y][3] and px[x, y][:3] != CONTOUR
@@ -244,9 +244,11 @@ def runes(im, s, queue, ox, oy, tronc):
              3: [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3), (2, 3), (1, 3), (0, 3), (0, 2), (1, 1), (2, 1)]}[s]
     for i, (dx, dy) in enumerate(motif):
         if corps(cx + dx, cy + dy): po[cx + dx, cy + dy] = TURQUOISE_CLAIR if i == len(motif) - 1 else TURQUOISE
-    for y in range(im.height):
-        for x in range(queue + 4, ox - 1):
-            if corps(x, y) and pt[x, y] < 128 and x % 3 == 2: po[x, y] = TURQUOISE
+    # Le long du dos, sous le contour et dans le tronc : un point sur deux. Les nageoires
+    # restent aux membranes du Gour.
+    for x in range(queue + 3, ox - 1, 2):
+        haut = min((y for y in range(im.height) if corps(x, y) and pt[x, y] >= 128), default=None)
+        if haut is not None and haut + 1 < im.height and corps(x, haut + 1): po[x, haut + 1] = TURQUOISE
     return out
 
 
@@ -308,6 +310,44 @@ def etoile():
     return t
 
 
+# Le renouveau (bible v0.4, d'après da-1 ; Codex, acte III : il rentre dans son œuf, et le même
+# en ressort) : l'œuf et la larve, joués à chaque renaissance. Pas
+# des stades : une courte animation. Mêmes couleurs que le héros (et le crème de l'éveil).
+LARGEUR_DE_L_OEUF, LARGEUR_DE_LA_LARVE = 17, 25
+# Translucides : un contour doux (un brun du corps), et tout ce qui n'est pas la réserve d'or
+# pâli vers le blanc.
+CONTOUR_DOUX = (180, 109, 56)
+
+
+def palir(im):
+    px = im.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            r, g, b, a = px[x, y]
+            if a and not (r - b > 150 and g < 190):
+                px[x, y] = (round(r * .55 + 255 * .45), round(g * .55 + 255 * .45), round(b * .55 + 255 * .45), a)
+
+
+def renouveau(teintes):
+    pal = teintes + [CREME_PALE[:3]]
+    oeuf = reduire(Image.open(os.path.join(HD, "cycle-0-oeuf.png")).convert("RGBA"), LARGEUR_DE_L_OEUF)
+    larve = reduire(Image.open(os.path.join(HD, "cycle-1-larve.png")).convert("RGBA"), LARGEUR_DE_LA_LARVE)
+    for im in (oeuf, larve): palir(im); caler(im, pal); lisser(im); contourner(im, CONTOUR_DOUX)
+    # L'œil de l'embryon, enroulé dans l'œuf ; celui de la larve, grand, à l'avant.
+    poser_oeil(oeuf, 0.64, 0.40, 1)
+    poser_oeil(larve, 0.84, 0.32, 1)
+    # L'œuf fendu : une fêlure en zigzag sur le haut de la coquille.
+    fendu = oeuf.copy(); pf = fendu.load()
+    y0 = round(oeuf.height * 0.22)
+    for x in range(3, oeuf.width - 3):
+        y = y0 + (0 if (x // 2) % 2 else 1)
+        if pf[x, y][3]: pf[x, y] = CONTOUR + (255,)
+    for x, y in ((oeuf.width // 2, y0 - 1), (oeuf.width // 2, y0 - 2), (oeuf.width // 2 - 3, y0 + 2)):
+        if pf[x, y][3]: pf[x, y] = CONTOUR + (255,)
+    queue = round(larve.width * 0.45)
+    return oeuf, fendu, [battre(larve, queue, d) for d in (1, -1)]
+
+
 def main():
     voir = sys.argv[sys.argv.index("--voir") + 1] if "--voir" in sys.argv else None
     hds = [Image.open(os.path.join(HD, f"croissance-{s}.png")).convert("RGBA") for s in range(len(LARGEURS))]
@@ -336,6 +376,12 @@ def main():
         infos.append({"stade": s, "cadre": [im.width, im.height], "pedoncule": queue,
                       "oeil": [ox, im.height - 1 - oy], "ancrages": ancrages(im, queue, ox, oy)})
     etoile().save(os.path.join(ART, "eveil", "etoile.png"))
+    os.makedirs(os.path.join(ART, "renouveau"), exist_ok=True)
+    oeuf, fendu, larves = renouveau(teintes)
+    oeuf.save(os.path.join(ART, "renouveau", "oeuf.png"))
+    fendu.save(os.path.join(ART, "renouveau", "oeuf-fendu.png"))
+    for i, l in enumerate(larves): l.save(os.path.join(ART, "renouveau", f"larve-i{i}.png"))
+    infos.append({"renouveau": {"oeuf": list(oeuf.size), "larve": list(larves[0].size)}})
     hexa = ["0x%02X%02X%02X" % t for t in teintes]
     infos.append({"eveil": ["0x%02X%02X%02X" % c[:3] for c in EVEIL], "marges": MARGES})
     print(json.dumps({"palette": hexa, "stades": infos}, indent=1))
@@ -348,6 +394,11 @@ def main():
         for im in corps:
             g = im.resize((im.width * E, im.height * E), Image.NEAREST); out.paste(g, (x, 16), g); x += g.width + 16
         out.save(os.path.join(voir, "heros-corps.png"))
+        ims = [oeuf, fendu] + larves
+        out = Image.new("RGB", (sum(i.width * E + 16 for i in ims) + 16, max(i.height for i in ims) * E + 32), (30, 70, 120)); x = 16
+        for im in ims:
+            g = im.resize((im.width * E, im.height * E), Image.NEAREST); out.paste(g, (x, 16), g); x += g.width + 16
+        out.save(os.path.join(voir, "heros-renouveau.png"))
 
 
 main()

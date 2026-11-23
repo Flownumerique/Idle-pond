@@ -41,11 +41,16 @@ le grain des illustrations reste visible, l'œuf et la larve sont trop petits po
 et l'anneau, les étincelles et l'aura — de la lumière douce dans les références — ne survivent
 pas à l'alpha tranché : ils seront dessinés et animés en jeu, à part du corps.
 
-**Dans le prototype** (2026-11-23, à l'essai, pas encore validé) : le corps des quatre stades
-vient de la lignée `da-2`, avec son œil, les marques de la Noue et du Gour replacées sur ce
-corps, et les quatre éveils en calques (runes ; rubans en deux images ; anneau et étoiles qui
-tournent ; aura), seuils 1, 3, 6, 10. Tout est produit par `outils/da/heros.py` et se refait
-d'une commande. Pas encore : l'œuf et la larve à la renaissance ; l'échelle 360 px.
+**Tranché par l'auteur** (2026-11-23) : la lignée **`da-2`** ; l'œuf et la larve **joués à
+chaque renaissance**. Le reste avance tel quel, à l'essai.
+
+**Dans le prototype** (2026-11-23, à l'essai) : le corps des quatre stades vient de la lignée
+`da-2`, avec son œil, les marques de la Noue et du Gour replacées sur ce corps, et les quatre
+éveils en calques (runes ; rubans en deux images ; anneau et étoiles qui tournent ; aura),
+seuils 1, 3, 6, 10. À chaque renaissance, **le renouveau** : l'œuf tremble, se fend, éclate ;
+la larve nage ; l'alevin paraît dans un éclair (3,1 s). Les runes sont sur le corps seulement
+(spirale du flanc, points le long du dos) : les nageoires restent aux membranes du Gour. Tout
+est produit par `outils/da/heros.py` et se refait d'une commande. Pas encore : l'échelle 360 px.
 
 **L'idée** : il commence **ordinaire** — l'alevin d'une ponte ordinaire (Codex, acte I). Son
 corps gagne du détail avec sa **puissance** (son niveau, dans le cycle), et du merveilleux avec
@@ -61,12 +66,13 @@ reste d'or partout. Plus la mare est sombre, plus son halo se voit sur l'eau aut
 Grand œil sombre avec un éclat, petit sourire, joue rose : il a un visage dès l'alevin
 (`da-2`). C'est ce qui en fait un personnage et non un poisson parmi d'autres.
 
-### La naissance — l'œuf et la larve (`da-1`, les deux premiers)
+### Le renouveau — l'œuf et la larve (`da-1`, les deux premiers)
 
 L'œuf translucide, l'embryon enroulé autour de sa réserve d'or ; puis la larve pâle, presque
-transparente, la réserve sous le ventre. **Proposé** : ils ne sont pas des stades de jeu ; ils
+transparente, la réserve sous le ventre. **Retenu** : ils ne sont pas des stades de jeu ; ils
 se jouent **à chaque renaissance**, en courte animation — l'œuf s'ouvre, la larve nage,
-l'alevin apparaît. La renaissance devient une éclosion.
+l'alevin apparaît. C'est l'acte III du Codex mis en image : il rentre dans son œuf, et le même
+en ressort. Le mot « éclosion » reste à l'acte I (mot mort ensuite) : on dit **le renouveau**.
 
 ### La puissance — le niveau (`da-2`)
 
@@ -77,8 +83,8 @@ l'alevin apparaît. La renaissance devient une éclosion.
 | 2 | 16 à 255 | **les nageoires s'allongent** et s'effrangent |
 | 3 | 256 et plus | **la queue en voile** : longue, ample, en plis, comme un combattant |
 
-`da-1` propose une autre lignée adulte, plus fine et plus réaliste ; `da-2` est retenue ici
-parce que la croissance s'y lit mieux. À trancher.
+`da-1` propose une autre lignée adulte, plus fine et plus réaliste ; **`da-2` est retenue**
+(2026-11-23) parce que la croissance s'y lit mieux.
 
 ### L'éveil — les renaissances (`da-3`)
 
@@ -103,12 +109,11 @@ celui qui franchit et revient.
 - **Des cadres plus grands** : la queue en voile et les rubans dépassent les gabarits actuels
   (65 × 31 au stade 3 ; les tirages font 70 × 45 et 80 × 39). Le passage à 360 px, déjà validé,
   est le bon moment pour les agrandir.
-- **Les marques des lieux et les runes se partagent les nageoires** : le bleu des membranes du
-  Gour et le turquoise des runes sont voisins. À distinguer — runes sur le flanc seulement, ou
-  membranes dans un autre bleu.
+- **Les marques des lieux et les runes ne se partagent plus les nageoires** : les runes sont
+  sur le corps seulement, les membranes du Gour sur les nageoires (un test le garde).
 
 ### Ce que l'auteur doit trancher
 
-La lignée de croissance (`da-2` ou `da-1`) ; l'œuf et la larve joués à la renaissance ; les
-quatre éveils et leurs seuils (1, 3, 6, 10 proposés, pour un parcours visé de 14) ; le partage
-des nageoires entre marques et runes ; faire ce travail avant ou avec le passage à 360 px.
+Les quatre éveils et leurs seuils (1, 3, 6, 10 proposés, pour un parcours visé de 14) ; le
+partage du corps entre runes et marques, tel qu'il est en jeu ; faire le dessin final avant
+ou avec le passage à 360 px.

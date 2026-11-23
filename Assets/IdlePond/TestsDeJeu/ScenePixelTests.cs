@@ -220,6 +220,28 @@ namespace IdlePond.TestsDeJeu
         }
 
         [UnityTest]
+        public IEnumerator Il_sort_de_son_oeuf_a_la_renaissance_jamais_au_chargement()
+        {
+            var e = EtatDeLaNoue(16, false);
+            partie.Remplacer(e with { Permanent = e.Permanent with { NombreDeRenaissances = 2 } });
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.RenouveauxJoues, Is.EqualTo(0), "une partie chargée ne renaît pas");
+            Assert.That(scene.Heros.EnRenouveau, Is.False);
+            var renee = EtatDeLaNoue(1, false);
+            partie.Remplacer(renee with { Permanent = renee.Permanent with { NombreDeRenaissances = 3 } });
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.RenouveauxJoues, Is.EqualTo(1), "il ressort de son œuf");
+            Assert.That(scene.Heros.EnRenouveau, Is.True);
+            Assert.That(scene.Heros.MuesJouees, Is.EqualTo(0), "et pas une mue");
+            yield return new WaitForSeconds(HerosEnPixels.DUREE_DU_RENOUVEAU + 0.3f);
+            Assert.That(scene.Heros.EnRenouveau, Is.False, "puis l'alevin paraît");
+        }
+
+        [UnityTest]
         public IEnumerator Un_nageur_hors_champ_n_est_pas_anime()
         {
             SceneDeLaMare scene = null;

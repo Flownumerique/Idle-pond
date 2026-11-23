@@ -24,6 +24,11 @@ namespace IdlePond.Jeu.Scene
         public Images[] Corps = Array.Empty<Images>();
         public EveilDUnStade[] Eveils = Array.Empty<EveilDUnStade>();
         public Sprite Etoile;
+        /// Le renouveau (bible v0.4, d'après da-1), joué à chaque renaissance : l'œuf, l'œuf
+        /// fendu, les deux images de la larve.
+        public Sprite Oeuf;
+        public Sprite OeufFendu;
+        public Sprite[] Larve = Array.Empty<Sprite>();
         public MarqueDAssise[] Marques = Array.Empty<MarqueDAssise>();
         public ImagesDEspece[] Especes = Array.Empty<ImagesDEspece>();
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();

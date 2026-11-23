@@ -210,6 +210,42 @@ namespace IdlePond.Tests
             Assert.That(new Cadre(le, he), Is.EqualTo(new Cadre(Gabarits.COTE_D_ETOILE, Gabarits.COTE_D_ETOILE)));
         }
 
+        [Test, Description("les runes restent sur le corps : jamais sur un pixel des membranes du Gour")]
+        public void Les_runes_ne_touchent_pas_les_membranes()
+        {
+            for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
+            {
+                var runes = LirePng(Art(Chemins.Runes(stade)), out _, out _);
+                var gour = LirePng(Art(Chemins.MarqueDAssise("gour", stade)), out _, out _);
+                for (var i = 0; i < runes.Length; i++)
+                    Assert.That(runes[i].a > 0 && gour[i].a > 0, Is.False, $"stade {stade}, pixel {i}");
+            }
+        }
+
+        [Test, Description("le renouveau : l'œuf, l'œuf fendu et la larve tiennent dans le cadre de l'alevin")]
+        public void Le_renouveau_tient_dans_le_cadre_de_l_alevin()
+        {
+            var cadre = Gabarits.CadreDuCorps(0);
+            LirePng(Art(Chemins.OEUF), out var lo, out var ho);
+            LirePng(Art(Chemins.OEUF_FENDU), out var lf, out var hf);
+            Assert.That((lf, hf), Is.EqualTo((lo, ho)), "l'œuf fendu a la taille de l'œuf");
+            Assert.That(lo <= cadre.Largeur && ho <= cadre.Hauteur + 4, Is.True, "l'œuf");
+            for (var i = 0; i < 2; i++)
+            {
+                LirePng(Art(Chemins.Larve(i)), out var l, out var h);
+                Assert.That(l <= cadre.Largeur + 4 && h <= cadre.Hauteur, Is.True, $"la larve, image {i}");
+            }
+        }
+
+        [Test, Description("le renouveau : l'œuf, puis fendu, puis la larve, puis finie")]
+        public void Le_renouveau_suit_ses_phases()
+        {
+            Assert.That(HerosEnPixels.PhaseA(0f), Is.EqualTo(HerosEnPixels.PhaseDuRenouveau.Oeuf));
+            Assert.That(HerosEnPixels.PhaseA(HerosEnPixels.FIN_DE_L_OEUF), Is.EqualTo(HerosEnPixels.PhaseDuRenouveau.OeufFendu));
+            Assert.That(HerosEnPixels.PhaseA(HerosEnPixels.ECLATEMENT), Is.EqualTo(HerosEnPixels.PhaseDuRenouveau.Larve));
+            Assert.That(HerosEnPixels.PhaseA(HerosEnPixels.DUREE_DU_RENOUVEAU), Is.EqualTo(HerosEnPixels.PhaseDuRenouveau.Finie));
+        }
+
         [Test, Description("chaque espèce livrée a ses deux images, aux dimensions de son rang")]
         public void Chaque_espece_livree_a_ses_images()
         {
@@ -300,6 +336,9 @@ namespace IdlePond.Tests
             }
             Assert.That(catalogue.Voile, Is.Not.Null);
             Assert.That(catalogue.Etoile, Is.Not.Null);
+            Assert.That(catalogue.Oeuf, Is.Not.Null);
+            Assert.That(catalogue.OeufFendu, Is.Not.Null);
+            Assert.That(catalogue.Larve, Has.Length.EqualTo(2).And.All.Not.Null);
             Assert.That(catalogue.Eclat, Is.Not.Null);
         }
 

@@ -77,8 +77,21 @@ namespace IdlePond.TestsDeJeu
             {
                 var eveil = ScenePixelTests.EtatDeLaNoue(256, false);
                 partie.Remplacer(eveil with { Permanent = eveil.Permanent with { NombreDeRenaissances = renaissances } });
-                yield return new WaitForSeconds(1.2f);
+                // Une renaissance de plus joue le renouveau : on attend que l'alevin soit sorti.
+                yield return new WaitForSeconds(HerosEnPixels.DUREE_DU_RENOUVEAU + 0.5f);
                 Ecrire(scene.Rendu, Path.Combine(dossier, $"portrait-eveil-{renaissances}.png"));
+            }
+
+            // Le renouveau (bible v0.4) : une renaissance de plus, l'œuf, l'œuf fendu, la larve.
+            var avant = ScenePixelTests.EtatDeLaNoue(256, false);
+            partie.Remplacer(avant with { Permanent = avant.Permanent with { NombreDeRenaissances = 2 } });
+            yield return new WaitForSeconds(1.2f);
+            var apres = ScenePixelTests.EtatDeLaNoue(1, false);
+            partie.Remplacer(apres with { Permanent = apres.Permanent with { NombreDeRenaissances = 3 } });
+            foreach (var (attente, nom) in new[] { (0.3f, "oeuf"), (1.1f, "fendu"), (0.6f, "larve"), (1.5f, "alevin") })
+            {
+                yield return new WaitForSeconds(attente);
+                Ecrire(scene.Rendu, Path.Combine(dossier, $"portrait-renouveau-{nom}.png"));
             }
             ServicesDePartie.Oublier();
         }

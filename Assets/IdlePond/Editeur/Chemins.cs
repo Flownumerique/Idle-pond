@@ -21,6 +21,9 @@ namespace IdlePond.Editeur
         public static string Anneau(int stade) => $"Heros/eveil/anneau-s{stade}.png";
         public static string Aura(int stade) => $"Heros/eveil/aura-s{stade}.png";
         public const string ETOILE = "Heros/eveil/etoile.png";
+        public const string OEUF = "Heros/renouveau/oeuf.png";
+        public const string OEUF_FENDU = "Heros/renouveau/oeuf-fendu.png";
+        public static string Larve(int image) => $"Heros/renouveau/larve-i{image}.png";
         public static string ImageDEspece(string espece, int image) => $"Especes/{espece}-i{image}.png";
         public static string Fond(string assise) => $"Fonds/{assise}/fond.png";
         public static string Roche(string assise) => $"Fonds/{assise}/roche.png";
