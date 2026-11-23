@@ -81,12 +81,9 @@ La CI (`.github/workflows/unity.yml`) lance EditMode et PlayMode dans l'éditeur
 via game-ci. Elle a besoin des secrets `UNITY_LICENSE`, `UNITY_EMAIL` et
 `UNITY_PASSWORD` ; sans eux, elle s'arrête sur un avertissement.
 
-**Le prototype en ligne** (`.github/workflows/webgl-vercel.yml`) : à chaque push sur `main` qui
-touche au jeu, game-ci construit le WebGL et l'envoie tout prêt à Vercel, qui ne fait que le
-servir (Vercel n'a pas Unity). Il faut, en plus des secrets Unity, `VERCEL_TOKEN`,
-`VERCEL_ORG_ID` et `VERCEL_PROJECT_ID` ; sans eux, le job s'arrête sur un avertissement.
-`vercel.json` coupe les déploiements automatiques de Vercel, qui construisaient l'ancienne
-version web.
+**Pas de prototype en ligne** pour l'instant : le workflow qui construisait le WebGL et le
+publiait sur Vercel a été retiré (2026-11-23). `vercel.json` reste : il empêche Vercel de
+reconstruire l'ancienne version web à chaque push.
 
 ## Découpage
 
