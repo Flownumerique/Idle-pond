@@ -21,8 +21,9 @@ palettes, accent, règle de lumière). Son texte reste dans l'historique git (co
 
 ## Proposition en cours — les couleurs de la Noue, du Gour et du héros (v0.3)
 
-**Maquette** : `docs/da/apercu-lieux-v1.png` — les deux lieux à la finesse retenue (360 px), avec
-les poissons validés. Le décor y est généré par script pour fixer la direction ; le vrai dessin
+**Maquette** : `docs/da/apercu-lieux-v2.png` — les deux lieux à la finesse retenue (360 px), avec
+les poissons validés ; dans le Gour, le héros porte ses deux marques (branchies de Sève, membranes
+de Courant). La v1 (héros du Gour sans marques) reste à côté pour comparer. Le décor y est généré par script pour fixer la direction ; le vrai dessin
 le reprendra.
 
 **L'idée** : chaque lieu a la couleur de sa magie (Codex §2), plus franche et plus lumineuse que
