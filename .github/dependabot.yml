@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # Met à jour les actions des workflows, y compris celles épinglées par SHA
+  # (le commentaire « # vX.Y.Z » est tenu à jour avec le SHA).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
