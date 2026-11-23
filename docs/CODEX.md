@@ -1,6 +1,6 @@
 # IdlePond — le Codex
 
-**Version** : 1.3 — 2026-11-22
+**Version** : 1.4 — 2026-11-23
 **Objet** : la fiction et le lexique. Ce que le monde est, ce que le héros devient, et
 comment chaque chose s'appelle — à l'écran comme dans le code.
 **Remplace** : `idlepond-histoire-v0.1.md`, absorbé et archivé.
@@ -150,6 +150,27 @@ le peuple du §3 : organisées, savantes, et pourtant des rejetés — aucune n'
 lui. Il n'en reste que des ruines d'herbes coupées et des récits. Ils sont **endormis plus
 bas** — personne ne sait où — et forment un fil de récit qui court jusqu'aux lieux profonds.
 Jamais un combat : le héros n'a jamais rien détruit.
+
+### Les six tribus à l'écran (2026-11-23)
+
+Validé par l'auteur le 2026-11-23 (bible du monde v0.2). Chaque tribu a un **représentant** — un
+chef ou un ancien, dessiné en grand, qui n'est pas un héros (§3) et reste plus petit que le
+héros adulte. Il se voit dans la fiche de l'espèce, à la conviction (il entre et rallie sa
+troupe), en tête de troupe, et dans la bibliothèque. Les tailles et les couleurs exactes sont
+dans `docs/da/gabarits.md`.
+
+| Tribu | Représentant | À l'œil | Ce qu'elle fait à l'écran | Son texte |
+|---|---|---|---|---|
+| le Chœur des vairons | **le Coryphée** | vert vif, ventre rouge braise, queue en feuille | la troupe nage à l'unisson ; une vague de rouge la parcourt à chaque seuil | « Cent corps, une seule voix. Quand ils chantent, ils changent de couleur. » |
+| les Loches devineresses | **la Doyenne** | bronze cuivré, runes turquoise, barbillons qui crépitent | elles s'agitent avant que l'eau se trouble, et avant qu'une descente se rouvre | « Elles savent avant l'eau. On vient les voir quand on a peur. » |
+| la Garde des épinoches | **le Capitaine de la Garde** | vert-bronze, gorge carmin, épines de verre rouge, œil bleu | un nid-forteresse d'herbes pousse à chaque seuil | « Elles bâtissent avant de se battre, et se battent pour ce qu'elles ont bâti. » |
+| les Chabots-gardiens | **le Vieux Gardien** | tête de pierre marbrée, lichen d'or | ils se pétrifient tant que l'eau est trouble | « Chaque pierre a le sien. Menacé, il devient la pierre. » |
+| les Lamproies pèlerines | **la Mère pèlerine** | lilas, bouche-ventouse cerclée de runes froides | elles s'accrochent aux parois ; un fil de mana vient des autres jusqu'à elles, sans rien prendre à l'économie | « Elles remontent tout ce qui descend, et boivent un peu de chacun. On les craint, on les écoute. » |
+| les Ombres-hérauts | **le Grand Héraut** | argent, voile-vitrail qui passe du violet au turquoise | quand une tribu est convaincue, une ombre laisse un mirage du nouveau venu | « On les voit passer, jamais arriver. Leur voile dit ce qui vient d'avoir lieu. » |
+
+**La magie du lieu se voit dans le sillage** : pollen or et vert tendre dans la Noue (la Sève),
+fins traits bleu clair dans le Gour (le Courant). **Une tribu brille en éclair, jamais en
+continu** : un ornement est une couleur ; la lumière ne vient que sur un événement.
 
 ### Les quinze espèces à venir (noms provisoires)
 
@@ -702,6 +723,11 @@ système et vivant comme terme de fiction. Aucun identifiant ne le porte.
 ---
 
 ## Journal
+
+**v1.4 — 2026-11-23.** La dérivation des six espèces livrées est validée (bible du monde v0.2) :
+§2 gagne « Les six tribus à l'écran » — aspect, comportement, texte et représentant de chaque
+tribu, et la règle de lumière en éclair. Les noms d'espèce ne changent pas. Aucun identifiant ni
+aucune sauvegarde ne change.
 
 **v1.3 — 2026-11-22.** L'auteur valide les sept blocs de la bible du monde v0.1, qui passent
 ici (§2) : les six magies (la typologie du mana), les tribus — chaque espèce est un peuple

@@ -55,8 +55,11 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   de l'arc inchangées. **Ce qui reste, dans l'ordre** :
   1. ~~La bible du monde~~ — **validée le 2026-11-22 et passée au Codex v1.3** (§2) : six
      magies, tribus, quinze espèces à venir, peuples de l'eau, panthéon, faune d'ambiance.
-  2. **La dérivation des six espèces livrées** (vairon, loche, épinoche, chabot, lamproie,
-     ombre) : ce qui les écarte du réel, à l'aspect et au texte.
+  2. ~~La dérivation des six espèces livrées~~ — **validée le 2026-11-23** (Codex v1.4, §2 ;
+     `docs/da/gabarits.md`) : couleurs, accent, comportement, texte et représentant de chaque
+     tribu. **Reste à la porter dans le code** : la finesse à 360 px, les nouveaux gabarits
+     (troupe ≈ 24 px, représentants ≈ 60 px), le champ `Accent`, les comportements branchés sur
+     `Partie.EvenementsDeJeu`, puis les provisoires régénérés.
   3. **Les palettes** de la Noue, du Gour, du héros et des espèces, dans `docs/da/gabarits.md`.
   - **Retenu le 2026-11-23 : une scène plus fine, à 360 px de large** au lieu de 240
     (`Gabarits.LARGEUR_VISEE`), pour dessiner des poissons détaillés (≈ 24 px la troupe, ≈ 60 px

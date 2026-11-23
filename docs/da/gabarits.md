@@ -4,6 +4,37 @@ Ce que doit respecter un dessin pour remplacer un provisoire **sans toucher au c
 Source de vérité : `Assets/IdlePond/Jeu/Scene/Gabarits.cs` et `RegistreDArt.cs` ; les tests
 `GabaritsTests` vérifient chaque fichier livré.
 
+> **Cible validée le 2026-11-23, pas encore dans le code** (Codex v1.4, §2 ; maquettes
+> `apercu-poissons-v3.png` et `apercu-finesse-scene.png`). Tant que le code n'a pas changé, les
+> sections suivantes décrivent l'état actuel et font foi pour déposer un PNG ; ce cadre dit ce
+> qui va changer, pour que personne ne dessine à l'ancienne échelle.
+>
+> - **La scène passe à 360 px de large** (`Gabarits.LARGEUR_VISEE`, aujourd'hui 240 ; repli sur
+>   320 si un vrai téléphone ne suit pas). Tout l'art provisoire se refait à cette échelle :
+>   décor, bandes, héros, marques.
+> - **Le poisson de troupe** : environ **24 px** de long (aujourd'hui 7 à 12). La formule de
+>   longueur par rang est à revoir avec la finesse.
+> - **Le représentant** de chaque tribu : un gabarit de plus, `Especes/representants/{id}-i{0..3}.png`,
+>   environ **60 px** de long, quatre images de nage comme le héros (seules la queue et les
+>   nageoires bougent), toujours plus petit que le héros adulte. Un seul par tribu à l'écran.
+> - **La taille à l'écran reste réglable** à part, par les gabarits.
+> - **Chaque espèce gagne un accent** : une quatrième couleur, sur quelques pixels (épines,
+>   runes, voile…). Champ `Accent` à ajouter à `CouleursDePoisson`.
+> - **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet qu'en éclair,
+>   sur un événement.
+> - **Nouvelles palettes d'espèces** (corps · dos · ventre · accent) :
+>
+> | Espèce | Corps | Dos | Ventre | Accent |
+> |---|---|---|---|---|
+> | vairon | `#7FC8A0` | `#2E7D5B` | `#E8483A` | `#B8E86A` (queue-feuille) |
+> | loche | `#C08A3E` | `#6E4A22` | `#F0D9A0` | `#4FE0D0` (runes) |
+> | épinoche | `#6FA05A` | `#2F5A35` | `#D8283A` (gorge) | `#FF8FA0` (épines) ; œil `#4AA8FF` |
+> | chabot | `#7C8790` | `#4B545C` | `#C9CFC9` | `#C8A040` (lichen) |
+> | lamproie | `#9B7FC0` | `#5A3F7A` | `#D9C8F0` | `#9FF0FF` (anneau de bouche) |
+> | ombre | `#A8B8D8` | `#4A5A8A` | `#E8EEF8` | voile `#C060F0` / `#40D0C0` (une couleur par image) |
+>
+> Les palettes des lieux (Noue, Gour) et du héros sont la prochaine étape.
+
 ## Règles communes
 
 - PNG, **un fichier par image**, déposé sous `Assets/IdlePond/Art/` au **nom exact** du
