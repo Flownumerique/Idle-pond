@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-22
+**Tenue à jour le** : 2026-11-23
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -27,7 +27,9 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 | Prototype | WebGL dans le navigateur du téléphone, Windows | APK Android (module absent) |
 
-**Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande. Les références de
+**Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande.
+**Pas de CI** depuis le 2026-11-23 (retirée faute de licence Unity fournie, avec la publication
+WebGL sur Vercel) : les tests se lancent en local, `outils/unity.sh tests`. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
 références).
 
@@ -57,10 +59,18 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      magies, tribus, quinze espèces à venir, peuples de l'eau, panthéon, faune d'ambiance.
   2. ~~La dérivation des six espèces livrées~~ — **validée le 2026-11-23** (Codex v1.4, §2 ;
      `docs/da/gabarits.md`) : couleurs, accent, comportement, texte et représentant de chaque
-     tribu. **Reste à la porter dans le code** : la finesse à 360 px, les nouveaux gabarits
-     (troupe ≈ 24 px, représentants ≈ 60 px), le champ `Accent`, les comportements branchés sur
-     `Partie.EvenementsDeJeu`, puis les provisoires régénérés.
-  3. **Les palettes** de la Noue, du Gour, du héros et des espèces, dans `docs/da/gabarits.md`.
+     tribu. **Dans le jeu depuis le 2026-11-23, à 240 px** : les palettes et l'accent de chaque
+     espèce. **Reste à porter** : la finesse à 360 px, les nouveaux gabarits (troupe ≈ 24 px,
+     représentants ≈ 60 px), les comportements branchés sur `Partie.EvenementsDeJeu`.
+  3. ~~Les palettes de la Noue, du Gour et du héros~~ — **validées le 2026-11-23** (Codex v1.5,
+     §2 ; `docs/da/gabarits.md`) et **dans le jeu à 240 px** : le héros en or, ses marques à la
+     couleur du lieu, l'eau et le décor de chaque lieu, un calque d'ambiance par bande.
+  - **En cours : le héros qui s'éveille** (bible du monde v0.4, d'après les références de
+    l'auteur dans `docs/da/reference/`). À l'essai dans le prototype : la lignée `da-2` pour les
+    quatre stades, quatre éveils en calques (runes, voile, étoiles, aura) aux renaissances 1, 3,
+    6 et 10, et **le renouveau** joué à chaque renaissance (l'œuf, la larve, l'alevin). Produit
+    par `outils/da/heros.py`. Reste à trancher : les seuils d'éveil, le partage du corps entre
+    runes et marques, le dessin final avant ou avec le passage à 360 px.
   - **Retenu le 2026-11-23 : une scène plus fine, à 360 px de large** au lieu de 240
     (`Gabarits.LARGEUR_VISEE`), pour dessiner des poissons détaillés (≈ 24 px la troupe, ≈ 60 px
     un représentant) dont la taille à l'écran reste réglable. Tout l'art provisoire se refait à
