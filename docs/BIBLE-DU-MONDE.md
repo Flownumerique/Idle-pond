@@ -18,9 +18,12 @@ le texte changent.
 
 ### Ce que le dessin permet
 
-Un poisson d'espèce mesure **7 à 12 pixels** de long (`docs/da/gabarits.md`), deux images de
-nage, trois couleurs (corps, dos, ventre) et un contour. À cette taille, une dérivation se lit
-par trois moyens, et la proposition s'y tient :
+Un poisson d'espèce mesure aujourd'hui **7 à 12 pixels** de long (`docs/da/gabarits.md`), deux
+images de nage, trois couleurs (corps, dos, ventre) et un contour. C'est trop petit pour un
+poisson « sympa » : ni œil expressif, ni ornement lisible. **Proposition (2026-11-23, après
+retour de l'auteur : « il faut plus de détail, des poissons plus sympa »)** : passer le poisson
+de troupe à **14 à 18 pixels** (le cadre suit la même formule), et dessiner le représentant à
+**environ 40 pixels**. À ces tailles, la dérivation se lit par :
 
 1. **Une couleur franche** par espèce, au lieu des gris-verts actuels.
 2. **Un accent** : un ou deux pixels d'une quatrième couleur (une épine, une rune, une
@@ -40,7 +43,7 @@ vert tendre quand une tribu produit ; dans le Gour (le Courant), de fins traits 
 
 ### Les six espèces
 
-**Aperçu des couleurs** : `docs/da/apercu-derivation-especes.png` — aujourd'hui à gauche, proposé à droite, sur l'eau de chaque lieu. La silhouette y est un gabarit commun, pas le dessin de chaque espèce : seules les couleurs et la place des accents sont à juger.
+**Maquettes** : `docs/da/apercu-poissons-v2.png` — pour chaque espèce, le représentant en grand (40 px) et le poisson de troupe (16 px), sur l'eau de son lieu. Silhouette propre à chaque espèce, volume en trois tons et reflet, grand œil, joue, opercule, nageoires à rayons et ornements. Ce sont des maquettes générées par script pour fixer la direction ; le vrai dessin les reprendra à la main.
 
 Couleurs en `#RRGGBB`, à régler à l'œil sur le fond de chaque lieu. Le contour reste `#121C1A`.
 
@@ -162,9 +165,11 @@ héros adulte, et le héros reste au centre de l'écran.
    du Chœur, il bâtit le premier nid de la Garde, il se pétrifie le premier).
 4. **Dans la bibliothèque** (chantier 6) : la fiche de la tribu.
 
-**Le gabarit proposé** : `Especes/representants/{id}-i{0..3}.png`, **24 px de long, cadre
-26 × 15**, quatre images de nage comme le héros (seules la queue et les nageoires bougent).
-C'est la taille du héros au stade 0, plus petit que le héros dès le stade 1. Palette : celle de
+**Le gabarit proposé** : `Especes/representants/{id}-i{0..3}.png`, **environ 40 px de long**
+(cadre à fixer, de l'ordre de 46 × 30 avec les nageoires et la voile de l'ombre), quatre images
+de nage comme le héros (seules la queue et les nageoires bougent). Dans la scène, il reste plus
+petit que le héros adulte (63 px au stade 3) ; dans la fiche, il s'affiche en grand. La première
+proposition (24 px, cadre 26 × 15) était trop petite pour le détail voulu. Palette : celle de
 l'espèce, plus son accent, plus deux nuances au plus. **Un seul représentant par tribu à
 l'écran**, et seulement sur le palier où se tient sa troupe, pour tenir le budget de lumières et
 la lisibilité.
@@ -177,7 +182,7 @@ la lisibilité.
 | Un quatrième champ `Accent`, dessiné par le générateur de provisoires | `CouleursDePoisson`, `GenerateurDeSprites` | S |
 | Les comportements : unisson, vague, pétrification, agitation, fil de mana, mirage, nids | la scène, abonnée à `Partie.EvenementsDeJeu` et à `PartDeContenance` | M |
 | Les sillages de la Sève et du Courant | la scène | S |
-| Les représentants : un gabarit de plus (26 × 15, quatre images), des provisoires générés, le portrait dans la fiche, l'entrée à la conviction, la tête de troupe | `Gabarits.cs`, `RegistreDArt.cs`, `GenerateurDeSprites`, la fiche du tiroir Espèces, la scène | M |
+| Le poisson de troupe à 14–18 px (formule de `Gabarits.cs`) ; les représentants : un gabarit de plus (≈ 40 px, quatre images), des provisoires générés, le portrait dans la fiche, l'entrée à la conviction, la tête de troupe | `Gabarits.cs`, `RegistreDArt.cs`, `GenerateurDeSprites`, la fiche du tiroir Espèces, la scène | M |
 | Les textes de bibliothèque | `Textes.cs`, quand la bibliothèque existera (chantier 6) | S |
 
 Aucune constante, aucun test de parité, aucune sauvegarde n'est touché. `LexiqueTests` doit
@@ -187,4 +192,5 @@ rester vert sur les nouveaux textes.
 
 Pour chaque espèce : garder, modifier ou rejeter — la couleur, l'accent, le comportement, le
 texte. Puis : la règle « un accent est une couleur, la lumière seulement en éclair ». Enfin, les
-représentants : leurs noms, leur taille (26 × 15), et les quatre endroits où on les voit.
+représentants : leurs noms, leur taille (≈ 40 px), et les quatre endroits où on les voit ; la
+taille du poisson de troupe (14–18 px).
