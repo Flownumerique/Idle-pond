@@ -77,9 +77,8 @@ Les scènes (`Assets/IdlePond/Scenes/`) sont **produites par le générateur**,
 menu « IdlePond ▸ Générer les scènes », et versionnées telles quelles. On ne les
 retouche jamais à la main : on modifie `GenerateurDeScenes.cs` et on relance.
 
-La CI (`.github/workflows/unity.yml`) lance EditMode et PlayMode dans l'éditeur
-via game-ci. Elle a besoin des secrets `UNITY_LICENSE`, `UNITY_EMAIL` et
-`UNITY_PASSWORD` ; sans eux, elle s'arrête sur un avertissement.
+**Pas de CI** pour l'instant (retirée le 2026-11-23, faute de licence Unity fournie) : les
+tests EditMode et PlayMode se lancent en local, `outils/unity.sh tests EditMode|PlayMode`.
 
 **Pas de prototype en ligne** pour l'instant : le workflow qui construisait le WebGL et le
 publiait sur Vercel a été retiré (2026-11-23). `vercel.json` reste : il empêche Vercel de
