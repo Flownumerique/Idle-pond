@@ -24,7 +24,17 @@ font foi au Codex v1.5 (§2, « Les lieux et le héros à l'écran ») et dans `
 
 ## Proposition en cours — le héros qui s'éveille (v0.4)
 
-**Maquette** : `docs/da/apercu-eveil-v1.png` — au fond du Gour, sous sa lumière propre.
+**Références de l'auteur** : `docs/da/reference/` — `da-1-cycle.png` (de l'œuf à l'adulte),
+`da-2-croissance.png` (la croissance, les nageoires qui deviennent des voiles),
+`da-3-eveil.png` (les quatre éveils). Elles font la direction ; les maquettes en pixels en sont
+tirées.
+
+**Sprites tirés des références** : `docs/da/apercu-sprites-v04.png`, un PNG par sujet dans
+`docs/da/sprites-v04/`, produits par `outils/da/pixeliser.py` (réduction, alpha tranché, palette
+du héros, lissage, contour). **C'est une base à reprendre à la main, pas un dessin fini** :
+le grain des illustrations reste visible, l'œuf et la larve sont trop petits pour la méthode,
+et l'anneau, les étincelles et l'aura — de la lumière douce dans les références — ne survivent
+pas à l'alpha tranché : ils seront dessinés et animés en jeu, à part du corps.
 
 **L'idée** : il commence **ordinaire** — l'alevin d'une ponte ordinaire (Codex, acte I). Son
 corps gagne du détail avec sa **puissance** (son niveau, dans le cycle), et du merveilleux avec
@@ -35,34 +45,59 @@ ce cycle, et ce qu'il est devenu.
 **Sa lumière propre** (déjà dans le jeu) : elle complète celle de sa bande jusqu'à 1, pour qu'il
 reste d'or partout. Plus la mare est sombre, plus son halo se voit sur l'eau autour de lui.
 
-### La puissance — le niveau (les quatre stades déjà dessinés)
+### Le visage
+
+Grand œil sombre avec un éclat, petit sourire, joue rose : il a un visage dès l'alevin
+(`da-2`). C'est ce qui en fait un personnage et non un poisson parmi d'autres.
+
+### La naissance — l'œuf et la larve (`da-1`, les deux premiers)
+
+L'œuf translucide, l'embryon enroulé autour de sa réserve d'or ; puis la larve pâle, presque
+transparente, la réserve sous le ventre. **Proposé** : ils ne sont pas des stades de jeu ; ils
+se jouent **à chaque renaissance**, en courte animation — l'œuf s'ouvre, la larve nage,
+l'alevin apparaît. La renaissance devient une éclosion.
+
+### La puissance — le niveau (`da-2`)
 
 | Stade | Niveau | Ce qui s'ajoute |
 |---|---|---|
-| 0 · alevin | 1 à 3 | rien : le poisson d'or, simple |
-| 1 | 4 à 15 | **les écailles** : des arcs ambre tramés sur le flanc |
-| 2 | 16 à 255 | **la ligne d'or** : des points clairs le long du flanc, de la queue aux branchies |
-| 3 | 256 et plus | **les bouts de lumière** : le bout de la queue pâlit, la matière devient lumière |
+| 0 · alevin | 1 à 3 | rond, simple, le visage, de petites nageoires |
+| 1 | 4 à 15 | **les écailles** et **la ligne d'or** (des points dorés le long du flanc) |
+| 2 | 16 à 255 | **les nageoires s'allongent** et s'effrangent |
+| 3 | 256 et plus | **la queue en voile** : longue, ample, en plis, comme un combattant |
 
-### L'éveil — les renaissances
+`da-1` propose une autre lignée adulte, plus fine et plus réaliste ; `da-2` est retenue ici
+parce que la croissance s'y lit mieux. À trancher.
+
+### L'éveil — les renaissances (`da-3`)
 
 | Éveil | Renaissances (à régler) | Ce qui s'ajoute | Couleurs |
 |---|---|---|---|
 | 0 | 0 | rien | — |
-| I | 1 | **les runes de mana** : un à trois signes sur le flanc, là où il a pris le mana des morts | `#4FCDCD` mana, `#9FFFF0` |
-| II | 3 | **le voile** : trois rubans qui prolongent la queue et ondulent, et des mèches au-dessus de la dorsale, de plus en plus clairsemés en s'éloignant | `#FFF4D0` or pâle, `#BFF4FF` bleu d'âme |
-| III | 6 | **les étincelles** : de petites croix de lumière qui tournent autour de lui, plus nombreuses à chaque renaissance | `#FFFFFF`, `#FFE070`, `#BFF4FF` |
-| IV | 10 | **la couronne** : trois pointes de lumière au-dessus de la tête ; son halo s'élargit | `#FFE070`, `#FFF8E0`, `#FFFFFF` |
+| I | 1 | **les runes** : une spirale turquoise sur le flanc, des traits turquoise sur la dorsale, les nageoires et derrière l'œil | `#1EA8B8`, `#7FE6E8` |
+| II | 3 | **le voile** : des rubans crème et turquoise qui sortent de la queue et ondulent derrière lui | `#FFF4D0`, `#7FE6E8` |
+| III | 6 | **les étincelles** : des étoiles d'or à quatre branches qui tournent sur un anneau de lumière | `#FFE070`, `#FFFBEA` |
+| IV | 10 | **l'aura** : un ovale de lumière dorée l'enveloppe, les étoiles se rassemblent au-dessus de sa tête ; son halo s'élargit | `#FFE070`, `#F8D070` |
 
-**En jeu** : le voile ondule et les étincelles tournent (animés, toujours au pixel entier) ; les
-runes et la couronne sont fixes. Le halo de sa lumière s'élargit d'un cran par éveil. Rien n'est
-demi-transparent : l'« éthéré » est une trame, comme les rayons.
+**En jeu** : le corps (stade + runes) est un sprite ; le voile, l'anneau, les étoiles et l'aura
+sont des calques à part, animés — le voile ondule, les étoiles tournent, toujours au pixel
+entier. Rien n'est demi-transparent : l'aura est une trame et une lumière, pas un flou.
 
 **Le lien au Codex** : l'éveil IV arrive vers la fin de l'axe des renaissances, quand il devient
-**le demi-dieu** (§4). La couronne n'est pas une royauté — il ne veut pas régner — mais la lumière
-de celui qui franchit et revient.
+**le demi-dieu** (§4). L'aura n'est pas une royauté — il ne veut pas régner — mais la lumière de
+celui qui franchit et revient.
+
+### Ce que ça demande au code
+
+- **Des cadres plus grands** : la queue en voile et les rubans dépassent les gabarits actuels
+  (65 × 31 au stade 3 ; les tirages font 70 × 45 et 80 × 39). Le passage à 360 px, déjà validé,
+  est le bon moment pour les agrandir.
+- **Les marques des lieux et les runes se partagent les nageoires** : le bleu des membranes du
+  Gour et le turquoise des runes sont voisins. À distinguer — runes sur le flanc seulement, ou
+  membranes dans un autre bleu.
 
 ### Ce que l'auteur doit trancher
 
-Les quatre détails de puissance ; les quatre éveils et leur ordre ; les seuils de renaissances
-(1, 3, 6, 10 proposés, pour un parcours visé de 14) ; les couleurs (mana et bleu d'âme).
+La lignée de croissance (`da-2` ou `da-1`) ; l'œuf et la larve joués à la renaissance ; les
+quatre éveils et leurs seuils (1, 3, 6, 10 proposés, pour un parcours visé de 14) ; le partage
+des nageoires entre marques et runes ; faire ce travail avant ou avec le passage à 360 px.
