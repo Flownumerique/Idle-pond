@@ -71,6 +71,15 @@ namespace IdlePond.TestsDeJeu
             partie.Remplacer(surface with { Cycle = surface.Cycle with { PaliersOuverts = 2 } });
             yield return new WaitForSeconds(1.2f);
             Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-surface.png"));
+
+            // L'éveil (bible v0.4) : au niveau 256, après 1, 3, 6 et 10 renaissances.
+            foreach (var renaissances in new[] { 1, 3, 6, 10 })
+            {
+                var eveil = ScenePixelTests.EtatDeLaNoue(256, false);
+                partie.Remplacer(eveil with { Permanent = eveil.Permanent with { NombreDeRenaissances = renaissances } });
+                yield return new WaitForSeconds(1.2f);
+                Ecrire(scene.Rendu, Path.Combine(dossier, $"portrait-eveil-{renaissances}.png"));
+            }
             ServicesDePartie.Oublier();
         }
 

@@ -111,6 +111,19 @@ namespace IdlePond.Jeu.Scene
             Joue = 0xFF9A80,
         };
 
+        /// Le héros dessiné (bible v0.4) : la palette commune à ses quatre stades, relevée par
+        /// `outils/da/heros.py` sur les inspirations — du brun du contour à la crème du ventre,
+        /// puis l'œil et son éclat.
+        public static readonly IReadOnlyList<int> HEROS_DESSINE = new[]
+        {
+            0x4A1E0C, 0x88391A, 0xC03709, 0xD74006, 0xDF5307, 0xB46D38, 0xE16B11, 0xEF6908, 0xF27C0C, 0xF78F13,
+            0xDA8F42, 0xFAA429, 0xE7A455, 0xFBBA40, 0xF3BF75, 0xFBD27D, 0xFCE2A4, 0x2A1408, 0xFFFBEA,
+        };
+
+        /// L'éveil (bible v0.4, d'après da-3) : le turquoise des runes et du voile, la crème du
+        /// voile, l'or des étoiles, de l'anneau et de l'aura, l'éclat du cœur des étoiles.
+        public static readonly IReadOnlyList<int> EVEIL = new[] { 0x1EA8B8, 0x7FE6E8, 0xFFF4D0, 0xFFE070, 0xF8D070, 0xFFFBEA };
+
         /// Une couleur par espèce, dans l'ordre des rangs ; au-delà, on reprend du début.
         /// La dérivation des six espèces : Codex v1.4, §2, et `docs/da/gabarits.md`.
         static readonly CouleursDePoisson[] ESPECES_PAR_RANG =
@@ -224,8 +237,8 @@ namespace IdlePond.Jeu.Scene
         }
 
         public static IReadOnlyList<int> PaletteDuHeros() =>
-            HEROS.Couleurs().Append(CONTOUR)
-                .Concat(MARQUES.Values.SelectMany(m => m.Couleurs)).Distinct().ToList();
+            HEROS_DESSINE.Append(CONTOUR)
+                .Concat(MARQUES.Values.SelectMany(m => m.Couleurs)).Concat(EVEIL).Distinct().ToList();
 
         public static IReadOnlyList<int> PaletteDesEspeces() =>
             ESPECES_PAR_RANG.SelectMany(c => c.Couleurs()).Append(CONTOUR).Distinct().ToList();

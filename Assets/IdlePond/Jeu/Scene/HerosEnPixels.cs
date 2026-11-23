@@ -29,7 +29,10 @@ namespace IdlePond.Jeu.Scene
         readonly List<SpriteRenderer> marques = new List<SpriteRenderer>();
         readonly List<Light2D> lueurs = new List<Light2D>();
         readonly List<Eclat> eclats = new List<Eclat>();
+        readonly List<SpriteRenderer> eveil = new List<SpriteRenderer>();
+        readonly List<SpriteRenderer> etoiles = new List<SpriteRenderer>();
         SpriteRenderer corps;
+        SpriteRenderer rubans;
         Light2D eclair;
         Light2D sienne;
         bool muePendante;
@@ -40,6 +43,11 @@ namespace IdlePond.Jeu.Scene
         public int? StadeAffiche { get; private set; }
         public int MuesJouees { get; private set; }
         public int NombreDeMarques => marques.Count;
+        /// Son éveil (bible v0.4) : 0 à 4, porté par ses renaissances.
+        public int Eveil { get; private set; }
+        public int NombreDEtoiles => etoiles.Count;
+        /// Les calques d'éveil posés : runes, rubans, anneau, aura (les étoiles à part).
+        public int NombreDeCalquesDEveil => eveil.Count;
         public bool EclairAllume => eclair != null && eclair.enabled;
         /// L'intensité de sa lumière propre ; 0 si elle est éteinte (près du jour).
         public float IntensiteDeSaLumiere => sienne != null && sienne.enabled ? sienne.intensity : 0f;
@@ -91,6 +99,58 @@ namespace IdlePond.Jeu.Scene
                 rang += 1;
             }
             corps.color = teinte;
+            PoserSonEveil(heros.Renaissances);
+        }
+
+        /// Son éveil (bible v0.4, d'après da-3) : I les runes sur lui ; II les rubans du voile
+        /// qui sortent de sa queue ; III l'anneau et les étoiles qui y tournent ; IV l'aura. Les
+        /// calques débordent du corps d'une marge : ils se posent à (-marge, -marge).
+        void PoserSonEveil(int renaissances)
+        {
+            foreach (var r in eveil) if (r != null) Object.Destroy(r.gameObject);
+            eveil.Clear();
+            foreach (var e in etoiles) if (e != null) Object.Destroy(e.gameObject);
+            etoiles.Clear();
+            rubans = null;
+            Eveil = Gabarits.EveilDe(renaissances);
+            var art = catalogue != null ? catalogue.EveilDe(stade) : null;
+            if (art == null) return;
+            var m = Gabarits.MARGES_D_EVEIL[stade];
+            if (Eveil >= 1 && art.Runes != null) eveil.Add(Briques.Poser(racine, "Runes", art.Runes, 0, 0, OrdreDeRendu.RUNES));
+            if (Eveil >= 2)
+            {
+                rubans = Briques.Poser(racine, "Rubans", art.Voile.Length > 0 ? art.Voile[0] : null, -m, -m, OrdreDeRendu.RUBANS);
+                eveil.Add(rubans);
+            }
+            if (Eveil >= 3 && art.Anneau != null) eveil.Add(Briques.Poser(racine, "Anneau", art.Anneau, -m, -m, OrdreDeRendu.ANNEAU));
+            if (Eveil >= 4 && art.Aura != null) eveil.Add(Briques.Poser(racine, "Aura", art.Aura, -m, -m, OrdreDeRendu.AURA));
+            for (var i = 0; i < Gabarits.EtoilesDe(renaissances); i++)
+                etoiles.Add(Briques.Poser(racine, "Etoile", catalogue.Etoile, 0, 0, OrdreDeRendu.ETOILES));
+            // Son halo s'élargit d'un cran par éveil.
+            if (sienne != null) sienne.pointLightOuterRadius = Gabarits.CadreDuCorps(stade).Largeur * (1.5f + 0.25f * Eveil);
+        }
+
+        /// Les rubans ondulent (deux images) ; les étoiles tournent sur l'anneau, toujours au
+        /// pixel entier.
+        void AnimerLEveil(float secondes)
+        {
+            if (rubans != null)
+            {
+                var art = catalogue.EveilDe(stade);
+                if (art != null && art.Voile.Length > 1) rubans.sprite = art.Voile[(int)(secondes * 3) % 2];
+            }
+            if (etoiles.Count == 0) return;
+            var c = Gabarits.CadreDuCorps(stade);
+            var m = Gabarits.MARGES_D_EVEIL[stade];
+            var demi = Gabarits.COTE_D_ETOILE / 2;
+            float cx = c.Largeur / 2f, cy = c.Hauteur / 2f;
+            float rx = c.Largeur / 2f + m - 2, ry = c.Hauteur / 2f + m - 2;
+            for (var i = 0; i < etoiles.Count; i++)
+            {
+                var a = secondes * 0.6f + i * Mathf.PI * 2f / etoiles.Count;
+                etoiles[i].transform.localPosition = new Vector3(
+                    Mathf.RoundToInt(cx + rx * Mathf.Cos(a)) - demi, Mathf.RoundToInt(cy + ry * Mathf.Sin(a)) - demi, 0f);
+            }
         }
 
         /// Sa lumière propre : elle comble ce qui manque à sa bande pour qu'il reste d'or. Pleine
@@ -111,7 +171,7 @@ namespace IdlePond.Jeu.Scene
             sienne.enabled = sienne.intensity > 0f;
             sienne.transform.localPosition = new Vector3(cadre.Largeur / 2f, cadre.Hauteur / 2f, 0f);
             sienne.pointLightInnerRadius = cadre.Largeur * 0.8f;
-            sienne.pointLightOuterRadius = cadre.Largeur * 1.5f;
+            sienne.pointLightOuterRadius = cadre.Largeur * (1.5f + 0.25f * Eveil);
         }
 
         Light2D Lueur(string assise, MarqueDArt art)
@@ -139,6 +199,7 @@ namespace IdlePond.Jeu.Scene
             // Il respire d'un pixel, sur 2,2 s : jamais d'un demi-pixel.
             var monte = Mathf.Repeat(secondes, 2.2f) < 1.1f ? 1 : 0;
             racine.localPosition = new Vector3(x, y + monte, 0f);
+            AnimerLEveil(secondes);
             AnimerLaMue(horloge);
         }
 

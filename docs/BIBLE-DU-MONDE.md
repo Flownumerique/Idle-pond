@@ -41,6 +41,12 @@ le grain des illustrations reste visible, l'œuf et la larve sont trop petits po
 et l'anneau, les étincelles et l'aura — de la lumière douce dans les références — ne survivent
 pas à l'alpha tranché : ils seront dessinés et animés en jeu, à part du corps.
 
+**Dans le prototype** (2026-11-23, à l'essai, pas encore validé) : le corps des quatre stades
+vient de la lignée `da-2`, avec son œil, les marques de la Noue et du Gour replacées sur ce
+corps, et les quatre éveils en calques (runes ; rubans en deux images ; anneau et étoiles qui
+tournent ; aura), seuils 1, 3, 6, 10. Tout est produit par `outils/da/heros.py` et se refait
+d'une commande. Pas encore : l'œuf et la larve à la renaissance ; l'échelle 360 px.
+
 **L'idée** : il commence **ordinaire** — l'alevin d'une ponte ordinaire (Codex, acte I). Son
 corps gagne du détail avec sa **puissance** (son niveau, dans le cycle), et du merveilleux avec
 son **éveil** (ses renaissances, qui ne se perdent jamais). La puissance se reperd à chaque

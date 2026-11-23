@@ -14,7 +14,14 @@ namespace IdlePond.Jeu.Scene
         public const int ROCHE = 15;
         public const int BORD = 20;
         public const int NAGEURS = 30;
+        /// L'éveil du héros (bible v0.4) : l'aura, l'anneau et les rubans du voile derrière lui ;
+        /// les runes sur lui, par-dessus ses marques ; les étoiles devant.
+        public const int AURA = 35;
+        public const int ANNEAU = 36;
+        public const int RUBANS = 38;
         public const int CORPS = 40;
+        public const int RUNES = 60;
+        public const int ETOILES = 65;
         /// Une marque par couche : MARQUES + son rang dans l'ordre des assises traversées.
         public const int MARQUES = 50;
         public const int PARTICULES = 70;

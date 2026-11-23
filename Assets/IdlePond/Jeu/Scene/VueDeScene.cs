@@ -22,7 +22,9 @@ namespace IdlePond.Jeu.Scene
 
     /// `Stade` : 0 à 3, la taille dessinée du corps (spec DA §3). Il remplace l'échelle
     /// continue de la spec 2026-09-17 [D12] : le pixel art ne s'agrandit pas.
-    public sealed record VueDuHeros(int Niveau, int Stade, IReadOnlyList<string> Couches);
+    /// `Renaissances` : le compte de ses renaissances, qui ne se perd jamais — il porte son éveil
+    /// (bible v0.4).
+    public sealed record VueDuHeros(int Niveau, int Stade, IReadOnlyList<string> Couches, int Renaissances = 0);
 
     /// <summary>
     /// IdlePond — la vue de la scène : ce que la scène dessine, sans Unity.
@@ -107,7 +109,8 @@ namespace IdlePond.Jeu.Scene
             }
             return new VueDeScene(
                 paliers,
-                new VueDuHeros(etat.Cycle.NiveauDuHeros, Gabarits.StadeDuNiveau(etat.Cycle.NiveauDuHeros), etat.Permanent.Couches),
+                new VueDuHeros(etat.Cycle.NiveauDuHeros, Gabarits.StadeDuNiveau(etat.Cycle.NiveauDuHeros), etat.Permanent.Couches,
+                    etat.Permanent.NombreDeRenaissances),
                 Economie.EauTroublee(etat),
                 Economie.EstSature(etat),
                 IndicesDeRoche(etat.Cycle.PaliersOuverts, etat.LimiteDeContenu)
@@ -137,6 +140,7 @@ namespace IdlePond.Jeu.Scene
                 sb.Append('#').Append(Roches.Count);
                 sb.Append('|').Append(Heros.Niveau).Append(':').Append(Heros.Stade)
                   .Append(':').Append(string.Join(",", Heros.Couches ?? Array.Empty<string>()))
+                  .Append(':').Append(Heros.Renaissances)
                   .Append('|').Append(EauTroublee ? 1 : 0).Append(Sature ? 1 : 0);
                 return clef = sb.ToString();
             }

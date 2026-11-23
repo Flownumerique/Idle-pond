@@ -195,6 +195,31 @@ namespace IdlePond.TestsDeJeu
         }
 
         [UnityTest]
+        public IEnumerator Son_eveil_suit_ses_renaissances()
+        {
+            var e = EtatDeLaNoue(16, false);
+            partie.Remplacer(e);
+            SceneDeLaMare scene = null;
+            yield return ChargerLaMare(s => scene = s);
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.Eveil, Is.EqualTo(0), "sans renaissance, il est ordinaire");
+            Assert.That(scene.Heros.NombreDeCalquesDEveil, Is.EqualTo(0));
+            partie.Remplacer(e with { Permanent = e.Permanent with { NombreDeRenaissances = 3 } });
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.Eveil, Is.EqualTo(2));
+            Assert.That(scene.Heros.NombreDeCalquesDEveil, Is.EqualTo(2), "les runes et le voile");
+            Assert.That(scene.Heros.NombreDEtoiles, Is.EqualTo(0));
+            partie.Remplacer(e with { Permanent = e.Permanent with { NombreDeRenaissances = 10 } });
+            yield return null;
+            yield return null;
+            Assert.That(scene.Heros.Eveil, Is.EqualTo(4));
+            Assert.That(scene.Heros.NombreDeCalquesDEveil, Is.EqualTo(4), "runes, voile, anneau, aura");
+            Assert.That(scene.Heros.NombreDEtoiles, Is.EqualTo(7));
+        }
+
+        [UnityTest]
         public IEnumerator Un_nageur_hors_champ_n_est_pas_anime()
         {
             SceneDeLaMare scene = null;

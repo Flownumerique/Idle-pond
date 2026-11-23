@@ -55,13 +55,8 @@ namespace IdlePond.Editeur
         public static SortedDictionary<string, byte[]> Produire()
         {
             var sortie = new SortedDictionary<string, byte[]>(StringComparer.Ordinal);
-            for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
-            {
-                for (var image = 0; image < Gabarits.IMAGES_DE_NAGE; image++)
-                    sortie[Chemins.CorpsDuHeros(stade, image)] = DessinerCorps(stade, image).EnPng();
-                foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
-                    sortie[Chemins.MarqueDAssise(assise, stade)] = DessinerMarque(assise, stade).EnPng();
-            }
+            // Le héros n'a plus de provisoire : il est dessiné (bible v0.4), corps, marques et
+            // éveil, par `outils/da/heros.py`.
             foreach (var espece in Chemins.EspecesLivrees())
                 for (var image = 0; image < Gabarits.IMAGES_D_ESPECE; image++)
                     sortie[Chemins.ImageDEspece(espece.Id, image)] = DessinerEspece(espece, image).EnPng();
@@ -103,12 +98,6 @@ namespace IdlePond.Editeur
         }
 
         /* ─── Les poissons ───────────────────────────────────────────────────────── */
-
-        /// Le battement de la queue, image par image : droite, haut, droite, bas.
-        static readonly int[] BATTEMENTS = { 0, 1, 0, -1 };
-
-        static Toile DessinerCorps(int stade, int image) =>
-            DessinerPoisson(Gabarits.LONGUEURS_DU_CORPS[stade], RegistreDArt.HEROS, BATTEMENTS[image], image);
 
         static Toile DessinerEspece(Espece espece, int image) =>
             DessinerPoisson(Gabarits.LongueurDEspece(espece.Rang), RegistreDArt.CouleursDEspece(espece.Rang), image == 0 ? 1 : -1, image);
@@ -153,9 +142,6 @@ namespace IdlePond.Editeur
                 for (var x = (int)Math.Round(t.Cx - 0.6 * t.A); x <= (int)Math.Round(t.Cx + 0.1 * longueur); x++)
                     if (toile.Lire(x, ligne) == c.Corps) toile.Poser(x, ligne, c.Reflet.Value);
             }
-            if (c.Nageoire.HasValue)
-                foreach (var p in Nageoires(longueur))
-                    toile.Poser(p.X, p.Y, p.Part == PartDeNageoire.Rayon ? c.Dos : c.Nageoire.Value);
             if (c.Joue.HasValue)
                 for (var x = oeilX - (longueur > 18 ? 1 : 0); x <= oeilX; x++)
                     if (t.Contient(x, oeilY - 2)) toile.Poser(x, oeilY - 2, c.Joue.Value);
@@ -220,72 +206,6 @@ namespace IdlePond.Editeur
                     }
                     break;
             }
-        }
-
-        enum PartDeNageoire { Rayon, Membrane, Toile }
-
-        /// Les nageoires du dos et du ventre du héros, hors du tronc et immobiles : seule la
-        /// queue bat. Un rayon toutes les trois colonnes ; entre deux rayons, une colonne de
-        /// membrane (où le Gour pose son bleu) et une de toile (qui reste orange).
-        static IEnumerable<(int X, int Y, PartDeNageoire Part)> Nageoires(int longueur)
-        {
-            var cadre = Gabarits.CadreDUnPoisson(longueur);
-            var t = Gabarits.TroncDUnPoisson(longueur);
-            var hauteur = longueur >= 40 ? 3 : 2;
-            PartDeNageoire Part(int rang) => rang % 3 == 0 ? PartDeNageoire.Rayon : rang % 3 == 1 ? PartDeNageoire.Membrane : PartDeNageoire.Toile;
-            // La dorsale : plus haute à l'avant, elle s'abaisse vers la queue.
-            int debut = (int)Math.Round(t.Cx - 0.14 * longueur), fin = (int)Math.Round(t.Cx + 0.1 * longueur);
-            for (var x = debut; x <= fin; x++)
-            {
-                var dessus = BordDuTronc(t, x, cadre.Hauteur, true);
-                if (dessus < 0) continue;
-                var h = x - debut < (fin - debut) / 3 ? hauteur - 1 : hauteur;
-                for (var k = 1; k <= h && dessus + k <= cadre.Hauteur - 2; k++) yield return (x, dessus + k, Part(fin - x));
-            }
-            // La ventrale, plus petite, sous le milieu du ventre.
-            debut = (int)Math.Round(t.Cx - 0.02 * longueur);
-            fin = (int)Math.Round(t.Cx + 0.1 * longueur);
-            for (var x = debut; x <= fin; x++)
-            {
-                var dessous = BordDuTronc(t, x, cadre.Hauteur, false);
-                if (dessous < 0) continue;
-                for (var k = 1; k <= hauteur - 1 && dessous - k >= 1; k++) yield return (x, dessous - k, Part(fin - x));
-            }
-        }
-
-        /// Une marque, dans le cadre du corps de son stade, seulement sur le tronc.
-        static Toile DessinerMarque(string assise, int stade)
-        {
-            var marque = RegistreDArt.MarqueDe(assise);
-            var longueur = Gabarits.LONGUEURS_DU_CORPS[stade];
-            var cadre = Gabarits.CadreDuCorps(stade);
-            var t = Gabarits.TroncDUnPoisson(longueur);
-            var toile = new Toile(cadre.Largeur, cadre.Hauteur);
-            var a = Gabarits.Ancrage(stade, marque.Ancrage);
-            switch (marque.Ancrage)
-            {
-                case AncrageId.Branchies:
-                    // Une fente par stade : les branchies se creusent à mesure qu'il grandit.
-                    var demi = (int)Math.Round(0.55 * t.B);
-                    for (var fente = 0; fente <= stade; fente++)
-                    {
-                        var x = a.X - 2 * fente;
-                        for (var y = a.Y - demi; y <= a.Y + demi; y++)
-                            if (t.Contient(x, y)) toile.Poser(x, y, marque.Couleurs[0]);
-                    }
-                    break;
-                case AncrageId.Dos:
-                    // Les membranes du Gour (bible v0.3) : le bleu du Courant tendu entre les
-                    // rayons des nageoires du dos et du ventre, une colonne sur trois ; le reste
-                    // de la nageoire garde son orange. Les nageoires ne battent pas : la marque
-                    // reste sur le corps dans les quatre images (spec DA §3).
-                    foreach (var p in Nageoires(longueur))
-                        if (p.Part == PartDeNageoire.Membrane) toile.Poser(p.X, p.Y, marque.Couleurs[0]);
-                    break;
-                default:
-                    throw new NotSupportedException($"aucun provisoire pour une marque à l'ancrage {marque.Ancrage} ({assise})");
-            }
-            return toile;
         }
 
         /* ─── Le décor ───────────────────────────────────────────────────────────── */

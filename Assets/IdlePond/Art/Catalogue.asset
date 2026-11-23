@@ -33,6 +33,32 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 267b5106c06f893479c2e7b6a5e65304, type: 3}
     - {fileID: 21300000, guid: eee5a6e830cf4af488ef25e5648997f9, type: 3}
     - {fileID: 21300000, guid: f780632545d59ea40b011f4a1cb98f01, type: 3}
+  Eveils:
+  - Runes: {fileID: 21300000, guid: 38e32e62bba667d44be86e45a842248c, type: 3}
+    Voile:
+    - {fileID: 21300000, guid: f278859cfe7712e49bee23eb31ea76ea, type: 3}
+    - {fileID: 21300000, guid: f13cefa29c145764b946f6db46e70ad6, type: 3}
+    Anneau: {fileID: 21300000, guid: f603e1cd41e4c584a8248fa037b3ca25, type: 3}
+    Aura: {fileID: 21300000, guid: 390264ecd7c1a924eb7d6cdc5596ce70, type: 3}
+  - Runes: {fileID: 21300000, guid: a7b67088f40698f4db4c92bc5c08e166, type: 3}
+    Voile:
+    - {fileID: 21300000, guid: 895d3f05e72a529419940cbaae18cf37, type: 3}
+    - {fileID: 21300000, guid: 15b05435fae521547869b9e95f8274a2, type: 3}
+    Anneau: {fileID: 21300000, guid: be3cf592a36919c4aa9226c535d367c3, type: 3}
+    Aura: {fileID: 21300000, guid: c25e140863192ba4b8c07076acb8413c, type: 3}
+  - Runes: {fileID: 21300000, guid: e8d01f62c745c3c43b7f775b64daea43, type: 3}
+    Voile:
+    - {fileID: 21300000, guid: 0ca70c7bdf82a1340856c96425a1bf2b, type: 3}
+    - {fileID: 21300000, guid: 16f451c676af70a4994c7459eb7cb4a9, type: 3}
+    Anneau: {fileID: 21300000, guid: 14433d9900c37114fbf7960cbbd70b30, type: 3}
+    Aura: {fileID: 21300000, guid: 1d562bc52c7ea8a48842e8db08a8051e, type: 3}
+  - Runes: {fileID: 21300000, guid: beec3cf8fb48c884e8d23bbdb3d6e79a, type: 3}
+    Voile:
+    - {fileID: 21300000, guid: 60a2f5efccfa62b4f8ff00bddc8f51e2, type: 3}
+    - {fileID: 21300000, guid: 1532e0811770afc4d9508264bdf1794b, type: 3}
+    Anneau: {fileID: 21300000, guid: 2c371ff774a2aa7488378bce08c78e47, type: 3}
+    Aura: {fileID: 21300000, guid: c76773ab650f58248984b96b1b0c9b6a, type: 3}
+  Etoile: {fileID: 21300000, guid: 3082718ebcb913a4d878beed90868f88, type: 3}
   Marques:
   - Assise: noue
     ParStade:

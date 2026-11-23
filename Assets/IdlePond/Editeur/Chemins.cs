@@ -16,6 +16,11 @@ namespace IdlePond.Editeur
 
         public static string CorpsDuHeros(int stade, int image) => $"Heros/corps-s{stade}-i{image}.png";
         public static string MarqueDAssise(string assise, int stade) => $"Heros/marques/{assise}-s{stade}.png";
+        public static string Runes(int stade) => $"Heros/eveil/runes-s{stade}.png";
+        public static string Voile(int stade, int image) => $"Heros/eveil/voile-s{stade}-i{image}.png";
+        public static string Anneau(int stade) => $"Heros/eveil/anneau-s{stade}.png";
+        public static string Aura(int stade) => $"Heros/eveil/aura-s{stade}.png";
+        public const string ETOILE = "Heros/eveil/etoile.png";
         public static string ImageDEspece(string espece, int image) => $"Especes/{espece}-i{image}.png";
         public static string Fond(string assise) => $"Fonds/{assise}/fond.png";
         public static string Roche(string assise) => $"Fonds/{assise}/roche.png";

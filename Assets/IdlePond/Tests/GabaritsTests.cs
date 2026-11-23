@@ -21,9 +21,12 @@ namespace IdlePond.Tests
         public void Le_cadre_d_un_corps()
         {
             Assert.That(Gabarits.CadreDuCorps(0), Is.EqualTo(new Cadre(23, 15)));
-            Assert.That(Gabarits.CadreDuCorps(1), Is.EqualTo(new Cadre(30, 17)));
-            Assert.That(Gabarits.CadreDuCorps(2), Is.EqualTo(new Cadre(44, 23)));
-            Assert.That(Gabarits.CadreDuCorps(3), Is.EqualTo(new Cadre(65, 31)));
+            Assert.That(Gabarits.CadreDuCorps(1), Is.EqualTo(new Cadre(30, 21)));
+            Assert.That(Gabarits.CadreDuCorps(2), Is.EqualTo(new Cadre(44, 31)));
+            Assert.That(Gabarits.CadreDuCorps(3), Is.EqualTo(new Cadre(65, 41)));
+            // La largeur suit toujours la longueur : le contour, d'un pixel de chaque côté.
+            for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
+                Assert.That(Gabarits.CadreDuCorps(stade).Largeur, Is.EqualTo(Gabarits.LONGUEURS_DU_CORPS[stade] + 2));
         }
 
         [Test, Description("une espèce mesure de 7 à 12 px selon son rang")]
@@ -34,18 +37,30 @@ namespace IdlePond.Tests
             Assert.That(Enumerable.Range(0, 21).Select(Gabarits.LongueurDEspece).All(l => l >= 7 && l <= 12), Is.True);
         }
 
-        [Test, Description("chaque ancrage tombe dans le tronc, à chaque stade")]
-        public void Chaque_ancrage_tombe_dans_le_tronc()
+        [Test, Description("chaque ancrage tombe dans le cadre de son stade, devant la queue qui bat")]
+        public void Chaque_ancrage_tombe_dans_le_cadre()
         {
             for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
             {
-                var tronc = Gabarits.TroncDUnPoisson(Gabarits.LONGUEURS_DU_CORPS[stade]);
+                var cadre = Gabarits.CadreDuCorps(stade);
                 foreach (AncrageId ancrage in System.Enum.GetValues(typeof(AncrageId)))
                 {
                     var p = Gabarits.Ancrage(stade, ancrage);
-                    Assert.That(tronc.Contient(p.X, p.Y), Is.True, $"stade {stade}, {ancrage} en ({p.X}, {p.Y})");
+                    Assert.That(p.X >= 0 && p.Y >= 0 && p.X < cadre.Largeur && p.Y < cadre.Hauteur, Is.True, $"stade {stade}, {ancrage} en ({p.X}, {p.Y})");
                 }
+                Assert.That(Gabarits.Ancrage(stade, AncrageId.Tete).X, Is.GreaterThan(Gabarits.Ancrage(stade, AncrageId.Queue).X), $"stade {stade} : il regarde à droite");
             }
+        }
+
+        [Test, Description("l'éveil : 0 sans renaissance, puis I à IV aux seuils ; les étoiles viennent avec le III")]
+        public void L_eveil_suit_les_renaissances()
+        {
+            Assert.That(Enumerable.Range(0, 15).Select(Gabarits.EveilDe),
+                Is.EqualTo(new[] { 0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4 }));
+            Assert.That(Gabarits.EtoilesDe(5), Is.EqualTo(0));
+            Assert.That(Gabarits.EtoilesDe(6), Is.EqualTo(3));
+            Assert.That(Gabarits.EtoilesDe(7), Is.EqualTo(4));
+            Assert.That(Gabarits.EtoilesDe(100), Is.EqualTo(8), "plafonnées");
         }
 
         [Test, Description("la Noue : six paliers éclairés, la lumière baisse, et ne dépasse jamais 1 avec l'ambiante")]
@@ -160,21 +175,39 @@ namespace IdlePond.Tests
                 }
         }
 
-        [Test, Description("les membranes du Gour : du bleu sur les nageoires, et l'orange y reste majoritaire")]
-        public void Les_membranes_du_Gour_laissent_l_orange()
+        [Test, Description("les membranes du Gour : du bleu sur les nageoires, jamais plus d'un pixel du corps sur cinq")]
+        public void Les_membranes_du_Gour_restent_sur_les_nageoires()
         {
-            var nageoire = RegistreDArt.HEROS.Nageoire.Value;
             for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
             {
                 var marque = LirePng(Art(Chemins.MarqueDAssise("gour", stade)), out _, out _);
                 var corps = LirePng(Art(Chemins.CorpsDuHeros(stade, 0)), out _, out _);
                 var bleus = marque.Count(c => c.a == 255);
-                var oranges = Enumerable.Range(0, corps.Length).Count(i => corps[i].a == 255 && Rgb(corps[i]) == nageoire && marque[i].a == 0);
                 Assert.That(bleus, Is.GreaterThan(0), $"stade {stade} : aucune membrane");
-                // La queue bat et reste orange ; sur les nageoires immobiles, la toile orange
-                // garde au moins autant de pixels que la membrane.
-                Assert.That(oranges, Is.GreaterThan(bleus), $"stade {stade}");
+                Assert.That(bleus * 5, Is.LessThan(corps.Count(c => c.a == 255)), $"stade {stade} : l'or doit rester");
             }
+        }
+
+        [Test, Description("l'éveil : les runes au cadre du corps et sur lui ; le voile, l'anneau, l'aura au cadre d'éveil")]
+        public void L_eveil_a_ses_calques_a_ses_cadres()
+        {
+            for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
+            {
+                var corps = LirePng(Art(Chemins.CorpsDuHeros(stade, 0)), out _, out _);
+                var runes = LirePng(Art(Chemins.Runes(stade)), out var l, out var h);
+                Assert.That(new Cadre(l, h), Is.EqualTo(Gabarits.CadreDuCorps(stade)), $"runes, stade {stade}");
+                Assert.That(runes.Count(c => c.a == 255), Is.GreaterThan(0), $"runes, stade {stade}");
+                for (var i = 0; i < runes.Length; i++)
+                    if (runes[i].a > 0) Assert.That(corps[i].a, Is.EqualTo(255), $"stade {stade} : une rune déborde au pixel {i}");
+                var chemins = new[] { Chemins.Voile(stade, 0), Chemins.Voile(stade, 1), Chemins.Anneau(stade), Chemins.Aura(stade) };
+                foreach (var chemin in chemins)
+                {
+                    LirePng(Art(chemin), out l, out h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(Gabarits.CadreDEveil(stade)), chemin);
+                }
+            }
+            LirePng(Art(Chemins.ETOILE), out var le, out var he);
+            Assert.That(new Cadre(le, he), Is.EqualTo(new Cadre(Gabarits.COTE_D_ETOILE, Gabarits.COTE_D_ETOILE)));
         }
 
         [Test, Description("chaque espèce livrée a ses deux images, aux dimensions de son rang")]
@@ -249,6 +282,12 @@ namespace IdlePond.Tests
             {
                 for (var image = 0; image < Gabarits.IMAGES_DE_NAGE; image++) Assert.That(catalogue.CorpsDe(stade, image), Is.Not.Null);
                 foreach (var assise in RegistreDArt.ASSISES_DESSINEES) Assert.That(catalogue.MarqueDe(assise, stade), Is.Not.Null);
+                var eveil = catalogue.EveilDe(stade);
+                Assert.That(eveil, Is.Not.Null, $"éveil du stade {stade}");
+                Assert.That(eveil.Runes, Is.Not.Null);
+                Assert.That(eveil.Voile.Length == 2 && eveil.Voile.All(v => v != null), Is.True);
+                Assert.That(eveil.Anneau, Is.Not.Null);
+                Assert.That(eveil.Aura, Is.Not.Null);
             }
             foreach (var espece in Chemins.EspecesLivrees())
                 for (var image = 0; image < Gabarits.IMAGES_D_ESPECE; image++) Assert.That(catalogue.EspeceDe(espece.Id, image), Is.Not.Null);
@@ -260,6 +299,7 @@ namespace IdlePond.Tests
                 if (RegistreDArt.DecorDe(assise).AUneAmbiance) Assert.That(catalogue.DecorDe(assise).Ambiance, Is.Not.Null, assise);
             }
             Assert.That(catalogue.Voile, Is.Not.Null);
+            Assert.That(catalogue.Etoile, Is.Not.Null);
             Assert.That(catalogue.Eclat, Is.Not.Null);
         }
 

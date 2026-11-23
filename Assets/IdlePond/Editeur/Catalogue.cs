@@ -34,7 +34,15 @@ namespace IdlePond.Editeur
             {
                 Sprites = Enumerable.Range(0, Gabarits.IMAGES_DE_NAGE).Select(i => S(Chemins.CorpsDuHeros(s, i))).ToArray(),
             }).ToArray();
-            catalogue.Marques = RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.MarqueDAssise
+            catalogue.Eveils = stades.Select(s => new CatalogueDArt.EveilDUnStade
+            {
+                Runes = S(Chemins.Runes(s)),
+                Voile = Enumerable.Range(0, 2).Select(i => S(Chemins.Voile(s, i))).ToArray(),
+                Anneau = S(Chemins.Anneau(s)),
+                Aura = S(Chemins.Aura(s)),
+            }).ToArray();
+            catalogue.Etoile = S(Chemins.ETOILE);
+            catalogue.Marques =RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.MarqueDAssise
             {
                 Assise = a,
                 ParStade = stades.Select(s => S(Chemins.MarqueDAssise(a, s))).ToArray(),

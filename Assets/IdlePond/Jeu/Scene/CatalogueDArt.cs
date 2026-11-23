@@ -17,7 +17,13 @@ namespace IdlePond.Jeu.Scene
         [Serializable] public sealed class ImagesDEspece { public string Espece; public Sprite[] Images = Array.Empty<Sprite>(); }
         [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; }
 
+        /// L'éveil d'un stade (bible v0.4) : ses runes, les deux images de son voile, l'anneau,
+        /// l'aura. Tous sauf les runes sont sur le cadre d'éveil, plus grand que le corps.
+        [Serializable] public sealed class EveilDUnStade { public Sprite Runes; public Sprite[] Voile = Array.Empty<Sprite>(); public Sprite Anneau; public Sprite Aura; }
+
         public Images[] Corps = Array.Empty<Images>();
+        public EveilDUnStade[] Eveils = Array.Empty<EveilDUnStade>();
+        public Sprite Etoile;
         public MarqueDAssise[] Marques = Array.Empty<MarqueDAssise>();
         public ImagesDEspece[] Especes = Array.Empty<ImagesDEspece>();
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();
@@ -28,6 +34,8 @@ namespace IdlePond.Jeu.Scene
             tableau != null && i >= 0 && i < tableau.Length ? tableau[i] : null;
 
         public Sprite CorpsDe(int stade, int image) => A(A(Corps, stade)?.Sprites, image);
+
+        public EveilDUnStade EveilDe(int stade) => A(Eveils, stade);
 
         public Sprite MarqueDe(string assise, int stade) =>
             A(Marques?.FirstOrDefault(m => m != null && m.Assise == assise)?.ParStade, stade);
