@@ -52,6 +52,8 @@ namespace IdlePond.Editeur
                 // Seulement là où il y en a une : sous terre, pas de berge.
                 Berge = RegistreDArt.DecorDe(a).Berge ? S(Chemins.Berge(a)) : null,
                 Rayons = S(Chemins.Rayons(a)),
+                // Ce qui flotte dans chaque bande : seulement là où il y a quelque chose.
+                Ambiance = RegistreDArt.DecorDe(a).AUneAmbiance ? S(Chemins.Ambiance(a)) : null,
             }).ToArray();
             catalogue.Voile = S(Chemins.VOILE);
             catalogue.Eclat = S(Chemins.ECLAT);

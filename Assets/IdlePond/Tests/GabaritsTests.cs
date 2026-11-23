@@ -146,6 +146,23 @@ namespace IdlePond.Tests
                 }
         }
 
+        [Test, Description("les membranes du Gour : du bleu sur les nageoires, et l'orange y reste majoritaire")]
+        public void Les_membranes_du_Gour_laissent_l_orange()
+        {
+            var nageoire = RegistreDArt.HEROS.Nageoire.Value;
+            for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
+            {
+                var marque = LirePng(Art(Chemins.MarqueDAssise("gour", stade)), out _, out _);
+                var corps = LirePng(Art(Chemins.CorpsDuHeros(stade, 0)), out _, out _);
+                var bleus = marque.Count(c => c.a == 255);
+                var oranges = Enumerable.Range(0, corps.Length).Count(i => corps[i].a == 255 && Rgb(corps[i]) == nageoire && marque[i].a == 0);
+                Assert.That(bleus, Is.GreaterThan(0), $"stade {stade} : aucune membrane");
+                // La queue bat et reste orange ; sur les nageoires immobiles, la toile orange
+                // garde au moins autant de pixels que la membrane.
+                Assert.That(oranges, Is.GreaterThan(bleus), $"stade {stade}");
+            }
+        }
+
         [Test, Description("chaque espèce livrée a ses deux images, aux dimensions de son rang")]
         public void Chaque_espece_livree_a_ses_images()
         {
@@ -174,6 +191,11 @@ namespace IdlePond.Tests
                 {
                     LirePng(Art(Chemins.Berge(assise)), out l, out h);
                     Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE)));
+                }
+                if (RegistreDArt.DecorDe(assise).AUneAmbiance)
+                {
+                    LirePng(Art(Chemins.Ambiance(assise)), out l, out h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE)), "l'ambiance pave comme la berge");
                 }
             }
         }
@@ -221,6 +243,7 @@ namespace IdlePond.Tests
                 Assert.That(catalogue.DecorDe(assise).Fond, Is.Not.Null);
                 Assert.That(catalogue.DecorDe(assise).Roche, Is.Not.Null);
                 Assert.That(catalogue.DecorDe(assise).Rayons, Is.Not.Null);
+                if (RegistreDArt.DecorDe(assise).AUneAmbiance) Assert.That(catalogue.DecorDe(assise).Ambiance, Is.Not.Null, assise);
             }
             Assert.That(catalogue.Voile, Is.Not.Null);
             Assert.That(catalogue.Eclat, Is.Not.Null);

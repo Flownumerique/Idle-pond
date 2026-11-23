@@ -5,6 +5,9 @@ namespace IdlePond.Jeu.Scene
     public static class OrdreDeRendu
     {
         public const int FOND = 0;
+        /// Ce qui flotte dans chaque bande (le pollen, les méduses, les grosses pierres) :
+        /// devant l'eau, derrière les rayons.
+        public const int AMBIANCE = 5;
         public const int RAYONS = 10;
         /// La roche à creuser passe devant les rayons, qui débordent sur deux bandes : le jour
         /// n'entre pas dans la pierre.

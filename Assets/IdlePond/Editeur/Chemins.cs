@@ -21,6 +21,7 @@ namespace IdlePond.Editeur
         public static string Roche(string assise) => $"Fonds/{assise}/roche.png";
         public static string Rayons(string assise) => $"Fonds/{assise}/rayons.png";
         public static string Berge(string assise) => $"Fonds/{assise}/berge.png";
+        public static string Ambiance(string assise) => $"Fonds/{assise}/ambiance.png";
 
         /// Les espèces des paliers livrés : la Noue s'arrête au palier 5, l'épinoche vit au 6.
         public static IEnumerable<Espece> EspecesLivrees() => Especes.Toutes.Where(e => e.Palier < Assises.PALIERS_LIVRES);

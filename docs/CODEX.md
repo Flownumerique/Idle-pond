@@ -1,6 +1,6 @@
 # IdlePond — le Codex
 
-**Version** : 1.4 — 2026-11-23
+**Version** : 1.5 — 2026-11-23
 **Objet** : la fiction et le lexique. Ce que le monde est, ce que le héros devient, et
 comment chaque chose s'appelle — à l'écran comme dans le code.
 **Remplace** : `idlepond-histoire-v0.1.md`, absorbé et archivé.
@@ -171,6 +171,19 @@ dans `docs/da/gabarits.md`.
 **La magie du lieu se voit dans le sillage** : pollen or et vert tendre dans la Noue (la Sève),
 fins traits bleu clair dans le Gour (le Courant). **Une tribu brille en éclair, jamais en
 continu** : un ornement est une couleur ; la lumière ne vient que sur un événement.
+
+### Les lieux et le héros à l'écran (2026-11-23)
+
+Validé par l'auteur le 2026-11-23 (bible du monde v0.3). **Chaque lieu a la couleur de sa
+magie**, plus franche et plus lumineuse que l'eau douce réelle, et le merveilleux grandit en
+descendant. **La Noue** est une eau claire et ensoleillée, vert d'eau : rayons dorés, nénuphars,
+racines qui bourgeonnent, herbes, pollen. **Le Gour** est une eau vive, d'un bleu qui plonge vers
+le bleu nuit : écume en pointillés, galets moussus, grosses pierres, méduses d'eau douce.
+
+**Le héros est la seule chose chaude de la mare** : il est d'or. Chaque marque prend la couleur
+du lieu traversé — les branchies en vert de Sève, les membranes en bleu de Courant, tendues
+entre les rayons de ses nageoires, qui restent orange. En descendant, son corps devient la carte
+des magies qu'il a traversées. Les couleurs exactes sont dans `docs/da/gabarits.md`.
 
 ### Les quinze espèces à venir (noms provisoires)
 
@@ -723,6 +736,10 @@ système et vivant comme terme de fiction. Aucun identifiant ne le porte.
 ---
 
 ## Journal
+
+**v1.5 — 2026-11-23.** Les couleurs de la Noue, du Gour et du héros sont validées (bible du monde
+v0.3) : §2 gagne « Les lieux et le héros à l'écran ». Le héros passe à l'or ; ses marques
+prennent la couleur du lieu. Aucun identifiant ni aucune sauvegarde ne change.
 
 **v1.4 — 2026-11-23.** La dérivation des six espèces livrées est validée (bible du monde v0.2) :
 §2 gagne « Les six tribus à l'écran » — aspect, comportement, texte et représentant de chaque

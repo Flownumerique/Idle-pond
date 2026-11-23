@@ -31,6 +31,9 @@ namespace IdlePond.Jeu.Scene
                 var bas = -(p.Index + 1) * Gabarits.HAUTEUR_DE_BANDE;
                 Briques.Paver(racine, "Bande " + p.Index, art.Fond, Gabarits.GAUCHE_DU_DECOR, bas,
                     Gabarits.LARGEUR_DU_DECOR, Gabarits.HAUTEUR_DE_BANDE, OrdreDeRendu.FOND);
+                if (art.Ambiance != null)
+                    Briques.Paver(racine, "Ambiance " + p.Index, art.Ambiance, Gabarits.GAUCHE_DU_DECOR, bas,
+                        Gabarits.LARGEUR_DU_DECOR, Gabarits.HAUTEUR_DE_BANDE, OrdreDeRendu.AMBIANCE);
                 if (p.Index != 0) continue;
                 if (RegistreDArt.DecorDe(p.Assise).Berge && art.Berge != null)
                     Briques.Paver(racine, "Berge", art.Berge, Gabarits.GAUCHE_DU_DECOR, bas,

@@ -18,22 +18,11 @@ Source de vérité : `Assets/IdlePond/Jeu/Scene/Gabarits.cs` et `RegistreDArt.cs
 >   environ **60 px** de long, quatre images de nage comme le héros (seules la queue et les
 >   nageoires bougent), toujours plus petit que le héros adulte. Un seul par tribu à l'écran.
 > - **La taille à l'écran reste réglable** à part, par les gabarits.
-> - **Chaque espèce gagne un accent** : une quatrième couleur, sur quelques pixels (épines,
->   runes, voile…). Champ `Accent` à ajouter à `CouleursDePoisson`.
 > - **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet qu'en éclair,
 >   sur un événement.
-> - **Nouvelles palettes d'espèces** (corps · dos · ventre · accent) :
 >
-> | Espèce | Corps | Dos | Ventre | Accent |
-> |---|---|---|---|---|
-> | vairon | `#7FC8A0` | `#2E7D5B` | `#E8483A` | `#B8E86A` (queue-feuille) |
-> | loche | `#C08A3E` | `#6E4A22` | `#F0D9A0` | `#4FE0D0` (runes) |
-> | épinoche | `#6FA05A` | `#2F5A35` | `#D8283A` (gorge) | `#FF8FA0` (épines) ; œil `#4AA8FF` |
-> | chabot | `#7C8790` | `#4B545C` | `#C9CFC9` | `#C8A040` (lichen) |
-> | lamproie | `#9B7FC0` | `#5A3F7A` | `#D9C8F0` | `#9FF0FF` (anneau de bouche) |
-> | ombre | `#A8B8D8` | `#4A5A8A` | `#E8EEF8` | voile `#C060F0` / `#40D0C0` (une couleur par image) |
->
-> Les palettes des lieux (Noue, Gour) et du héros sont la prochaine étape.
+> **Déjà dans le code** (2026-11-23, à 240 px) : les palettes des six espèces et leur accent,
+> celles de la Noue, du Gour et du héros (bible v0.3, Codex v1.5) — voir « Palettes ».
 
 ## Règles communes
 
@@ -77,6 +66,10 @@ complète ou interrompue) : le noyau ne les suit pas encore, une seule est livr�
 | Assise | Ancrage | Teinte du corps | Lumière |
 |---|---|---|---|
 | noue | Branchies | — | — |
+| gour | Dos — les nageoires du dos et du ventre | — | — |
+
+Les nageoires du héros ne battent pas (seule la queue bat) : la marque du Gour s'y pose, une
+colonne de membrane bleue entre deux rayons, la colonne suivante reste orange.
 
 ## Les espèces — `Especes/{id}-i{0,1}.png`
 
@@ -88,9 +81,10 @@ Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division
 
 | Fichier | Taille | Rôle |
 |---|---|---|
-| `fond.png` | 32 × 56 | une bande d'eau, répétée en largeur ; la vase en bas |
+| `fond.png` | 32 × 56 | une bande d'eau, répétée en largeur, du clair en haut au sombre en bas ; en bas, la vase et ses herbes, ou les galets et leur mousse |
 | `rayons.png` | 256 × 112 | les rayons du jour sur les deux premières bandes, tramés |
-| `berge.png` | 256 × 56 | les racines qui pendent de la première bande (si l'assise a une berge) |
+| `berge.png` | 256 × 56 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
+| `ambiance.png` | 256 × 56 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
 
 ## L'eau — `Eau/`
 
@@ -98,12 +92,28 @@ Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division
 
 ## Palettes
 
-- **Héros** : `#C49C5C` corps, `#8C683A` dos, `#E2CE96` ventre, `#121C1A` contour ;
-  marque de la Noue `#5E4426`.
-- **Espèces** : vairon `#96AAA0` `#566C64` `#C8D4CC` ; loche `#A08A5E` `#6A5A3A` `#CCB88A` ;
-  contour `#121C1A`.
-- **Noue** : eau `#4A8070` `#34645C` `#244A48`, vase `#28221A`, racines `#3A2C20` `#5C4630`,
-  rayon `#96BE96`.
+- **Héros** (bible v0.3) : `#F2B84A` corps (or), `#C07A2A` dos et rayons des nageoires
+  (ambre), `#FFE6A8` ventre, `#FFF0C0` reflet, `#E89A3A` nageoires, `#FF9A80` joue, `#121C1A`
+  contour ; marque de la Noue `#8FE070` (vert de Sève), du Gour `#8FD8FF` (bleu de Courant).
+- **Espèces** (corps · dos · ventre · accent), contour `#121C1A` :
+
+| Espèce | Corps | Dos | Ventre | Accent |
+|---|---|---|---|---|
+| vairon | `#7FC8A0` | `#2E7D5B` | `#E8483A` | `#B8E86A` (queue-feuille) |
+| loche | `#C08A3E` | `#6E4A22` | `#F0D9A0` | `#4FE0D0` (runes) |
+| épinoche | `#6FA05A` | `#2F5A35` | `#D8283A` (gorge) | `#FF8FA0` (épines) ; œil `#4AA8FF` |
+| chabot | `#7C8790` | `#4B545C` | `#C9CFC9` | `#C8A040` (lichen) |
+| lamproie | `#9B7FC0` | `#5A3F7A` | `#D9C8F0` | `#9FF0FF` (anneau de bouche) |
+| ombre | `#A8B8D8` | `#4A5A8A` | `#E8EEF8` | voile `#C060F0` / `#40D0C0` (une couleur par image) |
+
+- **Noue** (la Sève) : eau, du haut vers le bas, `#A8F0D0` `#5CC8A0` `#2F9A80` `#1E6A62`
+  `#163E44` ; surface `#D8FFF0` ; rayons `#FFF0A0` ; nénuphars `#4FB85A` `#6FD070`, fleur
+  `#F4A8C8`, cœur `#FFE070` ; racines `#6A4C30`, bourgeon `#8FE070` ; herbes `#3FA060` `#5CC070`
+  `#7CD070` ; vase `#4A3424` ; pollen `#FFE070` `#F6C840` `#DFFFA0`.
+- **Gour** (le Courant) : eau `#9ADCF8` `#5AB0E6` `#3A80C8` `#24589A` `#16345E` ; écume `#E6F8FF`
+  `#BFEAFF` ; galets `#8FA8C0` `#6E88A4` `#A8BCD0`, fond `#2A3E58` ; mousse `#4FA070` ; grosses
+  pierres `#7A90A8` `#93A8BE` ; méduses `#E8F4FF` `#C8E8FF`.
+- **Roche à creuser** : inchangée, voir `RegistreDArt.cs`.
 - **Eau** : blanc `#FFFFFF`.
 
 ## Rendu et contrôle
