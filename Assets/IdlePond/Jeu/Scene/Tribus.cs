@@ -19,6 +19,9 @@ namespace IdlePond.Jeu.Scene
         /// Toute tribu : à la conviction, son représentant entre dans la bande et rallie sa
         /// troupe. `Source` : la tribu convaincue.
         Entree,
+        /// La faune d'ambiance (Codex v1.3) : quand une tribu est ralliée, les écrevisses
+        /// porte-bannière défilent en procession au fond de sa bande. `Source` : la tribu.
+        Procession,
     }
 
     /// `Debut` : l'instant de la scène (en secondes) où la réaction commence.
@@ -107,6 +110,7 @@ namespace IdlePond.Jeu.Scene
             GenreDeReaction.VagueRouge => DUREE_DE_LA_VAGUE,
             GenreDeReaction.FilDeMana => DUREE_DU_FIL,
             GenreDeReaction.Entree => DUREE_DE_L_ENTREE,
+            GenreDeReaction.Procession => Faune.DUREE_DE_LA_PROCESSION,
             _ => DUREE_DU_MIRAGE,
         };
 
@@ -269,6 +273,7 @@ namespace IdlePond.Jeu.Scene
                         break;
                     case GenreDEvenement.EspeceConvaincue:
                         enCours.Add(new Reaction(GenreDeReaction.Entree, e.Sujet, instant));
+                        enCours.Add(new Reaction(GenreDeReaction.Procession, e.Sujet, instant));
                         if (e.Sujet != Tribus.OMBRE && presentes.Contains(Tribus.OMBRE))
                             enCours.Add(new Reaction(GenreDeReaction.Mirage, e.Sujet, instant));
                         break;

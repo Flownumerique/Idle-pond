@@ -95,8 +95,13 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
     hors de lui. **Fait hors de l'éditeur** : les tests purs passent sous .NET, les assets sont
     vérifiés par script ; à lancer dans Unity (tests EditMode et PlayMode, captures) et à mesurer
     sur un vrai téléphone — repli sur 320 px s'il ne suit pas.
-  4. **La faune d'ambiance** (ce qui vit dans la mare sans produire) et **une mare qui change
-     à chaque renaissance** (chantier 6).
+  4. ~~**La faune d'ambiance**~~ — **dans le jeu depuis le 2026-11-24** (`Faune.cs`, pur et
+     testé ; `FauneDAmbiance.cs` ; dessins `outils/da/faune.py`) : libellules-lanternes,
+     gerris-scribes et leurs runes, grenouilles-chantres plus nombreuses à chaque renaissance,
+     hydre, jardins de la Sève qui fleurissent et grandissent à chaque renaissance, procession
+     des écrevisses porte-bannière quand une tribu est ralliée ; les méduses du Gour sont dans
+     son décor. Pas encore vu dans Unity. **Reste** : la faune dans la bibliothèque (« la faune
+     rencontrée »), et le reste d'**une mare qui change à chaque renaissance** (chantier 6).
   Le constat qui a mené à la décision est gardé ci-dessous.
 - **L'esprit : fantaisie, couleur, diversité — le constat du 2026-11-22.**
   Constat de l'auteur (2026-11-22) : le jeu a perdu l'esprit fantaisiste, les couleurs et la

@@ -13,8 +13,13 @@ namespace IdlePond.Jeu.Scene
         /// n'entre pas dans la pierre.
         public const int ROCHE = 15;
         public const int BORD = 20;
+        /// L'hydre, accrochée sous la surface parmi les racines.
+        public const int HYDRE = 21;
         /// Les nids-forteresses de l'épinoche, sur le fond de sa bande : derrière les nageurs.
         public const int NIDS = 22;
+        /// Les jardins de la Sève et la procession des écrevisses, au fond des bandes.
+        public const int JARDINS = 23;
+        public const int PROCESSION = 24;
         /// Le mirage qu'une ombre laisse du nouveau venu : juste derrière les nageurs.
         public const int MIRAGES = 29;
         public const int NAGEURS = 30;
@@ -22,6 +27,9 @@ namespace IdlePond.Jeu.Scene
         public const int REPRESENTANTS = 31;
         /// Le fil de mana qui va jusqu'aux lamproies : devant les nageurs, derrière le héros.
         public const int FILS = 32;
+        /// Les bêtes de surface (libellules, gerris et leurs runes, grenouilles) : devant tout
+        /// ce qui nage, derrière le héros et son éveil.
+        public const int SURFACE = 33;
         /// L'éveil du héros (bible v0.4) : l'aura, l'anneau et les rubans du voile derrière lui ;
         /// les runes sur lui, par-dessus ses marques ; les étoiles devant.
         public const int AURA = 35;

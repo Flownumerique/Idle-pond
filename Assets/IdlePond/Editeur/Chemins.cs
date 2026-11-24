@@ -26,6 +26,7 @@ namespace IdlePond.Editeur
         public static string Larve(int image) => $"Heros/renouveau/larve-i{image}.png";
         public static string ImageDEspece(string espece, int image) => $"Especes/{espece}-i{image}.png";
         public static string ImageDuRepresentant(string espece, int image) => $"Especes/representants/{espece}-i{image}.png";
+        public static string ImageDeFaune(string nom, int image) => $"Faune/{nom}-i{image}.png";
         public static string Fond(string assise) => $"Fonds/{assise}/fond.png";
         public static string Roche(string assise) => $"Fonds/{assise}/roche.png";
         public static string Rayons(string assise) => $"Fonds/{assise}/rayons.png";

@@ -178,7 +178,9 @@ namespace IdlePond.Tests
             reactions.Recevoir(new[] { new EvenementDeJeu(GenreDEvenement.EspeceConvaincue, Tribus.LAMPROIE, 1) }, 0, new HashSet<string>(Toutes));
             var mirage = reactions.EnCours.Single(r => r.Genre == GenreDeReaction.Mirage);
             Assert.That(mirage.Source, Is.EqualTo(Tribus.LAMPROIE));
-            Assert.That(reactions.Avancer(Tribus.DUREE_DU_MIRAGE + 0.01), Is.False);
+            Assert.That(reactions.Avancer(Tribus.DUREE_DU_MIRAGE + 0.01), Is.True, "la procession des écrevisses dure plus longtemps");
+            Assert.That(reactions.EnCours.Any(r => r.Genre == GenreDeReaction.Mirage), Is.False);
+            Assert.That(reactions.Avancer(Faune.DUREE_DE_LA_PROCESSION + 0.01), Is.False);
             Assert.That(reactions.EnCours, Is.Empty);
         }
 

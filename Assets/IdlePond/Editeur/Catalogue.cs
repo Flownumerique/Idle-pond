@@ -60,6 +60,11 @@ namespace IdlePond.Editeur
                 Espece = e.Id,
                 Images = Enumerable.Range(0, Gabarits.IMAGES_DE_NAGE).Select(i => S(Chemins.ImageDuRepresentant(e.Id, i))).ToArray(),
             }).ToArray();
+            catalogue.Faune = IdlePond.Jeu.Scene.Faune.DESSINS.Select(f => new CatalogueDArt.ImagesDeFaune
+            {
+                Nom = f.Key,
+                Images = Enumerable.Range(0, f.Value.Images).Select(i => S(Chemins.ImageDeFaune(f.Key, i))).ToArray(),
+            }).ToArray();
             catalogue.Decors = RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.DecorDAssise
             {
                 Assise = a,

@@ -15,6 +15,7 @@ namespace IdlePond.Jeu.Scene
         [Serializable] public sealed class Images { public Sprite[] Sprites = Array.Empty<Sprite>(); }
         [Serializable] public sealed class MarqueDAssise { public string Assise; public Sprite[] ParStade = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDEspece { public string Espece; public Sprite[] Images = Array.Empty<Sprite>(); }
+        [Serializable] public sealed class ImagesDeFaune { public string Nom; public Sprite[] Images = Array.Empty<Sprite>(); }
         [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; }
 
         /// L'éveil d'un stade (bible v0.4) : ses runes, les deux images de son voile, l'anneau,
@@ -33,6 +34,8 @@ namespace IdlePond.Jeu.Scene
         public ImagesDEspece[] Especes = Array.Empty<ImagesDEspece>();
         /// Le représentant de chaque tribu (Codex v1.4) : quatre images de nage, comme le héros.
         public ImagesDEspece[] Representants = Array.Empty<ImagesDEspece>();
+        /// La faune d'ambiance (Codex v1.3) : une entrée par bête, ses images.
+        public ImagesDeFaune[] Faune = Array.Empty<ImagesDeFaune>();
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();
         public Sprite Voile;
         public Sprite Eclat;
@@ -55,6 +58,9 @@ namespace IdlePond.Jeu.Scene
         /// Les images du représentant d'une tribu, ou null s'il n'est pas dessiné.
         public Sprite[] ImagesDuRepresentant(string espece) =>
             Representants?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images;
+
+        /// Les images d'une bête de la faune d'ambiance, ou null.
+        public Sprite[] ImagesDeLaFaune(string nom) => Faune?.FirstOrDefault(f => f != null && f.Nom == nom)?.Images;
 
         /// Son portrait : sa première image (la fiche du tiroir Espèces).
         public Sprite PortraitDe(string espece) => A(ImagesDuRepresentant(espece), 0);

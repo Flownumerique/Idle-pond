@@ -255,6 +255,17 @@ namespace IdlePond.Jeu.Scene
             0xFF8AA0, 0xFF8FA0, 0xFFE070, 0xFFE4EA, 0xFFFFFF,
         };
 
+        /// La faune d'ambiance dessinée (`outils/da/faune.py`, Codex v1.3) : libellules,
+        /// gerris, grenouilles, écrevisses et leur bannière, hydre, fleurs des jardins.
+        public static readonly IReadOnlyList<int> FAUNE_DESSINEE = new[]
+        {
+            0x121C1A, 0x2FB8B0, 0x3FA060, 0x4A3424, 0x5CC070, 0x6A4C30, 0x7CD070, 0x7FE6E8, 0x8FE070, 0xA8F0D0,
+            0xB8452A, 0xB8E8C8, 0xD8FFF0, 0xE07040, 0xE6F8EE, 0xF4A8C8, 0xF6C840, 0xFFD0E4, 0xFFE070, 0xFFF0A0,
+            0xFFF0C0,
+        };
+
+        public static IReadOnlyList<int> PaletteDeLaFaune() => FAUNE_DESSINEE.Append(CONTOUR).Distinct().ToList();
+
         public static IReadOnlyList<int> PaletteDesEspeces() =>
             ESPECES_DESSINEES.Concat(ESPECES_PAR_RANG.SelectMany(c => c.Couleurs())).Append(CONTOUR).Distinct().ToList();
 

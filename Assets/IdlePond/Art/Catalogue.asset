@@ -139,6 +139,37 @@ MonoBehaviour:
     - {fileID: 21300000, guid: afa8ea18039547c69f01117105ff0ab7, type: 3}
     - {fileID: 21300000, guid: 0398e8738b3c46f58a8878f5bcdb0c1b, type: 3}
     - {fileID: 21300000, guid: a980e0411167459db0a813568af37625, type: 3}
+  Faune:
+  - Nom: libellule
+    Images:
+    - {fileID: 21300000, guid: eb830f26c0b543708d2696f22117db16, type: 3}
+    - {fileID: 21300000, guid: d4eab032cfbe4be89d2fce07fbcca075, type: 3}
+    - {fileID: 21300000, guid: 03238019ab844f8f93c2e8c995e88e27, type: 3}
+  - Nom: gerris
+    Images:
+    - {fileID: 21300000, guid: 6f245df153be4132903ca1e601b0ddc2, type: 3}
+    - {fileID: 21300000, guid: 5962de7b2c174b1c8a29edbadec768d7, type: 3}
+  - Nom: grenouille
+    Images:
+    - {fileID: 21300000, guid: 01a2393e5ee144d88abdf107926e2139, type: 3}
+    - {fileID: 21300000, guid: f85af05da881448c8bbf1e1a764291a2, type: 3}
+  - Nom: ecrevisse
+    Images:
+    - {fileID: 21300000, guid: 43411c4eb5f74f4a84604ac17b6525a4, type: 3}
+    - {fileID: 21300000, guid: cf9c0e84685d467cb5c97099c4c45fee, type: 3}
+  - Nom: ecrevisse-banniere
+    Images:
+    - {fileID: 21300000, guid: c9eeaab0c90c40a6ab4b313babe42299, type: 3}
+    - {fileID: 21300000, guid: 29a5a37bbbe64b4d8a5fe9651a015bd1, type: 3}
+  - Nom: hydre
+    Images:
+    - {fileID: 21300000, guid: e99be68173654297a50eb45fe69b5cc1, type: 3}
+    - {fileID: 21300000, guid: f326212e01594c7c83d78b2a4bdbb337, type: 3}
+  - Nom: fleur
+    Images:
+    - {fileID: 21300000, guid: 5b6fa00d9cc3460aa398cb80d4589fab, type: 3}
+    - {fileID: 21300000, guid: 379fe7d4714c436caa5cc61a0c1a6401, type: 3}
+    - {fileID: 21300000, guid: 54596a86cbdf4a98875fb8adb08ba5ac, type: 3}
   Decors:
   - Assise: noue
     Fond: {fileID: 21300000, guid: db07656bf8e30cd40911d1d4c53b770a, type: 3}

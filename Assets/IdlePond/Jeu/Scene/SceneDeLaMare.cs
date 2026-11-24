@@ -26,6 +26,7 @@ namespace IdlePond.Jeu.Scene
         public Voile Voile { get; private set; }
         public HerosEnPixels Heros { get; private set; }
         public ComportementsDesTribus Tribus { get; private set; }
+        public FauneDAmbiance FauneDAmbiance { get; private set; }
 
         /// Ce que l'état dit des tribus (pétrifiés, agitées, nids), relu à chaque changement.
         public EtatDesTribus EtatDesTribus { get; private set; } = Scene.EtatDesTribus.CALME;
@@ -58,6 +59,7 @@ namespace IdlePond.Jeu.Scene
             Voile = new Voile(transform, catalogue);
             Heros = new HerosEnPixels(transform, catalogue);
             Tribus = new ComportementsDesTribus(transform, catalogue);
+            FauneDAmbiance = new FauneDAmbiance(transform, catalogue);
         }
 
         void OnEnable()
@@ -87,6 +89,7 @@ namespace IdlePond.Jeu.Scene
             Reactions.Avancer(horloge);
             Nageurs?.Animer(horloge, premiereVisible, derniereVisible, EtatDesTribus, Reactions);
             Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
+            FauneDAmbiance?.Animer(horloge, premiereVisible, derniereVisible, Reactions.EnCours);
             Voile?.Animer(Time.deltaTime);
             Heros?.Animer(horloge);
         }
@@ -136,6 +139,7 @@ namespace IdlePond.Jeu.Scene
             presentes.Clear();
             foreach (var p in v.Paliers) if (p.Espece != null) presentes.Add(p.Espece.Id);
             Tribus.DessinerLesNids(v, EtatDesTribus);
+            FauneDAmbiance.Dessiner(v);
             var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
             Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
             // Le redessin remet les pièces au départ : on les replace avant que l'image soit rendue.

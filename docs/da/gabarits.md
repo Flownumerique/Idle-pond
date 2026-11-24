@@ -81,6 +81,23 @@ couleur à mi-course), dans un **cadre commun de 94 × 58**. Toujours plus petit
 conviction, et son portrait (l'image 0) remplace l'icône dans la fiche du tiroir Espèces. Produits
 par `outils/da/especes.py` avec les poissons de troupe ; mêmes couleurs.
 
+## La faune d'ambiance — `Faune/{nom}-i{n}.png`
+
+Ce qui vit dans la mare sans produire (Codex v1.3, §2), dessiné au pixel par
+`outils/da/faune.py` ; palette dans `RegistreDArt.FAUNE_DESSINEE`. Toutes les images d'une bête
+ont le même cadre (le dessin est posé en bas à gauche) ; regard à droite.
+
+| Bête | Cadre | Images | Où, quand |
+|---|---|---|---|
+| `libellule` | 14 × 7 | 3 (ailes hautes, basses, lanterne allumée) | deux, près de la surface de la Noue ; la lanterne s'allume en éclair, 0,4 s toutes les 7 s |
+| `gerris` | 11 × 5 | 2 | trois, sur la surface ; ils filent puis se posent, et laissent une rune (un éclat pâle) 1,2 s |
+| `grenouille` | 14 × 8 | 2 (repos, gorge gonflée) | au pied des nénuphars, les yeux à la surface ; une de plus par renaissance (trois au plus), et un chant plus fréquent |
+| `hydre` | 7 × 12 | 2 | accrochée sous la surface, parmi les racines |
+| `fleur` | 7 × 9 | 3 (bourgeon, fleur, grande fleur) | les jardins de la Sève, au fond des bandes de la Noue : une fleur de plus par renaissance (six au plus), qui grandit à la 3ᵉ et à la 6ᵉ |
+| `ecrevisse`, `ecrevisse-banniere` | 14 × 6, 14 × 11 | 2 chacune | quand une tribu est ralliée : quatre écrevisses traversent le fond de sa bande en 7 s, la première porte la bannière de Sève |
+
+Les méduses d'eau douce du Gour sont dans son décor (`ambiance.png`).
+
 ## Le décor — `Fonds/{assise}/`
 
 | Fichier | Taille | Rôle |

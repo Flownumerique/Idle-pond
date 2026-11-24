@@ -270,6 +270,18 @@ namespace IdlePond.Tests
                 }
         }
 
+        [Test, Description("chaque bête de la faune d'ambiance a ses images, au cadre de son dessin")]
+        public void Chaque_bete_a_ses_images()
+        {
+            foreach (var bete in Faune.DESSINS)
+                for (var image = 0; image < bete.Value.Images; image++)
+                {
+                    var px = LirePng(Art(Chemins.ImageDeFaune(bete.Key, image)), out var l, out var h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(bete.Value.Cadre), $"{bete.Key}, image {image}");
+                    Assert.That(px.Any(c => c.a == 255), Is.True, $"{bete.Key}, image {image} vide");
+                }
+        }
+
         [Test, Description("chaque tribu livrée a son représentant : quatre images, au cadre commun des représentants")]
         public void Chaque_tribu_a_son_representant()
         {
@@ -323,6 +335,7 @@ namespace IdlePond.Tests
                 if (relatif.StartsWith("Heros/")) return RegistreDArt.PaletteDuHeros();
                 if (relatif.StartsWith("Especes/")) return RegistreDArt.PaletteDesEspeces();
                 if (relatif.StartsWith("Fonds/")) return RegistreDArt.PaletteDuDecor(relatif.Split('/')[1]);
+                if (relatif.StartsWith("Faune/")) return RegistreDArt.PaletteDeLaFaune();
                 if (relatif.StartsWith("Eau/")) return new[] { RegistreDArt.BLANC };
                 Assert.Fail("famille inconnue : " + relatif);
                 return null;
@@ -371,6 +384,8 @@ namespace IdlePond.Tests
                 Assert.That(catalogue.DecorDe(assise).Rayons, Is.Not.Null);
                 if (RegistreDArt.DecorDe(assise).AUneAmbiance) Assert.That(catalogue.DecorDe(assise).Ambiance, Is.Not.Null, assise);
             }
+            foreach (var bete in Faune.DESSINS)
+                Assert.That(catalogue.ImagesDeLaFaune(bete.Key), Has.Length.EqualTo(bete.Value.Images).And.All.Not.Null, bete.Key);
             Assert.That(catalogue.Voile, Is.Not.Null);
             Assert.That(catalogue.Etoile, Is.Not.Null);
             Assert.That(catalogue.Oeuf, Is.Not.Null);
