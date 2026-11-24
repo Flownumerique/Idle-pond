@@ -169,6 +169,7 @@ namespace IdlePond.Tests
                          "Assets/IdlePond/Jeu/Scene/VueDeScene.cs", "Assets/IdlePond/Jeu/Scene/Palette.cs",
                          "Assets/IdlePond/Jeu/Scene/Gabarits.cs", "Assets/IdlePond/Jeu/Scene/RegistreDArt.cs",
                          "Assets/IdlePond/Jeu/Scene/Cadrage.cs", "Assets/IdlePond/Jeu/Scene/Nage.cs",
+                         "Assets/IdlePond/Jeu/Scene/Tribus.cs",
                      })
                 Assert.That(File.ReadAllText(f), Does.Not.Contain("using UnityEngine"));
         }

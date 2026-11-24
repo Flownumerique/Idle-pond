@@ -13,7 +13,13 @@ namespace IdlePond.Jeu.Scene
         /// n'entre pas dans la pierre.
         public const int ROCHE = 15;
         public const int BORD = 20;
+        /// Les nids-forteresses de l'épinoche, sur le fond de sa bande : derrière les nageurs.
+        public const int NIDS = 22;
+        /// Le mirage qu'une ombre laisse du nouveau venu : juste derrière les nageurs.
+        public const int MIRAGES = 29;
         public const int NAGEURS = 30;
+        /// Le fil de mana qui va jusqu'aux lamproies : devant les nageurs, derrière le héros.
+        public const int FILS = 32;
         /// L'éveil du héros (bible v0.4) : l'aura, l'anneau et les rubans du voile derrière lui ;
         /// les runes sur lui, par-dessus ses marques ; les étoiles devant.
         public const int AURA = 35;

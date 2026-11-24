@@ -36,6 +36,20 @@ namespace IdlePond.Jeu.Scene
             return new Trajet(x0, y, amplitude, periode, phase);
         }
 
+        /// Une lamproie accrochée à la paroi (Codex v1.4, les Lamproies pèlerines) : contre le
+        /// bord gauche ou droit de la bande, sans aller-retour. `Amplitude` 0 ; l'animation la
+        /// fait respirer d'un pixel (`Tribus.Respiration`).
+        public static Trajet TrajetAccroche(int palier, int numero, int longueur)
+        {
+            var h = Melanger((uint)(palier * 7919 + numero * 104729 + 7));
+            var cadre = Gabarits.CadreDUnPoisson(longueur);
+            var x0 = Tribus.AccrocheeAGauche(numero) ? 2 : Gabarits.LARGEUR_VISEE - 2 - cadre.Largeur;
+            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 12 - cadre.Hauteur;
+            var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 6 + (int)((h >> 11) % (uint)hauteurLibre);
+            var phase = ((h >> 23) % 100u) / 100.0 * 2.5;
+            return new Trajet(x0, y, 0, 2.5, phase);
+        }
+
         /// Aller-retour en cosinus : de X0 à X0 + amplitude en une période, retour en une
         /// autre. Arrondi au pixel : rien ne se pose entre deux pixels.
         public static (int X, bool VersLaDroite) Position(Trajet t, double secondes)

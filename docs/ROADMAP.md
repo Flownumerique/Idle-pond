@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-23
+**Tenue à jour le** : 2026-11-24
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -60,8 +60,16 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   2. ~~La dérivation des six espèces livrées~~ — **validée le 2026-11-23** (Codex v1.4, §2 ;
      `docs/da/gabarits.md`) : couleurs, accent, comportement, texte et représentant de chaque
      tribu. **Dans le jeu depuis le 2026-11-23, à 240 px** : les palettes et l'accent de chaque
-     espèce. **Reste à porter** : la finesse à 360 px, les nouveaux gabarits (troupe ≈ 24 px,
-     représentants ≈ 60 px), les comportements branchés sur `Partie.EvenementsDeJeu`.
+     espèce. **Depuis le 2026-11-24, les comportements** (`Tribus.cs`, pur et testé ;
+     `ComportementsDesTribus.cs` et `Nageurs.cs` pour le dessin) : la vague de rouge du Chœur à
+     chaque seuil du vairon, les loches qui frissonnent quand l'eau va se troubler ou la descente
+     se rouvrir, un nid-forteresse par seuil de l'épinoche, les chabots pétrifiés dans l'eau
+     trouble, les lamproies accrochées aux parois et le fil de mana qui leur vient d'une tribu qui
+     monte, le mirage du nouveau venu laissé par une ombre. Provisoire : fait de l'éclat teinté et
+     des images d'espèce. **Écrit hors de l'éditeur** : la partie pure passe ses tests sous .NET,
+     le dessin n'a pas encore été vu dans Unity — à lancer (`outils/unity.sh tests`, puis l'œil
+     sur l'atelier Espèces). **Reste à porter** : la finesse à 360 px, les nouveaux gabarits
+     (troupe ≈ 24 px, représentants ≈ 60 px), le représentant dans la fiche et à la conviction.
   3. ~~Les palettes de la Noue, du Gour et du héros~~ — **validées le 2026-11-23** (Codex v1.5,
      §2 ; `docs/da/gabarits.md`) et **dans le jeu à 240 px** : le héros en or, ses marques à la
      couleur du lieu, l'eau et le décor de chaque lieu, un calque d'ambiance par bande.

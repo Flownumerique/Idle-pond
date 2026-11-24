@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using IdlePond.Noyau;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,6 +22,13 @@ namespace IdlePond.Jeu.Scene
         public Nageurs Nageurs { get; private set; }
         public Voile Voile { get; private set; }
         public HerosEnPixels Heros { get; private set; }
+        public ComportementsDesTribus Tribus { get; private set; }
+
+        /// Ce que l'état dit des tribus (pétrifiés, agitées, nids), relu à chaque changement.
+        public EtatDesTribus EtatDesTribus { get; private set; } = Scene.EtatDesTribus.CALME;
+
+        /// Les éclairs des tribus en cours : la vague, les fils, les mirages.
+        public ReactionsDesTribus Reactions { get; } = new ReactionsDesTribus();
 
         Partie partie;
         bool vueAJour;
@@ -46,18 +54,22 @@ namespace IdlePond.Jeu.Scene
             Nageurs = new Nageurs(transform, catalogue);
             Voile = new Voile(transform, catalogue);
             Heros = new HerosEnPixels(transform, catalogue);
+            Tribus = new ComportementsDesTribus(transform, catalogue);
         }
 
         void OnEnable()
         {
             partie = Boucle.ObtenirOuCreerLaPartie();
             partie.EtatChange += SurEtatChange;
+            partie.EvenementsDeJeu += SurEvenements;
             vueAJour = false;
         }
 
         void OnDisable()
         {
-            if (partie != null) partie.EtatChange -= SurEtatChange;
+            if (partie == null) return;
+            partie.EtatChange -= SurEtatChange;
+            partie.EvenementsDeJeu -= SurEvenements;
         }
 
         void OnDestroy()
@@ -69,12 +81,27 @@ namespace IdlePond.Jeu.Scene
         void Update()
         {
             var horloge = Time.timeAsDouble;
-            Nageurs?.Animer(horloge, premiereVisible, derniereVisible);
+            Reactions.Avancer(horloge);
+            Nageurs?.Animer(horloge, premiereVisible, derniereVisible, EtatDesTribus, Reactions.VagueEnCours(horloge));
+            Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
             Voile?.Animer(Time.deltaTime);
             Heros?.Animer(horloge);
         }
 
-        void SurEtatChange(EtatJeu _) => vueAJour = false;
+        void SurEtatChange(EtatJeu etat)
+        {
+            vueAJour = false;
+            var tribus = Scene.Tribus.Lire(etat);
+            if (tribus == EtatDesTribus) return;
+            EtatDesTribus = tribus;
+            if (Vue != null) Tribus?.DessinerLesNids(Vue, tribus);
+        }
+
+        /// Les tribus qui nagent dans cette vie : seules elles réagissent.
+        readonly HashSet<string> presentes = new HashSet<string>();
+
+        void SurEvenements(IReadOnlyList<IdlePond.Jeu.EvenementDeJeu> evenements) =>
+            Reactions.Recevoir(evenements, Time.timeAsDouble, presentes);
 
         /// Pour les tests et les captures : une taille de cadre en pixels d'écran, à la place
         /// de celle de #scene.
@@ -103,10 +130,13 @@ namespace IdlePond.Jeu.Scene
             Eclairage.Dessiner(v);
             Nageurs.Dessiner(v);
             Heros.Dessiner(v);
+            presentes.Clear();
+            foreach (var p in v.Paliers) if (p.Espece != null) presentes.Add(p.Espece.Id);
+            Tribus.DessinerLesNids(v, EtatDesTribus);
             var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
             Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
             // Le redessin remet les pièces au départ : on les replace avant que l'image soit rendue.
-            Nageurs.Animer(Time.timeAsDouble, premiereVisible, derniereVisible);
+            Nageurs.Animer(Time.timeAsDouble, premiereVisible, derniereVisible, EtatDesTribus, Reactions.VagueEnCours(Time.timeAsDouble));
             Heros.Animer(Time.timeAsDouble);
             // Les lumières viennent d'être recréées : le cadrage doit les rallumer.
             cadrageBandes = -1;
