@@ -14,6 +14,8 @@ namespace IdlePond.Jeu.UI
     /// - **Ceux qu'il a rencontrés** : les tribus des lieux atteints (Codex v1.4). Connue, une
     ///   tribu montre son représentant, son nom, ses mœurs et son texte ; seulement aperçue, sa
     ///   silhouette. Rien d'un lieu qu'on n'a pas atteint.
+    /// - **Ce qui vit autour** : la faune d'ambiance des lieux atteints (Codex v1.3) — en
+    ///   silhouette tant qu'on ne l'a pas vue, puis son nom et ce qu'on en sait.
     /// - **Ce qu'il sait** : les succès (§8.3), en grille (maquette du 2026-10-07, révision 2).
     ///   Toucher un succès arrivé ou en chemin ouvre son détail : la condition, l'effet exact,
     ///   chiffré (§14.3, le lieu de l'audit), et la vie où il a été noté.
@@ -61,8 +63,11 @@ namespace IdlePond.Jeu.UI
         EtatJeu dernier;
 
         readonly System.Func<string, UnityEngine.Sprite> portraitDe;
+        readonly System.Func<string, int, UnityEngine.Sprite> imageDeFaune;
         readonly VisualElement tribus;
+        readonly VisualElement faune;
         string signatureDesTribus;
+        string signatureDeLaFaune;
         /// Le succès dont le détail est ouvert : il le reste quand la grille se reconstruit.
         string ouvert;
 
@@ -71,14 +76,19 @@ namespace IdlePond.Jeu.UI
 
         /// `portraitDe` : le portrait du représentant d'une tribu, pris au catalogue d'art ;
         /// null sans scène dessinée (la carte garde alors son icône).
-        public Succes(VisualElement racine, System.Func<string, UnityEngine.Sprite> portraitDe = null)
+        public Succes(VisualElement racine, System.Func<string, UnityEngine.Sprite> portraitDe = null,
+            System.Func<string, int, UnityEngine.Sprite> imageDeFaune = null)
         {
             racine.AddToClassList("panneau");
             this.portraitDe = portraitDe;
+            this.imageDeFaune = imageDeFaune;
 
             racine.Add(Elements.Texte("titre base bibliotheque-titre", E.BIBLIOTHEQUE_TRIBUS));
             tribus = Elements.Conteneur("liste bibliotheque-tribus");
             racine.Add(tribus);
+            racine.Add(Elements.Texte("titre base bibliotheque-titre", E.BIBLIOTHEQUE_FAUNE));
+            faune = Elements.Conteneur("liste bibliotheque-faune");
+            racine.Add(faune);
             racine.Add(Elements.Texte("titre base bibliotheque-titre", E.BIBLIOTHEQUE_SAVOIR));
 
             var resume = Elements.Conteneur("carte carte-souffle journal-resume");
@@ -128,6 +138,7 @@ namespace IdlePond.Jeu.UI
         {
             dernier = etat;
             RafraichirLesTribus(etat);
+            RafraichirLaFaune(etat);
             if (!ReferenceEquals(signature, etat.Permanent.Succes))
             {
                 signature = etat.Permanent.Succes;
@@ -195,12 +206,11 @@ namespace IdlePond.Jeu.UI
             foreach (var entree in liste) tribus.Add(Tribu(entree));
         }
 
-        VisualElement Tribu(EntreeDeTribu entree)
+        /// Une fiche : la vignette (le portrait, ou sa silhouette), puis ses lignes.
+        static VisualElement Fiche(string classes, string nom, UnityEngine.Sprite portrait, bool connue)
         {
-            var connue = entree.Etat == EtatDeTribu.Connue;
-            var carte = Elements.Conteneur("carte-de-tribu " + (connue ? "connue" : "apercue"), "tribu-" + entree.Espece.Id);
+            var carte = Elements.Conteneur("carte-de-tribu " + classes + " " + (connue ? "connue" : "apercue"), nom);
             var vignette = Elements.Conteneur("vignette vignette-portrait");
-            var portrait = portraitDe?.Invoke(entree.Espece.Id);
             if (portrait != null)
             {
                 vignette.style.backgroundImage = new StyleBackground(portrait);
@@ -208,6 +218,42 @@ namespace IdlePond.Jeu.UI
             }
             else vignette.Add(new Icone(connue ? Icones.ESPECES : Icones.CADENAS));
             carte.Add(vignette);
+            return carte;
+        }
+
+        /* ─── Ce qui vit autour ───────────────────────────────────────────────────── */
+
+        void RafraichirLaFaune(EtatJeu etat)
+        {
+            var liste = Bibliotheque.Faune(etat);
+            var cle = string.Join(",", liste.Select(f => f.Id + ":" + (f.Rencontree ? 1 : 0)));
+            if (cle == signatureDeLaFaune) return;
+            signatureDeLaFaune = cle;
+            faune.Clear();
+            foreach (var entree in liste)
+            {
+                var carte = Fiche("carte-de-faune", "faune-" + entree.Id, imageDeFaune?.Invoke(entree.Dessin, entree.Image), entree.Rencontree);
+                var infos = Elements.Conteneur("carte-de-tribu-infos");
+                var texte = Textes.TEXTES_DE_LA_FAUNE.First(f => f.Id == entree.Id).Texte;
+                if (entree.Rencontree)
+                {
+                    infos.Add(Elements.Texte("titre sm", Format.Capitale(texte.Nom)));
+                    infos.Add(Elements.Texte("doux xs", texte.Description));
+                }
+                else
+                {
+                    infos.Add(Elements.Texte("titre tu sm", E.INCONNU));
+                    infos.Add(Elements.Texte("tu xs", E.FAUNE_APERCUE));
+                }
+                carte.Add(infos);
+                faune.Add(carte);
+            }
+        }
+
+        VisualElement Tribu(EntreeDeTribu entree)
+        {
+            var connue = entree.Etat == EtatDeTribu.Connue;
+            var carte = Fiche("", "tribu-" + entree.Espece.Id, portraitDe?.Invoke(entree.Espece.Id), connue);
 
             var infos = Elements.Conteneur("carte-de-tribu-infos");
             var texte = Textes.DeLaTribu(entree.Espece.Id);

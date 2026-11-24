@@ -165,6 +165,9 @@ MonoBehaviour:
     Images:
     - {fileID: 21300000, guid: e99be68173654297a50eb45fe69b5cc1, type: 3}
     - {fileID: 21300000, guid: f326212e01594c7c83d78b2a4bdbb337, type: 3}
+  - Nom: meduse
+    Images:
+    - {fileID: 21300000, guid: ec622d17365a48b6b21d194078a9e907, type: 3}
   - Nom: fleur
     Images:
     - {fileID: 21300000, guid: 5b6fa00d9cc3460aa398cb80d4589fab, type: 3}

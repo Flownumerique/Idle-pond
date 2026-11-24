@@ -12,6 +12,10 @@ namespace IdlePond.Noyau.Donnees
     /// représentant, ses mœurs telles qu'on les voit dans la mare, et son texte.
     public sealed record TexteDeTribu(string Tribu, string Representant, string Moeurs, string Citation);
 
+    /// Une bête de la faune d'ambiance dans la bibliothèque (Codex v1.3, §2) : son nom, et ce
+    /// qu'on en sait.
+    public sealed record TexteDeFaune(string Nom, string Description);
+
     /// <summary>
     /// Ce que l'écran dit d'un bonus de lieu ou d'une technique : un nom, et ce que fait un
     /// rang. `{0}` reçoit la part d'un rang, en pour cent, que `Format` écrit.
@@ -87,6 +91,18 @@ namespace IdlePond.Noyau.Donnees
             ["ombre"] = new("les Ombres-hérauts", "le Grand Héraut",
                 "Quand une tribu est convaincue, une ombre laisse son mirage.",
                 "On les voit passer, jamais arriver. Leur voile dit ce qui vient d’avoir lieu."),
+        };
+
+        /// La faune d'ambiance, dans l'ordre où on la rencontre (Codex v1.3, §2).
+        public static readonly IReadOnlyList<(string Id, TexteDeFaune Texte)> TEXTES_DE_LA_FAUNE = new (string, TexteDeFaune)[]
+        {
+            ("libellules", new("les libellules-lanternes", "Leurs ailes s’allument au crépuscule, au-dessus de la Noue.")),
+            ("gerris", new("les gerris-scribes", "Ils tracent des runes à la surface. Qui regarde bien peut les lire.")),
+            ("grenouilles", new("les grenouilles-chantres", "Un chœur de berge, qui chante plus fort à chaque renaissance.")),
+            ("hydre", new("l’hydre", "Elle ne vieillit pas. Coupée en deux, elle repousse.")),
+            ("jardins", new("les jardins de la Sève", "Ils fleurissent et grandissent à chaque renaissance.")),
+            ("ecrevisses", new("les écrevisses porte-bannière", "Quand une tribu est ralliée, elles défilent au fond, en procession.")),
+            ("meduses", new("les méduses d’eau douce", "Des cloches de lumière, qui dérivent dans le Gour.")),
         };
 
         public static TexteDeTribu DeLaTribu(string espece) =>
@@ -401,6 +417,9 @@ namespace IdlePond.Noyau.Donnees
             /* — La bibliothèque (GDD §14.8) : qui il a rencontré, ce qu'il sait ———————— */
             public const string BIBLIOTHEQUE_TRIBUS = "Ceux qu’il a rencontrés";
             public const string BIBLIOTHEQUE_SAVOIR = "Ce qu’il sait";
+            public const string BIBLIOTHEQUE_FAUNE = "Ce qui vit autour";
+            /// Une bête d'un lieu atteint qu'on n'a pas encore vue.
+            public const string FAUNE_APERCUE = "Quelque chose bouge, qu’on n’a pas encore vu."; 
             /// Une tribu d'un lieu atteint, pas encore convaincue : sa silhouette, rien d'autre.
             public const string TRIBU_APERCUE = "Une silhouette, au loin. Convaincs-la pour la connaître.";
             /// Le détail d'un succès, à la demande : la condition, l'effet chiffré, la vie.
@@ -636,6 +655,12 @@ namespace IdlePond.Noyau.Donnees
                 var texte = DuBonus(bonus.Id);
                 yield return ($"bonus {bonus.Id}.nom", texte.Nom);
                 yield return ($"bonus {bonus.Id}.effet", texte.Effet);
+            }
+
+            foreach (var (id, texte) in TEXTES_DE_LA_FAUNE)
+            {
+                yield return ($"faune {id}.nom", texte.Nom);
+                yield return ($"faune {id}.description", texte.Description);
             }
 
             foreach (var tribu in TEXTES_DES_TRIBUS)

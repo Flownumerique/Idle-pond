@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using IdlePond.Jeu;
+using IdlePond.Jeu.Scene;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
 using IdlePond.Tests.Outils;
@@ -92,6 +93,40 @@ namespace IdlePond.Tests
             var apres = Bibliotheque.Detail(etat with { Permanent = etat.Permanent with { Succes = acquis } }, succes);
             Assert.That(apres.Rapport, Is.EqualTo(Textes.DuSucces(succes.Id).Rapport));
             Assert.That(apres.NoteDansLaVie, Is.EqualTo(3), "noté pendant la troisième vie : deux renaissances avant");
+        }
+
+        [Test, Description("la faune : chaque bête a son nom, sa description et un portrait dessiné")]
+        public void Chaque_bete_a_son_texte_et_son_portrait()
+        {
+            var tout = Bibliotheque.Faune(EtatDeTravail.Creer() with { LimiteDeContenu = 18 });
+            Assert.That(tout.Select(f => f.Id), Is.EquivalentTo(Textes.TEXTES_DE_LA_FAUNE.Select(f => f.Id)));
+            foreach (var bete in tout)
+            {
+                Assert.That(Faune.DESSINS.ContainsKey(bete.Dessin), Is.True, bete.Id);
+                Assert.That(bete.Image, Is.InRange(0, Faune.DESSINS[bete.Dessin].Images - 1), bete.Id);
+            }
+            foreach (var (id, texte) in Textes.TEXTES_DE_LA_FAUNE)
+                Assert.That(!string.IsNullOrWhiteSpace(texte.Nom) && !string.IsNullOrWhiteSpace(texte.Description), Is.True, id);
+        }
+
+        [Test, Description("au départ : la faune de la Noue, les jardins et la procession pas encore vus, rien du Gour")]
+        public void Au_depart_la_faune_de_la_Noue()
+        {
+            var faune = Bibliotheque.Faune(Reducteur.EtatInitial(1)).ToDictionary(f => f.Id, f => f.Rencontree);
+            Assert.That(faune.ContainsKey("meduses"), Is.False, "le Gour n'est pas atteint");
+            Assert.That(faune["libellules"] && faune["gerris"] && faune["grenouilles"] && faune["hydre"], Is.True);
+            Assert.That(faune["jardins"], Is.False, "ils fleurissent à la première renaissance");
+            Assert.That(faune["ecrevisses"], Is.False, "elles défilent à la première tribu ralliée");
+        }
+
+        [Test, Description("une tribu ralliée fait voir les écrevisses ; une renaissance, les jardins")]
+        public void Les_ecrevisses_et_les_jardins_se_voient_plus_tard()
+        {
+            var etat = EtatDeTravail.Creer();
+            Assert.That(Bibliotheque.Faune(etat).Single(f => f.Id == "ecrevisses").Rencontree, Is.True);
+            Assert.That(Bibliotheque.Faune(etat).Single(f => f.Id == "jardins").Rencontree, Is.False);
+            var renee = etat with { Permanent = etat.Permanent with { NombreDeRenaissances = 1 } };
+            Assert.That(Bibliotheque.Faune(renee).Single(f => f.Id == "jardins").Rencontree, Is.True);
         }
     }
 }

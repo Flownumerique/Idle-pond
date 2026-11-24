@@ -96,7 +96,9 @@ ont le même cadre (le dessin est posé en bas à gauche) ; regard à droite.
 | `fleur` | 7 × 9 | 3 (bourgeon, fleur, grande fleur) | les jardins de la Sève, au fond des bandes de la Noue : une fleur de plus par renaissance (six au plus), qui grandit à la 3ᵉ et à la 6ᵉ |
 | `ecrevisse`, `ecrevisse-banniere` | 14 × 6, 14 × 11 | 2 chacune | quand une tribu est ralliée : quatre écrevisses traversent le fond de sa bande en 7 s, la première porte la bannière de Sève |
 
-Les méduses d'eau douce du Gour sont dans son décor (`ambiance.png`).
+Les méduses d'eau douce du Gour sont dans son décor (`ambiance.png`) ; `meduse` (7 × 7, une
+image) n'est que leur portrait dans la bibliothèque. Chaque bête y a sa fiche, dont le portrait
+est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la grande fleur).
 
 ## Le décor — `Fonds/{assise}/`
 

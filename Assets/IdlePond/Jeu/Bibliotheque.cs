@@ -20,6 +20,10 @@ namespace IdlePond.Jeu
 
     public sealed record EntreeDeTribu(Espece Espece, EtatDeTribu Etat);
 
+    /// Une bête de la faune d'ambiance dans la bibliothèque : son identifiant (celui de
+    /// `Textes.TEXTES_DE_LA_FAUNE`), son lieu, si on l'a déjà vue, et l'image de son portrait.
+    public sealed record EntreeDeFaune(string Id, string Lieu, bool Rencontree, string Dessin, int Image);
+
     /// Le détail d'un succès, à la demande (GDD §14.8) : ce qui s'est passé, la condition,
     /// l'effet exact, chiffré, et la vie où il a été noté.
     public sealed record DetailDeSucces(string Nom, string Rapport, string Condition, string Effet, int? NoteDansLaVie);
@@ -53,6 +57,42 @@ namespace IdlePond.Jeu
         public static bool EstConnue(EtatJeu etat, string espece) =>
             etat.Cycle.Especes.TryGetValue(espece, out var vivante) && vivante.Debloquee && vivante.Niveau > 0
             || RegleDesSucces.EstAcquis(etat, $"seuil-{espece}-{NIVEAU_QUI_FAIT_CONNAITRE}");
+
+        /* ─── Ce qui vit autour : la faune d'ambiance ──────────────────────────────── */
+
+        /// Où vit chaque bête, quel dessin fait son portrait (la lanterne allumée, la gorge
+        /// gonflée, la bannière, la grande fleur), et quand on l'a vue.
+        static readonly IReadOnlyDictionary<string, (string Lieu, string Dessin, int Image, Func<EtatJeu, bool> Vue)> FAUNE =
+            new Dictionary<string, (string, string, int, Func<EtatJeu, bool>)>
+            {
+                // À la surface de la Noue : là dès qu'on y est.
+                ["libellules"] = ("noue", Scene.Faune.LIBELLULE, Scene.Faune.IMAGE_ALLUMEE, _ => true),
+                ["gerris"] = ("noue", Scene.Faune.GERRIS, 0, _ => true),
+                ["grenouilles"] = ("noue", Scene.Faune.GRENOUILLE, 1, _ => true),
+                ["hydre"] = ("noue", Scene.Faune.HYDRE, 0, _ => true),
+                // Les jardins fleurissent à la première renaissance.
+                ["jardins"] = ("noue", Scene.Faune.FLEUR, 2, e => e.Permanent.NombreDeRenaissances > 0),
+                // La procession défile à la première tribu ralliée.
+                ["ecrevisses"] = ("noue", Scene.Faune.ECREVISSE_BANNIERE, 0, e => e.Permanent.NombreDeRenaissances > 0 || UneTribuRalliee(e)),
+                // Les méduses sont dans le décor du Gour.
+                ["meduses"] = ("gour", Scene.Faune.MEDUSE, 0, _ => true),
+            };
+
+        static bool UneTribuRalliee(EtatJeu etat) => etat.Cycle.Especes.Values.Any(v => v.Debloquee && v.Niveau > 0);
+
+        /// La faune des lieux atteints, dans l'ordre du Codex ; rien d'un lieu qu'on n'a pas atteint.
+        public static IReadOnlyList<EntreeDeFaune> Faune(EtatJeu etat)
+        {
+            var lieux = RegleDesSucces.AssisesAtteintes(etat);
+            return Textes.TEXTES_DE_LA_FAUNE
+                .Where(f => FAUNE.ContainsKey(f.Id) && lieux.Contains(FAUNE[f.Id].Lieu))
+                .Select(f =>
+                {
+                    var (lieu, dessin, image, vue) = FAUNE[f.Id];
+                    return new EntreeDeFaune(f.Id, lieu, vue(etat), dessin, image);
+                })
+                .ToList();
+        }
 
         /* ─── Ce qu'il sait : le détail d'un succès ─────────────────────────────────── */
 

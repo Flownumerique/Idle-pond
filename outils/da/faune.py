@@ -5,7 +5,8 @@
 
 Dessinée au pixel, à l'échelle de la scène de 360 px. Chaque bête est une grille de caractères ;
 chaque caractère, une couleur. Le script imprime la palette, à reporter dans
-RegistreDArt.FAUNE_DESSINEE. Les méduses du Gour, elles, sont dans le décor (l'ambiance).
+RegistreDArt.FAUNE_DESSINEE. Les méduses du Gour sont dans le décor (l'ambiance) ; la méduse
+dessinée ici n'est que son portrait, dans la bibliothèque.
 """
 import json
 import os
@@ -28,6 +29,8 @@ COULEURS = {
     # l'hydre, pâle, aux bras qui pendent
     "y": "#B8E8C8", "Y": "#E6F8EE", "p": "#F4A8C8",
     # la fleur des jardins de la Sève
+    # la méduse d'eau douce, cloche de lumière du Gour
+    "m": "#E8F4FF", "M": "#C8E8FF",
     "f": "#F4A8C8", "F": "#FFD0E4", "c": "#FFE070", "s": "#3FA060", "S": "#5CC070",
 }
 
@@ -175,6 +178,18 @@ DESSINS = {
             "y..y..y",
             ".y..y..",
             ".y...y.",
+        ],
+    ],
+    # La méduse d'eau douce : pour la fiche de la bibliothèque (dans la mare, elle est au décor).
+    "meduse": [
+        [
+            "..mmm..",
+            ".mmmmm.",
+            "mmMmMmm",
+            "M.M.M.M",
+            ".M.M.M.",
+            "M...M..",
+            ".M...M.",
         ],
     ],
     # Les jardins de la Sève, à chaque renaissance : le bourgeon, la fleur, la grande fleur.

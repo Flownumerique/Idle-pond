@@ -27,6 +27,9 @@ namespace IdlePond.Jeu.Scene
         public const string ECREVISSE_BANNIERE = "ecrevisse-banniere";
         public const string HYDRE = "hydre";
         public const string FLEUR = "fleur";
+        /// La méduse d'eau douce n'a qu'un portrait (la bibliothèque) : dans la mare, elle est
+        /// dessinée dans le décor du Gour.
+        public const string MEDUSE = "meduse";
 
         /// Les dessins (`outils/da/faune.py`) : le cadre commun de chaque bête et son nombre
         /// d'images.
@@ -39,6 +42,7 @@ namespace IdlePond.Jeu.Scene
                 [ECREVISSE] = (new Cadre(14, 6), 2),
                 [ECREVISSE_BANNIERE] = (new Cadre(14, 11), 2),
                 [HYDRE] = (new Cadre(7, 12), 2),
+                [MEDUSE] = (new Cadre(7, 7), 1),
                 [FLEUR] = (new Cadre(7, 9), 3),
             };
 

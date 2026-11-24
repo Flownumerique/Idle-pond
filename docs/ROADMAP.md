@@ -100,8 +100,10 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      gerris-scribes et leurs runes, grenouilles-chantres plus nombreuses à chaque renaissance,
      hydre, jardins de la Sève qui fleurissent et grandissent à chaque renaissance, procession
      des écrevisses porte-bannière quand une tribu est ralliée ; les méduses du Gour sont dans
-     son décor. Pas encore vu dans Unity. **Reste** : la faune dans la bibliothèque (« la faune
-     rencontrée »), et le reste d'**une mare qui change à chaque renaissance** (chantier 6).
+     son décor. Et **dans la bibliothèque** (« Ce qui vit autour ») : la faune des lieux atteints,
+     en silhouette tant qu'on ne l'a pas vue — les jardins à la première renaissance, la
+     procession à la première tribu ralliée —, puis son nom et ce qu'on en sait. Pas encore vu
+     dans Unity. **Reste** : le reste d'**une mare qui change à chaque renaissance** (chantier 6).
   Le constat qui a mené à la décision est gardé ci-dessous.
 - **L'esprit : fantaisie, couleur, diversité — le constat du 2026-11-22.**
   Constat de l'auteur (2026-11-22) : le jeu a perdu l'esprit fantaisiste, les couleurs et la
