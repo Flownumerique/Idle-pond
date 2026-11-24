@@ -2,12 +2,15 @@
 2026-11-23, docs/da/apercu-poissons-v3.png), à l'échelle de la scène de 360 px.
 
     python -I outils/da/especes.py            # écrit Assets/IdlePond/Art/Especes/{id}-i{0,1}.png
+                                              # et Especes/representants/{id}-i{0..3}.png
     python -I outils/da/especes.py --voir D   # et une planche de contrôle dans D
 
 Chaque espèce : deux images de nage (la queue bat d'un pixel ; l'ombre change la couleur de
-son voile), dans un cadre COMMUN aux six — le plus petit qui les contient toutes. Le script
-imprime le cadre et la palette, à reporter dans Gabarits.CADRE_D_ESPECE et
-RegistreDArt.ESPECES_DESSINEES. Les fichiers écrits sont de « vrais dessins » : le générateur
+son voile), dans un cadre COMMUN aux six — le plus petit qui les contient toutes. Et son
+représentant (Codex v1.4 : le Coryphée, la Doyenne, le Capitaine de la Garde, le Vieux Gardien,
+la Mère pèlerine, le Grand Héraut), le même dessin à ≈ 60 px, en quatre images de nage comme le
+héros, dans un autre cadre commun. Le script imprime les cadres et la palette, à reporter dans
+Gabarits.CADRE_D_ESPECE, Gabarits.CADRE_DE_REPRESENTANT et RegistreDArt.ESPECES_DESSINEES. Les fichiers écrits sont de « vrais dessins » : le générateur
 de provisoires ne les touche plus.
 """
 import json
@@ -21,6 +24,7 @@ RACINE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 ART = os.path.join(RACINE, "Assets", "IdlePond", "Art", "Especes")
 # La longueur d'un poisson de troupe (≈ 24 px, gabarits) ; le représentant viendra à ≈ 60.
 LONGUEUR_DE_TROUPE = 24
+LONGUEUR_DE_REPRESENTANT = 60
 IDS = ["vairon", "loche", "epinoche", "chabot", "lamproie", "ombre"]
 
 def C(h): return tuple(int(h[i:i+2],16) for i in (1,3,5))+(255,)
@@ -225,6 +229,34 @@ def battre(im, decalage):
     return out
 
 
+def representant(sp):
+    """Les quatre images du représentant : la queue au milieu, haute, au milieu, basse — comme le
+    héros ; le voile de l'ombre change de couleur à mi-course."""
+    a = poisson(sp, LONGUEUR_DE_REPRESENTANT)
+    b = a
+    if sp.get("sail"):
+        autre = dict(sp); autre["acc"] = "#40D0C0"
+        b = poisson(autre, LONGUEUR_DE_REPRESENTANT)
+    return [battre(a, 0), battre(a, -1), battre(b, 0), battre(b, 1)]
+
+
+def rogner(toutes, dossier):
+    """Écrit chaque image dans le cadre commun (plus un pixel transparent de chaque côté) ;
+    rend le cadre et les couleurs employées."""
+    boites = [im.getbbox() for ims in toutes.values() for im in ims]
+    boite = (min(b[0] for b in boites) - 1, min(b[1] for b in boites) - 1,
+             max(b[2] for b in boites) + 1, max(b[3] for b in boites) + 1)
+    os.makedirs(dossier, exist_ok=True)
+    couleurs = set()
+    for i, ims in toutes.items():
+        for n, im in enumerate(ims):
+            c = im.crop(boite)
+            for p in c.getdata():
+                if p[3]: couleurs.add("0x%02X%02X%02X" % p[:3])
+            c.save(os.path.join(dossier, f"{i}-i{n}.png"))
+    return [boite[2] - boite[0], boite[3] - boite[1]], couleurs
+
+
 def images(sp):
     """Les deux images de nage : la queue haute, la queue basse ; le voile de l'ombre change de
     couleur d'une image à l'autre (RegistreDArt : #C060F0 puis #40D0C0)."""
@@ -239,31 +271,20 @@ def images(sp):
 
 def main():
     voir = sys.argv[sys.argv.index("--voir") + 1] if "--voir" in sys.argv else None
-    toutes = {i: images(sp) for i, sp in zip(IDS, ESPECES)}
-    boites = [im.getbbox() for ims in toutes.values() for im in ims]
-    g, h = min(b[0] for b in boites), min(b[1] for b in boites)
-    d, b = max(b[2] for b in boites), max(b[3] for b in boites)
-    # Une marge d'un pixel transparent de chaque côté : le contour ne touche jamais le bord.
-    boite = (g - 1, h - 1, d + 1, b + 1)
-    os.makedirs(ART, exist_ok=True)
-    couleurs = set()
-    for i, ims in toutes.items():
-        for n, im in enumerate(ims):
-            c = im.crop(boite)
-            for p in c.getdata():
-                if p[3]: couleurs.add("0x%02X%02X%02X" % p[:3])
-            c.save(os.path.join(ART, f"{i}-i{n}.png"))
-    cadre = [boite[2] - boite[0], boite[3] - boite[1]]
-    print(json.dumps({"cadre": cadre, "palette": sorted(couleurs)}))
+    cadre, couleurs = rogner({i: images(sp) for i, sp in zip(IDS, ESPECES)}, ART)
+    dossier = os.path.join(ART, "representants")
+    cadre_r, couleurs_r = rogner({i: representant(sp) for i, sp in zip(IDS, ESPECES)}, dossier)
+    print(json.dumps({"cadre": cadre, "representant": cadre_r, "palette": sorted(couleurs | couleurs_r)}))
     if voir:
         os.makedirs(voir, exist_ok=True)
-        E = 8
-        out = Image.new("RGB", (len(IDS) * (cadre[0] * E + 16) + 16, 2 * (cadre[1] * E + 16) + 16), (40, 110, 100))
+        E = 5
+        out = Image.new("RGB", (len(IDS) * (cadre_r[0] * E + 16) + 16, cadre_r[1] * E + cadre[1] * E + 48), (40, 110, 100))
         for k, i in enumerate(IDS):
-            for n in range(2):
-                im = Image.open(os.path.join(ART, f"{i}-i{n}.png"))
-                gr = im.resize((im.width * E, im.height * E), Image.NEAREST)
-                out.paste(gr, (16 + k * (cadre[0] * E + 16), 16 + n * (cadre[1] * E + 16)), gr)
+            x = 16 + k * (cadre_r[0] * E + 16)
+            im = Image.open(os.path.join(dossier, f"{i}-i0.png"))
+            gr = im.resize((im.width * E, im.height * E), Image.NEAREST); out.paste(gr, (x, 16), gr)
+            im = Image.open(os.path.join(ART, f"{i}-i0.png"))
+            gr = im.resize((im.width * E, im.height * E), Image.NEAREST); out.paste(gr, (x, 32 + cadre_r[1] * E), gr)
         out.save(os.path.join(voir, "especes.png"))
 
 

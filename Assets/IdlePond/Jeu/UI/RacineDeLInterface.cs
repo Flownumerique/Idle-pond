@@ -198,7 +198,8 @@ namespace IdlePond.Jeu.UI
                     // La table s'ouvre en haut du tiroir : on y remonte pour la voir.
                     defilement.scrollOffset = Vector2.zero;
                 },
-                id => p.MonterJusquAuSeuil(id));
+                id => p.MonterJusquAuSeuil(id),
+                id => CatalogueDeLaScene()?.PortraitDe(id));
             // Le gain prévu ne se calcule que tiroir de l'œuf ouvert : voir `Renaissance`.
             renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre(),
                 () => dock != null && dock.Actif == Tiroir.Oeuf);
@@ -500,5 +501,15 @@ namespace IdlePond.Jeu.UI
         public Tiroir TiroirOuvert => dock != null ? dock.Actif : Tiroir.Aucun;
 
         public void Ouvrir(Tiroir quel) => dock?.Choisir(quel);
+
+        /// Le catalogue d'art de la scène dessinée, cherché une fois : l'interface y prend le
+        /// portrait des représentants. Null sans scène (un test d'interface seul).
+        Scene.SceneDeLaMare sceneDessinee;
+
+        Scene.CatalogueDArt CatalogueDeLaScene()
+        {
+            if (sceneDessinee == null) sceneDessinee = FindAnyObjectByType<Scene.SceneDeLaMare>();
+            return sceneDessinee != null ? sceneDessinee.Catalogue : null;
+        }
     }
 }

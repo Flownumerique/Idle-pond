@@ -26,6 +26,9 @@ namespace IdlePond.Jeu.Scene
             public int Numero;
             public int Effectif;
             public bool Accroche;
+            /// Le représentant de la tribu (Codex v1.4) : en tête de sa troupe, plus grand, quatre
+            /// images de nage.
+            public bool Representant;
             public Sprite[] Images;
         }
 
@@ -60,6 +63,25 @@ namespace IdlePond.Jeu.Scene
                 var images = catalogue.ImagesDeLEspece(p.Espece.Id);
                 var effectif = VueDeScene.EffectifDesPoissons(p.Espece.Niveau);
                 var accroche = p.Espece.Id == Tribus.LAMPROIE;
+
+                // Le représentant d'abord : c'est lui qu'on suit des yeux (le fil des lamproies
+                // part de lui, le mirage se pose près de lui). Un seul par tribu.
+                var portraits = catalogue.ImagesDuRepresentant(p.Espece.Id);
+                if (portraits != null && portraits.Length > 0 && portraits[0] != null)
+                {
+                    var cadreR = Gabarits.CADRE_DE_REPRESENTANT;
+                    // Une lamproie mère tient la paroi d'en face de la première de sa troupe.
+                    var trajetR = accroche
+                        ? Nage.TrajetAccroche(p.Index, 1, cadreR)
+                        : Nage.TrajetDe(p.Index, Tribus.NUMERO_DU_REPRESENTANT, cadreR);
+                    tous.Add(new Nageur
+                    {
+                        Rendu = Briques.Poser(racine, p.Espece.Id + " (représentant)", portraits[0], trajetR.X0, trajetR.Y, OrdreDeRendu.REPRESENTANTS),
+                        Trajet = trajetR, Espece = p.Espece.Id, Largeur = cadreR.Largeur, Hauteur = cadreR.Hauteur, Bande = p.Index,
+                        Numero = accroche ? 1 : -1, Effectif = effectif, Accroche = accroche, Representant = true, Images = portraits,
+                    });
+                }
+
                 for (var numero = 0; numero < effectif; numero++)
                 {
                     var trajet = accroche ? Nage.TrajetAccroche(p.Index, numero, cadre) : Nage.TrajetDe(p.Index, numero, cadre);
@@ -76,7 +98,7 @@ namespace IdlePond.Jeu.Scene
         public int BandeDe(int numero) => tous[numero].Bande;
         public Vector3 PositionDe(int numero) => tous[numero].Rendu.transform.localPosition;
 
-        /// Le milieu du premier poisson d'une tribu, au pixel : d'où part un fil, où se pose
+        /// Le milieu du premier poisson d'une tribu — son représentant s'il est dessiné —, au pixel : d'où part un fil, où se pose
         /// un mirage. Null si la tribu ne nage pas.
         public Pixel CentreDuPremier(string espece)
         {
@@ -102,9 +124,10 @@ namespace IdlePond.Jeu.Scene
         /// animer coûterait pour rien. Le temps est un double, comme dans `Nage.Position` : un
         /// float perdrait sa précision au fil des heures de jeu.
         public void Animer(double secondes, int premiere = 0, int derniere = int.MaxValue,
-            EtatDesTribus tribus = null, Reaction vague = null)
+            EtatDesTribus tribus = null, ReactionsDesTribus reactions = null)
         {
             tribus ??= EtatDesTribus.CALME;
+            var vague = reactions?.VagueEnCours(secondes);
             var avancementDeLaVague = vague != null ? vague.Avancement(secondes) : 0;
             foreach (var n in tous)
             {
@@ -134,14 +157,26 @@ namespace IdlePond.Jeu.Scene
                     if (n.Espece == Tribus.LOCHE && tribus.LochesAgitees) x += Tribus.Frisson(secondes, n.Trajet.Phase);
                 }
 
+                // À la conviction, le représentant entre par la gauche et vient prendre sa place.
+                var entree = n.Representant ? reactions?.EntreeDe(n.Espece, secondes) : null;
+                if (entree != null)
+                {
+                    x += Tribus.DecalageDEntree(entree.Avancement(secondes), x + n.Largeur + 4);
+                    versLaDroite = true;
+                }
+
                 n.Rendu.flipX = !versLaDroite;
                 n.Rendu.transform.localPosition = new Vector3(versLaDroite ? x : x + n.Largeur, y, 0f);
-                n.Rendu.color = n.Espece == Tribus.VAIRON && vague != null && Tribus.EstRouge(n.Numero, n.Effectif, avancementDeLaVague)
+                // Le Coryphée rougit le premier, puis la vague parcourt la troupe.
+                var rang = n.Representant ? 0 : n.Numero + 1;
+                n.Rendu.color = n.Espece == Tribus.VAIRON && vague != null && Tribus.EstRouge(rang, n.Effectif + 1, avancementDeLaVague)
                     ? ROUGE_DU_CHOEUR
                     : Color.white;
 
-                // Une lamproie accrochée ne bat pas de la queue : elle tient.
-                var image = n.Accroche ? 0 : (int)((secondes * 4 + n.Trajet.Phase * 3) % Gabarits.IMAGES_D_ESPECE);
+                // Une lamproie accrochée ne bat pas de la queue : elle tient. Le représentant a
+                // quatre images, comme le héros.
+                var images = n.Representant ? Gabarits.IMAGES_DE_NAGE : Gabarits.IMAGES_D_ESPECE;
+                var image = n.Accroche ? 0 : (int)((secondes * (n.Representant ? 6 : 4) + n.Trajet.Phase * 3) % images);
                 var sprite = n.Images != null && image < n.Images.Length ? n.Images[image] : null;
                 if (sprite != null) n.Rendu.sprite = sprite;
             }

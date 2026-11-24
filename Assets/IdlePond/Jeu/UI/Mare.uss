@@ -856,6 +856,14 @@
     height: 72px;
 }
 
+/* Le portrait du représentant d'une tribu convaincue, en pixels nets, sans déformation. */
+.vignette-portrait {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+}
+
 .vignette-heros {
     width: 176px;
     height: 176px;

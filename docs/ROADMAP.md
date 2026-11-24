@@ -70,7 +70,10 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      le dessin n'a pas encore été vu dans Unity — à lancer (`outils/unity.sh tests`, puis l'œil
      sur l'atelier Espèces). **Depuis le 2026-11-24, les poissons de troupe à 24 px**, dessinés
      d'après la maquette validée (`outils/da/especes.py`), dans un cadre commun de 39 × 27.
-     **Reste** : le représentant (≈ 60 px), dans la fiche et à la conviction.
+     **Et les représentants** (le Coryphée, la Doyenne, le Capitaine de la Garde, le Vieux
+     Gardien, la Mère pèlerine, le Grand Héraut) : 60 px, quatre images, en tête de leur troupe ;
+     ils entrent dans leur bande à la conviction, et leur portrait est dans la fiche du tiroir
+     Espèces. **Reste** : la bibliothèque (le bestiaire du GDD §14.8), où le Codex les montre aussi.
   3. ~~Les palettes de la Noue, du Gour et du héros~~ — **validées le 2026-11-23** (Codex v1.5,
      §2 ; `docs/da/gabarits.md`) et **dans le jeu à 240 px** : le héros en or, ses marques à la
      couleur du lieu, l'eau et le décor de chaque lieu, un calque d'ambiance par bande.

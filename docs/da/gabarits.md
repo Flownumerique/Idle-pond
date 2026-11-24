@@ -10,11 +10,8 @@ Source de vérité : `Assets/IdlePond/Jeu/Scene/Gabarits.cs` et `RegistreDArt.cs
 > mise en page ne bouge pas ; il y a seulement une fois et demie plus de pixels pour dessiner. Repli
 > sur 320 px si un vrai téléphone ne suit pas.
 >
-> **Reste à venir** : le **représentant** de chaque tribu, un gabarit de plus,
-> `Especes/representants/{id}-i{0..3}.png`, environ **60 px** de long, quatre images de nage comme le
-> héros (seules la queue et les nageoires bougent), toujours plus petit que le héros adulte, un seul
-> par tribu à l'écran. **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet
-> qu'en éclair, sur un événement.
+> **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet qu'en éclair, sur un
+> événement.
 
 ## Règles communes
 
@@ -74,6 +71,15 @@ couleur de son voile). Un poisson de troupe mesure **24 px** ; les six tribus li
 **cadre commun de 39 × 27**, le plus petit qui les contient toutes (la queue-feuille du vairon, les
 barbillons de la loche, la voile de l'ombre). Elles sont dessinées, d'après la maquette validée,
 par `outils/da/especes.py` — ce ne sont plus des provisoires.
+
+## Les représentants — `Especes/representants/{id}-i{0..3}.png`
+
+Le chef ou l'ancien de chaque tribu (Codex v1.4) : le même dessin à **60 px**, en **quatre images**
+de nage comme le héros (la queue au milieu, haute, au milieu, basse ; le voile de l'ombre change de
+couleur à mi-course), dans un **cadre commun de 94 × 58**. Toujours plus petit que le héros adulte
+(97 × 62) ; un seul par tribu à l'écran. Il nage en tête de sa troupe, entre dans sa bande à la
+conviction, et son portrait (l'image 0) remplace l'icône dans la fiche du tiroir Espèces. Produits
+par `outils/da/especes.py` avec les poissons de troupe ; mêmes couleurs.
 
 ## Le décor — `Fonds/{assise}/`
 

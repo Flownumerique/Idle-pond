@@ -18,6 +18,8 @@ namespace IdlePond.Jeu.Scene
         /// Le mirage qu'une ombre laisse du nouveau venu : juste derrière les nageurs.
         public const int MIRAGES = 29;
         public const int NAGEURS = 30;
+        /// Le représentant de chaque tribu, en tête de sa troupe : devant elle.
+        public const int REPRESENTANTS = 31;
         /// Le fil de mana qui va jusqu'aux lamproies : devant les nageurs, derrière le héros.
         public const int FILS = 32;
         /// L'éveil du héros (bible v0.4) : l'aura, l'anneau et les rubans du voile derrière lui ;

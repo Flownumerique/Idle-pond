@@ -16,6 +16,9 @@ namespace IdlePond.Jeu.Scene
         /// Les Ombres-hérauts : une ombre laisse un mirage du nouveau venu. `Source` : la
         /// tribu tout juste convaincue.
         Mirage,
+        /// Toute tribu : à la conviction, son représentant entre dans la bande et rallie sa
+        /// troupe. `Source` : la tribu convaincue.
+        Entree,
     }
 
     /// `Debut` : l'instant de la scène (en secondes) où la réaction commence.
@@ -93,6 +96,7 @@ namespace IdlePond.Jeu.Scene
         public const double DUREE_DE_LA_VAGUE = 1.2;
         public const double DUREE_DU_FIL = 0.8;
         public const double DUREE_DU_MIRAGE = 2.4;
+        public const double DUREE_DE_L_ENTREE = 2.0;
 
         /// Un fil au plus par tribu source et par seconde : « monter jusqu'au seuil » fait des
         /// dizaines de crans d'un coup, l'écran n'en montre qu'un.
@@ -102,6 +106,7 @@ namespace IdlePond.Jeu.Scene
         {
             GenreDeReaction.VagueRouge => DUREE_DE_LA_VAGUE,
             GenreDeReaction.FilDeMana => DUREE_DU_FIL,
+            GenreDeReaction.Entree => DUREE_DE_L_ENTREE,
             _ => DUREE_DU_MIRAGE,
         };
 
@@ -169,6 +174,22 @@ namespace IdlePond.Jeu.Scene
             if (avancement < 0.5) return true;
             if (avancement < 0.8) return pas % 2 == 0;
             return pas % 3 == 0;
+        }
+
+        /* ─── L'entrée du représentant ───────────────────────────────────────────── */
+
+        /// Le numéro de trajet du représentant dans sa bande : hors de ceux de la troupe (au plus
+        /// `VueDeScene.POISSONS_MAX_PAR_GROUPE`), il nage son propre chemin.
+        public const int NUMERO_DU_REPRESENTANT = 100;
+
+        /// De combien le représentant est encore à gauche de sa place, à cet avancement de son
+        /// entrée : de toute la `distance` au début à rien à la fin, en ralentissant à
+        /// l'arrivée. Au pixel entier.
+        public static int DecalageDEntree(double avancement, int distance)
+        {
+            if (avancement >= 1 || distance <= 0) return 0;
+            var reste = 1 - Math.Max(0, avancement);
+            return -(int)Math.Round(distance * reste * reste);
         }
 
         /* ─── Les nids de l'épinoche ────────────────────────────────────────────────── */
@@ -246,8 +267,10 @@ namespace IdlePond.Jeu.Scene
                         enCours.RemoveAll(r => r.Genre == GenreDeReaction.VagueRouge);
                         enCours.Add(new Reaction(GenreDeReaction.VagueRouge, Tribus.VAIRON, instant));
                         break;
-                    case GenreDEvenement.EspeceConvaincue when e.Sujet != Tribus.OMBRE && presentes.Contains(Tribus.OMBRE):
-                        enCours.Add(new Reaction(GenreDeReaction.Mirage, e.Sujet, instant));
+                    case GenreDEvenement.EspeceConvaincue:
+                        enCours.Add(new Reaction(GenreDeReaction.Entree, e.Sujet, instant));
+                        if (e.Sujet != Tribus.OMBRE && presentes.Contains(Tribus.OMBRE))
+                            enCours.Add(new Reaction(GenreDeReaction.Mirage, e.Sujet, instant));
                         break;
                 }
                 if ((e.Genre == GenreDEvenement.CransMontes || e.Genre == GenreDEvenement.SeuilFranchi)
@@ -266,6 +289,10 @@ namespace IdlePond.Jeu.Scene
             enCours.RemoveAll(r => r.EstFinie(instant));
             return enCours.Count > 0;
         }
+
+        /// L'entrée en cours du représentant de cette tribu, ou null.
+        public Reaction EntreeDe(string espece, double instant) =>
+            enCours.FirstOrDefault(r => r.Genre == GenreDeReaction.Entree && r.Source == espece && !r.EstFinie(instant));
 
         public Reaction VagueEnCours(double instant) =>
             enCours.FirstOrDefault(r => r.Genre == GenreDeReaction.VagueRouge && !r.EstFinie(instant));

@@ -173,7 +173,7 @@ namespace IdlePond.Tests
         {
             var reactions = new ReactionsDesTribus();
             reactions.Recevoir(new[] { new EvenementDeJeu(GenreDEvenement.EspeceConvaincue, Tribus.LAMPROIE, 1) }, 0, new HashSet<string> { Tribus.VAIRON });
-            Assert.That(reactions.EnCours, Is.Empty, "sans ombre, pas de mirage");
+            Assert.That(reactions.EnCours.Any(r => r.Genre == GenreDeReaction.Mirage), Is.False, "sans ombre, pas de mirage");
 
             reactions.Recevoir(new[] { new EvenementDeJeu(GenreDEvenement.EspeceConvaincue, Tribus.LAMPROIE, 1) }, 0, new HashSet<string>(Toutes));
             var mirage = reactions.EnCours.Single(r => r.Genre == GenreDeReaction.Mirage);
@@ -199,6 +199,49 @@ namespace IdlePond.Tests
                 Assert.That(t.Y - 1, Is.GreaterThanOrEqualTo(haut - Gabarits.HAUTEUR_DE_BANDE));
                 Assert.That(t.Y + cadre.Hauteur, Is.LessThanOrEqualTo(haut));
                 Assert.That(Nage.TrajetAccroche(palier, numero, cadre), Is.EqualTo(t), "déterministe");
+            }
+        }
+
+        [Test, Description("à la conviction, le représentant entre : de hors champ à sa place, en ralentissant")]
+        public void A_la_conviction_le_representant_entre()
+        {
+            var reactions = new ReactionsDesTribus();
+            reactions.Recevoir(new[] { new EvenementDeJeu(GenreDEvenement.EspeceConvaincue, Tribus.CHABOT, 1) }, 10.0, new HashSet<string>());
+            var entree = reactions.EntreeDe(Tribus.CHABOT, 10.5);
+            Assert.That(entree, Is.Not.Null);
+            Assert.That(reactions.EntreeDe(Tribus.VAIRON, 10.5), Is.Null);
+            Assert.That(reactions.EntreeDe(Tribus.CHABOT, 10.0 + Tribus.DUREE_DE_L_ENTREE), Is.Null);
+
+            Assert.That(Tribus.DecalageDEntree(0, 120), Is.EqualTo(-120), "au départ, hors champ");
+            Assert.That(Tribus.DecalageDEntree(1, 120), Is.EqualTo(0), "à la fin, à sa place");
+            var precedent = -121;
+            for (var a = 0.0; a <= 1.0; a += 0.05)
+            {
+                var d = Tribus.DecalageDEntree(a, 120);
+                Assert.That(d, Is.GreaterThanOrEqualTo(precedent), "il avance toujours");
+                precedent = d;
+            }
+            Assert.That(Tribus.DecalageDEntree(0.9, 120) - Tribus.DecalageDEntree(0.8, 120),
+                Is.LessThan(Tribus.DecalageDEntree(0.2, 120) - Tribus.DecalageDEntree(0.1, 120)), "il ralentit à l'arrivée");
+        }
+
+        [Test, Description("le représentant tient dans sa bande, et reste plus petit que le héros adulte")]
+        public void Le_representant_tient_dans_sa_bande()
+        {
+            var cadre = Gabarits.CADRE_DE_REPRESENTANT;
+            Assert.That(Gabarits.LONGUEUR_DE_REPRESENTANT, Is.LessThan(Gabarits.LONGUEURS_DU_CORPS[3]));
+            Assert.That(cadre.Largeur, Is.LessThan(Gabarits.CadreDuCorps(3).Largeur));
+            for (var palier = 0; palier < 18; palier++)
+            {
+                var t = Nage.TrajetDe(palier, Tribus.NUMERO_DU_REPRESENTANT, cadre);
+                var bas = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE;
+                Assert.That(t.Y, Is.GreaterThanOrEqualTo(bas));
+                Assert.That(t.Y + cadre.Hauteur, Is.LessThanOrEqualTo(bas + Gabarits.HAUTEUR_DE_BANDE));
+                for (var s = 0.0; s < 20; s += 0.37)
+                {
+                    var (x, _) = Nage.Position(t, s);
+                    Assert.That(x >= 0 && x + cadre.Largeur <= Gabarits.LARGEUR_VISEE, Is.True);
+                }
             }
         }
     }

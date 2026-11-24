@@ -16,6 +16,9 @@ namespace IdlePond.Jeu.Scene
     {
         [SerializeField] CatalogueDArt catalogue;
 
+        /// Le catalogue d'art : l'interface y prend le portrait des représentants.
+        public CatalogueDArt Catalogue => catalogue;
+
         public RenduPixel Rendu { get; private set; }
         public VueDeScene Vue { get; private set; }
         public Eclairage Eclairage { get; private set; }
@@ -82,7 +85,7 @@ namespace IdlePond.Jeu.Scene
         {
             var horloge = Time.timeAsDouble;
             Reactions.Avancer(horloge);
-            Nageurs?.Animer(horloge, premiereVisible, derniereVisible, EtatDesTribus, Reactions.VagueEnCours(horloge));
+            Nageurs?.Animer(horloge, premiereVisible, derniereVisible, EtatDesTribus, Reactions);
             Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
             Voile?.Animer(Time.deltaTime);
             Heros?.Animer(horloge);
@@ -136,7 +139,7 @@ namespace IdlePond.Jeu.Scene
             var assiseDuBas = v.Paliers.Count > 0 ? v.Paliers[v.Paliers.Count - 1].Assise : RegistreDArt.ASSISES_DESSINEES[0];
             Voile.Viser(v.EauTroublee, RegistreDArt.DecorDe(assiseDuBas).Voile);
             // Le redessin remet les pièces au départ : on les replace avant que l'image soit rendue.
-            Nageurs.Animer(Time.timeAsDouble, premiereVisible, derniereVisible, EtatDesTribus, Reactions.VagueEnCours(Time.timeAsDouble));
+            Nageurs.Animer(Time.timeAsDouble, premiereVisible, derniereVisible, EtatDesTribus, Reactions);
             Heros.Animer(Time.timeAsDouble);
             // Les lumières viennent d'être recréées : le cadrage doit les rallumer.
             cadrageBandes = -1;

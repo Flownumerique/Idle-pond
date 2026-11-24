@@ -36,6 +36,9 @@ namespace IdlePond.Jeu.UI
             public Espece Espece;
             public VisualElement Racine;
             public Icone Icone;
+            public VisualElement Vignette;
+            /// Le portrait posé dans la vignette (le représentant de la tribu), ou null.
+            public UnityEngine.Sprite Portrait;
             public UnityEngine.Color Couleur;
             public Label Nom;
             public VisualElement Detail;
@@ -52,6 +55,7 @@ namespace IdlePond.Jeu.UI
         readonly Action<string> surNiveau;
         readonly Action<string> surLot;
         readonly Action<string> surCaptation;
+        readonly Func<string, UnityEngine.Sprite> portraitDe;
         readonly VisualElement puceUnCran;
         readonly VisualElement puceAuSeuil;
 
@@ -79,9 +83,12 @@ namespace IdlePond.Jeu.UI
 
         /// Creuser n'est plus ici : c'est un bouton posé sur la mare (`Creusement`, spec du
         /// 2026-10-07), visible sans ouvrir ce tiroir.
+        /// `portraitDe` : le portrait du représentant d'une tribu (Codex v1.4), pris au
+        /// catalogue d'art ; null tant qu'il n'est pas dessiné — la vignette garde son icône.
         public Mare(VisualElement racine, Action<string> surDeblocage, Action<string> surNiveau,
-            Action<string> surCaptation, Action<string> surLot = null)
+            Action<string> surCaptation, Action<string> surLot = null, Func<string, UnityEngine.Sprite> portraitDe = null)
         {
+            this.portraitDe = portraitDe;
             this.surDeblocage = surDeblocage;
             this.surNiveau = surNiveau;
             this.surLot = surLot ?? surNiveau;
@@ -172,6 +179,7 @@ namespace IdlePond.Jeu.UI
                 carte.Icone.style.color = atteinte ? new StyleColor(carte.Couleur) : new StyleColor(StyleKeyword.Null);
                 Elements.Montrer(carte.Achat.Racine, atteinte);
                 Elements.Montrer(carte.Detail, atteinte && niveau > 0);
+                PoserLePortrait(carte, atteinte && niveau > 0 ? portraitDe?.Invoke(espece.Id) : null);
                 Elements.Montrer(carte.Indice, !(atteinte && niveau > 0));
                 if (!atteinte)
                 {
@@ -242,6 +250,17 @@ namespace IdlePond.Jeu.UI
             }
         }
 
+        /// Convaincue, une tribu montre son représentant dans la vignette ; sinon, l'icône à sa
+        /// couleur (ou grise). On ne retouche le style que s'il change.
+        static void PoserLePortrait(Carte carte, UnityEngine.Sprite portrait)
+        {
+            if (carte.Portrait == portrait) return;
+            carte.Portrait = portrait;
+            carte.Vignette.style.backgroundImage = portrait != null ? new StyleBackground(portrait) : new StyleBackground(StyleKeyword.Null);
+            Elements.Marquer(carte.Vignette, "vignette-portrait", portrait != null);
+            Elements.Montrer(carte.Icone, portrait == null);
+        }
+
         static int NiveauDe(EtatJeu etat, string espece) =>
             etat.Cycle.Especes.TryGetValue(espece, out var vivante) && vivante.Debloquee ? vivante.Niveau : 0;
 
@@ -253,6 +272,7 @@ namespace IdlePond.Jeu.UI
 
             // La vignette porte la couleur de l'espèce, celle de ses nageurs dans la scène.
             var vignette = Elements.Conteneur("vignette");
+            carte.Vignette = vignette;
             carte.Icone = new Icone(Icones.TOI);
             carte.Couleur = Briques.Couleur(RegistreDArt.CouleursDEspece(espece.Rang).Corps);
             vignette.Add(carte.Icone);

@@ -270,6 +270,27 @@ namespace IdlePond.Tests
                 }
         }
 
+        [Test, Description("chaque tribu livrée a son représentant : quatre images, au cadre commun des représentants")]
+        public void Chaque_tribu_a_son_representant()
+        {
+            foreach (var espece in Chemins.EspecesLivrees())
+            {
+                var images = Enumerable.Range(0, Gabarits.IMAGES_DE_NAGE).Select(i =>
+                {
+                    var px = LirePng(Art(Chemins.ImageDuRepresentant(espece.Id, i)), out var l, out var h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(Gabarits.CADRE_DE_REPRESENTANT), $"{espece.Id}, image {i}");
+                    return px;
+                }).ToList();
+                Assert.That(images.All(px => px.Any(c => c.a == 255)), Is.True, espece.Id + " : une image vide");
+                // Seules la queue (et le voile de l'ombre) bougent : la tête, à droite, reste.
+                var largeur = Gabarits.CADRE_DE_REPRESENTANT.Largeur;
+                for (var i = 1; i < images.Count; i++)
+                    for (var p = 0; p < images[0].Length; p++)
+                        if (p % largeur > largeur * 3 / 4)
+                            Assert.That(Rgb(images[i][p]) == Rgb(images[0][p]) && images[i][p].a == images[0][p].a, Is.True, $"{espece.Id} : la tête bouge, image {i}");
+            }
+        }
+
         [Test, Description("chaque assise dessinée a son fond, ses rayons, et sa berge si elle en déclare une")]
         public void Chaque_assise_dessinee_a_son_decor()
         {
@@ -337,7 +358,12 @@ namespace IdlePond.Tests
                 Assert.That(eveil.Aura, Is.Not.Null);
             }
             foreach (var espece in Chemins.EspecesLivrees())
+            {
                 for (var image = 0; image < Gabarits.IMAGES_D_ESPECE; image++) Assert.That(catalogue.EspeceDe(espece.Id, image), Is.Not.Null);
+                var representant = catalogue.ImagesDuRepresentant(espece.Id);
+                Assert.That(representant, Has.Length.EqualTo(Gabarits.IMAGES_DE_NAGE).And.All.Not.Null, espece.Id);
+                Assert.That(catalogue.PortraitDe(espece.Id), Is.SameAs(representant[0]));
+            }
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 Assert.That(catalogue.DecorDe(assise).Fond, Is.Not.Null);

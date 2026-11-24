@@ -111,6 +111,12 @@ namespace IdlePond.Jeu.Scene
 
         public static Cadre CadreDEspece(int rang) => CADRE_D_ESPECE;
 
+        /// Le représentant de chaque tribu (Codex v1.4, « Les six tribus à l'écran ») : le même
+        /// dessin à ≈ 60 px, en quatre images de nage comme le héros, dans un cadre commun aux
+        /// six. Toujours plus petit que le héros adulte (95 px). Un seul par tribu à l'écran.
+        public const int LONGUEUR_DE_REPRESENTANT = 60;
+        public static readonly Cadre CADRE_DE_REPRESENTANT = new Cadre(94, 58);
+
         /// Le tronc : une ellipse. Il porte les ancrages et ne bouge pas d'une image de nage
         /// à l'autre — seule la queue bat (spec DA §3).
         public sealed record Tronc(double Cx, double Cy, double A, double B)

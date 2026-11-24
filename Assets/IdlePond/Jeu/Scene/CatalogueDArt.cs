@@ -31,6 +31,8 @@ namespace IdlePond.Jeu.Scene
         public Sprite[] Larve = Array.Empty<Sprite>();
         public MarqueDAssise[] Marques = Array.Empty<MarqueDAssise>();
         public ImagesDEspece[] Especes = Array.Empty<ImagesDEspece>();
+        /// Le représentant de chaque tribu (Codex v1.4) : quatre images de nage, comme le héros.
+        public ImagesDEspece[] Representants = Array.Empty<ImagesDEspece>();
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();
         public Sprite Voile;
         public Sprite Eclat;
@@ -49,6 +51,13 @@ namespace IdlePond.Jeu.Scene
         /// nageur, au lieu de refaire la recherche à chaque image.
         public Sprite[] ImagesDeLEspece(string espece) =>
             Especes?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images;
+
+        /// Les images du représentant d'une tribu, ou null s'il n'est pas dessiné.
+        public Sprite[] ImagesDuRepresentant(string espece) =>
+            Representants?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images;
+
+        /// Son portrait : sa première image (la fiche du tiroir Espèces).
+        public Sprite PortraitDe(string espece) => A(ImagesDuRepresentant(espece), 0);
 
         public Sprite EspeceDe(string espece, int image) =>
             A(Especes?.FirstOrDefault(e => e != null && e.Espece == espece)?.Images, image);

@@ -243,7 +243,7 @@ namespace IdlePond.Jeu.Scene
                 .Concat(MARQUES.Values.SelectMany(m => m.Couleurs)).Concat(EVEIL).Distinct().ToList();
 
         /// Les six tribus dessinées (`outils/da/especes.py`, d'après la maquette validée) : toutes
-        /// les couleurs de leurs poissons de troupe — corps, dos, ventre, accent, mais aussi
+        /// les couleurs de leurs poissons de troupe et de leurs représentants — corps, dos, ventre, accent, mais aussi
         /// nageoires, reflets, taches, joues, l'œil et son éclat.
         public static readonly IReadOnlyList<int> ESPECES_DESSINEES = new[]
         {
@@ -251,8 +251,8 @@ namespace IdlePond.Jeu.Scene
             0x4B545C, 0x4FE0D0, 0x5A3A18, 0x5A3F7A, 0x5A8A48, 0x5DB07E, 0x69747C, 0x6E4A22, 0x6FA05A, 0x6FA83A,
             0x7888B0, 0x7A5020, 0x7C8790, 0x7E60A8, 0x7FC8A0, 0x8A50E0, 0x9B7FC0, 0x9FF0FF, 0xA4AFB8, 0xA8783A,
             0xA8B8D8, 0xA8D88A, 0xB8E86A, 0xB9F0CF, 0xC060F0, 0xC08A3E, 0xC4A8E8, 0xC8A040, 0xC9CFC9, 0xD4E0F4,
-            0xD8283A, 0xD9C8F0, 0xE2B470, 0xE8483A, 0xE8EEF8, 0xF0A0D0, 0xF0D9A0, 0xF4F1E4, 0xFF8AA0, 0xFF8FA0,
-            0xFFE070, 0xFFE4EA, 0xFFFFFF,
+            0xD8283A, 0xD9C8F0, 0xE2B470, 0xE8483A, 0xE8EEF8, 0xF070C0, 0xF0A0D0, 0xF0D070, 0xF0D9A0, 0xF4F1E4,
+            0xFF8AA0, 0xFF8FA0, 0xFFE070, 0xFFE4EA, 0xFFFFFF,
         };
 
         public static IReadOnlyList<int> PaletteDesEspeces() =>

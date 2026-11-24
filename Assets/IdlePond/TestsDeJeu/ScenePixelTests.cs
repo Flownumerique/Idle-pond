@@ -142,8 +142,9 @@ namespace IdlePond.TestsDeJeu
             partie.Remplacer(EtatDeLaNoue(1, false));
             yield return null;
             yield return null;
-            // vairon niveau 40 → 1 + ⌊log₂ 40⌋ = 6 ; loche niveau 12 → 4.
-            Assert.That(scene.Nageurs.Nombre, Is.EqualTo(10));
+            // vairon niveau 40 → 1 + ⌊log₂ 40⌋ = 6 ; loche niveau 12 → 4 ; plus un représentant
+            // par tribu, en tête de sa troupe.
+            Assert.That(scene.Nageurs.Nombre, Is.EqualTo(12));
         }
 
         [UnityTest]
