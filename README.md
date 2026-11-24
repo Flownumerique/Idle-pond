@@ -23,7 +23,9 @@ script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
 jauge), la mare au centre — on la touche, et le héros prend : le gain s'envole du
 doigt —, « Creuser plus bas » posé dessus, un dock de cinq boutons
-(Toi, Espèces, Débloquer, L'œuf, Journal) qui ouvrent des tiroirs. Débloquer montre les
+(Toi, Espèces, Débloquer, L'œuf, Bibliothèque) qui ouvrent des tiroirs. La Bibliothèque montre
+ceux qu'il a rencontrés — les tribus, leur représentant et leur texte — et ce qu'il sait — les
+succès, avec leur effet chiffré au toucher. Débloquer montre les
 lieux et leur maîtrise, les bonus de lieu et les techniques, achetés au mana. Le tiroir Toi
 liste ce que le héros a appris pour toujours (l'arbre de technique : trente nœuds, appris par
 l'usage, dont les verbes qui automatisent la redescente). En paysage, le tiroir s'ouvre

@@ -203,7 +203,7 @@ namespace IdlePond.Jeu.UI
             // Le gain prévu ne se calcule que tiroir de l'œuf ouvert : voir `Renaissance`.
             renaissance = new Renaissance(racine.Q<VisualElement>("renaissance"), () => p.Renaitre(),
                 () => dock != null && dock.Actif == Tiroir.Oeuf);
-            succes = new Succes(racine.Q<VisualElement>("succes"));
+            succes = new Succes(racine.Q<VisualElement>("succes"), id => CatalogueDeLaScene()?.PortraitDe(id));
             ameliorations = new AmeliorationsDeRenaissance(racine.Q<VisualElement>("ameliorations"), id => p.AcheterUneAmelioration(id), () => p.ToutAmeliorer());
             debloquer = new Debloquer(racine.Q<VisualElement>("debloquer"), id => p.AcheterUnBonus(id));
             annonces = new Annonces(racine.Q<VisualElement>("annonces"), id => p.OublierAnnonce(id));

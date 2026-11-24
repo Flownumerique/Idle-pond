@@ -8,7 +8,16 @@ using E = IdlePond.Noyau.Donnees.Textes.Ecran;
 namespace IdlePond.Jeu.UI
 {
     /// <summary>
-    /// Le Journal : l'écran des succès (§8.3), en grille (maquette du 2026-10-07, révision 2).
+    /// La Bibliothèque (GDD §14.8 ; tiroir « Journal » jusqu'au 2026-11-24, renommé au choix de
+    /// l'auteur — le journal qui raconte viendra avec le récit). Deux parties :
+    ///
+    /// - **Ceux qu'il a rencontrés** : les tribus des lieux atteints (Codex v1.4). Connue, une
+    ///   tribu montre son représentant, son nom, ses mœurs et son texte ; seulement aperçue, sa
+    ///   silhouette. Rien d'un lieu qu'on n'a pas atteint.
+    /// - **Ce qu'il sait** : les succès (§8.3), en grille (maquette du 2026-10-07, révision 2).
+    ///   Toucher un succès arrivé ou en chemin ouvre son détail : la condition, l'effet exact,
+    ///   chiffré (§14.3, le lieu de l'audit), et la vie où il a été noté.
+    ///
     ///
     /// | État    | Ce que le joueur voit                    |
     /// |---------|------------------------------------------|
@@ -51,9 +60,26 @@ namespace IdlePond.Jeu.UI
         int filtre;
         EtatJeu dernier;
 
-        public Succes(VisualElement racine)
+        readonly System.Func<string, UnityEngine.Sprite> portraitDe;
+        readonly VisualElement tribus;
+        string signatureDesTribus;
+        /// Le succès dont le détail est ouvert : il le reste quand la grille se reconstruit.
+        string ouvert;
+
+        /// Une silhouette : le portrait du représentant, teint de l'ombre de l'eau.
+        static readonly UnityEngine.Color SILHOUETTE = new UnityEngine.Color(0.06f, 0.11f, 0.12f, 1f);
+
+        /// `portraitDe` : le portrait du représentant d'une tribu, pris au catalogue d'art ;
+        /// null sans scène dessinée (la carte garde alors son icône).
+        public Succes(VisualElement racine, System.Func<string, UnityEngine.Sprite> portraitDe = null)
         {
             racine.AddToClassList("panneau");
+            this.portraitDe = portraitDe;
+
+            racine.Add(Elements.Texte("titre base bibliotheque-titre", E.BIBLIOTHEQUE_TRIBUS));
+            tribus = Elements.Conteneur("liste bibliotheque-tribus");
+            racine.Add(tribus);
+            racine.Add(Elements.Texte("titre base bibliotheque-titre", E.BIBLIOTHEQUE_SAVOIR));
 
             var resume = Elements.Conteneur("carte carte-souffle journal-resume");
             var gauche = Elements.Conteneur("journal-resume-texte");
@@ -101,6 +127,7 @@ namespace IdlePond.Jeu.UI
         public void Rafraichir(EtatJeu etat)
         {
             dernier = etat;
+            RafraichirLesTribus(etat);
             if (!ReferenceEquals(signature, etat.Permanent.Succes))
             {
                 signature = etat.Permanent.Succes;
@@ -118,6 +145,7 @@ namespace IdlePond.Jeu.UI
             }
         }
 
+        // Arrivé et en chemin se déplient : ils ne peuvent plus être statiques.
         void Reconstruire(EtatJeu etat)
         {
             grille.Clear();
@@ -154,13 +182,85 @@ namespace IdlePond.Jeu.UI
             return carte;
         }
 
-        static VisualElement Arrive(SuccesAffichable entree)
+        /* ─── Ceux qu'il a rencontrés ─────────────────────────────────────────────── */
+
+        /// Les tribus ne se redessinent que lorsque l'une change d'état ou qu'un lieu s'ouvre.
+        void RafraichirLesTribus(EtatJeu etat)
+        {
+            var liste = Bibliotheque.Tribus(etat);
+            var cle = string.Join(",", liste.Select(t => t.Espece.Id + ":" + (int)t.Etat));
+            if (cle == signatureDesTribus) return;
+            signatureDesTribus = cle;
+            tribus.Clear();
+            foreach (var entree in liste) tribus.Add(Tribu(entree));
+        }
+
+        VisualElement Tribu(EntreeDeTribu entree)
+        {
+            var connue = entree.Etat == EtatDeTribu.Connue;
+            var carte = Elements.Conteneur("carte-de-tribu " + (connue ? "connue" : "apercue"), "tribu-" + entree.Espece.Id);
+            var vignette = Elements.Conteneur("vignette vignette-portrait");
+            var portrait = portraitDe?.Invoke(entree.Espece.Id);
+            if (portrait != null)
+            {
+                vignette.style.backgroundImage = new StyleBackground(portrait);
+                if (!connue) vignette.style.unityBackgroundImageTintColor = SILHOUETTE;
+            }
+            else vignette.Add(new Icone(connue ? Icones.ESPECES : Icones.CADENAS));
+            carte.Add(vignette);
+
+            var infos = Elements.Conteneur("carte-de-tribu-infos");
+            var texte = Textes.DeLaTribu(entree.Espece.Id);
+            if (connue)
+            {
+                infos.Add(Elements.Texte("titre sm", Format.Capitale(texte.Tribu)));
+                infos.Add(Elements.Texte("souffle-doux xs", Format.Capitale(texte.Representant)));
+                infos.Add(Elements.Texte("doux xs", texte.Moeurs));
+                infos.Add(Elements.Texte("tu xs italique", "« " + texte.Citation + " »"));
+            }
+            else
+            {
+                infos.Add(Elements.Texte("titre tu sm", E.INCONNU));
+                infos.Add(Elements.Texte("tu xs", E.TRIBU_APERCUE));
+            }
+            carte.Add(infos);
+            return carte;
+        }
+
+        /* ─── Ce qu'il sait : le détail d'un succès ───────────────────────────────── */
+
+        /// Toucher une carte ouvre son détail, toucher encore le referme ; un seul ouvert.
+        void RendreDepliable(VisualElement carte, SuccesAffichable entree)
+        {
+            var detail = Elements.Conteneur("detail-de-succes");
+            carte.Add(detail);
+            carte.Add(Elements.Texte("tu xs indice-de-detail", E.DETAIL_TOUCHER));
+            void Montrer(bool visible)
+            {
+                detail.Clear();
+                Elements.Montrer(detail, visible);
+                if (!visible || dernier == null) return;
+                var d = Bibliotheque.Detail(dernier, entree.Succes);
+                detail.Add(Elements.Texte("doux xs", Format.Remplir(E.DETAIL_QUAND, d.Condition)));
+                detail.Add(Elements.Texte("souffle-doux xs", Format.Remplir(E.DETAIL_EFFET, d.Effet)));
+                if (d.NoteDansLaVie.HasValue) detail.Add(Elements.Texte("tu xs", Format.Remplir(E.DETAIL_NOTE, d.NoteDansLaVie.Value)));
+            }
+            Montrer(ouvert == entree.Succes.Id);
+            carte.AddManipulator(new Clickable(() =>
+            {
+                ouvert = ouvert == entree.Succes.Id ? null : entree.Succes.Id;
+                if (dernier != null) Reconstruire(dernier);
+            }));
+        }
+
+        VisualElement Arrive(SuccesAffichable entree)
         {
             var texte = Textes.DuSucces(entree.Succes.Id);
             var carte = Carte("arrive", Icones.JOURNAL);
             carte.Add(Elements.Texte("titre sm", texte.Nom));
             carte.Add(Elements.Texte("tu xs italique", texte.Rapport));
             carte.Add(Elements.Texte("souffle-doux xs", E.ARRIVE));
+            RendreDepliable(carte, entree);
             return carte;
         }
 
@@ -180,6 +280,7 @@ namespace IdlePond.Jeu.UI
                 carte.Add(rail);
                 enCours.Add((entree, barre));
             }
+            RendreDepliable(carte, entree);
             return carte;
         }
 

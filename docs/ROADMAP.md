@@ -73,7 +73,11 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      **Et les représentants** (le Coryphée, la Doyenne, le Capitaine de la Garde, le Vieux
      Gardien, la Mère pèlerine, le Grand Héraut) : 60 px, quatre images, en tête de leur troupe ;
      ils entrent dans leur bande à la conviction, et leur portrait est dans la fiche du tiroir
-     Espèces. **Reste** : la bibliothèque (le bestiaire du GDD §14.8), où le Codex les montre aussi.
+     Espèces. **Et la bibliothèque** (2026-11-24, GDD §14.8) : le tiroir « Journal » devient la
+     **Bibliothèque** — ceux qu'il a rencontrés (les tribus des lieux atteints : silhouette, puis
+     représentant, nom, mœurs et texte une fois convaincues ; connues pour toujours dès le seuil
+     de 10) et ce qu'il sait (les succès, dont le détail au toucher dit la condition, l'effet
+     chiffré et la vie où il a été noté). Le journal qui raconte viendra avec le récit.
   3. ~~Les palettes de la Noue, du Gour et du héros~~ — **validées le 2026-11-23** (Codex v1.5,
      §2 ; `docs/da/gabarits.md`) et **dans le jeu à 240 px** : le héros en or, ses marques à la
      couleur du lieu, l'eau et le décor de chaque lieu, un calque d'ambiance par bande.
@@ -275,7 +279,7 @@ Hors économie et hors contenu des lieux. Elles peuvent avancer en parallèle de
 |---|---|---|
 | **Expéditions** (décidé 2026-11-18) | Une espèce convaincue part explorer un palier déjà ouvert pendant l'absence et cesse de produire le temps du voyage ; elle rapporte du récit et des points d'arbre, jamais de mana. À calculer en un seul pas | Le récit dans l'état ; la règle d'absence (chantier 2) |
 | **Le récit dans l'état** (BACKEND lot 3) | Les chapitres, le relais qui ouvre `Dialogue`, la pierre trouvée, l'esprit venu ; le journal qui raconte, séparé de la bibliothèque qui inventorie | — |
-| **La bibliothèque / le bestiaire** | Les espèces en silhouette puis en fiche, la faune rencontrée, les textes des égarés | Le récit dans l'état ; la direction du chantier 0 |
+| **La bibliothèque / le bestiaire** | **Fait le 2026-11-24** pour les six tribus (silhouette puis fiche, représentant, texte) et le détail des succès. Reste : la faune d'ambiance rencontrée, les textes des égarés, le second bestiaire (ce qu'il libère, GDD §6.8) | Le récit dans l'état ; la faune d'ambiance |
 | **La fin** (BACKEND lot 5, D3 et D6) | La pierre : offrandes de mana jusqu'à la contenance, qui font avancer les actes VII à IX ; décider l'après-acte IX | Le lieu VI |
 | **Les saisons cosmétiques** (décidé 2026-11-18) | Frai, gel, crue changent l'aspect de la mare, sans rien à gagner ni à rater | Le chantier 0 |
 | **Une mare qui change à chaque renaissance** | Des changements visuels permanents et cumulés (végétation, lumière, particules), lus sur le nombre de renaissances | Le chantier 0 |

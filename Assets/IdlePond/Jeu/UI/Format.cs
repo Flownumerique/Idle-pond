@@ -119,6 +119,10 @@ namespace IdlePond.Jeu.UI
             return char.ToUpperInvariant(nom[0]) + nom.Substring(1);
         }
 
+        /// Une phrase en tête : sa première lettre en capitale.
+        public static string Capitale(string texte) =>
+            string.IsNullOrEmpty(texte) ? texte : char.ToUpperInvariant(texte[0]) + texte.Substring(1);
+
         public static string NomDeLEspece(string espece) =>
             espece != null && Textes.NOM_DES_ESPECES.TryGetValue(espece, out var nom) ? nom : E.ESPECE_SANS_NOM;
 

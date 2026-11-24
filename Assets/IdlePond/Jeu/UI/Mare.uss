@@ -1598,3 +1598,54 @@
 .savoir-prochain {
     margin-top: 16px;
 }
+
+/* La bibliothèque (GDD §14.8) : ceux qu'il a rencontrés, puis ce qu'il sait. */
+.bibliotheque-titre {
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.carte-de-tribu {
+    flex-direction: row;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 28px;
+    background-color: var(--couleur-surface);
+}
+
+.carte-de-tribu > .vignette {
+    margin-right: 20px;
+}
+
+.carte-de-tribu-infos {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.carte-de-tribu-infos > Label {
+    white-space: normal;
+    margin-bottom: 4px;
+}
+
+.carte-de-tribu.apercue {
+    opacity: 0.8;
+}
+
+/* Le détail d'un succès, déplié au toucher : la condition, l'effet, la vie. */
+.detail-de-succes {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top-width: 1px;
+    border-top-color: var(--couleur-jour-doux);
+}
+
+.detail-de-succes > Label {
+    white-space: normal;
+    margin-bottom: 4px;
+}
+
+.indice-de-detail {
+    margin-top: 6px;
+}
+

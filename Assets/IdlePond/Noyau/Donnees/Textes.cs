@@ -8,6 +8,10 @@ namespace IdlePond.Noyau.Donnees
 
     public sealed record TexteDeSucces(string Nom, string Condition, string Rapport);
 
+    /// Une tribu dans la bibliothèque (Codex v1.4, « Les six tribus à l'écran ») : son nom, son
+    /// représentant, ses mœurs telles qu'on les voit dans la mare, et son texte.
+    public sealed record TexteDeTribu(string Tribu, string Representant, string Moeurs, string Citation);
+
     /// <summary>
     /// Ce que l'écran dit d'un bonus de lieu ou d'une technique : un nom, et ce que fait un
     /// rang. `{0}` reçoit la part d'un rang, en pour cent, que `Format` écrit.
@@ -61,6 +65,32 @@ namespace IdlePond.Noyau.Donnees
             ["lamproie"] = "la lamproie",
             ["ombre"] = "l’ombre",
         };
+
+        /// Les six tribus livrées, d'après le Codex v1.4 (§2) — mot pour mot pour leur texte.
+        public static readonly IReadOnlyDictionary<string, TexteDeTribu> TEXTES_DES_TRIBUS = new Dictionary<string, TexteDeTribu>
+        {
+            ["vairon"] = new("le Chœur des vairons", "le Coryphée",
+                "Ils nagent à l’unisson ; à chaque seuil, une vague de rouge les parcourt.",
+                "Cent corps, une seule voix. Quand ils chantent, ils changent de couleur."),
+            ["loche"] = new("les Loches devineresses", "la Doyenne",
+                "Elles s’agitent avant que l’eau se trouble, et avant que la descente se rouvre.",
+                "Elles savent avant l’eau. On vient les voir quand on a peur."),
+            ["epinoche"] = new("la Garde des épinoches", "le Capitaine de la Garde",
+                "À chaque seuil, un nid-forteresse d’herbes pousse au fond de leur eau.",
+                "Elles bâtissent avant de se battre, et se battent pour ce qu’elles ont bâti."),
+            ["chabot"] = new("les Chabots-gardiens", "le Vieux Gardien",
+                "Tant que l’eau est trouble, ils deviennent pierre.",
+                "Chaque pierre a le sien. Menacé, il devient la pierre."),
+            ["lamproie"] = new("les Lamproies pèlerines", "la Mère pèlerine",
+                "Accrochées aux parois, elles reçoivent un fil de mana de chaque tribu qui monte.",
+                "Elles remontent tout ce qui descend, et boivent un peu de chacun. On les craint, on les écoute."),
+            ["ombre"] = new("les Ombres-hérauts", "le Grand Héraut",
+                "Quand une tribu est convaincue, une ombre laisse son mirage.",
+                "On les voit passer, jamais arriver. Leur voile dit ce qui vient d’avoir lieu."),
+        };
+
+        public static TexteDeTribu DeLaTribu(string espece) =>
+            TEXTES_DES_TRIBUS.TryGetValue(espece, out var texte) ? texte : null;
 
         /// <summary>
         /// Ce que l'écran dit d'une amélioration — un verbe, ce que ça fait. La globale
@@ -368,6 +398,26 @@ namespace IdlePond.Noyau.Donnees
             public const string SUCCES_EMPLACEMENTS_VIDES = "Emplacements vides";
             public const string SUCCES_MARQUE_DES_VIDES = "·";
 
+            /* — La bibliothèque (GDD §14.8) : qui il a rencontré, ce qu'il sait ———————— */
+            public const string BIBLIOTHEQUE_TRIBUS = "Ceux qu’il a rencontrés";
+            public const string BIBLIOTHEQUE_SAVOIR = "Ce qu’il sait";
+            /// Une tribu d'un lieu atteint, pas encore convaincue : sa silhouette, rien d'autre.
+            public const string TRIBU_APERCUE = "Une silhouette, au loin. Convaincs-la pour la connaître.";
+            /// Le détail d'un succès, à la demande : la condition, l'effet chiffré, la vie.
+            public const string DETAIL_QUAND = "Quand : {0}";
+            public const string DETAIL_EFFET = "Ce que ça change : {0}";
+            public const string DETAIL_NOTE = "Noté dans ta vie n° {0}";
+            public const string DETAIL_TOUCHER = "Touche pour lire le détail";
+            public const string EFFET_AUCUN = "rien d’autre qu’un souvenir";
+            public const string EFFET_CREUSER = "creuser coûte {0} de moins";
+            public const string EFFET_MONTER = "monter d’un cran coûte {0} de moins";
+            public const string EFFET_DEBLOQUER = "convaincre coûte {0} de moins";
+            public const string EFFET_COUT = "un prix baisse de {0}";
+            public const string EFFET_PORTER = "tu peux porter {0} de plus";
+            public const string EFFET_ABSENCE = "ton absence compte {0} de plus";
+            public const string EFFET_PLAFOND = "une limite monte de {0}";
+            public const string EFFET_VERBE = "ton peuple fait désormais un geste seul";
+
             /* — Les améliorations ——————————————————————————————————————————————————— */
             public const string AMELIORATIONS_TITRE = "Améliorations de renaissance";
             public const string SOUFFLE_EN_RESERVE = "{0} de Souffle";
@@ -412,14 +462,14 @@ namespace IdlePond.Noyau.Donnees
             /* — Le dock : un mot sous chaque icône, qui tient sous le pouce ————————— */
             public const string DOCK_TOI = "Toi";
             public const string DOCK_ESPECES = "Espèces";
-            public const string DOCK_JOURNAL = "Journal";
+            public const string DOCK_JOURNAL = "Bibliothèque";
             public const string DOCK_OEUF = "L’œuf";
 
             /* — Ce qu'un tiroir dit sous son titre ————————————————————————————————— */
             public const string SOUS_TITRE_TOI = "Ce que tu captes, et ce que rester t’a déjà gagné";
             public const string SOUS_TITRE_ESPECES = "Ceux qui vivent ici, lieu par lieu";
             public const string SOUS_TITRE_OEUF = "Ce que tu emportes, ce que tu laisses";
-            public const string SOUS_TITRE_JOURNAL = "Ce qui est arrivé, et ce qui vient";
+            public const string SOUS_TITRE_JOURNAL = "Ceux qu’il a rencontrés, ce qu’il sait";
 
             /* — L’écran d’accueil (spec du 2026-10-08) ————————————————————————————— */
             public const string ACCUEIL_SOUS_TITRE = "Une mare, un poisson, et tout le temps du monde";
@@ -586,6 +636,14 @@ namespace IdlePond.Noyau.Donnees
                 var texte = DuBonus(bonus.Id);
                 yield return ($"bonus {bonus.Id}.nom", texte.Nom);
                 yield return ($"bonus {bonus.Id}.effet", texte.Effet);
+            }
+
+            foreach (var tribu in TEXTES_DES_TRIBUS)
+            {
+                yield return ($"tribu {tribu.Key}.tribu", tribu.Value.Tribu);
+                yield return ($"tribu {tribu.Key}.representant", tribu.Value.Representant);
+                yield return ($"tribu {tribu.Key}.moeurs", tribu.Value.Moeurs);
+                yield return ($"tribu {tribu.Key}.citation", tribu.Value.Citation);
             }
 
             foreach (var succes in RegistreDesSucces.Tous)
