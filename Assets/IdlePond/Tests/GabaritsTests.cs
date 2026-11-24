@@ -20,21 +20,32 @@ namespace IdlePond.Tests
         [Test, Description("le cadre d'un corps : sa longueur plus le contour, et une hauteur impaire")]
         public void Le_cadre_d_un_corps()
         {
-            Assert.That(Gabarits.CadreDuCorps(0), Is.EqualTo(new Cadre(23, 15)));
-            Assert.That(Gabarits.CadreDuCorps(1), Is.EqualTo(new Cadre(30, 21)));
-            Assert.That(Gabarits.CadreDuCorps(2), Is.EqualTo(new Cadre(44, 31)));
-            Assert.That(Gabarits.CadreDuCorps(3), Is.EqualTo(new Cadre(65, 41)));
+            Assert.That(Gabarits.CadreDuCorps(0), Is.EqualTo(new Cadre(34, 22)));
+            Assert.That(Gabarits.CadreDuCorps(1), Is.EqualTo(new Cadre(44, 31)));
+            Assert.That(Gabarits.CadreDuCorps(2), Is.EqualTo(new Cadre(65, 45)));
+            Assert.That(Gabarits.CadreDuCorps(3), Is.EqualTo(new Cadre(97, 62)));
             // La largeur suit toujours la longueur : le contour, d'un pixel de chaque côté.
             for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
                 Assert.That(Gabarits.CadreDuCorps(stade).Largeur, Is.EqualTo(Gabarits.LONGUEURS_DU_CORPS[stade] + 2));
         }
 
-        [Test, Description("une espèce mesure de 7 à 12 px selon son rang")]
-        public void Une_espece_mesure_de_7_a_12_px()
+        [Test, Description("un poisson de troupe mesure 24 px, dans un cadre commun aux six tribus")]
+        public void Un_poisson_de_troupe_mesure_24_px()
         {
-            Assert.That(Gabarits.LongueurDEspece(0), Is.EqualTo(7));
-            Assert.That(Gabarits.LongueurDEspece(20), Is.EqualTo(12));
-            Assert.That(Enumerable.Range(0, 21).Select(Gabarits.LongueurDEspece).All(l => l >= 7 && l <= 12), Is.True);
+            Assert.That(Enumerable.Range(0, 21).Select(Gabarits.LongueurDEspece).All(l => l == 24), Is.True);
+            Assert.That(Enumerable.Range(0, 21).Select(Gabarits.CadreDEspece).Distinct().Single(), Is.EqualTo(Gabarits.CADRE_D_ESPECE));
+            Assert.That(Gabarits.CADRE_D_ESPECE.Largeur, Is.GreaterThan(Gabarits.LONGUEUR_DE_TROUPE), "la queue et le contour débordent du corps");
+            Assert.That(Gabarits.CADRE_D_ESPECE.Hauteur, Is.LessThan(Gabarits.HAUTEUR_DE_BANDE / 2), "deux poissons tiennent l'un au-dessus de l'autre dans une bande");
+        }
+
+        [Test, Description("la scène fait 360 px de large : chaque mesure est celle de 240 fois 1,5")]
+        public void La_scene_fait_360_px()
+        {
+            Assert.That(Gabarits.LARGEUR_VISEE, Is.EqualTo(360));
+            Assert.That(Gabarits.HAUTEUR_DE_BANDE, Is.EqualTo(84));
+            Assert.That(Gabarits.LARGEUR_DU_DECOR + 2 * Gabarits.GAUCHE_DU_DECOR, Is.EqualTo(Gabarits.LARGEUR_VISEE), "le décor déborde autant des deux côtés");
+            Assert.That(Gabarits.LARGEUR_DU_DECOR % Gabarits.LARGEUR_DE_FOND, Is.EqualTo(0), "le fond pave le décor");
+            Assert.That(Gabarits.HAUTEUR_DES_RAYONS, Is.EqualTo(2 * Gabarits.HAUTEUR_DE_BANDE), "les rayons couvrent deux bandes");
         }
 
         [Test, Description("chaque ancrage tombe dans le cadre de son stade, devant la queue qui bat")]

@@ -134,7 +134,7 @@ namespace IdlePond.Jeu.Scene
         /* ─── Le fil des lamproies ──────────────────────────────────────────────────── */
 
         /// L'écart entre deux points du fil, en pixels.
-        public const int PAS_DU_FIL = 3;
+        public const int PAS_DU_FIL = 4;
 
         /// Les points du fil, de la source vers la lamproie, à cet avancement : le fil
         /// s'allonge pendant la première moitié, puis se retire de la source vers la lamproie
@@ -180,12 +180,12 @@ namespace IdlePond.Jeu.Scene
 
         public static readonly IReadOnlyList<int> HERBES_DU_NID = new[] { 0x2F5A35, 0x3FA060, 0x6FA05A, 0x8FE070 };
 
-        public const int LARGEUR_DE_NID = 12;
+        public const int LARGEUR_DE_NID = 18;
 
         public static IReadOnlyList<PointDeNid> PointsDUnNid(int numero)
         {
-            // Un dôme : 6 colonnes de 2 px, plus hautes au milieu ; une porte sombre au pied.
-            var bases = new[] { 1, 2, 3, 3, 2, 1 };
+            // Un dôme : 9 colonnes de 2 px, plus hautes au milieu ; une porte sombre au pied.
+            var bases = new[] { 1, 2, 3, 4, 5, 4, 3, 2, 1 };
             var points = new List<PointDeNid>();
             var hauteurs = new int[bases.Length];
             for (var c = 0; c < bases.Length; c++)
@@ -193,21 +193,20 @@ namespace IdlePond.Jeu.Scene
                 hauteurs[c] = bases[c] + ((numero + c) % 4 == 0 ? 1 : 0);
                 for (var r = 0; r < hauteurs[c]; r++)
                 {
-                    var porte = r == 0 && (c == 2 || c == 3);
+                    var porte = r <= 1 && c >= 3 && c <= 5 && !(r == 1 && c != 4);
                     var couleur = porte ? 0 : 1 + ((c + r + numero) % 3);
                     points.Add(new PointDeNid(2 * c, 2 * r, couleur));
                 }
             }
             // Une épine de verre rouge plantée au sommet : la Garde. Couleur −1 : l'accent de
             // l'épinoche, pas une herbe.
-            var sommet = 2 + numero % 2;
+            var sommet = 3 + numero % 3;
             points.Add(new PointDeNid(2 * sommet, 2 * hauteurs[sommet], -1));
             return points;
         }
 
-        /// Le pied du `numero`-ième nid dans une bande de 240 px : répartis sur le fond, sans
-        /// se toucher.
-        public static int XDuNid(int numero) => 18 + numero * 52 + (numero % 2) * 9;
+        /// Le pied du `numero`-ième nid dans la bande : répartis sur le fond, sans se toucher.
+        public static int XDuNid(int numero) => 27 + numero * 78 + (numero % 2) * 14;
 
         /* ─── Les lamproies aux parois ─────────────────────────────────────────────── */
 

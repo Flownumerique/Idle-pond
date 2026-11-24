@@ -46,7 +46,7 @@ namespace IdlePond.Jeu.Scene
             nidsDessines = (bande, nombre);
             Briques.Vider(nids);
             if (catalogue == null || catalogue.Eclat == null || nombre == 0) return;
-            var fond = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 2;
+            var fond = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 3;
             for (var numero = 0; numero < nombre; numero++)
             {
                 var x0 = Tribus.XDuNid(numero);
@@ -89,11 +89,12 @@ namespace IdlePond.Jeu.Scene
                         if (ombre == null || image == null) continue;
                         // Le mirage reste derrière l'ombre, là d'où elle vient.
                         var versLaDroite = nageurs.PremierVersLaDroite(Tribus.OMBRE);
-                        var x = versLaDroite ? ombre.X - 20 : ombre.X + 8;
+                        var cadre = Gabarits.CADRE_D_ESPECE;
+                        var x = versLaDroite ? ombre.X - cadre.Largeur - 6 : ombre.X + 6;
                         var rendu = Piece(mirages, mirage++, image, OrdreDeRendu.MIRAGES);
                         rendu.flipX = !versLaDroite;
                         rendu.enabled = Tribus.MirageVisible(avancement);
-                        rendu.transform.localPosition = new Vector3(versLaDroite ? x : x + 12, ombre.Y - 3, 0f);
+                        rendu.transform.localPosition = new Vector3(versLaDroite ? x : x + cadre.Largeur, ombre.Y - cadre.Hauteur / 2 - 4, 0f);
                     }
                 }
             }

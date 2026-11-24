@@ -21,31 +21,37 @@ namespace IdlePond.Jeu.Scene
             return x;
         }
 
-        public static Trajet TrajetDe(int palier, int numero, int longueur)
+        public static Trajet TrajetDe(int palier, int numero, int longueur) =>
+            TrajetDe(palier, numero, Gabarits.CadreDUnPoisson(longueur));
+
+        /// Les marges et l'amplitude sont celles de la scène de 360 px : une fois et demie
+        /// celles de 240, la nage garde son allure à l'écran.
+        public static Trajet TrajetDe(int palier, int numero, Cadre cadre)
         {
             var h = Melanger((uint)(palier * 7919 + numero * 104729 + 1));
-            var cadre = Gabarits.CadreDUnPoisson(longueur);
-            var amplitude = 8 + (int)(h % 24u);
-            // Aller et retour compris, le nageur tient dans [0 ; 240 − largeur de son cadre].
-            var marge = Gabarits.LARGEUR_VISEE - 16 - amplitude - cadre.Largeur;
-            var x0 = 8 + (int)((h >> 5) % (uint)marge);
-            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 12 - cadre.Hauteur;
-            var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 6 + (int)((h >> 11) % (uint)hauteurLibre);
+            var amplitude = 12 + (int)(h % 36u);
+            // Aller et retour compris, le nageur tient dans [0 ; largeur visée − largeur de son cadre].
+            var marge = Gabarits.LARGEUR_VISEE - 24 - amplitude - cadre.Largeur;
+            var x0 = 12 + (int)((h >> 5) % (uint)marge);
+            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
+            var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
             var periode = 2.0 + ((h >> 17) % 20u) / 10.0;
             var phase = ((h >> 23) % 100u) / 100.0 * periode * 2;
             return new Trajet(x0, y, amplitude, periode, phase);
         }
 
+        public static Trajet TrajetAccroche(int palier, int numero, int longueur) =>
+            TrajetAccroche(palier, numero, Gabarits.CadreDUnPoisson(longueur));
+
         /// Une lamproie accrochée à la paroi (Codex v1.4, les Lamproies pèlerines) : contre le
         /// bord gauche ou droit de la bande, sans aller-retour. `Amplitude` 0 ; l'animation la
         /// fait respirer d'un pixel (`Tribus.Respiration`).
-        public static Trajet TrajetAccroche(int palier, int numero, int longueur)
+        public static Trajet TrajetAccroche(int palier, int numero, Cadre cadre)
         {
             var h = Melanger((uint)(palier * 7919 + numero * 104729 + 7));
-            var cadre = Gabarits.CadreDUnPoisson(longueur);
-            var x0 = Tribus.AccrocheeAGauche(numero) ? 2 : Gabarits.LARGEUR_VISEE - 2 - cadre.Largeur;
-            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 12 - cadre.Hauteur;
-            var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 6 + (int)((h >> 11) % (uint)hauteurLibre);
+            var x0 = Tribus.AccrocheeAGauche(numero) ? 3 : Gabarits.LARGEUR_VISEE - 3 - cadre.Largeur;
+            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
+            var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
             var phase = ((h >> 23) % 100u) / 100.0 * 2.5;
             return new Trajet(x0, y, 0, 2.5, phase);
         }

@@ -16,7 +16,7 @@ validée le 2026-11-23 et fait foi au Codex v1.4 ; son texte reste au commit `cf
 **Les couleurs de la Noue, du Gour et du héros** (v0.3) ont été validées le 2026-11-23, avec
 des membranes fines — un trait de bleu entre deux rayons, l'orange des nageoires reste. Elles
 font foi au Codex v1.5 (§2, « Les lieux et le héros à l'écran ») et dans `docs/da/gabarits.md`
-(palettes) ; elles sont dans le jeu, à l'échelle actuelle (240 px). Maquette :
+(palettes) ; elles sont dans le jeu, à 360 px depuis le 2026-11-24. Maquette :
 `docs/da/apercu-lieux-v2.png`. Le texte de la proposition reste dans l'historique git (commit
 `cc13364`).
 
@@ -50,7 +50,8 @@ chaque renaissance**. Le reste avance tel quel, à l'essai.
 seuils 1, 3, 6, 10. À chaque renaissance, **le renouveau** : l'œuf tremble, se fend, éclate ;
 la larve nage ; l'alevin paraît dans un éclair (3,1 s). Les runes sont sur le corps seulement
 (spirale du flanc, points le long du dos) : les nageoires restent aux membranes du Gour. Tout
-est produit par `outils/da/heros.py` et se refait d'une commande. Pas encore : l'échelle 360 px.
+est produit par `outils/da/heros.py` et se refait d'une commande, à l'échelle de 360 px depuis le
+2026-11-24.
 
 **L'idée** : il commence **ordinaire** — l'alevin d'une ponte ordinaire (Codex, acte I). Son
 corps gagne du détail avec sa **puissance** (son niveau, dans le cycle), et du merveilleux avec

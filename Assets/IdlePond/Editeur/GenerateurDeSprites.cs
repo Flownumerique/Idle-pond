@@ -55,11 +55,9 @@ namespace IdlePond.Editeur
         public static SortedDictionary<string, byte[]> Produire()
         {
             var sortie = new SortedDictionary<string, byte[]>(StringComparer.Ordinal);
-            // Le héros n'a plus de provisoire : il est dessiné (bible v0.4), corps, marques et
-            // éveil, par `outils/da/heros.py`.
-            foreach (var espece in Chemins.EspecesLivrees())
-                for (var image = 0; image < Gabarits.IMAGES_D_ESPECE; image++)
-                    sortie[Chemins.ImageDEspece(espece.Id, image)] = DessinerEspece(espece, image).EnPng();
+            // Le héros et les six tribus n'ont plus de provisoire : ils sont dessinés — le héros
+            // par `outils/da/heros.py` (bible v0.4), les poissons de troupe par
+            // `outils/da/especes.py` (Codex v1.4, maquette validée).
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 var decor = RegistreDArt.DecorDe(assise);
@@ -97,123 +95,13 @@ namespace IdlePond.Editeur
             }
         }
 
-        /* ─── Les poissons ───────────────────────────────────────────────────────── */
-
-        static Toile DessinerEspece(Espece espece, int image) =>
-            DessinerPoisson(Gabarits.LongueurDEspece(espece.Rang), RegistreDArt.CouleursDEspece(espece.Rang), image == 0 ? 1 : -1, image);
-
-        /// Un poisson qui regarde à droite : un tronc elliptique (dos sombre, flanc, ventre
-        /// clair), une queue en éventail échancré qui bat d'un pixel, un œil, un contour. Une
-        /// espèce porte son accent sur quelques pixels ; le héros a ses nageoires, son reflet
-        /// et sa joue.
-        static Toile DessinerPoisson(int longueur, CouleursDePoisson c, int battement, int image)
-        {
-            var cadre = Gabarits.CadreDUnPoisson(longueur);
-            var t = Gabarits.TroncDUnPoisson(longueur);
-            var toile = new Toile(cadre.Largeur, cadre.Hauteur);
-            var naissance = t.Cx - 0.85 * t.A;
-            var queue = 0.3 * longueur;
-            var nageoire = c.Nageoire ?? c.Dos;
-            for (var y = 0; y < toile.Hauteur; y++)
-                for (var x = 0; x < toile.Largeur; x++)
-                {
-                    var dy = y - t.Cy;
-                    if (t.Contient(x, y))
-                    {
-                        toile.Poser(x, y, dy > 0.25 * t.B ? c.Dos : dy < -0.3 * t.B ? c.Ventre : c.Corps);
-                        continue;
-                    }
-                    var q = naissance - x;
-                    if (q <= 0 || q > queue) continue;
-                    var decale = dy - battement * (q / queue);
-                    var ouverture = 0.2 * t.B + q * 0.55;
-                    var echancrure = q > 0.6 * queue && Math.Abs(decale) < q * 0.35;
-                    if (Math.Abs(decale) > ouverture || echancrure) continue;
-                    // La queue-feuille du vairon : le bout de la queue prend l'accent.
-                    var bout = c.Pose == PoseDAccent.Queue && c.Accent.HasValue && q > 0.6 * queue;
-                    toile.Poser(x, y, bout ? c.Accent.Value : nageoire);
-                }
-            var oeilX = (int)Math.Round(t.Cx + 0.28 * longueur);
-            var oeilY = (int)Math.Round(t.Cy + 0.25 * t.B);
-            if (c.Reflet.HasValue)
-            {
-                // Le reflet : une ligne claire sous le dos, de la naissance de la queue aux branchies.
-                var ligne = (int)Math.Floor(t.Cy + 0.25 * t.B);
-                for (var x = (int)Math.Round(t.Cx - 0.6 * t.A); x <= (int)Math.Round(t.Cx + 0.1 * longueur); x++)
-                    if (toile.Lire(x, ligne) == c.Corps) toile.Poser(x, ligne, c.Reflet.Value);
-            }
-            if (c.Joue.HasValue)
-                for (var x = oeilX - (longueur > 18 ? 1 : 0); x <= oeilX; x++)
-                    if (t.Contient(x, oeilY - 2)) toile.Poser(x, oeilY - 2, c.Joue.Value);
-            PoserLAccent(toile, t, longueur, c, image);
-            var oeil = c.Oeil ?? RegistreDArt.CONTOUR;
-            toile.Poser(oeilX, oeilY, oeil);
-            if (longueur > 18) toile.Poser(oeilX - 1, oeilY, RegistreDArt.CONTOUR);
-            toile.Contourner(RegistreDArt.CONTOUR);
-            return toile;
-        }
-
-        /// Le plus haut (ou le plus bas) pixel du tronc dans une colonne, ou -1.
-        static int BordDuTronc(Gabarits.Tronc t, int x, int hauteur, bool dessus)
-        {
-            if (dessus) { for (var y = hauteur - 1; y >= 0; y--) if (t.Contient(x, y)) return y; }
-            else { for (var y = 0; y < hauteur; y++) if (t.Contient(x, y)) return y; }
-            return -1;
-        }
-
-        /// L'accent d'une espèce (Codex v1.4, §2) : une couleur, sur quelques pixels.
-        static void PoserLAccent(Toile toile, Gabarits.Tronc t, int longueur, CouleursDePoisson c, int image)
-        {
-            if (!c.Accent.HasValue) return;
-            var accent = image % 2 == 1 && c.AccentDeLAutreImage.HasValue ? c.AccentDeLAutreImage.Value : c.Accent.Value;
-            var milieu = (int)Math.Round(t.Cy);
-            int X(double f) => (int)Math.Round(t.Cx + f * longueur);
-            switch (c.Pose)
-            {
-                case PoseDAccent.Flanc:
-                    // Les runes de la loche : deux points sur le flanc.
-                    toile.Poser(X(-0.15), milieu, accent);
-                    toile.Poser(X(0.05), milieu, accent);
-                    break;
-                case PoseDAccent.Epines:
-                    // Les épines de l'épinoche : trois pointes au-dessus du dos.
-                    foreach (var x in new[] { X(-0.2), X(0), X(0.15) })
-                    {
-                        var dessus = BordDuTronc(t, x, toile.Hauteur, true);
-                        if (dessus >= 0 && dessus + 1 <= toile.Hauteur - 2) toile.Poser(x, dessus + 1, accent);
-                    }
-                    break;
-                case PoseDAccent.Taches:
-                    // Le lichen du chabot : deux taches sur le dos.
-                    foreach (var x in new[] { X(-0.15), X(0.1) })
-                    {
-                        var dessus = BordDuTronc(t, x, toile.Hauteur, true);
-                        if (dessus >= 0) toile.Poser(x, dessus, accent);
-                    }
-                    break;
-                case PoseDAccent.Bouche:
-                    // L'anneau de la lamproie : le bout du museau.
-                    for (var x = toile.Largeur - 1; x >= 0; x--)
-                        if (t.Contient(x, milieu)) { toile.Poser(x, milieu, accent); break; }
-                    break;
-                case PoseDAccent.Voile:
-                    // Le voile de l'ombre : une haute dorsale, d'une couleur par image.
-                    for (var x = X(-0.25); x <= X(0.1); x++)
-                    {
-                        var dessus = BordDuTronc(t, x, toile.Hauteur, true);
-                        if (dessus < 0) continue;
-                        for (var y = dessus + 1; y <= Math.Min(dessus + 2, toile.Hauteur - 2); y++) toile.Poser(x, y, accent);
-                    }
-                    break;
-            }
-        }
-
         /* ─── Le décor ───────────────────────────────────────────────────────────── */
 
         /// Une bande d'eau qui se répète en largeur : l'eau, tramée du clair en haut au sombre en
         /// bas (bible v0.3), et son fond : la vase et ses herbes, ou le lit de galets et sa
         /// mousse. La lumière, elle, vient des Light2D. Tout ce qui s'y dessine a une période
-        /// qui divise la largeur (32) : la tuile se raccorde à elle-même.
+        /// qui divise la largeur (48) : la tuile se raccorde à elle-même. Dessinée pour la scène de
+        /// 360 px : chaque mesure est une fois et demie celle de 240.
         static Toile DessinerFond(DecorDArt d)
         {
             var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
@@ -226,11 +114,11 @@ namespace IdlePond.Editeur
                     var i = Math.Min((int)profondeur, d.Eau.Count - 1);
                     var passage = (profondeur - i - 0.75) / 0.25;
                     var couleur = i + 1 < d.Eau.Count && Toile.Seuil(x, y) < passage ? d.Eau[i + 1] : d.Eau[i];
-                    if (d.Galets.Count == 0 && (y <= 1 || (y == 2 && x % 2 == 0))) couleur = d.Vase;
+                    if (d.Galets.Count == 0 && (y <= 2 || (y == 3 && x % 2 == 0))) couleur = d.Vase;
                     // Le courant du Gour : des traits d'écume qui filent, en pointillés décalés
                     // d'une rangée à l'autre.
-                    if (d.Courant && y > 6 && y % 9 == 4 && (x + y * 3) % 16 < 7 && x % 2 == 0)
-                        couleur = d.Ecume.Count > 0 ? d.Ecume[(y / 9) % d.Ecume.Count] : d.Rayon;
+                    if (d.Courant && y > 9 && y % 13 == 6 && (x + y * 3) % 24 < 10 && x % 2 == 0)
+                        couleur = d.Ecume.Count > 0 ? d.Ecume[(y / 13) % d.Ecume.Count] : d.Rayon;
                     toile.Poser(x, y, couleur);
                 }
             if (d.Galets.Count > 0) DessinerGalets(toile, d);
@@ -241,13 +129,17 @@ namespace IdlePond.Editeur
         /// Les herbes qui montent de la vase et ondulent.
         static void DessinerHerbes(Toile toile, DecorDArt d)
         {
-            var pieds = new[] { 2, 8, 13, 19, 24, 29 };
-            var hauteurs = new[] { 9, 14, 6, 11, 16, 8 };
+            var pieds = new[] { 3, 12, 20, 28, 36, 44 };
+            var hauteurs = new[] { 13, 21, 9, 16, 24, 12 };
             for (var k = 0; k < pieds.Length; k++)
                 for (var i = 0; i < hauteurs[k]; i++)
                 {
-                    var x = pieds[k] + (int)Math.Round(Math.Sin(i * 0.45 + k * 1.7) * 1.2);
-                    toile.Poser((x + toile.Largeur) % toile.Largeur, 2 + i, d.Herbes[k % d.Herbes.Count]);
+                    var x = pieds[k] + (int)Math.Round(Math.Sin(i * 0.3 + k * 1.7) * 1.8);
+                    {
+                        // Une herbe de deux pixels d'épaisseur sur sa moitié basse.
+                        toile.Poser((x + toile.Largeur) % toile.Largeur, 3 + i, d.Herbes[k % d.Herbes.Count]);
+                        if (i < hauteurs[k] / 2) toile.Poser((x + 1 + toile.Largeur) % toile.Largeur, 3 + i, d.Herbes[k % d.Herbes.Count]);
+                    }
                 }
         }
 
@@ -257,14 +149,14 @@ namespace IdlePond.Editeur
         {
             var galets = new (double X, double Y, double Rx, double Ry, int Couleur)[]
             {
-                (3, 2, 3, 2, 0), (9, 1.5, 2.5, 1.5, 1), (14.5, 2.5, 3, 2.2, 2),
-                (20.5, 1.5, 2.5, 1.6, 0), (26, 2.5, 3, 2, 1), (30.5, 1, 2, 1.3, 2),
+                (4.5, 3, 4.5, 3, 0), (13.5, 2.25, 3.75, 2.25, 1), (21.75, 3.75, 4.5, 3.3, 2),
+                (30.75, 2.25, 3.75, 2.4, 0), (39, 3.75, 4.5, 3, 1), (45.75, 1.5, 3, 1.95, 2),
             };
             var fond = d.Galets[d.Galets.Count - 1];
-            for (var y = 0; y <= 5; y++)
+            for (var y = 0; y <= 8; y++)
                 for (var x = 0; x < toile.Largeur; x++)
                 {
-                    var couleur = y <= 1 ? fond : (int?)null;
+                    var couleur = y <= 2 ? fond : (int?)null;
                     for (var g = 0; g < galets.Length; g++)
                     {
                         var dx = Math.Abs(x - galets[g].X);
@@ -281,7 +173,7 @@ namespace IdlePond.Editeur
 
         /// <summary>
         /// La roche d'un palier pas encore creusé : des pierres irrégulières (une cellule de
-        /// Voronoï chacune, autour d'un germe tiré au hasard dans une grille de 8 × 8), jointes
+        /// Voronoï chacune, autour d'un germe tiré au hasard dans une grille de 12 × 12), jointes
         /// par des fissures, éclairées d'une arête claire sur leur bord haut ; en haut de la
         /// bande, le seuil, la ligne sombre où l'eau creusée s'arrête. Les distances se
         /// mesurent en tournant sur la largeur : la tuile se raccorde à elle-même quand elle
@@ -290,7 +182,7 @@ namespace IdlePond.Editeur
         /// </summary>
         static Toile DessinerRoche(DecorDArt d)
         {
-            const int CASE = 8;
+            const int CASE = 12;
             var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
             var colonnes = toile.Largeur / CASE;
             var rangees = (toile.Hauteur + CASE - 1) / CASE;
@@ -328,16 +220,16 @@ namespace IdlePond.Editeur
                 {
                     var (pierre, ecart) = Pierre(x, y);
                     int couleur;
-                    if (ecart < 0.9) couleur = d.Roche[3];
+                    if (ecart < 1.35) couleur = d.Roche[3];
                     else
                     {
                         couleur = germes[pierre].Claire ? d.Roche[1] : d.Roche[0];
                         // L'arête claire : le bord haut de la pierre, juste sous la fissure.
-                        if (Pierre(x, y + 1).Ecart < 0.9 && Toile.Seuil(x, y) < 0.7) couleur = d.Roche[2];
+                        if (Pierre(x, y + 1).Ecart < 1.35 && Toile.Seuil(x, y) < 0.7) couleur = d.Roche[2];
                         // Le grain, tramé, pour que la pierre ne soit pas lisse.
                         else if (couleur == d.Roche[1] && Toile.Seuil(x, y) < 0.1) couleur = d.Roche[0];
                     }
-                    if (y >= toile.Hauteur - 2) couleur = d.Roche[3];
+                    if (y >= toile.Hauteur - 3) couleur = d.Roche[3];
                     toile.Poser(x, y, couleur);
                 }
             return toile;
@@ -376,84 +268,95 @@ namespace IdlePond.Editeur
             var toile = new Toile(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE);
             var hasard = Hasard(7);
             var haut = toile.Hauteur - 1;
-            const int RACINES = 12;
+            const int RACINES = 18;
             for (var k = 0; k < RACINES; k++)
             {
-                var x = (k + 0.5) * toile.Largeur / RACINES + (hasard() - 0.5) * 6;
+                var x = (k + 0.5) * toile.Largeur / RACINES + (hasard() - 0.5) * 9;
                 var longueur = (int)(toile.Hauteur * (0.35 + hasard() * 0.5));
-                var epaisseur = hasard() < 0.4 ? 2 : 1;
+                var epaisseur = hasard() < 0.4 ? 3 : 2;
                 for (var i = 0; i < longueur; i++)
                 {
-                    x += (hasard() - 0.5) * 0.9;
+                    x += (hasard() - 0.5) * 1.35;
                     // Le bout de la racine bourgeonne : la Sève y monte.
-                    var bourgeon = d.Bourgeon.HasValue && i >= longueur - 2;
+                    var bourgeon = d.Bourgeon.HasValue && i >= longueur - 3;
                     for (var e = 0; e < epaisseur; e++)
                         toile.Poser((int)Math.Round(x) + e, haut - 1 - i,
                             bourgeon ? d.Bourgeon.Value : d.Racines[e % d.Racines.Count]);
                 }
             }
             if (d.Surface.HasValue)
-                for (var x = 0; x < toile.Largeur; x++) toile.Poser(x, haut, d.Surface.Value);
+                for (var x = 0; x < toile.Largeur; x++)
+                {
+                    toile.Poser(x, haut, d.Surface.Value);
+                    // La surface a deux pixels ; le second, tramé, se mêle à l'eau.
+                    if (Toile.Seuil(x, haut - 1) < 0.5 && toile.Lire(x, haut - 1) == null) toile.Poser(x, haut - 1, d.Surface.Value);
+                }
             if (d.Nenuphar.Count >= 4)
             {
                 // Trois feuilles à la surface ; une seule a sa fleur.
-                var feuilles = new[] { (X: 34, Demi: 8, Fleur: false), (X: 120, Demi: 7, Fleur: true), (X: 205, Demi: 9, Fleur: false) };
+                var feuilles = new[] { (X: 51, Demi: 12, Fleur: false), (X: 180, Demi: 10, Fleur: true), (X: 307, Demi: 13, Fleur: false) };
                 foreach (var f in feuilles)
                 {
                     for (var x = f.X - f.Demi; x <= f.X + f.Demi; x++)
                     {
                         toile.Poser(x, haut, d.Nenuphar[1]);
                         if (Math.Abs(x - f.X) < f.Demi) toile.Poser(x, haut - 1, d.Nenuphar[0]);
+                        if (Math.Abs(x - f.X) < f.Demi - 3) toile.Poser(x, haut - 2, d.Nenuphar[0]);
                     }
                     // L'échancrure de la feuille.
-                    toile.Poser(f.X + 2, haut, d.Surface ?? d.Nenuphar[0]);
+                    toile.Poser(f.X + 3, haut, d.Surface ?? d.Nenuphar[0]);
+                    toile.Poser(f.X + 3, haut - 1, d.Surface ?? d.Nenuphar[0]);
                     if (!f.Fleur) continue;
-                    foreach (var dx in new[] { -2, -1, 1, 2 }) toile.Poser(f.X + dx, haut, d.Nenuphar[2]);
+                    // La fleur : des pétales autour d'un cœur d'or, posée sur la feuille.
+                    foreach (var dx in new[] { -3, -2, -1, 1, 2, 3 }) toile.Poser(f.X + dx, haut, d.Nenuphar[2]);
+                    foreach (var dx in new[] { -2, -1, 0, 1, 2 }) toile.Poser(f.X + dx, haut - 1, d.Nenuphar[2]);
                     toile.Poser(f.X, haut, d.Nenuphar[3]);
-                    toile.Poser(f.X - 1, haut - 1, d.Nenuphar[2]);
-                    toile.Poser(f.X + 1, haut - 1, d.Nenuphar[2]);
+                    toile.Poser(f.X, haut - 1, d.Nenuphar[3]);
+                    toile.Poser(f.X - 1, haut - 2, d.Nenuphar[2]);
+                    toile.Poser(f.X + 1, haut - 2, d.Nenuphar[2]);
                 }
             }
             return toile;
         }
 
-        /// Ce qui flotte dans chaque bande, sur 256 px pour ne pas se répéter tous les 32 :
+        /// Ce qui flotte dans chaque bande, sur 384 px pour ne pas se répéter tous les 48 :
         /// le pollen de la Sève ; les méduses et les grosses pierres du Gour.
         static Toile DessinerAmbiance(DecorDArt d)
         {
             var toile = new Toile(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE);
             var hasard = Hasard(11);
             if (d.Grains.Count > 0)
-                for (var k = 0; k < 36; k++)
+                for (var k = 0; k < 60; k++)
                 {
                     var x = (int)(hasard() * toile.Largeur);
-                    var y = 6 + (int)(hasard() * (toile.Hauteur - 10));
+                    var y = 9 + (int)(hasard() * (toile.Hauteur - 15));
                     toile.Poser(x, y, d.Grains[k % d.Grains.Count]);
                 }
             if (d.Pierres.Count > 0)
-                foreach (var (cx, rx, ry) in new[] { (70.0, 10.0, 6.0), (196.0, 12.0, 7.0) })
-                    for (var y = 0; y <= (int)ry + 2; y++)
+                foreach (var (cx, rx, ry) in new[] { (105.0, 15.0, 9.0), (294.0, 18.0, 10.5) })
+                    for (var y = 0; y <= (int)ry + 3; y++)
                         for (var x = (int)(cx - rx); x <= (int)(cx + rx); x++)
                         {
                             var u = (x - cx) / rx;
-                            var v = (y - 2) / ry;
+                            var v = (y - 3) / ry;
                             if (u * u + v * v > 1) continue;
                             var couleur = v > 0.45 ? d.Pierres[1] : d.Pierres[0];
                             if (d.Mousse.HasValue && v > 0.75 && Toile.Seuil(x, y) < 0.5) couleur = d.Mousse.Value;
                             toile.Poser(x, y, couleur);
                         }
             if (d.Meduses.Count > 0)
-                foreach (var (cx, cy) in new[] { (40, 40), (150, 30), (222, 44) })
+                foreach (var (cx, cy) in new[] { (60, 60), (225, 45), (333, 66) })
                 {
-                    // Une cloche de cinq pixels, et ses filaments qui pendent.
-                    for (var dx = -1; dx <= 1; dx++) toile.Poser(cx + dx, cy + 1, d.Meduses[0]);
-                    for (var dx = -2; dx <= 2; dx++) toile.Poser(cx + dx, cy, d.Meduses[0]);
-                    toile.Poser(cx - 2, cy - 1, d.Meduses[1]);
-                    toile.Poser(cx + 2, cy - 1, d.Meduses[1]);
-                    for (var i = 1; i <= 3; i++)
+                    // Une cloche de sept pixels, son bord, et ses filaments qui pendent.
+                    for (var dx = -1; dx <= 1; dx++) toile.Poser(cx + dx, cy + 2, d.Meduses[0]);
+                    for (var dx = -2; dx <= 2; dx++) toile.Poser(cx + dx, cy + 1, d.Meduses[0]);
+                    for (var dx = -3; dx <= 3; dx++) toile.Poser(cx + dx, cy, d.Meduses[0]);
+                    toile.Poser(cx - 3, cy - 1, d.Meduses[1]);
+                    toile.Poser(cx + 3, cy - 1, d.Meduses[1]);
+                    for (var i = 1; i <= 5; i++)
                     {
-                        toile.Poser(cx - 1, cy - i, d.Meduses[1]);
-                        if (i < 3) toile.Poser(cx + 1, cy - i, d.Meduses[1]);
+                        toile.Poser(cx - 1 + (i % 2), cy - i, d.Meduses[1]);
+                        if (i < 4) toile.Poser(cx + 2 - (i % 2), cy - i, d.Meduses[1]);
                     }
                 }
             return toile;

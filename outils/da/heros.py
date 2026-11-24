@@ -17,10 +17,13 @@ HD = os.path.join(RACINE, "docs", "da", "inspirations", "hd")
 ART = os.path.join(RACINE, "Assets", "IdlePond", "Art", "Heros")
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 
-# La largeur de chaque stade : celle des cadres d'aujourd'hui (23, 30, 44, 65).
-LARGEURS = [23, 30, 44, 65]
+# La largeur de chaque stade : celle des cadres (Gabarits.CadreDuCorps), à l'échelle de la scène
+# de 360 px (2026-11-24) — une fois et demie celle de 240 (23, 30, 44, 65).
+LARGEURS = [34, 44, 65, 97]
 COULEURS = 16
 CONTOUR = (74, 30, 12)
+# Le côté de l'œil, par stade : environ un pixel par 22 de longueur.
+COTES_D_OEIL = [2, 2, 3, 4]
 
 
 def reduire(hd, largeur):
@@ -150,7 +153,7 @@ def poser_oeil(im, fx, fy, stade):
     """L'œil redessiné : sombre, avec un éclat dès qu'il fait deux pixels."""
     px = im.load()
     x, y = round(fx * im.width - 0.5), round(fy * im.height - 0.5)
-    cote = [1, 2, 2, 3][stade]
+    cote = COTES_D_OEIL[stade]
     for dx in range(cote):
         for dy in range(cote):
             if 0 <= x + dx < im.width and 0 <= y + dy < im.height and px[x + dx, y + dy][3]:
@@ -198,7 +201,7 @@ def marques(im, stade, queue, ox, oy, tronc):
     pn, pg = noue.load(), gour.load()
     demi = max(1, round(0.13 * im.height))
     for k in range(min(3, stade + 1)):
-        x = ox - 2 - [1, 2, 2, 3][stade] - 2 * k
+        x = ox - 2 - COTES_D_OEIL[stade] - 2 * k
         for y in range(oy - demi, oy + demi + 1):
             if 0 <= x < im.width and 0 <= y < im.height and px[x, y][3] and px[x, y][:3] != CONTOUR and dans(x, y):
                 pn[x, y] = NOUE
@@ -220,7 +223,7 @@ def marques(im, stade, queue, ox, oy, tronc):
 
 # L'éveil (bible v0.4, d'après da-3) : des calques sur une toile plus grande que le corps,
 # d'une marge MARGES[stade] de chaque côté. Couleurs : à reporter dans RegistreDArt.EVEIL.
-MARGES = [8, 10, 14, 18]
+MARGES = [12, 15, 21, 27]
 TURQUOISE, TURQUOISE_CLAIR = (30, 168, 184, 255), (127, 230, 232, 255)
 CREME_PALE, ETOILE, OR_CLAIR, ECLAT = (255, 244, 208, 255), (255, 224, 112, 255), (248, 208, 112, 255), (255, 251, 234, 255)
 EVEIL = [TURQUOISE, TURQUOISE_CLAIR, CREME_PALE, ETOILE, OR_CLAIR, ECLAT]
@@ -303,17 +306,18 @@ def aura(im, s):
 
 
 def etoile():
-    """Une étoile à quatre branches, 5 × 5."""
-    t = Image.new("RGBA", (5, 5), (0, 0, 0, 0)); pt = t.load()
-    for i in (0, 1, 3, 4): pt[2, i] = ETOILE; pt[i, 2] = ETOILE
-    pt[2, 2] = ECLAT
+    """Une étoile à quatre branches, 7 × 7 : les branches, et le cœur d'éclat qui déborde d'un
+    pixel en croix."""
+    t = Image.new("RGBA", (7, 7), (0, 0, 0, 0)); pt = t.load()
+    for i in range(7): pt[3, i] = ETOILE; pt[i, 3] = ETOILE
+    for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)): pt[3 + dx, 3 + dy] = ECLAT
     return t
 
 
 # Le renouveau (bible v0.4, d'après da-1 ; Codex, acte III : il rentre dans son œuf, et le même
 # en ressort) : l'œuf et la larve, joués à chaque renaissance. Pas
 # des stades : une courte animation. Mêmes couleurs que le héros (et le crème de l'éveil).
-LARGEUR_DE_L_OEUF, LARGEUR_DE_LA_LARVE = 17, 25
+LARGEUR_DE_L_OEUF, LARGEUR_DE_LA_LARVE = 25, 37
 # Translucides : un contour doux (un brun du corps), et tout ce qui n'est pas la réserve d'or
 # pâli vers le blanc.
 CONTOUR_DOUX = (180, 109, 56)

@@ -4,25 +4,17 @@ Ce que doit respecter un dessin pour remplacer un provisoire **sans toucher au c
 Source de vérité : `Assets/IdlePond/Jeu/Scene/Gabarits.cs` et `RegistreDArt.cs` ; les tests
 `GabaritsTests` vérifient chaque fichier livré.
 
-> **Cible validée le 2026-11-23, pas encore dans le code** (Codex v1.4, §2 ; maquettes
-> `apercu-poissons-v3.png` et `apercu-finesse-scene.png`). Tant que le code n'a pas changé, les
-> sections suivantes décrivent l'état actuel et font foi pour déposer un PNG ; ce cadre dit ce
-> qui va changer, pour que personne ne dessine à l'ancienne échelle.
+> **La scène est à 360 px de large depuis le 2026-11-24** (`Gabarits.LARGEUR_VISEE`, 240 avant ;
+> Codex v1.4, §2 ; maquettes `apercu-poissons-v3.png` et `apercu-finesse-scene.png`). Toutes les
+> mesures du dessin ont suivi d'un même facteur 1,5 : bande de 84 px, décor, héros. À l'écran, la
+> mise en page ne bouge pas ; il y a seulement une fois et demie plus de pixels pour dessiner. Repli
+> sur 320 px si un vrai téléphone ne suit pas.
 >
-> - **La scène passe à 360 px de large** (`Gabarits.LARGEUR_VISEE`, aujourd'hui 240 ; repli sur
->   320 si un vrai téléphone ne suit pas). Tout l'art provisoire se refait à cette échelle :
->   décor, bandes, héros, marques.
-> - **Le poisson de troupe** : environ **24 px** de long (aujourd'hui 7 à 12). La formule de
->   longueur par rang est à revoir avec la finesse.
-> - **Le représentant** de chaque tribu : un gabarit de plus, `Especes/representants/{id}-i{0..3}.png`,
->   environ **60 px** de long, quatre images de nage comme le héros (seules la queue et les
->   nageoires bougent), toujours plus petit que le héros adulte. Un seul par tribu à l'écran.
-> - **La taille à l'écran reste réglable** à part, par les gabarits.
-> - **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet qu'en éclair,
->   sur un événement.
->
-> **Déjà dans le code** (2026-11-23, à 240 px) : les palettes des six espèces et leur accent,
-> celles de la Noue, du Gour et du héros (bible v0.3, Codex v1.5) — voir « Palettes ».
+> **Reste à venir** : le **représentant** de chaque tribu, un gabarit de plus,
+> `Especes/representants/{id}-i{0..3}.png`, environ **60 px** de long, quatre images de nage comme le
+> héros (seules la queue et les nageoires bougent), toujours plus petit que le héros adulte, un seul
+> par tribu à l'écran. **Lumière** : un accent est une couleur, pas une lumière ; une espèce n'émet
+> qu'en éclair, sur un événement.
 
 ## Règles communes
 
@@ -40,19 +32,23 @@ nageoires bougent** ; le tronc est identique d'une image à l'autre (les marques
 
 | Stade | Niveau | Longueur | Cadre (l × h) |
 |---|---|---|---|
-| 0 | 1 à 3 | 21 | 23 × 15 |
-| 1 | 4 à 15 | 28 | 30 × 17 |
-| 2 | 16 à 255 | 42 | 44 × 23 |
-| 3 | 256 et plus | 63 | 65 × 31 |
+| 0 | 1 à 3 | 32 | 34 × 22 |
+| 1 | 4 à 15 | 42 | 44 × 31 |
+| 2 | 16 à 255 | 63 | 65 × 45 |
+| 3 | 256 et plus | 95 | 97 × 62 |
+
+Le héros est dessiné (bible v0.4) par `outils/da/heros.py`, d'après `docs/da/inspirations/` : la
+hauteur du cadre est celle de ses nageoires. Les calques d'éveil (voile, anneau, aura) ont le cadre
+du corps agrandi de 12, 15, 21 et 27 px de chaque côté selon le stade ; l'étoile fait 7 × 7.
 
 Points d'ancrage (origine **en bas à gauche**), un par marque possible :
 
 | Stade | Branchies | Tête | Dos | Ventre | Flanc | Queue |
 |---|---|---|---|---|---|---|
-| 0 | 18, 7 | 20, 7 | 15, 10 | 15, 4 | 13, 7 | 9, 7 |
-| 1 | 24, 8 | 26, 8 | 19, 11 | 19, 5 | 16, 8 | 12, 8 |
-| 2 | 36, 11 | 39, 11 | 28, 16 | 28, 6 | 24, 11 | 17, 11 |
-| 3 | 53, 15 | 58, 15 | 42, 23 | 42, 7 | 36, 15 | 26, 15 |
+| 0 | 24, 11 | 27, 9 | 19, 15 | 19, 7 | 19, 11 | 13, 11 |
+| 1 | 33, 16 | 37, 14 | 26, 20 | 26, 12 | 26, 16 | 17, 16 |
+| 2 | 50, 24 | 56, 23 | 38, 30 | 38, 18 | 38, 24 | 23, 24 |
+| 3 | 77, 33 | 87, 32 | 63, 41 | 63, 25 | 63, 33 | 42, 33 |
 
 Chaque ancrage est un pixel **opaque du tronc**, de la même couleur dans les quatre images.
 Ce tableau est le calcul de `Gabarits.Ancrage` ; si le code change, c'est lui qui fait foi.
@@ -73,18 +69,20 @@ colonne de membrane bleue entre deux rayons, la colonne suivante reste orange.
 
 ## Les espèces — `Especes/{id}-i{0,1}.png`
 
-Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division entière) : 7 px (rang 0) à
-12 px (rang 20) ; cadre `(longueur + 2) × (2·⌈0,2·longueur⌉ + 5)`. Livrées : vairon, loche
-(7 px, cadre 9 × 9).
+Deux images de nage, regard à droite : la queue haute, la queue basse (l'ombre change aussi la
+couleur de son voile). Un poisson de troupe mesure **24 px** ; les six tribus livrées partagent un
+**cadre commun de 39 × 27**, le plus petit qui les contient toutes (la queue-feuille du vairon, les
+barbillons de la loche, la voile de l'ombre). Elles sont dessinées, d'après la maquette validée,
+par `outils/da/especes.py` — ce ne sont plus des provisoires.
 
 ## Le décor — `Fonds/{assise}/`
 
 | Fichier | Taille | Rôle |
 |---|---|---|
-| `fond.png` | 32 × 56 | une bande d'eau, répétée en largeur, du clair en haut au sombre en bas ; en bas, la vase et ses herbes, ou les galets et leur mousse |
-| `rayons.png` | 256 × 112 | les rayons du jour sur les deux premières bandes, tramés |
-| `berge.png` | 256 × 56 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
-| `ambiance.png` | 256 × 56 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
+| `fond.png` | 48 × 84 | une bande d'eau, répétée en largeur, du clair en haut au sombre en bas ; en bas, la vase et ses herbes, ou les galets et leur mousse |
+| `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
+| `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
+| `ambiance.png` | 384 × 84 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
 
 ## L'eau — `Eau/`
 
@@ -95,7 +93,8 @@ Deux images de nage, regard à droite. Longueur `7 + min(5, rang / 4)` (division
 - **Héros** (bible v0.3) : `#F2B84A` corps (or), `#C07A2A` dos et rayons des nageoires
   (ambre), `#FFE6A8` ventre, `#FFF0C0` reflet, `#E89A3A` nageoires, `#FF9A80` joue, `#121C1A`
   contour ; marque de la Noue `#8FE070` (vert de Sève), du Gour `#8FD8FF` (bleu de Courant).
-- **Espèces** (corps · dos · ventre · accent), contour `#121C1A` :
+- **Espèces** (corps · dos · ventre · accent), contour `#121C1A` ; le dessin y ajoute nageoires,
+  reflets, taches, joues et l'œil (toute la palette dans `RegistreDArt.ESPECES_DESSINEES`) :
 
 | Espèce | Corps | Dos | Ventre | Accent |
 |---|---|---|---|---|

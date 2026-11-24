@@ -76,13 +76,13 @@ namespace IdlePond.TestsDeJeu
             scene.ImposerLaTaille(1080, 768);
             yield return null;
             yield return null;
-            Assert.That(scene.Rendu.Dimensions, Is.EqualTo(new DimensionsDuRendu(5, 216, 153)));
+            Assert.That(scene.Rendu.Dimensions, Is.EqualTo(new DimensionsDuRendu(3, 360, 256)));
             Assert.That(scene.Rendu.Camera.targetTexture, Is.SameAs(scene.Rendu.Texture));
             // Sans carte graphique (-nographics), aucune texture ne se crée : les dimensions
             // et la caméra se vérifient quand même, la texture seulement avec un affichage.
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) yield break;
-            Assert.That(scene.Rendu.Texture.width, Is.EqualTo(216));
-            Assert.That(scene.Rendu.Texture.height, Is.EqualTo(153));
+            Assert.That(scene.Rendu.Texture.width, Is.EqualTo(360));
+            Assert.That(scene.Rendu.Texture.height, Is.EqualTo(256));
             Assert.That(scene.Rendu.Texture.filterMode, Is.EqualTo(FilterMode.Point));
         }
 
@@ -97,7 +97,7 @@ namespace IdlePond.TestsDeJeu
             scene.ImposerLaTaille(1600, 430);
             yield return null;
             yield return null;
-            Assert.That(scene.Rendu.Dimensions, Is.EqualTo(new DimensionsDuRendu(7, 228, 61)));
+            Assert.That(scene.Rendu.Dimensions, Is.EqualTo(new DimensionsDuRendu(4, 400, 107)));
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) yield break;
             Assert.That(premiere == null, Is.True, "l'ancienne texture n'a pas été détruite");
         }
@@ -128,9 +128,9 @@ namespace IdlePond.TestsDeJeu
             yield return null;
             Assert.That(scene.Eclairage.Ambiante.lightType, Is.EqualTo(Light2D.LightType.Global));
             Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(PALIERS_DE_LA_NOUE));
-            // Portrait : 153 px de haut, six bandes de 56 → les bandes 3, 4 et 5.
+            // Portrait : 256 px de haut, six bandes de 84 → les bandes 2 à 5.
             var allumees = scene.Eclairage.ParBande.Select((l, i) => (l, i)).Where(x => x.l.enabled).Select(x => x.i).ToList();
-            Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
+            Assert.That(allumees, Is.EqualTo(new[] { 2, 3, 4, 5 }));
             Assert.That(scene.Eclairage.ParBande[5].intensity, Is.LessThan(scene.Eclairage.ParBande[3].intensity));
         }
 

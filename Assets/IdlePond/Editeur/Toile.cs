@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace IdlePond.Editeur
 {
@@ -50,22 +49,23 @@ namespace IdlePond.Editeur
             foreach (var (x, y) in aPeindre) Poser(x, y, couleur);
         }
 
+        /// Le PNG de la toile, par l'encodeur pur : mêmes octets dans l'éditeur et hors de lui.
         public byte[] EnPng()
         {
-            var texture = new Texture2D(Largeur, Hauteur, TextureFormat.RGBA32, false);
-            var couleurs = new Color32[Largeur * Hauteur];
-            for (var i = 0; i < couleurs.Length; i++)
-            {
-                var c = pixels[i];
-                couleurs[i] = c.HasValue
-                    ? new Color32((byte)(c.Value >> 16), (byte)(c.Value >> 8), (byte)c.Value, 255)
-                    : new Color32(0, 0, 0, 0);
-            }
-            texture.SetPixels32(couleurs);
-            texture.Apply();
-            var png = texture.EncodeToPNG();
-            Object.DestroyImmediate(texture);
-            return png;
+            var rgba = new byte[Largeur * Hauteur * 4];
+            for (var y = 0; y < Hauteur; y++)
+                for (var x = 0; x < Largeur; x++)
+                {
+                    var c = pixels[y * Largeur + x];
+                    if (!c.HasValue) continue;
+                    // La toile a son origine en bas ; le PNG commence par la rangée du haut.
+                    var o = ((Hauteur - 1 - y) * Largeur + x) * 4;
+                    rgba[o] = (byte)(c.Value >> 16);
+                    rgba[o + 1] = (byte)(c.Value >> 8);
+                    rgba[o + 2] = (byte)c.Value;
+                    rgba[o + 3] = 255;
+                }
+            return Png.Encoder(Largeur, Hauteur, rgba);
         }
     }
 }

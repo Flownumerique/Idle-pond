@@ -120,8 +120,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 256
-        height: 112
+        width: 384
+        height: 168
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,6 +152,6 @@ TextureImporter:
     nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData: idlepond:provisoire:EB0002953ED97C541DB83667BA4CD4B8F2CCBB55
+  userData: idlepond:provisoire:E78A29AA1D91F63006B7507AD78CA2A8A008B00B
   assetBundleName: 
   assetBundleVariant: 

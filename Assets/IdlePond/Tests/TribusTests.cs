@@ -188,18 +188,17 @@ namespace IdlePond.Tests
             for (var palier = 0; palier < 18; palier++)
             for (var numero = 0; numero < VueDeScene.POISSONS_MAX_PAR_GROUPE; numero++)
             {
-                var longueur = Gabarits.LongueurDEspece(4);
-                var cadre = Gabarits.CadreDUnPoisson(longueur);
-                var t = Nage.TrajetAccroche(palier, numero, longueur);
+                var cadre = Gabarits.CADRE_D_ESPECE;
+                var t = Nage.TrajetAccroche(palier, numero, cadre);
                 Assert.That(t.Amplitude, Is.EqualTo(0));
-                if (Tribus.AccrocheeAGauche(numero)) Assert.That(t.X0, Is.LessThanOrEqualTo(2));
-                else Assert.That(t.X0 + cadre.Largeur, Is.GreaterThanOrEqualTo(Gabarits.LARGEUR_VISEE - 2));
+                if (Tribus.AccrocheeAGauche(numero)) Assert.That(t.X0, Is.LessThanOrEqualTo(3));
+                else Assert.That(t.X0 + cadre.Largeur, Is.GreaterThanOrEqualTo(Gabarits.LARGEUR_VISEE - 3));
                 Assert.That(t.X0, Is.GreaterThanOrEqualTo(0));
                 Assert.That(t.X0 + cadre.Largeur, Is.LessThanOrEqualTo(Gabarits.LARGEUR_VISEE));
                 var haut = -palier * Gabarits.HAUTEUR_DE_BANDE;
                 Assert.That(t.Y - 1, Is.GreaterThanOrEqualTo(haut - Gabarits.HAUTEUR_DE_BANDE));
                 Assert.That(t.Y + cadre.Hauteur, Is.LessThanOrEqualTo(haut));
-                Assert.That(Nage.TrajetAccroche(palier, numero, longueur), Is.EqualTo(t), "déterministe");
+                Assert.That(Nage.TrajetAccroche(palier, numero, cadre), Is.EqualTo(t), "déterministe");
             }
         }
     }

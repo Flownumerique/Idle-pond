@@ -113,11 +113,13 @@ namespace IdlePond.Jeu.Scene
 
         /// Le héros dessiné (bible v0.4) : la palette commune à ses quatre stades, relevée par
         /// `outils/da/heros.py` sur les inspirations — du brun du contour à la crème du ventre,
-        /// puis l'œil et son éclat.
+        /// puis l'œil et son éclat (relevée à l'échelle de 360 px, 2026-11-24).
         public static readonly IReadOnlyList<int> HEROS_DESSINE = new[]
         {
-            0x4A1E0C, 0x88391A, 0xC03709, 0xD74006, 0xDF5307, 0xB46D38, 0xE16B11, 0xEF6908, 0xF27C0C, 0xF78F13,
-            0xDA8F42, 0xFAA429, 0xE7A455, 0xFBBA40, 0xF3BF75, 0xFBD27D, 0xFCE2A4, 0x2A1408, 0xFFFBEA,
+            0x4A1E0C, 0x722813, 0xB2340C, 0xD23906, 0xDD4D06, 0xE4660B, 0xBE6A2F, 0xF06808, 0xF37C0C, 0xE78D2D,
+            0xFA951A, 0xFBAB2D, 0xE9A557, 0xFCC045, 0xF5C57A, 0xFCD981, 0xFCE4AE, 0x2A1408, 0xFFFBEA,
+            // Le contour doux de l'œuf et de la larve, translucides (le renouveau).
+            0xB46D38,
         };
 
         /// L'éveil (bible v0.4, d'après da-3) : le turquoise des runes et du voile, la crème du
@@ -240,8 +242,21 @@ namespace IdlePond.Jeu.Scene
             HEROS_DESSINE.Append(CONTOUR)
                 .Concat(MARQUES.Values.SelectMany(m => m.Couleurs)).Concat(EVEIL).Distinct().ToList();
 
+        /// Les six tribus dessinées (`outils/da/especes.py`, d'après la maquette validée) : toutes
+        /// les couleurs de leurs poissons de troupe — corps, dos, ventre, accent, mais aussi
+        /// nageoires, reflets, taches, joues, l'œil et son éclat.
+        public static readonly IReadOnlyList<int> ESPECES_DESSINEES = new[]
+        {
+            0x121C1A, 0x2A1A40, 0x2E7D5B, 0x2F5A35, 0x2F7FE0, 0x3A2458, 0x3A4148, 0x3A4870, 0x40D0C0, 0x4A5A8A,
+            0x4B545C, 0x4FE0D0, 0x5A3A18, 0x5A3F7A, 0x5A8A48, 0x5DB07E, 0x69747C, 0x6E4A22, 0x6FA05A, 0x6FA83A,
+            0x7888B0, 0x7A5020, 0x7C8790, 0x7E60A8, 0x7FC8A0, 0x8A50E0, 0x9B7FC0, 0x9FF0FF, 0xA4AFB8, 0xA8783A,
+            0xA8B8D8, 0xA8D88A, 0xB8E86A, 0xB9F0CF, 0xC060F0, 0xC08A3E, 0xC4A8E8, 0xC8A040, 0xC9CFC9, 0xD4E0F4,
+            0xD8283A, 0xD9C8F0, 0xE2B470, 0xE8483A, 0xE8EEF8, 0xF0A0D0, 0xF0D9A0, 0xF4F1E4, 0xFF8AA0, 0xFF8FA0,
+            0xFFE070, 0xFFE4EA, 0xFFFFFF,
+        };
+
         public static IReadOnlyList<int> PaletteDesEspeces() =>
-            ESPECES_PAR_RANG.SelectMany(c => c.Couleurs()).Append(CONTOUR).Distinct().ToList();
+            ESPECES_DESSINEES.Concat(ESPECES_PAR_RANG.SelectMany(c => c.Couleurs())).Append(CONTOUR).Distinct().ToList();
 
         public static IReadOnlyList<int> PaletteDuDecor(string assise) => DecorDe(assise).Couleurs().Distinct().ToList();
     }

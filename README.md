@@ -15,9 +15,10 @@ qui s'adapte au portrait et au paysage.
 **La Noue et le Gour** (assises I et II, 18 paliers, 6 espèces) sont jouables de bout
 en bout dans Unity : creuser, convaincre, monter, grandir, améliorer, renaître, quitter,
 revenir et recevoir le crédit hors ligne. La scène est en **pixel art** (URP 2D,
-≈240 px de large, lumières 2D) : l'eau des paliers ouverts, la roche obscure de ceux
-qu'il reste à creuser, le héros et ses marques. Les sprites sont **provisoires**,
-générés par script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
+360 px de large, lumières 2D) : l'eau des paliers ouverts, la roche obscure de ceux
+qu'il reste à creuser, le héros et ses marques. Le héros et les six tribus sont
+dessinés (`outils/da/heros.py`, `outils/da/especes.py`) ; le décor est **provisoire**, généré par
+script ; le cahier des charges du vrai dessin est `docs/da/gabarits.md`.
 
 L'écran est pensé pour le **téléphone en portrait** : une barre fine (mana, Souffle,
 jauge), la mare au centre — on la touche, et le héros prend : le gain s'envole du

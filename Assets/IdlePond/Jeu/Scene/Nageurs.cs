@@ -21,6 +21,7 @@ namespace IdlePond.Jeu.Scene
             public Trajet Trajet;
             public string Espece;
             public int Largeur;
+            public int Hauteur;
             public int Bande;
             public int Numero;
             public int Effectif;
@@ -54,18 +55,18 @@ namespace IdlePond.Jeu.Scene
             foreach (var p in vue.Paliers)
             {
                 if (p.Espece == null) continue;
-                var longueur = Gabarits.LongueurDEspece(p.Espece.Rang);
-                var largeur = Gabarits.CadreDUnPoisson(longueur).Largeur;
+                var cadre = Gabarits.CadreDEspece(p.Espece.Rang);
+                var largeur = cadre.Largeur;
                 var images = catalogue.ImagesDeLEspece(p.Espece.Id);
                 var effectif = VueDeScene.EffectifDesPoissons(p.Espece.Niveau);
                 var accroche = p.Espece.Id == Tribus.LAMPROIE;
                 for (var numero = 0; numero < effectif; numero++)
                 {
-                    var trajet = accroche ? Nage.TrajetAccroche(p.Index, numero, longueur) : Nage.TrajetDe(p.Index, numero, longueur);
+                    var trajet = accroche ? Nage.TrajetAccroche(p.Index, numero, cadre) : Nage.TrajetDe(p.Index, numero, cadre);
                     var rendu = Briques.Poser(racine, p.Espece.Id, images != null && images.Length > 0 ? images[0] : null, trajet.X0, trajet.Y, OrdreDeRendu.NAGEURS);
                     tous.Add(new Nageur
                     {
-                        Rendu = rendu, Trajet = trajet, Espece = p.Espece.Id, Largeur = largeur, Bande = p.Index,
+                        Rendu = rendu, Trajet = trajet, Espece = p.Espece.Id, Largeur = largeur, Hauteur = cadre.Hauteur, Bande = p.Index,
                         Numero = numero, Effectif = effectif, Accroche = accroche, Images = images,
                     });
                 }
@@ -84,7 +85,7 @@ namespace IdlePond.Jeu.Scene
                 if (n.Espece != espece || n.Rendu == null) continue;
                 var p = n.Rendu.transform.localPosition;
                 var gauche = n.Rendu.flipX ? (int)p.x - n.Largeur : (int)p.x;
-                return new Pixel(gauche + n.Largeur / 2, (int)p.y + 3);
+                return new Pixel(gauche + n.Largeur / 2, (int)p.y + n.Hauteur / 2);
             }
             return null;
         }

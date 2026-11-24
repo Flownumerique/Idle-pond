@@ -68,8 +68,9 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      monte, le mirage du nouveau venu laissé par une ombre. Provisoire : fait de l'éclat teinté et
      des images d'espèce. **Écrit hors de l'éditeur** : la partie pure passe ses tests sous .NET,
      le dessin n'a pas encore été vu dans Unity — à lancer (`outils/unity.sh tests`, puis l'œil
-     sur l'atelier Espèces). **Reste à porter** : la finesse à 360 px, les nouveaux gabarits
-     (troupe ≈ 24 px, représentants ≈ 60 px), le représentant dans la fiche et à la conviction.
+     sur l'atelier Espèces). **Depuis le 2026-11-24, les poissons de troupe à 24 px**, dessinés
+     d'après la maquette validée (`outils/da/especes.py`), dans un cadre commun de 39 × 27.
+     **Reste** : le représentant (≈ 60 px), dans la fiche et à la conviction.
   3. ~~Les palettes de la Noue, du Gour et du héros~~ — **validées le 2026-11-23** (Codex v1.5,
      §2 ; `docs/da/gabarits.md`) et **dans le jeu à 240 px** : le héros en or, ses marques à la
      couleur du lieu, l'eau et le décor de chaque lieu, un calque d'ambiance par bande.
@@ -78,11 +79,15 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
     quatre stades, quatre éveils en calques (runes, voile, étoiles, aura) aux renaissances 1, 3,
     6 et 10, et **le renouveau** joué à chaque renaissance (l'œuf, la larve, l'alevin). Produit
     par `outils/da/heros.py`. Reste à trancher : les seuils d'éveil, le partage du corps entre
-    runes et marques, le dessin final avant ou avec le passage à 360 px.
-  - **Retenu le 2026-11-23 : une scène plus fine, à 360 px de large** au lieu de 240
-    (`Gabarits.LARGEUR_VISEE`), pour dessiner des poissons détaillés (≈ 24 px la troupe, ≈ 60 px
-    un représentant) dont la taille à l'écran reste réglable. Tout l'art provisoire se refait à
-    cette échelle ; à mesurer sur un vrai téléphone, repli sur 320 px.
+    runes et marques, le dessin final. Le héros est retiré à l'échelle de 360 px (2026-11-24).
+  - **La scène est à 360 px de large depuis le 2026-11-24** (`Gabarits.LARGEUR_VISEE`, retenu le
+    2026-11-23 au lieu de 240). Toutes les mesures ont suivi d'un facteur 1,5 (bande de 84 px,
+    décor, héros, nage) : la mise en page ne bouge pas à l'écran, le dessin a une fois et demie
+    plus de pixels. Le décor provisoire est régénéré à cette échelle ; le générateur encode
+    désormais ses PNG lui-même (`Editeur/Png.cs`), pour des octets identiques dans l'éditeur et
+    hors de lui. **Fait hors de l'éditeur** : les tests purs passent sous .NET, les assets sont
+    vérifiés par script ; à lancer dans Unity (tests EditMode et PlayMode, captures) et à mesurer
+    sur un vrai téléphone — repli sur 320 px s'il ne suit pas.
   4. **La faune d'ambiance** (ce qui vit dans la mare sans produire) et **une mare qui change
      à chaque renaissance** (chantier 6).
   Le constat qui a mené à la décision est gardé ci-dessous.
