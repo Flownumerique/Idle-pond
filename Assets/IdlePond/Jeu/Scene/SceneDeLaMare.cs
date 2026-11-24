@@ -27,6 +27,7 @@ namespace IdlePond.Jeu.Scene
         public HerosEnPixels Heros { get; private set; }
         public ComportementsDesTribus Tribus { get; private set; }
         public FauneDAmbiance FauneDAmbiance { get; private set; }
+        public RetoursVisuels RetoursVisuels { get; private set; }
 
         /// Ce que l'état dit des tribus (pétrifiés, agitées, nids), relu à chaque changement.
         public EtatDesTribus EtatDesTribus { get; private set; } = Scene.EtatDesTribus.CALME;
@@ -60,6 +61,7 @@ namespace IdlePond.Jeu.Scene
             Heros = new HerosEnPixels(transform, catalogue);
             Tribus = new ComportementsDesTribus(transform, catalogue);
             FauneDAmbiance = new FauneDAmbiance(transform, catalogue);
+            RetoursVisuels = new RetoursVisuels(transform, catalogue);
         }
 
         void OnEnable()
@@ -68,6 +70,9 @@ namespace IdlePond.Jeu.Scene
             partie.EtatChange += SurEtatChange;
             partie.EvenementsDeJeu += SurEvenements;
             vueAJour = false;
+            // La saison du calendrier de l'appareil (décision du 2026-11-18) : relue à chaque
+            // activation de la scène, par l'horloge du jeu ; rien de la partie n'en dépend.
+            if (FauneDAmbiance != null) FauneDAmbiance.Saison = Saisons.De(Horloge.MoisLocal(new HorlogeSysteme()));
         }
 
         void OnDisable()
@@ -90,6 +95,7 @@ namespace IdlePond.Jeu.Scene
             Nageurs?.Animer(horloge, premiereVisible, derniereVisible, EtatDesTribus, Reactions);
             Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
             FauneDAmbiance?.Animer(horloge, premiereVisible, derniereVisible, Reactions.EnCours);
+            RetoursVisuels?.Animer(horloge);
             Voile?.Animer(Time.deltaTime);
             Heros?.Animer(horloge);
         }
@@ -106,8 +112,11 @@ namespace IdlePond.Jeu.Scene
         /// Les tribus qui nagent dans cette vie : seules elles réagissent.
         readonly HashSet<string> presentes = new HashSet<string>();
 
-        void SurEvenements(IReadOnlyList<IdlePond.Jeu.EvenementDeJeu> evenements) =>
+        void SurEvenements(IReadOnlyList<IdlePond.Jeu.EvenementDeJeu> evenements)
+        {
             Reactions.Recevoir(evenements, Time.timeAsDouble, presentes);
+            RetoursVisuels?.Recevoir(evenements, Time.timeAsDouble, Vue != null ? Vue.Paliers.Count : 1, Nageurs != null ? Nageurs.CentreDuPremier : null);
+        }
 
         /// Pour les tests et les captures : une taille de cadre en pixels d'écran, à la place
         /// de celle de #scene.

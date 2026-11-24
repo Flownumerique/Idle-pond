@@ -103,7 +103,9 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
      son décor. Et **dans la bibliothèque** (« Ce qui vit autour ») : la faune des lieux atteints,
      en silhouette tant qu'on ne l'a pas vue — les jardins à la première renaissance, la
      procession à la première tribu ralliée —, puis son nom et ce qu'on en sait. Pas encore vu
-     dans Unity. **Reste** : le reste d'**une mare qui change à chaque renaissance** (chantier 6).
+     dans Unity. **Et une mare qui change à chaque renaissance** (2026-11-24) : une libellule de
+     plus à la 3ᵉ et à la 6ᵉ, une seconde hydre à la 4ᵉ (« coupée en deux, elle repousse »), des
+     étincelles de Sève qui montent du fond, deux de plus par renaissance.
   Le constat qui a mené à la décision est gardé ci-dessous.
 - **L'esprit : fantaisie, couleur, diversité — le constat du 2026-11-22.**
   Constat de l'auteur (2026-11-22) : le jeu a perdu l'esprit fantaisiste, les couleurs et la
@@ -288,9 +290,9 @@ Hors économie et hors contenu des lieux. Elles peuvent avancer en parallèle de
 | **Le récit dans l'état** (BACKEND lot 3) | Les chapitres, le relais qui ouvre `Dialogue`, la pierre trouvée, l'esprit venu ; le journal qui raconte, séparé de la bibliothèque qui inventorie | — |
 | **La bibliothèque / le bestiaire** | **Fait le 2026-11-24** pour les six tribus (silhouette puis fiche, représentant, texte) et le détail des succès. Reste : la faune d'ambiance rencontrée, les textes des égarés, le second bestiaire (ce qu'il libère, GDD §6.8) | Le récit dans l'état ; la faune d'ambiance |
 | **La fin** (BACKEND lot 5, D3 et D6) | La pierre : offrandes de mana jusqu'à la contenance, qui font avancer les actes VII à IX ; décider l'après-acte IX | Le lieu VI |
-| **Les saisons cosmétiques** (décidé 2026-11-18) | Frai, gel, crue changent l'aspect de la mare, sans rien à gagner ni à rater | Le chantier 0 |
-| **Une mare qui change à chaque renaissance** | Des changements visuels permanents et cumulés (végétation, lumière, particules), lus sur le nombre de renaissances | Le chantier 0 |
-| **Les retours visuels et le son** | Brancher le flux `Partie.EvenementsDeJeu` : chiffres qui jaillissent, roche qui cède, éclat d'un seuil, eau troublée plus visible ; puis l'audio (une ambiance par lieu, cinq ou six effets) | — |
+| **Les saisons cosmétiques** (décidé 2026-11-18) | **Fait le 2026-11-24** (`Saisons.cs`) : selon le mois de l'appareil, le frai au printemps (grappes d'œufs au pied des herbes), la crue à l'automne (feuilles mortes que le courant emporte), le gel l'hiver (glace sur la surface, ni libellules ni grenouilles) ; rien à gagner ni à rater | — |
+| **Une mare qui change à chaque renaissance** | **Fait le 2026-11-24** pour la faune et les particules (jardins de la Sève, libellules, hydres, étincelles de Sève). Reste, si on le veut : la lumière, la végétation du Gour | Le chantier 0 |
+| **Les retours visuels et le son** | **Retours visuels faits le 2026-11-24** (`Gerbes.cs`, `RetoursVisuels.cs`) : la roche qui cède au creusement, la couronne d'or d'un seuil, l'éclair d'une tribu ralliée, la vase qui monte quand l'eau se trouble ; les chiffres du toucher s'envolaient déjà. **Reste le son** : aucun fichier audio dans le dépôt (une ambiance par lieu, cinq ou six effets) | — |
 | **Le confort d'application** (BACKEND lot 6) | Export et import de la save, copie tournante, notifications locales qui ne punissent pas l'absence, rapport de retour détaillé | — |
 | **La monétisation** | Modèle à choisir (premium, cosmétique F2P, épisodique) ; jamais de puissance ; une seule exception décidée le 2026-11-19, la pub contre avance rapide, plafonnée et obtenable sans pub — à redéfinir avec la règle d'absence. Le GDD §17 n'est pas encore amendé | La durée totale (chantier 2), une vraie partie (chantier 1) |
 

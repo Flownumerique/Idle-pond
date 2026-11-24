@@ -31,6 +31,10 @@ COULEURS = {
     # la fleur des jardins de la Sève
     # la méduse d'eau douce, cloche de lumière du Gour
     "m": "#E8F4FF", "M": "#C8E8FF",
+    # les saisons (décidé le 2026-11-18) : la glace du gel, les œufs du frai, la feuille de la crue
+    "i": "#E6F8FF", "I": "#BFEAFF", "n": "#8FD8FF",
+    "u": "#FFF0C0", "U": "#F6C840",
+    "l": "#E07040", "L": "#F6C840", "d": "#8A4A20",
     "f": "#F4A8C8", "F": "#FFD0E4", "c": "#FFE070", "s": "#3FA060", "S": "#5CC070",
 }
 
@@ -190,6 +194,39 @@ DESSINS = {
             ".M.M.M.",
             "M...M..",
             ".M...M.",
+        ],
+    ],
+    # Le gel : une tuile de glace sur la surface (48 px, elle se répète), avec ses fêlures.
+    "glace": [
+        [
+            "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+            "iIiiiiiiIiiiinniiiiiiiIiiiiiiiiiiiIiiiiiiiniiiii",
+            "IIIIInIIIIIIIIIIIIIIIIIIIIInIIIIIIIIIIIIIIIIIIII",
+            "I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.I.",
+        ],
+    ],
+    # Le frai : une grappe d'œufs accrochée au pied des herbes.
+    "oeufs": [
+        [
+            ".uuu...",
+            "uUuuu..",
+            "uuuUuu.",
+            ".uuuuUu",
+            "..uUuu.",
+        ],
+    ],
+    # La crue : une feuille morte qui dérive, en tournant.
+    "feuille": [
+        [
+            ".lll..",
+            "lLlLld",
+            ".lll..",
+        ],
+        [
+            "..l...",
+            ".lLl..",
+            ".lLl..",
+            "..ld..",
         ],
     ],
     # Les jardins de la Sève, à chaque renaissance : le bourgeon, la fleur, la grande fleur.

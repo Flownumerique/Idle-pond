@@ -20,6 +20,8 @@ namespace IdlePond.Jeu.Scene
         /// Les jardins de la Sève et la procession des écrevisses, au fond des bandes.
         public const int JARDINS = 23;
         public const int PROCESSION = 24;
+        /// La glace du gel, sur la surface : devant la berge, derrière ce qui y patine.
+        public const int GLACE = 26;
         /// Le mirage qu'une ombre laisse du nouveau venu : juste derrière les nageurs.
         public const int MIRAGES = 29;
         public const int NAGEURS = 30;

@@ -168,6 +168,16 @@ MonoBehaviour:
   - Nom: meduse
     Images:
     - {fileID: 21300000, guid: ec622d17365a48b6b21d194078a9e907, type: 3}
+  - Nom: glace
+    Images:
+    - {fileID: 21300000, guid: 3aa1d566c78d431b9e1bd370a12feede, type: 3}
+  - Nom: oeufs
+    Images:
+    - {fileID: 21300000, guid: 7ee23ecfade048d4bdce2da1d5e6d8e2, type: 3}
+  - Nom: feuille
+    Images:
+    - {fileID: 21300000, guid: b4d5147c7f9644e8b747a4ce115b8eb4, type: 3}
+    - {fileID: 21300000, guid: df12ee0b089a4cf3b7378c3efe162f08, type: 3}
   - Nom: fleur
     Images:
     - {fileID: 21300000, guid: 5b6fa00d9cc3460aa398cb80d4589fab, type: 3}

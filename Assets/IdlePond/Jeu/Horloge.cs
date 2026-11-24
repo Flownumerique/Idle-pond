@@ -73,5 +73,10 @@ namespace IdlePond.Jeu
         /// qui ait le droit d'être impur. Les 32 bits bas, non signés, comme `>>> 0`.
         /// </summary>
         public static long GrainePourNouvellePartie(IHorloge horloge) => horloge.MaintenantMs() & 0xFFFFFFFF;
+
+        /// Le mois du calendrier de l'appareil, 1 à 12, à l'heure locale : les saisons
+        /// cosmétiques (décision du 2026-11-18) s'y lisent. Rien de la partie n'en dépend.
+        public static int MoisLocal(IHorloge horloge) =>
+            DateTimeOffset.FromUnixTimeMilliseconds(horloge.MaintenantMs()).ToLocalTime().Month;
     }
 }

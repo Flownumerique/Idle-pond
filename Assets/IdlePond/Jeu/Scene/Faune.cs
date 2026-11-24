@@ -30,6 +30,10 @@ namespace IdlePond.Jeu.Scene
         /// La méduse d'eau douce n'a qu'un portrait (la bibliothèque) : dans la mare, elle est
         /// dessinée dans le décor du Gour.
         public const string MEDUSE = "meduse";
+        /// Les saisons (`Saisons`) : la glace du gel, les œufs du frai, la feuille de la crue.
+        public const string GLACE = "glace";
+        public const string OEUFS = "oeufs";
+        public const string FEUILLE = "feuille";
 
         /// Les dessins (`outils/da/faune.py`) : le cadre commun de chaque bête et son nombre
         /// d'images.
@@ -43,10 +47,44 @@ namespace IdlePond.Jeu.Scene
                 [ECREVISSE_BANNIERE] = (new Cadre(14, 11), 2),
                 [HYDRE] = (new Cadre(7, 12), 2),
                 [MEDUSE] = (new Cadre(7, 7), 1),
+                [GLACE] = (new Cadre(48, 4), 1),
+                [OEUFS] = (new Cadre(7, 5), 1),
+                [FEUILLE] = (new Cadre(6, 4), 2),
                 [FLEUR] = (new Cadre(7, 9), 3),
             };
 
         public const int LIBELLULES = 2;
+
+        /* ─── Une mare qui change à chaque renaissance (chantier 6 ; Codex, acte III :
+         *     « une faune permanente un peu plus étrange qu'avant ») ───────────────── */
+
+        /// Deux libellules, une de plus à la 3ᵉ et à la 6ᵉ renaissance.
+        public static int Libellules(int renaissances) => LIBELLULES + Math.Min(2, Math.Max(0, renaissances) / 3);
+
+        /// L'hydre repousse coupée en deux : à la 4ᵉ renaissance, elles sont deux.
+        public static int Hydres(int renaissances) => renaissances >= 4 ? 2 : 1;
+
+        /// Les étincelles de Sève, qui montent du fond des bandes de la Noue : deux de plus par
+        /// renaissance, douze au plus par bande. Aucune avant la première.
+        public static int Etincelles(int renaissances) => Math.Min(12, 2 * Math.Max(0, renaissances));
+
+        public const double MONTEE_D_UNE_ETINCELLE = 9.0;
+
+        /// Une étincelle de Sève à cet instant : elle monte du fond au haut de sa bande en neuf
+        /// secondes, en ondulant, et ne brille qu'une partie du chemin. Null quand elle est
+        /// éteinte. Un point de deux pixels.
+        public static Pixel Etincelle(int bande, int numero, double secondes)
+        {
+            var h = (uint)(bande * 7919 + numero * 104729 + 13);
+            h ^= h >> 15; h *= 0x2c1b3c6dU; h ^= h >> 12;
+            var phase = (h % 1000u) / 1000.0 * MONTEE_D_UNE_ETINCELLE;
+            var t = Modulo(secondes + phase, MONTEE_D_UNE_ETINCELLE) / MONTEE_D_UNE_ETINCELLE;
+            if (t > 0.8) return null;
+            var x0 = 10 + (int)((h >> 10) % (uint)(Gabarits.LARGEUR_VISEE - 20));
+            var x = x0 + (int)Math.Round(5 * Math.Sin(secondes * 1.1 + numero));
+            var bas = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 6;
+            return new Pixel(x, bas + (int)Math.Round(t * (Gabarits.HAUTEUR_DE_BANDE - 12)));
+        }
         public const int GERRIS_A_LA_SURFACE = 3;
         public const int ECREVISSES = 4;
 
@@ -62,10 +100,11 @@ namespace IdlePond.Jeu.Scene
         {
             var cadre = DESSINS[LIBELLULE].Cadre;
             var phase = numero * 2.1;
-            var centre = 80 + numero * 180;
-            var x = centre + (int)Math.Round(70 * Math.Sin(secondes * 0.45 + phase));
+            // Quatre au plus, réparties sur la largeur : les deux premières aux deux côtés.
+            var centre = new[] { 80, 260, 170, 330 }[numero % 4];
+            var x = centre + (int)Math.Round(60 * Math.Sin(secondes * 0.45 + phase));
             var versLaDroite = Math.Cos(secondes * 0.45 + phase) >= 0;
-            var y = -18 - numero * 7 + (int)Math.Round(4 * Math.Sin(secondes * 1.7 + phase));
+            var y = -18 - (numero % 2) * 7 + (int)Math.Round(4 * Math.Sin(secondes * 1.7 + phase));
             x = Math.Max(0, Math.Min(Gabarits.LARGEUR_VISEE - cadre.Largeur, x));
             var allumee = Modulo(secondes + numero * 3.3, PERIODE_DE_LA_LANTERNE) < ECLAT_DE_LA_LANTERNE;
             var image = allumee ? IMAGE_ALLUMEE : (int)Math.Floor(secondes * 12) % 2;
@@ -143,8 +182,9 @@ namespace IdlePond.Jeu.Scene
         public const int X_DE_L_HYDRE = 132;
 
         /// Accrochée sous la surface, ses bras pendent et ondulent.
-        public static PoseDeFaune Hydre(double secondes) =>
-            new PoseDeFaune(HYDRE, (int)Math.Floor(secondes / 1.5) % 2, X_DE_L_HYDRE, -3 - DESSINS[HYDRE].Cadre.Hauteur);
+        public static PoseDeFaune Hydre(double secondes, int numero = 0) =>
+            new PoseDeFaune(HYDRE, (int)Math.Floor(secondes / 1.5 + numero * 0.5) % 2, X_DE_L_HYDRE + numero * 151,
+                -3 - DESSINS[HYDRE].Cadre.Hauteur);
 
         /* ─── Les jardins de la Sève ───────────────────────────────────────────── */
 

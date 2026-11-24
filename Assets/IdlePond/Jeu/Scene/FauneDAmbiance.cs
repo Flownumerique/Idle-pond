@@ -18,6 +18,8 @@ namespace IdlePond.Jeu.Scene
     {
         /// La rune d'un gerris : un point pâle sur l'eau.
         static readonly Color RUNE = Briques.Couleur(0xFFF0C0);
+        /// Les étincelles de Sève : le pollen d'or et le vert tendre de la Noue (bible v0.3).
+        static readonly Color[] SEVE = { Briques.Couleur(0xDFFFA0), Briques.Couleur(0xFFE070) };
 
         readonly Transform racine;
         readonly CatalogueDArt catalogue;
@@ -29,6 +31,11 @@ namespace IdlePond.Jeu.Scene
         bool surfaceDeLaNoue;
         readonly List<int> bandesDeLaNoue = new List<int>();
         int renaissances;
+        int bandesOuvertes;
+        SpriteRenderer glace;
+
+        /// La saison du calendrier de l'appareil (décision du 2026-11-18), posée par la scène.
+        public Saison Saison { get; set; } = Saison.Aucune;
 
         public FauneDAmbiance(Transform parent, CatalogueDArt catalogue)
         {
@@ -43,6 +50,7 @@ namespace IdlePond.Jeu.Scene
             surfaceDeLaNoue = false;
             if (vue == null) return;
             renaissances = vue.Heros != null ? vue.Heros.Renaissances : 0;
+            bandesOuvertes = vue.Paliers.Count;
             foreach (var p in vue.Paliers)
             {
                 // Les jardins de la Sève ne poussent que dans la Noue.
@@ -56,11 +64,16 @@ namespace IdlePond.Jeu.Scene
         public void Animer(double secondes, int premiere, int derniere, IReadOnlyList<Reaction> reactions)
         {
             utilisees = 0;
+            var belleSaison = Saisons.BetesDeLaBelleSaison(Saison);
+            PoserLaGlace(surfaceDeLaNoue && Saison == Saison.Gel);
             if (catalogue != null)
             {
                 if (surfaceDeLaNoue && premiere <= 0)
                 {
-                    for (var n = 0; n < Faune.LIBELLULES; n++) Poser(Faune.Libellule(n, secondes), OrdreDeRendu.SURFACE);
+                    // La mare qui change : une libellule de plus à la 3ᵉ et à la 6ᵉ renaissance.
+                    // L'hiver, ni libellules ni grenouilles : elles reviennent au printemps.
+                    if (belleSaison)
+                        for (var n = 0; n < Faune.Libellules(renaissances); n++) Poser(Faune.Libellule(n, secondes), OrdreDeRendu.SURFACE);
                     for (var n = 0; n < Faune.GERRIS_A_LA_SURFACE; n++)
                     {
                         Poser(Faune.Gerris(n, secondes), OrdreDeRendu.SURFACE);
@@ -72,15 +85,35 @@ namespace IdlePond.Jeu.Scene
                             piece.color = RUNE;
                         }
                     }
-                    for (var n = 0; n < Faune.Grenouilles(renaissances); n++)
-                        Poser(Faune.Grenouille(n, secondes, renaissances), OrdreDeRendu.SURFACE);
-                    Poser(Faune.Hydre(secondes), OrdreDeRendu.HYDRE);
+                    if (belleSaison)
+                        for (var n = 0; n < Faune.Grenouilles(renaissances); n++)
+                            Poser(Faune.Grenouille(n, secondes, renaissances), OrdreDeRendu.SURFACE);
+                    for (var n = 0; n < Faune.Hydres(renaissances); n++) Poser(Faune.Hydre(secondes, n), OrdreDeRendu.HYDRE);
                 }
                 foreach (var bande in bandesDeLaNoue)
                 {
                     if (bande < premiere || bande > derniere) continue;
                     foreach (var fleur in Faune.Jardin(bande, renaissances)) Poser(fleur, OrdreDeRendu.JARDINS);
+                    if (Saison == Saison.Frai) foreach (var grappe in Saisons.Frai(bande)) Poser(grappe, OrdreDeRendu.JARDINS);
+                    // Les étincelles de Sève, de plus en plus nombreuses à chaque renaissance.
+                    if (catalogue.Eclat != null)
+                        for (var n = 0; n < Faune.Etincelles(renaissances); n++)
+                        {
+                            var e = Faune.Etincelle(bande, n, secondes);
+                            if (e == null) continue;
+                            var piece = Piece(catalogue.Eclat, OrdreDeRendu.JARDINS);
+                            piece.transform.localPosition = new Vector3(e.X, e.Y, 0f);
+                            piece.color = SEVE[n % SEVE.Length];
+                        }
                 }
+                // La crue : des feuilles mortes que le courant emporte.
+                if (Saison == Saison.Crue)
+                    for (var n = 0; n < Saisons.FEUILLES; n++)
+                    {
+                        var f = Saisons.Feuille(n, secondes, bandesOuvertes);
+                        var bande = (int)System.Math.Floor(-(f.Y + 1) / (double)Gabarits.HAUTEUR_DE_BANDE);
+                        if (bande >= premiere && bande <= derniere) Poser(f, OrdreDeRendu.SURFACE);
+                    }
                 if (reactions != null)
                     foreach (var r in reactions)
                     {
@@ -92,6 +125,20 @@ namespace IdlePond.Jeu.Scene
             }
             for (var i = utilisees; i < pieces.Count; i++)
                 if (pieces[i] != null && pieces[i].gameObject.activeSelf) pieces[i].gameObject.SetActive(false);
+        }
+
+        /// La glace du gel : pavée sur toute la largeur du décor, au ras de la surface.
+        void PoserLaGlace(bool visible)
+        {
+            if (glace == null)
+            {
+                if (!visible || catalogue == null) return;
+                var images = catalogue.ImagesDeLaFaune(Faune.GLACE);
+                if (images == null || images.Length == 0 || images[0] == null) return;
+                glace = Briques.Paver(racine, "Glace", images[0], Gabarits.GAUCHE_DU_DECOR, Saisons.YDeLaGlace,
+                    Gabarits.LARGEUR_DU_DECOR, Faune.DESSINS[Faune.GLACE].Cadre.Hauteur, OrdreDeRendu.GLACE);
+            }
+            if (glace.enabled != visible) glace.enabled = visible;
         }
 
         void Poser(PoseDeFaune pose, int ordre)
