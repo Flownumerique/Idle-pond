@@ -17,7 +17,9 @@ namespace IdlePond.Tests
     public class VueDeSceneTests
     {
         [TestCase(1, 6, new[] { 1, 2, 3, 4, 5 })]
-        [TestCase(3, 62, new[] { 3, 4, 5 })]
+        [TestCase(3, 62, new[] { 3, 4, 5, 6 })]
+        [TestCase(7, 18, new[] { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 })]
+        [TestCase(7, 62, new[] { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 })]
         [TestCase(6, 6, new int[0])]
         [TestCase(6, 62, new[] { 6 })]
         public void La_roche_va_jusqu_au_bas_de_l_assise_en_cours(int ouverts, int limite, int[] attendus)
@@ -30,10 +32,12 @@ namespace IdlePond.Tests
         {
             var e = Reducteur.EtatInitial(1, Assises.PALIERS_LIVRES);
             var vue = VueDeScene.Depuis(e);
-            // Jusqu'au bas de l'assise où l'on creuse : la Noue, pas le Gour en dessous.
+            // Jusqu'au bas de l'assise où l'on creuse, puis le premier palier du Gour dessous —
+            // le lieu qu'on voit venir (2026-11-25), dans sa roche à lui.
             var finDeLaNoue = Assises.Toutes[0].NombreDePaliers;
-            Assert.That(vue.Roches.Select(r => r.Index), Is.EqualTo(Enumerable.Range(e.Cycle.PaliersOuverts, finDeLaNoue - e.Cycle.PaliersOuverts)));
-            Assert.That(vue.Roches.All(r => r.Assise == Assises.Toutes[0].Id), Is.True);
+            Assert.That(vue.Roches.Select(r => r.Index), Is.EqualTo(Enumerable.Range(e.Cycle.PaliersOuverts, finDeLaNoue + 1 - e.Cycle.PaliersOuverts)));
+            Assert.That(vue.Roches.Take(vue.Roches.Count - 1).All(r => r.Assise == Assises.Toutes[0].Id), Is.True);
+            Assert.That(vue.Roches.Last().Assise, Is.EqualTo(Assises.Toutes[1].Id));
             var creuse = e with { Cycle = e.Cycle with { PaliersOuverts = e.Cycle.PaliersOuverts + 1 } };
             Assert.That(VueDeScene.Depuis(creuse).Clef, Is.Not.EqualTo(vue.Clef));
         }

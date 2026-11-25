@@ -75,6 +75,8 @@ namespace IdlePond.Editeur
                 Rayons = S(Chemins.Rayons(a)),
                 // Ce qui flotte dans chaque bande : seulement là où il y a quelque chose.
                 Ambiance = RegistreDArt.DecorDe(a).AUneAmbiance ? S(Chemins.Ambiance(a)) : null,
+                // La lèvre de la vasque : pour un lieu qu'on atteint en perçant (2026-11-25).
+                Seuil = a != RegistreDArt.ASSISES_DESSINEES[0] ? S(Chemins.Seuil(a)) : null,
             }).ToArray();
             catalogue.Voile = S(Chemins.VOILE);
             catalogue.Eclat = S(Chemins.ECLAT);

@@ -66,6 +66,8 @@ namespace IdlePond.Editeur
                 sortie[Chemins.Rayons(assise)] = DessinerRayons(decor).EnPng();
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
                 if (decor.AUneAmbiance) sortie[Chemins.Ambiance(assise)] = DessinerAmbiance(decor).EnPng();
+                // Le seuil : seulement pour un lieu qu'on atteint en perçant, pas pour la surface.
+                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor).EnPng();
             }
             sortie[Chemins.VOILE] = DessinerVoile().EnPng();
             sortie[Chemins.ECLAT] = DessinerEclat().EnPng();
@@ -359,6 +361,48 @@ namespace IdlePond.Editeur
                         if (i < 4) toile.Poser(cx + 2 - (i % 2), cy - i, d.Meduses[1]);
                     }
                 }
+            return toile;
+        }
+
+        /// <summary>
+        /// Le seuil d'un lieu (2026-11-25) : la lèvre de roche de sa vasque, en haut de son
+        /// premier palier, sur toute la largeur du décor — irrégulière, éclairée sur le dessus,
+        /// de la mousse qui pend dessous — et la brèche où l'eau du lieu d'au-dessus déborde en
+        /// cascade (les gouttes, elles, sont animées par la scène).
+        /// </summary>
+        static Toile DessinerSeuil(DecorDArt d)
+        {
+            var toile = new Toile(Gabarits.LARGEUR_DU_DECOR, Lieux.HAUTEUR_DU_SEUIL);
+            var breche = Lieux.XDeLaBreche - Gabarits.GAUCHE_DU_DECOR;
+            var haut = toile.Hauteur - 1;
+            var hasard = Hasard(19);
+            var epaisseurs = new int[toile.Largeur];
+            for (var x = 0; x < toile.Largeur; x++)
+                epaisseurs[x] = 5 + (int)Math.Round(2 * Math.Sin(x * 0.11) + 1.5 * Math.Sin(x * 0.037 + 1.3));
+            for (var x = 0; x < toile.Largeur; x++)
+            {
+                var dansLaBreche = Math.Abs(x - breche) <= 5;
+                if (dansLaBreche)
+                {
+                    // La nappe d'eau qui déborde : écume au bord, eau claire dedans, tramée.
+                    for (var y = haut; y >= haut - 7; y--)
+                        if (Math.Abs(x - breche) <= 3 && Toile.Seuil(x, y) < 0.75)
+                            toile.Poser(x, y, Math.Abs(x - breche) == 3 || y == haut ? (d.Ecume.Count > 0 ? d.Ecume[0] : d.Rayon) : d.Eau[0]);
+                    continue;
+                }
+                // La lèvre s'amincit à l'approche de la brèche.
+                var e = Math.Max(2, Math.Min(epaisseurs[x], Math.Abs(x - breche) - 3));
+                for (var i = 0; i < e; i++)
+                {
+                    var y = haut - i;
+                    var couleur = i == 0 ? d.Roche[2] : (Toile.Seuil(x, y) < 0.3 ? d.Roche[1] : d.Roche[0]);
+                    if (i == e - 1) couleur = d.Roche[3];
+                    toile.Poser(x, y, couleur);
+                }
+                // La mousse qui pend sous la lèvre, par touffes.
+                if (d.Mousse.HasValue && hasard() < 0.12)
+                    for (var i = 0; i < 1 + (int)(hasard() * 3); i++) toile.Poser(x, haut - e - i, d.Mousse.Value);
+            }
             return toile;
         }
 

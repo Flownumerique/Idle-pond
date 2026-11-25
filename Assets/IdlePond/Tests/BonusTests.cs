@@ -37,7 +37,12 @@ namespace IdlePond.Tests
                 Cycle = etat.Cycle with { ManaCourant = Decimal.Parse("1e15") },
                 Permanent = etat.Permanent with { ContenanceMana = Decimal.Parse("1e18") },
             };
-            while (etat.Cycle.PaliersOuverts < paliers) etat = Reducteur.Creuser(etat);
+            while (etat.Cycle.PaliersOuverts < paliers)
+            {
+                // La percée (2026-11-25) : on rallie le peuple du lieu avant de percer.
+                foreach (var tribu in Economie.TribusARallierPourPercer(etat)) etat = Reducteur.Debloquer(etat, tribu.Id);
+                etat = Reducteur.Creuser(etat);
+            }
             return etat;
         }
 

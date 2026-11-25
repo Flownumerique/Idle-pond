@@ -119,8 +119,17 @@ namespace IdlePond.Jeu
         /// qui a agi. Pour l'habillage et le son ; aucune règle n'en dépend.
         public event Action<IReadOnlyList<EvenementDeJeu>> EvenementsDeJeu;
 
+        /// Une annonce d'arrivée dans un lieu (2026-11-25) se reconnaît à ce préfixe ; le reste
+        /// est l'identifiant du lieu. Les annonces de succès, elles, portent leur identifiant.
+        public const string ANNONCE_DE_LIEU = "lieu:";
+
         void Signaler(EtatJeu avant, EtatJeu apres, bool automatique = false)
         {
+            // La percée vers un nouveau lieu s'annonce, comme un succès : une ligne qui
+            // apparaît et s'efface (2026-11-25). Pas à la renaissance : la vie repart d'en haut.
+            if (avant != null && apres != null && apres.Permanent.NombreDeRenaissances == avant.Permanent.NombreDeRenaissances)
+                for (var palier = avant.Cycle.PaliersOuverts; palier < apres.Cycle.PaliersOuverts; palier++)
+                    if (Economie.EstUnePercee(palier)) aAnnoncer.Add(ANNONCE_DE_LIEU + Assises.DuPalier(palier).Id);
             if (EvenementsDeJeu == null) return;
             var evenements = Evenements.Entre(avant, apres, automatique);
             if (evenements.Count > 0) EvenementsDeJeu.Invoke(evenements);

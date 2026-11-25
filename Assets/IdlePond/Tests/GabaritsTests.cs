@@ -324,6 +324,12 @@ namespace IdlePond.Tests
                     LirePng(Art(Chemins.Ambiance(assise)), out l, out h);
                     Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE)), "l'ambiance pave comme la berge");
                 }
+                // La lèvre de la vasque : pour un lieu qu'on atteint en perçant (2026-11-25).
+                if (assise != RegistreDArt.ASSISES_DESSINEES[0])
+                {
+                    LirePng(Art(Chemins.Seuil(assise)), out l, out h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DU_DECOR, Lieux.HAUTEUR_DU_SEUIL)), "le seuil couvre le décor");
+                }
             }
         }
 
@@ -383,6 +389,7 @@ namespace IdlePond.Tests
                 Assert.That(catalogue.DecorDe(assise).Roche, Is.Not.Null);
                 Assert.That(catalogue.DecorDe(assise).Rayons, Is.Not.Null);
                 if (RegistreDArt.DecorDe(assise).AUneAmbiance) Assert.That(catalogue.DecorDe(assise).Ambiance, Is.Not.Null, assise);
+                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) Assert.That(catalogue.DecorDe(assise).Seuil, Is.Not.Null, assise + " : son seuil");
             }
             foreach (var bete in Faune.DESSINS)
                 Assert.That(catalogue.ImagesDeLaFaune(bete.Key), Has.Length.EqualTo(bete.Value.Images).And.All.Not.Null, bete.Key);

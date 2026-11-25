@@ -150,6 +150,18 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   attendant, un **prototype WebGL** se joue dans le navigateur du téléphone
   (`outils/unity.sh build webgl`, voir le README) ; l'APK sort de `outils/unity.sh build android`
   dès que le module est ajouté.
+- **Le passage d'un lieu à l'autre** (décidé par l'auteur le 2026-11-25) :
+  - **La percée** : on ne perce vers un nouveau lieu qu'après avoir rallié toutes les tribus du lieu
+    actuel dans la vie (`Economie.TribusARallierPourPercer`) ; pas de prix en plus. Le bouton dit
+    « Rallie d'abord la loche », puis « Percer vers le Gour ». Une percée fermée n'est pas un
+    blocage et ne se met pas en file. Parité régénérée, durées inchangées (`RESULTATS.md`, journal).
+  - **La jonction** : la lèvre de roche de la vasque en haut du premier palier d'un lieu
+    (`Fonds/{lieu}/seuil.png`), avec la brèche où l'eau du lieu d'au-dessus déborde en cascade.
+  - **Voir venir** : sous la roche du lieu actuel, celle du premier palier du lieu suivant, où sa
+    magie suinte en lueurs de sa couleur.
+  - **Le moment** : la percée jaillit par la brèche (une grande gerbe d'eau) et s'annonce d'une
+    ligne : « Le Gour. L'eau file, ici : le Courant porte, pousse, et se souvient du chemin. »
+  Pas encore vu dans Unity.
 
 ---
 

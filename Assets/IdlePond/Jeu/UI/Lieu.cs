@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using IdlePond.Noyau;
 using IdlePond.Noyau.Donnees;
 using UnityEngine.UIElements;
@@ -61,7 +62,18 @@ namespace IdlePond.Jeu.UI
             // le creux d'avance. Le réducteur tranche, l'écran ne recopie pas sa règle.
             bouton.Regler(!ReferenceEquals(Reducteur.DemanderUnCreux(etat), etat));
             var demandes = etat.Cycle.CreuxDemandes;
-            Elements.Poser(bouton.Libelle, demandes > 0 ? Format.Remplir(E.CREUSER_EN_ATTENTE, demandes) : E.CREUSER);
+            // La percée (2026-11-25) : le bouton dit vers quel lieu on perce, ou quelles tribus
+            // il faut encore rallier pour qu'elles suivent.
+            var cible = etat.Cycle.PaliersOuverts;
+            var manquent = Economie.TribusARallierPourPercer(etat);
+            string libelle;
+            if (manquent.Count > 0)
+                libelle = Format.Remplir(E.RALLIER_POUR_PERCER, string.Join(E.ET, manquent.Select(e => Format.NomDeLEspece(e.Id))));
+            else if (Economie.EstUnePercee(cible))
+                libelle = Format.Remplir(E.PERCER_VERS, Format.NomDeLAssise(Assises.DuPalier(cible).Id));
+            else
+                libelle = demandes > 0 ? Format.Remplir(E.CREUSER_EN_ATTENTE, demandes) : E.CREUSER;
+            Elements.Poser(bouton.Libelle, libelle);
         }
     }
 }

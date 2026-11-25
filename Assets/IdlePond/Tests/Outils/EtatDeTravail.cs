@@ -35,7 +35,14 @@ namespace IdlePond.Tests.Outils
                     ProfondeurMaxAtteinte = 9,
                 },
             };
-            for (var i = 0; i < 6; i++) etat = Reducteur.Creuser(etat);
+            for (var i = 0; i < 6; i++)
+            {
+                // La percée (2026-11-25) : on ne perce vers le Gour qu'avec tout le peuple de
+                // la Noue. Le ralliement se fait là, à niveau 1 ; les niveaux viennent après,
+                // comme avant — l'état final ne change pas.
+                foreach (var tribu in Economie.TribusARallierPourPercer(etat)) etat = Reducteur.Debloquer(etat, tribu.Id);
+                etat = Reducteur.Creuser(etat);
+            }
             var ouvertes = Especes.Toutes.Where(e => e.Palier < etat.Cycle.PaliersOuverts).ToList();
             for (var index = 0; index < ouvertes.Count; index++)
             {

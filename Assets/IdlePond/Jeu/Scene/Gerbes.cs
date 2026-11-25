@@ -15,6 +15,9 @@ namespace IdlePond.Jeu.Scene
         Ralliement,
         /// L'eau se trouble : de la vase monte du fond.
         Trouble,
+        /// La percée vers un nouveau lieu (2026-11-25) : l'eau d'au-dessus s'engouffre par la
+        /// brèche, avec les éclats de la lèvre de roche.
+        Percee,
     }
 
     /// `Origine` : d'où elle jaillit, en pixels de la scène ; `Debut` : l'instant de la scène.
@@ -36,6 +39,7 @@ namespace IdlePond.Jeu.Scene
             GenreDeGerbe.RocheQuiCede => 0.9,
             GenreDeGerbe.Seuil => 0.8,
             GenreDeGerbe.Ralliement => 1.0,
+            GenreDeGerbe.Percee => 2.2,
             _ => 1.6,
         };
 
@@ -44,6 +48,7 @@ namespace IdlePond.Jeu.Scene
             GenreDeGerbe.RocheQuiCede => 16,
             GenreDeGerbe.Seuil => 12,
             GenreDeGerbe.Ralliement => 14,
+            GenreDeGerbe.Percee => 40,
             _ => 18,
         };
 
@@ -54,6 +59,7 @@ namespace IdlePond.Jeu.Scene
             GenreDeGerbe.RocheQuiCede => RegistreDArt.DecorDe("noue").Roche,
             GenreDeGerbe.Seuil => new[] { 0xFFE070, 0xFFFBEA },
             GenreDeGerbe.Ralliement => new[] { 0xD8FFF0, 0xFFE070, 0x7FE6E8 },
+            GenreDeGerbe.Percee => new[] { 0xE6F8FF, 0xBFEAFF, 0xD8FFF0, RegistreDArt.DecorDe("noue").Roche[1] },
             _ => new[] { 0x4A3424, 0x6A4C30 },
         };
 
@@ -103,6 +109,11 @@ namespace IdlePond.Jeu.Scene
                         dx = Math.Cos(angle) * rayon;
                         dy = Math.Sin(angle) * rayon * 0.6;
                         break;
+                    case GenreDeGerbe.Percee:
+                        // Une gerbe d'eau qui jaillit par la brèche et retombe en éventail.
+                        dx = (u - 0.5) * 110 * Math.Sqrt(a);
+                        dy = 14 * a * (1 - v) - 70 * a * a;
+                        break;
                     default:
                         // La vase qui monte en volutes.
                         dx = (u - 0.5) * 120 + Math.Sin(age * 3 + i) * 4;
@@ -124,7 +135,11 @@ namespace IdlePond.Jeu.Scene
             switch (evenement.Genre)
             {
                 case GenreDEvenement.CreuxOuvert:
-                    return new Gerbe(GenreDeGerbe.RocheQuiCede, new Pixel(milieu, -(int)evenement.Valeur * h - 4), instant);
+                    var creux = (int)evenement.Valeur;
+                    // La percée vers un nouveau lieu jaillit par la brèche de son seuil.
+                    return Lieux.OuvreUnLieu(creux)
+                        ? new Gerbe(GenreDeGerbe.Percee, new Pixel(Lieux.XDeLaBreche, -creux * h - 4), instant)
+                        : new Gerbe(GenreDeGerbe.RocheQuiCede, new Pixel(milieu, -creux * h - 4), instant);
                 case GenreDEvenement.SeuilFranchi:
                     var centre = centreDe?.Invoke(evenement.Sujet);
                     return centre != null ? new Gerbe(GenreDeGerbe.Seuil, centre, instant) : null;

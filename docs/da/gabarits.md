@@ -112,6 +112,7 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 | `fond.png` | 48 × 84 | une bande d'eau, répétée en largeur, du clair en haut au sombre en bas ; en bas, la vase et ses herbes, ou les galets et leur mousse |
 | `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
 | `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
+| `seuil.png` | 576 × 20 | la lèvre de roche de la vasque, posée à `GAUCHE_DU_DECOR` en haut du premier palier du lieu (sauf la Noue), avec la brèche de la cascade au tiers gauche du champ (2026-11-25) |
 | `ambiance.png` | 384 × 84 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
 
 ## L'eau — `Eau/`

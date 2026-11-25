@@ -265,6 +265,8 @@ namespace IdlePond.Noyau
             var creuse = Creuser(etat);
             if (!ReferenceEquals(creuse, etat)) return creuse;
             if (!Automatismes.Capacites(etat).Contains(CapaciteId.FileDeDescente)) return etat;
+            // Une percée fermée ne se demande pas d'avance : elle attend des tribus, pas du mana.
+            if (!Economie.PerceeOuverte(etat)) return etat;
             var demandes = etat.Cycle.CreuxDemandes;
             if (demandes >= Constantes.CREUX_EN_ATTENTE_AU_PLUS) return etat;
             var reste = Math.Min(etat.LimiteDeContenu, Constantes.NOMBRE_DE_PALIERS) - etat.Cycle.PaliersOuverts;
@@ -282,6 +284,8 @@ namespace IdlePond.Noyau
         static EtatJeu CreuserSansApprendre(EtatJeu etat)
         {
             if (Economie.ToutEstCreuse(etat)) return etat;
+            // La percée (2026-11-25) : on ne perce vers le lieu suivant qu'avec tout son peuple.
+            if (!Economie.PerceeOuverte(etat)) return etat;
             var cible = etat.Cycle.PaliersOuverts;
             var cout = Economie.CoutDeDescente(etat, cible);
             if (cout.Gt(Economie.Contenance(etat))) return etat;

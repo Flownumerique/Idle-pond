@@ -105,6 +105,18 @@ namespace IdlePond.Noyau.Donnees
             ("meduses", new("les méduses d’eau douce", "Des cloches de lumière, qui dérivent dans le Gour.")),
         };
 
+        /// L'arrivée dans un lieu, annoncée à la percée (2026-11-25) : son nom, et sa magie
+        /// (Codex v1.3, §2 « Les six magies »). La Noue n'en a pas : on y naît.
+        public static readonly IReadOnlyDictionary<string, string> ARRIVEE_DANS_LE_LIEU = new Dictionary<string, string>
+        {
+            ["gour"] = "Le Gour. L’eau file, ici : le Courant porte, pousse, et se souvient du chemin.",
+        };
+
+        public const string ARRIVEE_AILLEURS = "Plus bas, une autre eau.";
+
+        public static string ArriveeDans(string lieu) =>
+            lieu != null && ARRIVEE_DANS_LE_LIEU.TryGetValue(lieu, out var texte) ? texte : ARRIVEE_AILLEURS;
+
         public static TexteDeTribu DeLaTribu(string espece) =>
             TEXTES_DES_TRIBUS.TryGetValue(espece, out var texte) ? texte : null;
 
@@ -395,6 +407,11 @@ namespace IdlePond.Noyau.Donnees
             /// « La file » : des creux demandés d'avance attendent leur mana.
             public const string CREUSER_EN_ATTENTE = "Creuser plus bas · {0} en attente";
             public const string PLUS_DE_ROCHE = "Il n’y a plus de roche à ouvrir ici";
+            /// La percée (2026-11-25) : le creux qui ouvre un nouveau lieu.
+            public const string PERCER_VERS = "Percer vers {0}";
+            /// Elle se ferme tant que tout le peuple du lieu ne suit pas le héros.
+            public const string RALLIER_POUR_PERCER = "Rallie d’abord {0}";
+            public const string ET = " et ";
 
             /* — La renaissance ———————————————————————————————————————————————————— */
             public const string RENTRER_DANS_L_OEUF = "Rentrer dans l’œuf";
@@ -656,6 +673,9 @@ namespace IdlePond.Noyau.Donnees
                 yield return ($"bonus {bonus.Id}.nom", texte.Nom);
                 yield return ($"bonus {bonus.Id}.effet", texte.Effet);
             }
+
+            foreach (var arrivee in ARRIVEE_DANS_LE_LIEU) yield return ($"arrivée {arrivee.Key}", arrivee.Value);
+            yield return ("arrivée ailleurs", ARRIVEE_AILLEURS);
 
             foreach (var (id, texte) in TEXTES_DE_LA_FAUNE)
             {

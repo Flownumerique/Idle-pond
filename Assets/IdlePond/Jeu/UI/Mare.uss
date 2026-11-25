@@ -827,6 +827,12 @@
     opacity: 1;
 }
 
+/* L'arrivée dans un lieu, à la percée (2026-11-25) : la couleur de l'eau claire. */
+.annonce-de-lieu {
+    border-color: rgb(143, 216, 255);
+    color: rgb(230, 248, 255);
+}
+
 /* ─── Les tiroirs, révision 2 (maquette du 2026-10-07) ─────────────────────────── */
 
 .tiroir-titres {

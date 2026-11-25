@@ -179,7 +179,8 @@ namespace IdlePond.Simulateur
                 return rendement.Value;
             }
 
-            if (!Economie.EstBloque(etat))
+            // Une percée fermée (2026-11-25) n'est pas un achat : il faut d'abord rallier.
+            if (!Economie.EstBloque(etat) && Economie.PerceeOuverte(etat))
             {
                 var cible = etat.Cycle.PaliersOuverts;
                 var cout = Economie.CoutDeDescente(etat, cible);

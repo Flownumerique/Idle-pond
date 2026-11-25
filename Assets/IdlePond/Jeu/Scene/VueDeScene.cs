@@ -79,15 +79,16 @@ namespace IdlePond.Jeu.Scene
 
         /// <summary>
         /// Les paliers à dessiner en roche : du premier fermé jusqu'au bas de l'assise où l'on
-        /// creuse — on voit ce qui reste de la Noue, pas les soixante paliers de la suite. Une
-        /// assise entièrement creusée laisse voir la seule bande suivante, s'il y en a une.
+        /// creuse — on voit ce qui reste de la Noue, pas les soixante paliers de la suite — et,
+        /// dessous, le premier palier de l'assise suivante (2026-11-25, « voir venir le lieu
+        /// suivant ») : sa roche à elle, où sa magie suinte. Rien au-delà du contenu livré.
         /// </summary>
         public static IReadOnlyList<int> IndicesDeRoche(int paliersOuverts, int limiteDeContenu)
         {
             if (paliersOuverts >= limiteDeContenu) return Array.Empty<int>();
             var assise = Assises.DuPalier(Math.Max(0, paliersOuverts - 1));
             var finDeLAssise = assise.IndexPremierPalier + assise.NombreDePaliers;
-            var jusqua = Math.Min(limiteDeContenu, finDeLAssise > paliersOuverts ? finDeLAssise : paliersOuverts + 1);
+            var jusqua = Math.Min(limiteDeContenu, Math.Max(finDeLAssise, paliersOuverts) + 1);
             return Enumerable.Range(paliersOuverts, jusqua - paliersOuverts).ToArray();
         }
 

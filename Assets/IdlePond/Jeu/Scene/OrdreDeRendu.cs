@@ -12,6 +12,10 @@ namespace IdlePond.Jeu.Scene
         /// La roche à creuser passe devant les rayons, qui débordent sur deux bandes : le jour
         /// n'entre pas dans la pierre.
         public const int ROCHE = 15;
+        /// La lèvre de la vasque d'un lieu, à sa jonction avec celui d'au-dessus (2026-11-25) :
+        /// devant sa roche comme devant son eau ; les lueurs du lieu suivant juste devant.
+        public const int SEUIL = 16;
+        public const int LUEURS = 17;
         public const int BORD = 20;
         /// L'hydre, accrochée sous la surface parmi les racines.
         public const int HYDRE = 21;

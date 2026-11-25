@@ -4735,7 +4735,7 @@
      6.5014084429643674E+177
     ],
     "souffle": "1.62733719464594e135",
-    "contenanceMana": "2.6584627796743172e28",
+    "contenanceMana": "2.6586219319761555e28",
     "couches": [
      "noue",
      "gour",
@@ -5017,7 +5017,7 @@
      "espece-6-2",
      "espece-6-3"
     ],
-    "manaAmbiant": "9.07180522850175e277",
+    "manaAmbiant": "9.07424910595701e277",
     "heuresHorsLigneCreditees": 0.0,
     "ameliorations": {
      "amelioration-globale": 225,
@@ -5157,8 +5157,8 @@
    },
    "derives": {
     "production": "9.8893453489007186e235",
-    "contenance": "5.3169255593486344e28",
-    "partDeContenance": 6.7708301720910843E-28,
+    "contenance": "5.317243863952311e28",
+    "partDeContenance": 6.770424851878277E-28,
     "eauTroublee": false,
     "estBloque": false,
     "gainDeSoufflePrevu": "0e0"

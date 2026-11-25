@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace IdlePond.Jeu.Scene
@@ -41,6 +42,15 @@ namespace IdlePond.Jeu.Scene
                 if (art.Rayons != null)
                     Briques.Poser(racine, "Rayons", art.Rayons, (Gabarits.LARGEUR_VISEE - Gabarits.LARGEUR_DE_BERGE) / 2,
                         -Gabarits.HAUTEUR_DES_RAYONS, OrdreDeRendu.RAYONS);
+            }
+            // La lèvre de la vasque de chaque lieu atteint en perçant (2026-11-25), qu'il soit
+            // déjà ouvert ou encore dans la roche qu'on voit venir.
+            foreach (var index in vue.Paliers.Select(p => (p.Index, p.Assise)).Concat(vue.Roches.Select(r => (r.Index, r.Assise))))
+            {
+                if (!Lieux.OuvreUnLieu(index.Index)) continue;
+                var seuil = catalogue.DecorDe(index.Assise)?.Seuil;
+                if (seuil != null && catalogue.DecorDe(index.Assise).Assise == index.Assise)
+                    Briques.Poser(racine, "Seuil " + index.Index, seuil, Gabarits.GAUCHE_DU_DECOR, Lieux.YDuSeuil(index.Index), OrdreDeRendu.SEUIL);
             }
             // La roche à creuser, sous l'eau. Aucune lumière de palier ne l'atteint : seule
             // l'ambiante la touche, et elle reste dans l'obscurité jusqu'à ce qu'on la creuse.

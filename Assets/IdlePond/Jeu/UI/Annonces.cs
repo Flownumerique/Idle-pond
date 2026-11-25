@@ -62,7 +62,9 @@ namespace IdlePond.Jeu.UI
                     racine.Add(existante);
                     continue;
                 }
-                var ligne = Elements.Texte("annonce base titre", Textes.DuSucces(ids[i]).Rapport);
+                var lieu = ids[i].StartsWith(Partie.ANNONCE_DE_LIEU) ? ids[i].Substring(Partie.ANNONCE_DE_LIEU.Length) : null;
+                var ligne = Elements.Texte("annonce base titre", lieu != null ? Textes.ArriveeDans(lieu) : Textes.DuSucces(ids[i]).Rapport);
+                if (lieu != null) ligne.AddToClassList("annonce-de-lieu");
                 lignes[ids[i]] = ligne;
                 racine.Add(ligne);
                 // Elle se lève au tour suivant : une classe posée avant le premier calcul de

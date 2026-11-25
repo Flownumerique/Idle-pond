@@ -644,6 +644,34 @@ namespace IdlePond.Noyau
         /// la renaissance, et sa seule vraie décision : partir maintenant pour la
         /// profondeur, ou rester pour le Souffle.
         /// </summary>
+        /* ─── La percée (décidée par l'auteur le 2026-11-25) ─────────────────────── */
+
+        /// Le premier creux d'un lieu, la percée vers lui (jamais le tout premier creux de la
+        /// mare).
+        public static bool EstUnePercee(int cible) =>
+            cible > 0 && cible < Constantes.NOMBRE_DE_PALIERS && Assises.DuPalier(cible).IndexPremierPalier == cible;
+
+        /// <summary>
+        /// Ce qu'il manque pour percer vers le lieu suivant : les tribus du lieu actuel qu'on
+        /// n'a pas encore ralliées dans cette vie. Vide quand le prochain creux n'est pas une
+        /// percée, ou quand tout le peuple du lieu suit le héros.
+        ///
+        /// La règle ne demande aucun prix de plus : une condition lisible et narrative — le
+        /// peuple du lieu te suit plus bas. Elle ne touche ni la contenance ni le blocage
+        /// (`EstBloque`) : une percée fermée se rouvre en ralliant, pas en attendant.
+        /// </summary>
+        public static IReadOnlyList<Espece> TribusARallierPourPercer(EtatJeu etat)
+        {
+            var cible = etat.Cycle.PaliersOuverts;
+            if (!EstUnePercee(cible)) return Array.Empty<Espece>();
+            var lieu = Assises.DuPalier(cible - 1);
+            return Especes.DeLAssise(lieu.Id)
+                .Where(e => e.Palier < cible && !(etat.Cycle.Especes.TryGetValue(e.Id, out var v) && v.Debloquee && v.Niveau > 0))
+                .ToList();
+        }
+
+        public static bool PerceeOuverte(EtatJeu etat) => TribusARallierPourPercer(etat).Count == 0;
+
         public static bool EstBloque(EtatJeu etat)
         {
             if (ToutEstCreuse(etat)) return true;

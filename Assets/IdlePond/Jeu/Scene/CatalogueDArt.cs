@@ -16,7 +16,7 @@ namespace IdlePond.Jeu.Scene
         [Serializable] public sealed class MarqueDAssise { public string Assise; public Sprite[] ParStade = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDEspece { public string Espece; public Sprite[] Images = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDeFaune { public string Nom; public Sprite[] Images = Array.Empty<Sprite>(); }
-        [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; }
+        [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; public Sprite Seuil; }
 
         /// L'éveil d'un stade (bible v0.4) : ses runes, les deux images de son voile, l'anneau,
         /// l'aura. Tous sauf les runes sont sur le cadre d'éveil, plus grand que le corps.

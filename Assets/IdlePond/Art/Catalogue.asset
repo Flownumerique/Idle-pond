@@ -190,11 +190,13 @@ MonoBehaviour:
     Berge: {fileID: 21300000, guid: 8134562a103dfd34ab558abc833f0815, type: 3}
     Rayons: {fileID: 21300000, guid: 3183c194ed9c68c46b98c28d52934f54, type: 3}
     Ambiance: {fileID: 21300000, guid: 6d01890059883274b98359b46da54f16, type: 3}
+    Seuil: {fileID: 0}
   - Assise: gour
     Fond: {fileID: 21300000, guid: b7ead7d258583904487b42405ec41cca, type: 3}
     Roche: {fileID: 21300000, guid: 733d72c29ed39844e8148f9949ad9fa0, type: 3}
     Berge: {fileID: 0}
     Rayons: {fileID: 21300000, guid: 1553b41af361d0c49a211f38dcc6ab81, type: 3}
     Ambiance: {fileID: 21300000, guid: 0445970b5f2ef1d46b44c1221742e965, type: 3}
+    Seuil: {fileID: 21300000, guid: 549672e458fd4ec68e0961c963639060, type: 3}
   Voile: {fileID: 21300000, guid: ce926a3c1b461854f9a1480b4d7078dc, type: 3}
   Eclat: {fileID: 21300000, guid: 476a13a1bb0d3334a95ba9f298c2a4b9, type: 3}
