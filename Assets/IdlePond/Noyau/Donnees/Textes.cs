@@ -480,7 +480,7 @@ namespace IdlePond.Noyau.Donnees
             public const string MAITRISE_SUR = "{0} / {1}";
             public const string BONUS_S_OUVRE_A = "s’ouvre à la maîtrise {0}";
             public const string TECHNIQUE_S_OUVRE_A = "s’ouvre à {0} creux ouverts";
-            public const string LIEU_FERME_CONDITION = "s’ouvre en creusant {0} jusqu’au fond";
+            public const string LIEU_FERME_CONDITION = "s’ouvre au fond de {0}, quand tout son peuple te suit";
             public const string BONUS_DU_LIEU_EXPLIQUE = "Ils ne valent que pour leur lieu, et restent ici quand tu rentres dans l’œuf.";
             public const string TECHNIQUES_EXPLIQUE = "Elles valent partout, et restent ici quand tu rentres dans l’œuf.";
             public const string RANG_SUR = "rang {0} / {1}";

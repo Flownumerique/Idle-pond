@@ -49,29 +49,49 @@ namespace IdlePond.Jeu.UI
             foreach (var id in ids)
                 if (minuteries.Add(id)) Armer(id);
 
-            var visibles = ids.Count > NOMBRE_VISIBLE ? ids.Count - NOMBRE_VISIBLE : 0;
-            var cle = string.Join("|", ids) + "#" + visibles;
+            var montrees = AMontrer(ids, TexteDe, NOMBRE_VISIBLE);
+            var cle = string.Join("|", montrees);
             if (cle == derniereAffichee) return;
             derniereAffichee = cle;
 
             racine.Clear();
-            for (var i = visibles; i < ids.Count; i++)
+            foreach (var id in montrees)
             {
-                if (lignes.TryGetValue(ids[i], out var existante))
+                if (lignes.TryGetValue(id, out var existante))
                 {
                     racine.Add(existante);
                     continue;
                 }
-                var lieu = ids[i].StartsWith(Partie.ANNONCE_DE_LIEU) ? ids[i].Substring(Partie.ANNONCE_DE_LIEU.Length) : null;
-                var ligne = Elements.Texte("annonce base titre", lieu != null ? Textes.ArriveeDans(lieu) : Textes.DuSucces(ids[i]).Rapport);
-                if (lieu != null) ligne.AddToClassList("annonce-de-lieu");
-                lignes[ids[i]] = ligne;
+                var ligne = Elements.Texte("annonce base titre", TexteDe(id));
+                if (id.StartsWith(Partie.ANNONCE_DE_LIEU)) ligne.AddToClassList("annonce-de-lieu");
+                lignes[id] = ligne;
                 racine.Add(ligne);
                 // Elle se lève au tour suivant : une classe posée avant le premier calcul de
                 // style ne déclenche aucune transition, et la ligne surgirait au lieu de
                 // s'élever.
                 ligne.schedule.Execute(() => ligne.AddToClassList("annonce-visible")).StartingIn(30);
             }
+        }
+
+        static string TexteDe(string id) =>
+            id.StartsWith(Partie.ANNONCE_DE_LIEU)
+                ? Textes.ArriveeDans(id.Substring(Partie.ANNONCE_DE_LIEU.Length))
+                : Textes.DuSucces(id).Rapport;
+
+        /// <summary>
+        /// Les annonces à montrer, dans l'ordre : une seule ligne par texte — plusieurs succès
+        /// partagent la même phrase (« Celui-là ne prendra plus personne. » pour chaque creux
+        /// saturé), et deux lignes identiques empilées se lisent comme un bug —, puis les
+        /// `visibles` dernières. Les doublons cachés gardent leur minuterie et s'éteignent
+        /// avec les autres.
+        /// </summary>
+        public static IReadOnlyList<string> AMontrer(IReadOnlyList<string> ids, Func<string, string> texteDe, int visibles)
+        {
+            var vus = new HashSet<string>();
+            var distinctes = new List<string>();
+            foreach (var id in ids)
+                if (vus.Add(texteDe(id))) distinctes.Add(id);
+            return distinctes.Count > visibles ? distinctes.GetRange(distinctes.Count - visibles, visibles) : distinctes;
         }
 
         void Armer(string id)
