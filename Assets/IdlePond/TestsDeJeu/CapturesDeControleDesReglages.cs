@@ -33,6 +33,7 @@ namespace IdlePond.TestsDeJeu
         static readonly (string Nom, Tiroir Tiroir)[] VUES =
         {
             ("mare", Tiroir.Aucun), ("toi", Tiroir.Toi), ("especes", Tiroir.Especes), ("reglages", Tiroir.Reglages),
+            ("bibliotheque", Tiroir.Journal), ("debloquer", Tiroir.Debloquer),
         };
 
         [UnityTest]
@@ -163,6 +164,26 @@ namespace IdlePond.TestsDeJeu
                     });
                     yield return new WaitForSeconds(0.6f);
                     Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-file.png"));
+
+                    // La percée (2026-11-25) : la Noue creusée jusqu'au fond, la loche pas encore
+                    // ralliée — « Rallie d'abord la loche » ; puis ralliée — « Percer vers le Gour ».
+                    var auBord = ScenePixelTests.EtatDeLaNoue(16, false);
+                    var sansLaLoche = new System.Collections.Generic.Dictionary<string, IdlePond.Noyau.EtatEspece>(auBord.Cycle.Especes)
+                    {
+                        ["loche"] = new IdlePond.Noyau.EtatEspece(false, 0),
+                    };
+                    partie.Remplacer(auBord with
+                    {
+                        Cycle = auBord.Cycle with { Especes = sansLaLoche, CreuxDemandes = 0, ManaCourant = IdlePond.Noyau.Economie.Contenance(auBord) },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-percee-fermee.png"));
+                    partie.Remplacer(auBord with
+                    {
+                        Cycle = auBord.Cycle with { CreuxDemandes = 0, ManaCourant = IdlePond.Noyau.Economie.Contenance(auBord) },
+                    });
+                    yield return new WaitForSeconds(0.6f);
+                    Ecrire(rt, Path.Combine(dossier, $"ui-{CADRES[0].Nom}-percee-ouverte.png"));
 
                     panneau.targetTexture = null;
                     Object.Destroy(rt);

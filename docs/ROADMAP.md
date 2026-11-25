@@ -27,10 +27,10 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 | Prototype | WebGL dans le navigateur du téléphone, Windows | APK Android (module absent) |
 
-**Tests** : 580 EditMode et 37 PlayMode, tous verts dans Unity (2026-11-25), plus cinq mesures à la demande.
-Le travail écrit hors de l'éditeur les 23 et 24 novembre compile et passe, et les captures de
-contrôle de la scène et des tiroirs sont saines. La bibliothèque, la percée et les saisons n'ont
-pas encore de capture.
+**Tests** : 584 EditMode et 37 PlayMode, tous verts dans Unity (2026-11-25), plus cinq mesures à la demande.
+Le travail écrit hors de l'éditeur les 23 et 24 novembre compile et passe. Les captures de contrôle
+(`outils/unity.sh captures`) couvrent désormais aussi les saisons, la percée, la bibliothèque et
+Débloquer.
 **Pas de CI** depuis le 2026-11-23 (retirée faute de licence Unity fournie, avec la publication
 WebGL sur Vercel) : les tests se lancent en local, `outils/unity.sh tests`. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des
@@ -164,7 +164,15 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
     magie suinte en lueurs de sa couleur.
   - **Le moment** : la percée jaillit par la brèche (une grande gerbe d'eau) et s'annonce d'une
     ligne : « Le Gour. L'eau file, ici : le Courant porte, pousse, et se souvient du chemin. »
-  Pas encore vu dans Unity.
+  **Vu dans Unity le 2026-11-25** (captures `portrait-voir-venir`, `-percee`, `-jonction`,
+  `ui-telephone-percee-*`). La jonction se lit bien. Deux défauts corrigés : les lueurs n'étaient
+  jamais dessinées (elles ne s'allumaient que parmi les bandes d'eau, or la roche est dessous), et
+  dès que l'eau dépasse le cadre, la roche qui vient sortait de l'écran — une **rive** d'une
+  demi-bande de roche reste maintenant sous l'eau (`Cadrage.RIVE_DE_ROCHE`). **Reste à trancher
+  (DA)** : les lueurs (un pixel, dans une roche sans lumière 2D, donc presque noires) et la gerbe
+  de la percée (des points clairs sur l'eau claire du Gour) sont trop discrètes pour « voir venir »
+  et pour « une grande gerbe ». Les rendre vives demande une lumière de plus (le budget est déjà
+  dépassé) ou un matériau non éclairé pour ces éclats.
 
 ---
 

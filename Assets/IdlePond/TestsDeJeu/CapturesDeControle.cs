@@ -93,6 +93,37 @@ namespace IdlePond.TestsDeJeu
                 yield return new WaitForSeconds(attente);
                 Ecrire(scene.Rendu, Path.Combine(dossier, $"portrait-renouveau-{nom}.png"));
             }
+
+            // Les saisons (2026-11-18) : la surface, une fois par saison. La scène lit le mois de
+            // l'appareil à l'activation ; ici on l'impose, puis on change d'état pour redessiner.
+            var saisonOriginale = scene.FauneDAmbiance.Saison;
+            var niveauDeSaison = 2;
+            foreach (var (saison, nom) in new[] { (Saison.Aucune, "ete"), (Saison.Frai, "frai"), (Saison.Crue, "crue"), (Saison.Gel, "gel") })
+            {
+                scene.FauneDAmbiance.Saison = saison;
+                var etat = ScenePixelTests.EtatDeLaNoue(niveauDeSaison++, false);
+                partie.Remplacer(etat with { Cycle = etat.Cycle with { PaliersOuverts = 2 } });
+                yield return new WaitForSeconds(2.5f);
+                Ecrire(scene.Rendu, Path.Combine(dossier, $"portrait-saison-{nom}.png"));
+            }
+            scene.FauneDAmbiance.Saison = saisonOriginale;
+
+            // Le passage d'un lieu à l'autre (2026-11-25) : la Noue au complet, la roche du Gour
+            // dessous où sa magie suinte ; la percée qui jaillit par la brèche ; la jonction.
+            // L'acquis de séjour relève la contenance : assez pour porter la percée (4,23 k,
+            // plus que la mare d'essai ne tient à l'acquis nul).
+            var auBord = ScenePixelTests.EtatDeLaNoue(16, false);
+            for (var acquis = 1.0; acquis <= 64 && IdlePond.Noyau.Economie.EstBloque(auBord); acquis *= 2)
+                auBord = auBord with { Cycle = auBord.Cycle with { AcquisDeSejour = acquis } };
+            Assert.That(IdlePond.Noyau.Economie.EstBloque(auBord), Is.False, "aucun acquis d'essai ne porte la percée");
+            partie.Remplacer(auBord with { Cycle = auBord.Cycle with { ManaCourant = IdlePond.Noyau.Economie.Contenance(auBord) } });
+            yield return new WaitForSeconds(1.2f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-voir-venir.png"));
+            partie.Creuser();
+            yield return new WaitForSeconds(0.35f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-percee.png"));
+            yield return new WaitForSeconds(3f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-jonction.png"));
             ServicesDePartie.Oublier();
         }
 
