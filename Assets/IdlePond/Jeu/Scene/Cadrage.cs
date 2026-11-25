@@ -32,18 +32,29 @@ namespace IdlePond.Jeu.Scene
             Cadrer(d, nombreDeBandes, nombreDeBandes);
 
         /// <summary>
+        /// La rive : ce qu'on garde de roche sous l'eau creusée quand celle-ci dépasse le cadre.
+        /// Une demi-bande. Sans elle, le bas de l'eau collait au bas du cadre, et ce que la roche
+        /// annonce — la roche du lieu suivant et les lueurs de sa magie (« voir venir »,
+        /// 2026-11-25) — n'était jamais à l'écran dès que l'eau dépassait le cadre : la Noue en
+        /// paysage, le Gour partout.
+        /// </summary>
+        public const int RIVE_DE_ROCHE = Gabarits.HAUTEUR_DE_BANDE / 2;
+
+        /// <summary>
         /// Avec la roche à creuser dessinée sous l'eau : la coupe part de la surface tant que
         /// l'eau CREUSÉE tient dans le cadre — la roche remplit alors le dessous au lieu du
-        /// vide. Sinon, le bas de l'eau creusée reste en bas du cadre, comme avant : la roche
-        /// ne pousse jamais le héros hors de l'écran.
+        /// vide. Sinon, le bas de l'eau creusée remonte d'une rive au-dessus du bas du cadre,
+        /// pour qu'on voie ce qui vient. La rive cède avant la bande du héros : la roche ne la
+        /// pousse jamais hors de l'écran.
         /// </summary>
         public static ChampDeCamera Cadrer(DimensionsDuRendu d, int bandesOuvertes, int bandesDessinees)
         {
             var gauche = Gabarits.LARGEUR_VISEE / 2 - d.Largeur / 2;
             var eau = Math.Max(0, bandesOuvertes) * Gabarits.HAUTEUR_DE_BANDE;
             var tout = Math.Max(eau, Math.Max(0, bandesDessinees) * Gabarits.HAUTEUR_DE_BANDE);
-            var haut = tout <= d.Hauteur || eau <= d.Hauteur ? 0 : d.Hauteur - eau;
-            return new ChampDeCamera(gauche, haut, d.Largeur, d.Hauteur);
+            if (tout <= d.Hauteur || eau <= d.Hauteur) return new ChampDeCamera(gauche, 0, d.Largeur, d.Hauteur);
+            var rive = Math.Max(0, Math.Min(tout - eau, Math.Min(RIVE_DE_ROCHE, d.Hauteur - Gabarits.HAUTEUR_DE_BANDE)));
+            return new ChampDeCamera(gauche, d.Hauteur - eau - rive, d.Largeur, d.Hauteur);
         }
 
         public static (int Premiere, int Derniere) BandesVisibles(ChampDeCamera champ, int nombreDeBandes)

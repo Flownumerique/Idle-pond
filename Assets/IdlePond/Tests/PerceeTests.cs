@@ -134,6 +134,20 @@ namespace IdlePond.Tests
             Assert.That(Lieux.CouleurDeLaMagie("lieu-inconnu"), Is.EqualTo(0xFFE070));
         }
 
+        [Test, Description("la roche qui vient se voit dès qu'elle touche le champ — elle est SOUS l'eau, jamais parmi ses bandes")]
+        public void La_roche_qui_vient_se_voit_dans_le_champ()
+        {
+            var portrait = new DimensionsDuRendu(3, 360, 256);
+            // La Noue au complet, la roche du Gour dessous : la rive la montre.
+            Assert.That(Lieux.BandeDansLeChamp(6, Cadrage.Cadrer(portrait, 6, 7)), Is.True);
+            // Sans roche dessinée, le champ s'arrête au fond de l'eau.
+            Assert.That(Lieux.BandeDansLeChamp(6, Cadrage.Cadrer(portrait, 6, 6)), Is.False);
+            // Une bande au-dessus du champ ne se voit pas ; celle du héros, si.
+            Assert.That(Lieux.BandeDansLeChamp(0, Cadrage.Cadrer(portrait, 6, 7)), Is.False);
+            Assert.That(Lieux.BandeDansLeChamp(5, Cadrage.Cadrer(portrait, 6, 7)), Is.True);
+            Assert.That(Lieux.BandeDansLeChamp(0, null), Is.False);
+        }
+
         [Test, Description("la percée jaillit par la brèche ; un creux ordinaire fait céder la roche")]
         public void La_percee_jaillit_par_la_breche()
         {

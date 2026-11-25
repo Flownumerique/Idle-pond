@@ -98,7 +98,7 @@ namespace IdlePond.Jeu.Scene
             Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
             FauneDAmbiance?.Animer(horloge, premiereVisible, derniereVisible, Reactions.EnCours);
             RetoursVisuels?.Animer(horloge);
-            Passages?.Animer(horloge, premiereVisible, derniereVisible);
+            Passages?.Animer(horloge, Rendu?.Champ);
             Voile?.Animer(Time.deltaTime);
             Heros?.Animer(horloge);
         }

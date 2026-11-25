@@ -43,10 +43,29 @@ namespace IdlePond.Tests
             var portrait = new DimensionsDuRendu(3, 360, 256);
             // Une bande d'eau, cinq de roche : 504 px, plus que le cadre ; l'eau tient, on part du haut.
             Assert.That(Cadrage.Cadrer(portrait, 1, 6), Is.EqualTo(new ChampDeCamera(0, 0, 360, 256)));
-            // Quatre bandes d'eau (336 px) ne tiennent plus : le bas de l'eau creusée reste en bas.
-            Assert.That(Cadrage.Cadrer(portrait, 4, 6), Is.EqualTo(new ChampDeCamera(0, 256 - 336, 360, 256)));
+            // Quatre bandes d'eau (336 px) ne tiennent plus : sous le bas de l'eau creusée, une
+            // rive de roche d'une demi-bande, pour voir ce qui vient.
+            Assert.That(Cadrage.Cadrer(portrait, 4, 6), Is.EqualTo(new ChampDeCamera(0, 256 - 336 - Cadrage.RIVE_DE_ROCHE, 360, 256)));
             // Sans roche, le cadrage d'avant.
             Assert.That(Cadrage.Cadrer(portrait, 6, 6), Is.EqualTo(Cadrage.Cadrer(portrait, 6)));
+        }
+
+        [Test, Description("voir venir (2026-11-25) : la Noue au complet laisse voir la roche du Gour, sans couper la bande du héros")]
+        public void La_rive_montre_le_lieu_suivant_sans_couper_le_heros()
+        {
+            Assert.That(Cadrage.RIVE_DE_ROCHE, Is.EqualTo(Gabarits.HAUTEUR_DE_BANDE / 2));
+            var portrait = new DimensionsDuRendu(3, 360, 256);
+            // Six bandes d'eau, la septième de roche (le premier palier du Gour) : sa moitié haute se voit.
+            var champ = Cadrage.Cadrer(portrait, 6, 7);
+            Assert.That(champ.Bas, Is.EqualTo(-6 * Gabarits.HAUTEUR_DE_BANDE - Cadrage.RIVE_DE_ROCHE));
+            // Moins de roche dessinée que la rive : on n'en montre pas plus qu'il n'y en a.
+            Assert.That(Cadrage.Cadrer(portrait, 4, 4).Bas, Is.EqualTo(-4 * Gabarits.HAUTEUR_DE_BANDE));
+            // Un cadre trop bas pour la bande du héros ET la rive : la bande du héros d'abord.
+            var bas = new DimensionsDuRendu(3, 360, 100);
+            Assert.That(Cadrage.Cadrer(bas, 6, 7).Bas, Is.EqualTo(-6 * Gabarits.HAUTEUR_DE_BANDE - (100 - Gabarits.HAUTEUR_DE_BANDE)));
+            // L'eau tient tout juste, la rive ne tient plus : la coupe reste accrochée en haut.
+            var juste = new DimensionsDuRendu(3, 360, 2 * Gabarits.HAUTEUR_DE_BANDE);
+            Assert.That(Cadrage.Cadrer(juste, 2, 3).Haut, Is.EqualTo(0));
         }
 
         [Test, Description("les bandes visibles : celles que le champ touche, et aucune s'il n'y en a pas")]

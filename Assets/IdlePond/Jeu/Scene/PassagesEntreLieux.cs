@@ -38,7 +38,7 @@ namespace IdlePond.Jeu.Scene
                     lieuxQuiViennent.Add((r.Index, Briques.Couleur(Lieux.CouleurDeLaMagie(r.Assise))));
         }
 
-        public void Animer(double secondes, int premiere, int derniere)
+        public void Animer(double secondes, ChampDeCamera champ)
         {
             var utilisees = 0;
             if (catalogue != null && catalogue.Eclat != null)
@@ -46,12 +46,12 @@ namespace IdlePond.Jeu.Scene
                 foreach (var palier in vasquesOuvertes)
                 {
                     // La cascade tombe du haut de la vasque : elle se voit depuis la bande d'au-dessus.
-                    if (palier < premiere - 1 || palier > derniere) continue;
+                    if (!Lieux.BandeDansLeChamp(palier, champ) && !Lieux.BandeDansLeChamp(palier - 1, champ)) continue;
                     foreach (var g in Lieux.Cascade(palier, secondes)) Placer(ref utilisees, g.X, g.Y, EAU[g.Couleur], OrdreDeRendu.SEUIL);
                 }
                 foreach (var (palier, couleur) in lieuxQuiViennent)
                 {
-                    if (palier < premiere || palier > derniere) continue;
+                    if (!Lieux.BandeDansLeChamp(palier, champ)) continue;
                     foreach (var l in Lieux.Lueurs(palier, secondes)) Placer(ref utilisees, l.X, l.Y, couleur, OrdreDeRendu.LUEURS);
                 }
             }

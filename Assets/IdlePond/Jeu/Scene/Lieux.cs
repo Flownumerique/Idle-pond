@@ -35,6 +35,19 @@ namespace IdlePond.Jeu.Scene
 
         public static int XDeLaBreche => (int)Math.Round(Gabarits.LARGEUR_VISEE * BRECHE);
 
+        /// <summary>
+        /// La bande `palier` touche-t-elle le champ de la caméra ? Eau ou roche, peu importe :
+        /// la roche du lieu qui vient est SOUS la dernière bande d'eau, et un test sur les
+        /// bandes d'eau visibles ne l'aurait jamais allumée.
+        /// </summary>
+        public static bool BandeDansLeChamp(int palier, ChampDeCamera champ)
+        {
+            if (champ == null || palier < 0) return false;
+            var haut = -palier * Gabarits.HAUTEUR_DE_BANDE;
+            var bas = haut - Gabarits.HAUTEUR_DE_BANDE;
+            return bas < champ.Haut && haut > champ.Bas;
+        }
+
         /* ─── La cascade ───────────────────────────────────────────────────────── */
 
         public const int GOUTTES = 10;

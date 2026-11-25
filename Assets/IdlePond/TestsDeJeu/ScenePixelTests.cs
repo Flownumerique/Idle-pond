@@ -128,9 +128,10 @@ namespace IdlePond.TestsDeJeu
             yield return null;
             Assert.That(scene.Eclairage.Ambiante.lightType, Is.EqualTo(Light2D.LightType.Global));
             Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(PALIERS_DE_LA_NOUE));
-            // Portrait : 256 px de haut, six bandes de 84 → les bandes 2 à 5.
+            // Portrait : 256 px de haut, six bandes de 84 et la rive de roche dessous (42 px) →
+            // les bandes 3 à 5 ; la bande 2 n'y montrait que 4 px avant la rive.
             var allumees = scene.Eclairage.ParBande.Select((l, i) => (l, i)).Where(x => x.l.enabled).Select(x => x.i).ToList();
-            Assert.That(allumees, Is.EqualTo(new[] { 2, 3, 4, 5 }));
+            Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
             Assert.That(scene.Eclairage.ParBande[5].intensity, Is.LessThan(scene.Eclairage.ParBande[3].intensity));
         }
 
