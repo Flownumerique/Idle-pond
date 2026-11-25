@@ -231,7 +231,9 @@ namespace IdlePond.Jeu.Scene
         }
 
         /// Le pied du `numero`-ième nid dans la bande : répartis sur le fond, sans se toucher.
-        public static int XDuNid(int numero) => 27 + numero * 78 + (numero % 2) * 14;
+        /// Sur la corniche de la bande de l'épinoche (le puits, 2026-11-25) : une case par seuil.
+        public static int XDuNid(int numero, Corniche corniche) =>
+            Puits.XSurLaCorniche(corniche, numero, IdlePond.Noyau.Constantes.SEUILS_DE_JALON.Count, LARGEUR_DE_NID, 17);
 
         /* ─── Les lamproies aux parois ─────────────────────────────────────────────── */
 

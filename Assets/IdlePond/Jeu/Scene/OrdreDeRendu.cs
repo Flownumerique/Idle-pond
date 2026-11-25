@@ -19,6 +19,11 @@ namespace IdlePond.Jeu.Scene
         /// devant sa roche comme devant son eau ; les lueurs du lieu suivant juste devant.
         public const int SEUIL = 16;
         public const int LUEURS = 17;
+        /// Le puits (2026-11-25) : le sol du fond, devant la roche qui recule quand on creuse ;
+        /// les parois et les corniches devant lui — le sol s'arrête à la paroi.
+        public const int LIT = 18;
+        public const int PAROIS = 19;
+        public const int CORNICHES = 19;
         public const int BORD = 20;
         /// L'hydre, accrochée sous la surface parmi les racines.
         public const int HYDRE = 21;

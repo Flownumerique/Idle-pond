@@ -30,9 +30,10 @@ namespace IdlePond.Jeu.Scene
         {
             var h = Melanger((uint)(palier * 7919 + numero * 104729 + 1));
             var amplitude = 12 + (int)(h % 36u);
-            // Aller et retour compris, le nageur tient dans [0 ; largeur visée − largeur de son cadre].
-            var marge = Gabarits.LARGEUR_VISEE - 24 - amplitude - cadre.Largeur;
-            var x0 = 12 + (int)((h >> 5) % (uint)marge);
+            // Aller et retour compris, le nageur tient entre les parois du puits (2026-11-25), qui
+            // n'avancent jamais au-delà de `Puits.MARGE_DES_PAROIS`.
+            var marge = Gabarits.LARGEUR_VISEE - 2 * Puits.MARGE_DES_PAROIS - amplitude - cadre.Largeur;
+            var x0 = Puits.MARGE_DES_PAROIS + (int)((h >> 5) % (uint)marge);
             var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
             var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
             var periode = 2.0 + ((h >> 17) % 20u) / 10.0;
@@ -49,9 +50,13 @@ namespace IdlePond.Jeu.Scene
         public static Trajet TrajetAccroche(int palier, int numero, Cadre cadre)
         {
             var h = Melanger((uint)(palier * 7919 + numero * 104729 + 7));
-            var x0 = Tribus.AccrocheeAGauche(numero) ? 3 : Gabarits.LARGEUR_VISEE - 3 - cadre.Largeur;
             var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
             var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
+            // Contre le bord de la paroi du puits à sa hauteur, mordant de deux pixels dans la roche.
+            var milieu = y + cadre.Hauteur / 2;
+            var x0 = Tribus.AccrocheeAGauche(numero)
+                ? Math.Max(0, Puits.BordGauche(milieu) - 2)
+                : Math.Min(Gabarits.LARGEUR_VISEE - cadre.Largeur, Puits.BordDroit(milieu) + 3 - cadre.Largeur);
             var phase = ((h >> 23) % 100u) / 100.0 * 2.5;
             return new Trajet(x0, y, 0, 2.5, phase);
         }

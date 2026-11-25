@@ -34,6 +34,9 @@ namespace IdlePond.Jeu.Scene
         /// Ce que l'état dit des tribus (pétrifiés, agitées, nids), relu à chaque changement.
         public EtatDesTribus EtatDesTribus { get; private set; } = Scene.EtatDesTribus.CALME;
 
+        /// Le décor : le puits, ses parois, ses corniches, et le sol qui s'ouvre.
+        public Decor Decor => decor;
+
         /// Les éclairs des tribus en cours : la vague, les fils, les mirages.
         public ReactionsDesTribus Reactions { get; } = new ReactionsDesTribus();
 
@@ -100,6 +103,7 @@ namespace IdlePond.Jeu.Scene
             Tribus?.Animer(horloge, Reactions.EnCours, Nageurs);
             FauneDAmbiance?.Animer(horloge, premiereVisible, derniereVisible, Reactions.EnCours);
             RetoursVisuels?.Animer(horloge);
+            decor?.Animer(horloge);
             Passages?.Animer(horloge, Rendu?.Champ);
             EauVivante?.Animer(horloge, premiereVisible, derniereVisible);
             Voile?.Animer(Time.deltaTime);
@@ -121,6 +125,9 @@ namespace IdlePond.Jeu.Scene
         void SurEvenements(IReadOnlyList<IdlePond.Jeu.EvenementDeJeu> evenements)
         {
             Reactions.Recevoir(evenements, Time.timeAsDouble, presentes);
+            // Le sol qui s'ouvre (le puits, 2026-11-25).
+            foreach (var e in evenements)
+                if (e.Genre == IdlePond.Jeu.GenreDEvenement.CreuxOuvert) decor?.Ouvrir((int)e.Valeur, Time.timeAsDouble);
             RetoursVisuels?.Recevoir(evenements, Time.timeAsDouble, Vue != null ? Vue.Paliers.Count : 1, Nageurs != null ? Nageurs.CentreDuPremier : null);
         }
 

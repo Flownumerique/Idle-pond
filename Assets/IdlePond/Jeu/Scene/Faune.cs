@@ -194,14 +194,17 @@ namespace IdlePond.Jeu.Scene
 
         public static int StadeDesFleurs(int renaissances) => renaissances >= 6 ? 2 : renaissances >= 3 ? 1 : 0;
 
+        /// Sur la corniche de la bande (le puits, 2026-11-25), chacune dans sa case : celles qui
+        /// poussent à la renaissance suivante ne font pas bouger les autres.
         public static IReadOnlyList<PoseDeFaune> Jardin(int bande, int renaissances)
         {
             var fleurs = new List<PoseDeFaune>();
             var stade = StadeDesFleurs(renaissances);
+            var corniche = Puits.CornicheDe(bande);
             for (var i = 0; i < FleursParBande(renaissances); i++)
             {
-                var x = 14 + i * 57 + (int)((uint)(bande * 7919 + i * 104729) % 17u);
-                fleurs.Add(new PoseDeFaune(FLEUR, stade, x, -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 3));
+                var x = Puits.XSurLaCorniche(corniche, i, 6, DESSINS[FLEUR].Cadre.Largeur, 11);
+                fleurs.Add(new PoseDeFaune(FLEUR, stade, x, corniche.Sol));
             }
             return fleurs;
         }
@@ -211,23 +214,30 @@ namespace IdlePond.Jeu.Scene
         public const double DUREE_DE_LA_PROCESSION = 7.0;
         public const int ECART_DANS_LA_PROCESSION = 18;
 
-        /// La procession, à cet avancement : quatre écrevisses qui traversent le fond de la
-        /// bande de gauche à droite, la première porte la bannière. Seules celles qui sont dans
-        /// le champ sont rendues.
+        /// <summary>
+        /// La procession, à cet avancement : quatre écrevisses sortent de la paroi sur la
+        /// corniche de la bande (le puits, 2026-11-25), la première porte la bannière jusqu'à la
+        /// pointe ; puis elles font demi-tour et rentrent dans la roche. Seules celles qui sont
+        /// sorties de la paroi sont rendues.
+        /// </summary>
         public static IReadOnlyList<PoseDeFaune> Procession(int bande, double avancement)
         {
             var poses = new List<PoseDeFaune>();
             if (avancement <= 0 || avancement >= 1) return poses;
+            var corniche = Puits.CornicheDe(bande);
             var largeur = DESSINS[ECREVISSE].Cadre.Largeur;
-            var parcours = Gabarits.LARGEUR_VISEE + largeur + ECART_DANS_LA_PROCESSION * ECREVISSES;
-            var tete = -largeur + (int)Math.Round(avancement * parcours);
-            var bas = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 4;
+            var aller = avancement < 0.5;
+            var p = aller ? avancement * 2 : (1 - avancement) * 2;
+            // Jusqu'où la tête s'avance depuis la paroi : presque la pointe.
+            var portee = corniche.Longueur - largeur - 6;
+            var tete = -largeur + (int)Math.Round(p * (portee + largeur));
             for (var i = 0; i < ECREVISSES; i++)
             {
-                var x = tete - i * ECART_DANS_LA_PROCESSION;
-                if (x + largeur <= 0 || x >= Gabarits.LARGEUR_VISEE) continue;
-                var pas = ((x / 3) % 2 + 2) % 2;
-                poses.Add(new PoseDeFaune(i == 0 ? ECREVISSE_BANNIERE : ECREVISSE, pas, x, bas));
+                var d = tete - i * ECART_DANS_LA_PROCESSION;
+                if (d < 0 || d > portee) continue;
+                var x = corniche.AGauche ? corniche.Debut + d : corniche.Fin - largeur - d;
+                var pas = ((d / 3) % 2 + 2) % 2;
+                poses.Add(new PoseDeFaune(i == 0 ? ECREVISSE_BANNIERE : ECREVISSE, pas, x, corniche.Sol, corniche.AGauche == aller));
             }
             return poses;
         }

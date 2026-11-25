@@ -151,7 +151,7 @@ namespace IdlePond.Jeu.Scene
                     var creux = (int)evenement.Valeur;
                     // La percée vers un nouveau lieu jaillit par la brèche de son seuil.
                     return Lieux.OuvreUnLieu(creux)
-                        ? new Gerbe(GenreDeGerbe.Percee, new Pixel(Lieux.XDeLaBreche, -creux * h - 4), instant)
+                        ? new Gerbe(GenreDeGerbe.Percee, new Pixel(Lieux.ACassure(creux) ? Lieux.XDeLaBreche : milieu, -creux * h - 4), instant)
                         : new Gerbe(GenreDeGerbe.RocheQuiCede, new Pixel(milieu, -creux * h - 4), instant);
                 case GenreDEvenement.SeuilFranchi:
                     var centre = centreDe?.Invoke(evenement.Sujet);

@@ -16,7 +16,24 @@ namespace IdlePond.Jeu.Scene
         [Serializable] public sealed class MarqueDAssise { public string Assise; public Sprite[] ParStade = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDEspece { public string Espece; public Sprite[] Images = Array.Empty<Sprite>(); }
         [Serializable] public sealed class ImagesDeFaune { public string Nom; public Sprite[] Images = Array.Empty<Sprite>(); }
-        [Serializable] public sealed class DecorDAssise { public string Assise; public Sprite Fond; public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; public Sprite Seuil; }
+        [Serializable] public sealed class DecorDAssise
+        {
+            public string Assise;
+            /// Par rang de palier dans le lieu (le puits, 2026-11-25) : l'eau, les parois, la corniche.
+            public Sprite[] Eaux = Array.Empty<Sprite>();
+            public Sprite[] Parois = Array.Empty<Sprite>();
+            public Sprite[] Corniches = Array.Empty<Sprite>();
+            /// Le sol du fond du puits : la vase et ses herbes, ou les galets.
+            public Sprite Lit;
+            public Sprite Roche; public Sprite Berge; public Sprite Rayons; public Sprite Ambiance; public Sprite Seuil;
+
+            /// Le dessin du `rang`-ième palier ; au-delà de ce qui est dessiné, le dernier.
+            public Sprite EauDu(int rang) => Au(Eaux, rang);
+            public Sprite ParoisDu(int rang) => Au(Parois, rang);
+            public Sprite CornicheDu(int rang) => Au(Corniches, rang);
+            static Sprite Au(Sprite[] dessins, int rang) =>
+                dessins == null || dessins.Length == 0 ? null : dessins[Math.Max(0, Math.Min(rang, dessins.Length - 1))];
+        }
 
         /// L'éveil d'un stade (bible v0.4) : ses runes, les deux images de son voile, l'anneau,
         /// l'aura. Tous sauf les runes sont sur le cadre d'éveil, plus grand que le corps.

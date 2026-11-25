@@ -58,10 +58,24 @@ namespace IdlePond.Editeur
             // Le héros et les six tribus n'ont plus de provisoire : ils sont dessinés — le héros
             // par `outils/da/heros.py` (bible v0.4), les poissons de troupe par
             // `outils/da/especes.py` (Codex v1.4, maquette validée).
+            DecorDArt precedent = null;
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 var decor = RegistreDArt.DecorDe(assise);
-                sortie[Chemins.Fond(assise)] = DessinerFond(decor).EnPng();
+                // Le puits (2026-11-25) : l'eau de chaque palier, tranche d'un dégradé qui court
+                // sur tout le lieu, fondue dans celle d'au-dessus si le lieu se raccorde en fondu ;
+                // les parois et la corniche de chaque palier ; le sol du fond.
+                var rangs = Chemins.Rangs(assise).ToList();
+                var fondu = decor.Jonction == JonctionDeLieu.Fondu ? precedent : null;
+                foreach (var rang in rangs)
+                {
+                    var palier = Chemins.PremierPalier(assise) + rang;
+                    sortie[Chemins.Eau(assise, rang)] = DessinerEau(decor, rang, rangs.Count, fondu).EnPng();
+                    sortie[Chemins.Parois(assise, rang)] = DessinerParois(decor, palier).EnPng();
+                    sortie[Chemins.Corniche(assise, rang)] = DessinerCorniche(decor, palier).EnPng();
+                }
+                sortie[Chemins.Lit(assise)] = DessinerLit(decor).EnPng();
+                precedent = decor;
                 sortie[Chemins.Roche(assise)] = DessinerRoche(decor).EnPng();
                 sortie[Chemins.Rayons(assise)] = DessinerRayons(decor).EnPng();
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
@@ -100,32 +114,231 @@ namespace IdlePond.Editeur
 
         /* ─── Le décor ───────────────────────────────────────────────────────────── */
 
-        /// Une bande d'eau qui se répète en largeur : l'eau, tramée du clair en haut au sombre en
-        /// bas (bible v0.3), et son fond : la vase et ses herbes, ou le lit de galets et sa
-        /// mousse. La lumière, elle, vient des Light2D. Tout ce qui s'y dessine a une période
-        /// qui divise la largeur (48) : la tuile se raccorde à elle-même. Dessinée pour la scène de
-        /// 360 px : chaque mesure est une fois et demie celle de 240.
-        static Toile DessinerFond(DecorDArt d)
+        /// <summary>
+        /// L'eau du `rang`-ième des `nombre` paliers d'un lieu (le puits, 2026-11-25) : une
+        /// tranche d'un seul dégradé qui court du haut du lieu à son fond — du clair au sombre
+        /// (bible v0.3), en aplats dont seul le dernier quart est tramé vers le suivant. Plus de
+        /// sol ici : il n'y en a qu'au fond du puits (`DessinerLit`). Un lieu en fondu mêle le haut
+        /// de son premier palier à l'eau la plus sombre de celui d'au-dessus (`fondu`). La lumière,
+        /// elle, vient des Light2D. Se répète en largeur : tout y a une période qui divise 48.
+        /// </summary>
+        static Toile DessinerEau(DecorDArt d, int rang, int nombre, DecorDArt fondu)
         {
             var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
+            var hauteurDuLieu = nombre * toile.Hauteur - 1.0;
             for (var y = 0; y < toile.Hauteur; y++)
                 for (var x = 0; x < toile.Largeur; x++)
                 {
-                    // Des aplats, du clair en haut au sombre en bas ; seul le dernier quart de
-                    // chaque aplat est tramé vers le suivant, pour que l'eau reste lisse.
-                    var profondeur = (1 - y / (double)(toile.Hauteur - 1)) * (d.Eau.Count - 1);
+                    var descente = rang * toile.Hauteur + (toile.Hauteur - 1 - y);
+                    // Les nappes ondulent : leur passage de l'une à l'autre n'est pas une règle.
+                    var onde = 3 * Math.Sin(2 * Math.PI * x / toile.Largeur) + 2 * Math.Sin(4 * Math.PI * x / toile.Largeur + 1);
+                    var profondeur = Math.Max(0, Math.Min(hauteurDuLieu, descente + onde)) / hauteurDuLieu * (d.Eau.Count - 1);
                     var i = Math.Min((int)profondeur, d.Eau.Count - 1);
                     var passage = (profondeur - i - 0.75) / 0.25;
                     var couleur = i + 1 < d.Eau.Count && Toile.Seuil(x, y) < passage ? d.Eau[i + 1] : d.Eau[i];
-                    if (d.Galets.Count == 0 && (y <= 2 || (y == 3 && x % 2 == 0))) couleur = d.Vase;
+                    // Le fondu : l'eau d'au-dessus descend dans la première bande et s'y perd.
+                    if (fondu != null && rang == 0 && 1 - descente / (toile.Hauteur * 0.7) > Toile.Seuil(x, y))
+                        couleur = fondu.Eau[fondu.Eau.Count - 1];
                     // Le courant du Gour : des traits d'écume qui filent, en pointillés décalés
                     // d'une rangée à l'autre.
                     if (d.Courant && y > 9 && y % 13 == 6 && (x + y * 3) % 24 < 10 && x % 2 == 0)
                         couleur = d.Ecume.Count > 0 ? d.Ecume[(y / 13) % d.Ecume.Count] : d.Rayon;
                     toile.Poser(x, y, couleur);
                 }
-            if (d.Galets.Count > 0) DessinerGalets(toile, d);
-            if (d.Herbes.Count > 0) DessinerHerbes(toile, d);
+            return toile;
+        }
+
+        public const int HAUTEUR_DU_LIT = 30;
+        const int LARGEUR_DU_LIT = 192;
+
+        /// <summary>
+        /// Le sol du fond du puits : la vase et ses herbes, ou le lit de galets et sa mousse, et
+        /// les grosses pierres du Gour. Posé au bas du dernier palier ouvert seulement ; il
+        /// descend quand on creuse. Pave le décor (192 divise 576).
+        /// </summary>
+        static Toile DessinerLit(DecorDArt d)
+        {
+            var motif = new Toile(Gabarits.LARGEUR_DE_FOND, HAUTEUR_DU_LIT);
+            if (d.Galets.Count == 0)
+                for (var x = 0; x < motif.Largeur; x++)
+                {
+                    for (var y = 0; y <= 2; y++) motif.Poser(x, y, d.Vase);
+                    if (x % 2 == 0) motif.Poser(x, 3, d.Vase);
+                }
+            if (d.Galets.Count > 0) DessinerGalets(motif, d);
+            if (d.Herbes.Count > 0) DessinerHerbes(motif, d);
+            var toile = new Toile(LARGEUR_DU_LIT, HAUTEUR_DU_LIT);
+            for (var y = 0; y < toile.Hauteur; y++)
+                for (var x = 0; x < toile.Largeur; x++)
+                {
+                    var c = motif.Lire(x % motif.Largeur, y);
+                    if (c.HasValue) toile.Poser(x, y, c.Value);
+                }
+            if (d.Pierres.Count > 0)
+                foreach (var (cx, rx, ry) in new[] { (52.0, 15.0, 9.0), (141.0, 18.0, 10.5) })
+                    for (var y = 0; y <= (int)ry + 3; y++)
+                        for (var x = (int)(cx - rx); x <= (int)(cx + rx); x++)
+                        {
+                            var u = (x - cx) / rx;
+                            var v = (y - 3) / ry;
+                            if (u * u + v * v > 1) continue;
+                            var couleur = v > 0.45 ? d.Pierres[1] : d.Pierres[0];
+                            if (d.Mousse.HasValue && v > 0.75 && Toile.Seuil(x, y) < 0.5) couleur = d.Mousse.Value;
+                            toile.Poser(x, y, couleur);
+                        }
+            return toile;
+        }
+
+        /* ─── Les parois et les corniches du puits ─────────────────────────────── */
+
+        /// Une pierre de paroi, en coordonnées du MONDE : une cellule de Voronoï autour d'un
+        /// germe tiré dans une grille de 12 × 12. Les parois de deux paliers se raccordent donc
+        /// sans couture. `Ecart` : la distance à la fissure la plus proche.
+        static (bool Claire, double Ecart) PierreDuMonde(int xw, int yw)
+        {
+            const int CASE = 12;
+            int Plancher(int a) => a >= 0 ? a / CASE : -((-a + CASE - 1) / CASE);
+            var cx = Plancher(xw);
+            var cy = Plancher(yw);
+            double premiere = double.MaxValue, seconde = double.MaxValue;
+            var claire = false;
+            for (var dy = -1; dy <= 1; dy++)
+                for (var dx = -1; dx <= 1; dx++)
+                {
+                    var c = cx + dx;
+                    var r = cy + dy;
+                    var h = (uint)(c * 73856093) ^ (uint)(r * 19349663) ^ 0x9E3779B9u;
+                    h ^= h >> 13; h *= 0x5bd1e995; h ^= h >> 15;
+                    var gx = c * CASE + 1 + (h & 0xFF) / 255.0 * (CASE - 2);
+                    var gy = r * CASE + 1 + ((h >> 8) & 0xFF) / 255.0 * (CASE - 2);
+                    var ddx = (xw - gx) * 0.8;
+                    var ddy = yw - gy;
+                    var distance = Math.Sqrt(ddx * ddx + ddy * ddy);
+                    if (distance < premiere) { seconde = premiere; premiere = distance; claire = (h >> 16 & 3) != 0; }
+                    else if (distance < seconde) seconde = distance;
+                }
+            return (claire, seconde - premiere);
+        }
+
+        /// La couleur d'un pixel de roche à `profond` pixels du bord de l'eau : l'arête éclairée
+        /// au bord, puis la pierre et ses fissures.
+        static int CouleurDeParoi(DecorDArt d, int xw, int yw, int profond)
+        {
+            if (profond == 0) return d.Roche[2];
+            if (profond == 1) return Toile.Seuil(xw & 3, yw & 3) < 0.5 ? d.Roche[2] : d.Roche[1];
+            var (claire, ecart) = PierreDuMonde(xw, yw);
+            if (ecart < 1.35) return d.Roche[3];
+            if (PierreDuMonde(xw, yw + 1).Ecart < 1.35 && Toile.Seuil(xw & 3, yw & 3) < 0.7) return d.Roche[2];
+            return claire ? d.Roche[1] : d.Roche[0];
+        }
+
+        static uint HacherLaParoi(int a, uint sel)
+        {
+            var h = (uint)(a * 7919) + sel * 104729u;
+            h ^= h >> 15; h *= 0x2c1b3c6dU; h ^= h >> 12;
+            return h;
+        }
+
+        /// <summary>
+        /// Les parois d'un palier (le puits, 2026-11-25) : de la roche sur toute la largeur du
+        /// décor, sauf l'eau entre `Puits.BordGauche` et `Puits.BordDroit` — un bord qui ondule
+        /// et se raccorde au palier d'au-dessus et d'au-dessous. Des touffes d'herbe (ou de
+        /// mousse) s'accrochent au bord.
+        /// </summary>
+        static Toile DessinerParois(DecorDArt d, int palier)
+        {
+            var toile = new Toile(Gabarits.LARGEUR_DU_DECOR, Gabarits.HAUTEUR_DE_BANDE);
+            var bas = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE;
+            var touffe = d.Mousse ?? (d.Herbes.Count > 0 ? d.Herbes[0] : d.Roche[2]);
+            for (var y = 0; y < toile.Hauteur; y++)
+            {
+                var yw = bas + y;
+                var gauche = Puits.BordGauche(yw);
+                var droit = Puits.BordDroit(yw);
+                for (var x = 0; x < toile.Largeur; x++)
+                {
+                    var xw = Gabarits.GAUCHE_DU_DECOR + x;
+                    if (xw < gauche) toile.Poser(x, y, CouleurDeParoi(d, xw, yw, gauche - 1 - xw));
+                    else if (xw > droit) toile.Poser(x, y, CouleurDeParoi(d, xw, yw, xw - droit - 1));
+                }
+                // Une touffe de temps en temps, qui déborde du bord sur l'eau.
+                var h = HacherLaParoi(yw, 3);
+                if (h % 9u == 0)
+                    for (var i = 0; i < 1 + (int)((h >> 8) % 3u); i++) toile.Poser(gauche + i - Gabarits.GAUCHE_DU_DECOR, y, touffe);
+                if ((h >> 4) % 9u == 0)
+                    for (var i = 0; i < 1 + (int)((h >> 12) % 3u); i++) toile.Poser(droit - i - Gabarits.GAUCHE_DU_DECOR, y, touffe);
+            }
+            return toile;
+        }
+
+        public const int HAUTEUR_DE_CORNICHE = 44;
+        /// La corniche pend sous le bas de son palier : sa toile commence ce nombre de pixels
+        /// plus bas (`Decor` la pose là).
+        public const int PENDANT_DE_CORNICHE = Gabarits.HAUTEUR_DE_BANDE / 7;
+
+        /// <summary>
+        /// La corniche d'un palier (`Puits.CornicheDe`) : un bloc de roche qui sort de sa paroi,
+        /// épais contre elle, qui s'amincit en pointe ; son dessus presque plat (on s'y pose, à
+        /// `Corniche.Sol`), son dessous bosselé qui pend sous le palier, avec quelques gouttes de
+        /// pierre ; le dessus éclairé, et ce qui y pousse — des herbes dans la Noue, de la mousse
+        /// et des galets dans le Gour. Sa toile couvre la largeur du décor et commence
+        /// `PENDANT_DE_CORNICHE` pixels sous le bas du palier.
+        /// </summary>
+        static Toile DessinerCorniche(DecorDArt d, int palier)
+        {
+            var toile = new Toile(Gabarits.LARGEUR_DU_DECOR, HAUTEUR_DE_CORNICHE);
+            var c = Puits.CornicheDe(palier);
+            var pied = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE - PENDANT_DE_CORNICHE;
+            // Le dessus : la rangée juste sous `Sol`.
+            var dessus = c.Sol - 1 - pied;
+            var hasard = Hasard(31u + (uint)palier);
+            const int EPAISSEUR_A_LA_PAROI = 16;
+            for (var x = 0; x < toile.Largeur; x++)
+            {
+                var xw = Gabarits.GAUCHE_DU_DECOR + x;
+                // La distance à la paroi, le long de la corniche : négative dans la paroi.
+                var s = c.AGauche ? xw - c.Debut : c.Fin - 1 - xw;
+                if (s >= c.Longueur) continue;
+                var u = Math.Max(0.0, s / (double)c.Longueur);
+                // Épaisse à la paroi, en pointe au bout ; le dessous ondule et se bosselle.
+                var epaisseur = 3 + (EPAISSEUR_A_LA_PAROI - 3) * Math.Pow(1 - u, 1.4)
+                    + 1.6 * Math.Sin(xw * 0.23 + palier) + 1.1 * Math.Sin(xw * 0.57 + 2 * palier);
+                var reste = c.Longueur - s;
+                var haut = dessus - (reste < 4 ? 4 - reste : 0) + ((xw + palier) % 23 == 0 && reste > 8 ? 1 : 0);
+                var dessous = Math.Max(0, haut - (int)Math.Round(Math.Max(2, epaisseur)));
+                // Une goutte de pierre qui pend, de loin en loin.
+                if (reste > 10 && s > 4 && HacherLaParoi(xw, (uint)palier + 7) % 29u == 0) dessous = Math.Max(0, dessous - 2 - (int)(HacherLaParoi(xw, 9) % 3u));
+                for (var y = dessous; y <= haut; y++)
+                {
+                    int couleur;
+                    if (y == haut) couleur = d.Roche[2];
+                    else if (y == haut - 1 && Toile.Seuil(x, y) < 0.5) couleur = d.Roche[2];
+                    else if (y == dessous) couleur = d.Roche[3];
+                    else
+                    {
+                        var (claire, ecart) = PierreDuMonde(xw, pied + y);
+                        couleur = ecart < 1.35 ? d.Roche[3] : claire ? d.Roche[1] : d.Roche[0];
+                    }
+                    toile.Poser(x, y, couleur);
+                }
+                if (s < 0 || reste < 3) continue;
+                // Ce qui pousse dessus.
+                if (d.Herbes.Count > 0 && hasard() < 0.16)
+                {
+                    var brin = d.Herbes[(int)(hasard() * d.Herbes.Count)];
+                    var longueur = 3 + (int)(hasard() * 8);
+                    for (var i = 1; i <= longueur; i++)
+                        toile.Poser(x + (int)Math.Round(Math.Sin(i * 0.5 + x) * 0.8), haut + i, brin);
+                }
+                if (d.Mousse.HasValue && Toile.Seuil(x, haut) < 0.45) toile.Poser(x, haut, d.Mousse.Value);
+                if (d.Galets.Count > 1 && hasard() < 0.05)
+                {
+                    var galet = d.Galets[(int)(hasard() * (d.Galets.Count - 1))];
+                    toile.Poser(x, haut + 1, galet);
+                    toile.Poser(x + 1, haut + 1, galet);
+                    toile.Poser(x + 1, haut + 2, galet);
+                }
+            }
             return toile;
         }
 
@@ -335,18 +548,6 @@ namespace IdlePond.Editeur
                     var y = 9 + (int)(hasard() * (toile.Hauteur - 15));
                     toile.Poser(x, y, d.Grains[k % d.Grains.Count]);
                 }
-            if (d.Pierres.Count > 0)
-                foreach (var (cx, rx, ry) in new[] { (105.0, 15.0, 9.0), (294.0, 18.0, 10.5) })
-                    for (var y = 0; y <= (int)ry + 3; y++)
-                        for (var x = (int)(cx - rx); x <= (int)(cx + rx); x++)
-                        {
-                            var u = (x - cx) / rx;
-                            var v = (y - 3) / ry;
-                            if (u * u + v * v > 1) continue;
-                            var couleur = v > 0.45 ? d.Pierres[1] : d.Pierres[0];
-                            if (d.Mousse.HasValue && v > 0.75 && Toile.Seuil(x, y) < 0.5) couleur = d.Mousse.Value;
-                            toile.Poser(x, y, couleur);
-                        }
             if (d.Meduses.Count > 0)
                 foreach (var (cx, cy) in new[] { (60, 60), (225, 45), (333, 66) })
                 {
@@ -405,32 +606,29 @@ namespace IdlePond.Editeur
         /// <summary>
         /// Une couche des caustiques (2026-11-25) : le réseau de lumière que la surface projette
         /// dans l'eau — les arêtes d'un pavage de cellules aplaties, d'un pixel d'épaisseur, en
-        /// blanc teinté au rendu. Le réseau est plein en haut de la bande, s'émiette en
-        /// descendant et s'éteint aux deux tiers : la lumière n'atteint pas le fond. Il se
-        /// raccorde à lui-même en largeur.
+        /// blanc teinté au rendu. Égal sur toute la bande et raccordé à lui-même en largeur
+        /// comme en hauteur : d'une bande à l'autre, pas de couture (le puits). C'est la lumière
+        /// de la scène qui l'éteint en descendant.
         /// </summary>
         static Toile DessinerCaustiques(int couche)
         {
             var toile = new Toile(Eau.LARGEUR_DES_CAUSTIQUES, Gabarits.HAUTEUR_DE_BANDE);
             var hasard = Hasard(couche == 0 ? 101u : 202u);
-            const int CELLULES = 14;
+            const int CELLULES = 9;
             var centres = new (double X, double Y)[CELLULES];
             for (var i = 0; i < CELLULES; i++) centres[i] = (hasard() * toile.Largeur, hasard() * toile.Hauteur);
             for (var y = 0; y < toile.Hauteur; y++)
             {
-                // 0 en haut de la bande, 1 au fond.
-                var profondeur = (toile.Hauteur - 1 - y) / (double)(toile.Hauteur - 1);
-                var force = 1.6 * (1 - profondeur / 0.66);
                 for (var x = 0; x < toile.Largeur; x++)
                 {
-                    if (force <= Toile.Seuil(x, y)) continue;
                     double premier = double.MaxValue, second = double.MaxValue;
                     foreach (var (cx, cy) in centres)
                     {
                         var dx = Math.Abs(x - cx);
                         dx = Math.Min(dx, toile.Largeur - dx);
+                        var ady = Math.Abs(y - cy);
                         // Aplaties : vues de biais, les cellules sont plus larges que hautes.
-                        var dy = (y - cy) * 1.6;
+                        var dy = Math.Min(ady, toile.Hauteur - ady) * 1.6;
                         var dist = Math.Sqrt(dx * dx + dy * dy);
                         if (dist < premier) { second = premier; premier = dist; }
                         else if (dist < second) second = dist;

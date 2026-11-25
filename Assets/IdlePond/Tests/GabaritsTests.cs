@@ -308,8 +308,19 @@ namespace IdlePond.Tests
         {
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
-                LirePng(Art(Chemins.Fond(assise)), out var l, out var h);
-                Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE)));
+                int l, h;
+                foreach (var rang in Chemins.Rangs(assise))
+                {
+                    // Le puits (2026-11-25) : l'eau pave, les parois et la corniche couvrent le décor.
+                    LirePng(Art(Chemins.Eau(assise, rang)), out l, out h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE)));
+                    LirePng(Art(Chemins.Parois(assise, rang)), out l, out h);
+                    Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DU_DECOR, Gabarits.HAUTEUR_DE_BANDE)));
+                    LirePng(Art(Chemins.Corniche(assise, rang)), out l, out h);
+                    Assert.That(l, Is.EqualTo(Gabarits.LARGEUR_DU_DECOR));
+                }
+                LirePng(Art(Chemins.Lit(assise)), out l, out h);
+                Assert.That(Gabarits.LARGEUR_DU_DECOR % l, Is.EqualTo(0), "le sol pave le décor");
                 LirePng(Art(Chemins.Roche(assise)), out l, out h);
                 Assert.That(new Cadre(l, h), Is.EqualTo(new Cadre(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE)), "la roche pave comme le fond");
                 LirePng(Art(Chemins.Rayons(assise)), out l, out h);
@@ -389,7 +400,11 @@ namespace IdlePond.Tests
             }
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
-                Assert.That(catalogue.DecorDe(assise).Fond, Is.Not.Null);
+                var rangs = Chemins.Rangs(assise).Count();
+                Assert.That(catalogue.DecorDe(assise).Eaux, Has.Length.EqualTo(rangs).And.All.Not.Null, assise);
+                Assert.That(catalogue.DecorDe(assise).Parois, Has.Length.EqualTo(rangs).And.All.Not.Null, assise);
+                Assert.That(catalogue.DecorDe(assise).Corniches, Has.Length.EqualTo(rangs).And.All.Not.Null, assise);
+                Assert.That(catalogue.DecorDe(assise).Lit, Is.Not.Null, assise);
                 Assert.That(catalogue.DecorDe(assise).Roche, Is.Not.Null);
                 Assert.That(catalogue.DecorDe(assise).Rayons, Is.Not.Null);
                 if (RegistreDArt.DecorDe(assise).AUneAmbiance) Assert.That(catalogue.DecorDe(assise).Ambiance, Is.Not.Null, assise);

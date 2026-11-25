@@ -112,9 +112,17 @@ namespace IdlePond.TestsDeJeu
             yield return null;
             var decor = scene.transform.Find("Decor");
             Assert.That(decor, Is.Not.Null);
-            var bandes = 0;
-            foreach (Transform enfant in decor) if (enfant.name.StartsWith("Bande ")) bandes++;
-            Assert.That(bandes, Is.EqualTo(PALIERS_DE_LA_NOUE));
+            int Compter(string prefixe)
+            {
+                var n = 0;
+                foreach (Transform enfant in decor) if (enfant.name.StartsWith(prefixe)) n++;
+                return n;
+            }
+            // Le puits (2026-11-25) : une eau, des parois et une corniche par palier ; un seul sol, au fond.
+            Assert.That(Compter("Eau "), Is.EqualTo(PALIERS_DE_LA_NOUE));
+            Assert.That(Compter("Parois "), Is.EqualTo(PALIERS_DE_LA_NOUE));
+            Assert.That(Compter("Corniche "), Is.EqualTo(PALIERS_DE_LA_NOUE));
+            Assert.That(Compter("Sol du fond"), Is.EqualTo(1));
         }
 
         [UnityTest]

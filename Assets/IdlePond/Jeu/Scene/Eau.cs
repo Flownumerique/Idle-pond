@@ -11,8 +11,9 @@ namespace IdlePond.Jeu.Scene
     /// bête. Pur et déterministe ; `EauVivante` le dessine.
     ///
     /// - **Les caustiques** : le réseau de lumière que la surface projette, deux couches
-    ///   (`Eau/caustiques.png`) qui glissent en sens contraires et se croisent. C'est de la
-    ///   lumière : sans éclairage, et d'autant plus pâle que le palier est sombre.
+    ///   (`Eau/caustiques-{0,1}.png`) qui glissent en sens contraires et se croisent. Dans la
+    ///   lumière de la scène : elle les éteint en descendant, sans marche d'un palier à l'autre
+    ///   (le puits). Rendues sans éclairage, elles refaisaient des étages.
     /// - **Les bulles**, partout : elles montent du fond de chaque bande.
     /// - **Ce qui est propre à un lieu**, lu dans son décor : le pollen qui dérive dans la Noue
     ///   (`DecorDArt.Grains`), les filets du courant qui filent dans le Gour (`DecorDArt.Courant`).
@@ -30,7 +31,7 @@ namespace IdlePond.Jeu.Scene
         public const double VITESSE_DANS_LE_COURANT = 2.5;
 
         /// L'opacité de chaque couche dans une bande en pleine lumière.
-        static readonly double[] FORCES = { 0.42, 0.26 };
+        static readonly double[] FORCES = { 0.30, 0.18 };
 
         public const int COUCHES_DE_CAUSTIQUES = 2;
 
@@ -44,10 +45,11 @@ namespace IdlePond.Jeu.Scene
             return r < 0 ? r + LARGEUR_DES_CAUSTIQUES : r;
         }
 
-        /// L'opacité d'une couche dans un palier : la lumière qui y reste. La lumière baisse en
-        /// descendant (GDD §15.2) ; ses reflets aussi.
+        /// L'opacité d'une couche dans un palier : un peu moins à chaque palier, assez peu pour
+        /// qu'on ne voie pas la marche — c'est la lumière de la scène qui fait le gros de
+        /// l'extinction (GDD §15.2 : la lumière baisse en descendant ; ses reflets aussi).
         public static double ForceDesCaustiques(int couche, int palier) =>
-            FORCES[couche] * RegistreDArt.LumiereDuPalier(palier);
+            FORCES[couche] * (0.5 + 0.5 * RegistreDArt.LumiereDuPalier(palier));
 
         /// La couleur des reflets : celle des rayons du lieu.
         public static int CouleurDesCaustiques(string assise) => RegistreDArt.DecorDe(assise).Rayon;
@@ -67,7 +69,7 @@ namespace IdlePond.Jeu.Scene
             const double MONTEE = 2.0 / 3.0;
             if (t > MONTEE) return null;
             t /= MONTEE;
-            var x0 = 14 + (int)((h >> 12) % (uint)(Gabarits.LARGEUR_VISEE - 28));
+            var x0 = Puits.MARGE_DES_PAROIS + 2 + (int)((h >> 12) % (uint)(Gabarits.LARGEUR_VISEE - 2 * Puits.MARGE_DES_PAROIS - 4));
             var x = x0 + (int)Math.Round(1.5 * Math.Sin(secondes * 4.0 + numero * 2.1));
             var bas = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 6;
             // Elle accélère un peu en montant.
@@ -94,7 +96,7 @@ namespace IdlePond.Jeu.Scene
             var h = Hacher(bande, numero, 73);
             var t = Modulo(secondes + (h % 1000u) / 1000.0 * CHUTE_D_UN_GRAIN, CHUTE_D_UN_GRAIN) / CHUTE_D_UN_GRAIN;
             if (t > 0.85) return null;
-            var x0 = 10 + (int)((h >> 10) % (uint)(Gabarits.LARGEUR_VISEE - 20));
+            var x0 = Puits.MARGE_DES_PAROIS + 3 + (int)((h >> 10) % (uint)(Gabarits.LARGEUR_VISEE - 2 * Puits.MARGE_DES_PAROIS - 14));
             var x = x0 + (int)Math.Round(8 * t + 3 * Math.Sin(secondes * 0.7 + numero * 1.3));
             var haut = -bande * Gabarits.HAUTEUR_DE_BANDE - 6;
             return new Pixel(x, haut - (int)Math.Round(t * (Gabarits.HAUTEUR_DE_BANDE - 18)));
@@ -104,9 +106,9 @@ namespace IdlePond.Jeu.Scene
 
         public const int FILETS = 4;
 
-        /// Un filet du courant à cet instant : il traverse le cadre de gauche à droite, à sa
-        /// hauteur dans la bande, entre la surface et le lit de galets. Toujours là : le
-        /// courant ne s'arrête pas.
+        /// Un filet du courant à cet instant : il file de gauche à droite, à sa hauteur dans la
+        /// bande, d'une paroi du puits à l'autre — il naît au bord de l'une et se perd dans
+        /// l'autre (null tant qu'il n'est pas entre les deux).
         public static FiletDEau Filet(int bande, int numero, double secondes)
         {
             var h = Hacher(bande, numero, 97);
@@ -116,7 +118,8 @@ namespace IdlePond.Jeu.Scene
             var x = -MARGE + (int)Math.Floor(Modulo(secondes * vitesse + (h >> 6) % (uint)parcours, parcours));
             var bas = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE;
             var y = bas + 14 + (int)((h >> 14) % (uint)(Gabarits.HAUTEUR_DE_BANDE - 26));
-            return new FiletDEau(x, y, 4 + (int)((h >> 20) % 7u));
+            var filet = new FiletDEau(x, y, 4 + (int)((h >> 20) % 7u));
+            return x < Puits.BordGauche(y) || x + filet.Longueur - 1 > Puits.BordDroit(y) ? null : filet;
         }
 
         /// Ce qu'un lieu met dans son eau, lu dans son décor : du pollen s'il a des grains, des

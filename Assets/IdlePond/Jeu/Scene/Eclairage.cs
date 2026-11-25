@@ -15,6 +15,10 @@ namespace IdlePond.Jeu.Scene
     {
         readonly Transform racine;
         readonly List<Light2D> parBande = new List<Light2D>();
+        // Le dégradé de chaque bande, du haut de son palier au haut du suivant : recréés à
+        // chaque dessin, détruits avec lui.
+        readonly List<UnityEngine.Object> degradesDesBandes = new List<UnityEngine.Object>();
+        const int MARCHES_D_UNE_BANDE = 16;
         Light2D surLaRoche;
         // Le dégradé de la roche, du haut (clair) vers le bas (éteint) : voir `EclairerLaRoche`.
         readonly Texture2D degrade;
@@ -57,6 +61,8 @@ namespace IdlePond.Jeu.Scene
         {
             foreach (var lumiere in parBande) if (lumiere != null) UnityEngine.Object.Destroy(lumiere.gameObject);
             parBande.Clear();
+            foreach (var o in degradesDesBandes) if (o != null) UnityEngine.Object.Destroy(o);
+            degradesDesBandes.Clear();
             var l = Gabarits.LARGEUR_DU_DECOR;
             var h = Gabarits.HAUTEUR_DE_BANDE;
             foreach (var p in vue.Paliers)
@@ -67,16 +73,40 @@ namespace IdlePond.Jeu.Scene
                 var lumiere = go.AddComponent<Light2D>();
                 // Une lumière de sprite, et non de forme libre : sans le paquet 2D Common, URP ne
                 // triangule pas l'intérieur d'une forme libre, qui ne s'éclaire alors que sur son
-                // pourtour. Le pixel blanc, d'une unité et pivot en bas à gauche, s'étire au
-                // rectangle de la bande par l'échelle.
-                go.transform.localScale = new Vector3(l, h, 1f);
+                // pourtour. Son cookie est un dégradé d'une unité de large, pivot en bas à gauche,
+                // étiré au rectangle de la bande par l'échelle : la lumière et sa teinte glissent
+                // du haut du palier à celles du suivant (le puits, 2026-11-25) — pas de marche
+                // d'un palier à l'autre, sauf au-dessus d'une cassure. URP multiplie la couleur
+                // de la lumière par le RGB du cookie : l'intensité est le maximum, le cookie le reste.
+                var haut = Ponderer(RegistreDArt.TeinteDuPalier(p.Index), RegistreDArt.LumiereDuPalier(p.Index));
+                var (lumiereDuBas, teinteDuBas) = RegistreDArt.LumiereAuBasDu(p.Index);
+                var bas = Ponderer(teinteDuBas, lumiereDuBas);
+                var plus = Mathf.Max(Mathf.Max(haut.maxColorComponent, bas.maxColorComponent), 1e-4f);
+                var degradeDeBande = new Texture2D(1, MARCHES_D_UNE_BANDE, TextureFormat.RGBA32, false)
+                    { name = "Lumiere de bande " + p.Index, wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+                for (var y = 0; y < MARCHES_D_UNE_BANDE; y++)
+                {
+                    var c = Color.Lerp(bas, haut, y / (float)(MARCHES_D_UNE_BANDE - 1)) / plus;
+                    degradeDeBande.SetPixel(0, y, new Color(c.r, c.g, c.b, 1f));
+                }
+                degradeDeBande.Apply();
+                var sprite = Sprite.Create(degradeDeBande, new Rect(0, 0, 1, MARCHES_D_UNE_BANDE), Vector2.zero, 1f);
+                degradesDesBandes.Add(sprite);
+                degradesDesBandes.Add(degradeDeBande);
+                go.transform.localScale = new Vector3(l, h / (float)MARCHES_D_UNE_BANDE, 1f);
                 lumiere.lightType = Light2D.LightType.Sprite;
-                lumiere.lightCookieSprite = rectangle;
-                lumiere.intensity = (float)RegistreDArt.LumiereDuPalier(p.Index);
-                lumiere.color = Briques.Couleur(RegistreDArt.TeinteDuPalier(p.Index));
+                lumiere.lightCookieSprite = sprite;
+                lumiere.intensity = plus;
+                lumiere.color = Color.white;
                 parBande.Add(lumiere);
             }
             EclairerLaRoche(vue);
+        }
+
+        static Color Ponderer(int teinte, double force)
+        {
+            var c = Briques.Couleur(teinte);
+            return new Color(c.r * (float)force, c.g * (float)force, c.b * (float)force, 1f);
         }
 
         /// <summary>
@@ -107,6 +137,7 @@ namespace IdlePond.Jeu.Scene
 
         public void Dispose()
         {
+            foreach (var o in degradesDesBandes) if (o != null) UnityEngine.Object.Destroy(o);
             UnityEngine.Object.Destroy(rectangle);
             UnityEngine.Object.Destroy(blanc);
             UnityEngine.Object.Destroy(rectangleDegrade);

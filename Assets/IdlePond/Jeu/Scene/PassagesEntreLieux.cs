@@ -34,7 +34,7 @@ namespace IdlePond.Jeu.Scene
             lieuxQuiViennent.Clear();
             if (vue == null) return;
             foreach (var p in vue.Paliers)
-                if (Lieux.OuvreUnLieu(p.Index)) vasquesOuvertes.Add(p.Index);
+                if (Lieux.ACassure(p.Index)) vasquesOuvertes.Add(p.Index);
             foreach (var r in vue.Roches)
                 if (Lieux.OuvreUnLieu(r.Index))
                     lieuxQuiViennent.Add((r.Index, Briques.Couleur(Lieux.CouleurDeLaMagie(r.Assise))));

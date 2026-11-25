@@ -68,7 +68,10 @@ namespace IdlePond.Editeur
             catalogue.Decors = RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.DecorDAssise
             {
                 Assise = a,
-                Fond = S(Chemins.Fond(a)),
+                Eaux = Chemins.Rangs(a).Select(r => S(Chemins.Eau(a, r))).ToArray(),
+                Parois = Chemins.Rangs(a).Select(r => S(Chemins.Parois(a, r))).ToArray(),
+                Corniches = Chemins.Rangs(a).Select(r => S(Chemins.Corniche(a, r))).ToArray(),
+                Lit = S(Chemins.Lit(a)),
                 Roche = S(Chemins.Roche(a)),
                 // Seulement là où il y en a une : sous terre, pas de berge.
                 Berge = RegistreDArt.DecorDe(a).Berge ? S(Chemins.Berge(a)) : null,

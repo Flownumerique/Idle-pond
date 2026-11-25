@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: db07656bf8e30cd40911d1d4c53b770a
+guid: 31fb129c772d3c3479180f610eaad68e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7585009627398372457
-    second: fond_0
+      213: 557700210252711998
+    second: parois-1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,12 +115,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fond_0
+      name: parois-1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 48
+        width: 576
         height: 84
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79380055ee1acb690800000000000000
-      internalID: -7585009627398372457
+      spriteID: e38064be2695db700800000000000000
+      internalID: 557700210252711998
       vertices: []
       indices: 
       edges: []
@@ -152,6 +152,6 @@ TextureImporter:
     nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData: idlepond:provisoire:3FD197F50E69D86C05276CE5AB2F6C9C14A17BF0
+  userData: idlepond:provisoire:46BA49D3615D16229ABFBFB95492E61210CCCC95
   assetBundleName: 
   assetBundleVariant: 

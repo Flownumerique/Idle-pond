@@ -31,7 +31,15 @@ namespace IdlePond.Editeur
         public static string ImageDEspece(string espece, int image) => $"Especes/{espece}-i{image}.png";
         public static string ImageDuRepresentant(string espece, int image) => $"Especes/representants/{espece}-i{image}.png";
         public static string ImageDeFaune(string nom, int image) => $"Faune/{nom}-i{image}.png";
-        public static string Fond(string assise) => $"Fonds/{assise}/fond.png";
+        /// Le puits (2026-11-25) : l'eau du `rang`-ième palier du lieu, une tranche d'un dégradé
+        /// qui court sur tout le lieu ; ses parois ; sa corniche ; et le sol du fond du puits.
+        public static string Eau(string assise, int rang) => $"Fonds/{assise}/eau-{rang}.png";
+        public static string Parois(string assise, int rang) => $"Fonds/{assise}/parois-{rang}.png";
+        public static string Corniche(string assise, int rang) => $"Fonds/{assise}/corniche-{rang}.png";
+        public static string Lit(string assise) => $"Fonds/{assise}/lit.png";
+        /// Les rangs des paliers d'un lieu : 0 pour son premier.
+        public static IEnumerable<int> Rangs(string assise) => Enumerable.Range(0, Assises.Toutes.First(a => a.Id == assise).NombreDePaliers);
+        public static int PremierPalier(string assise) => Assises.Toutes.First(a => a.Id == assise).IndexPremierPalier;
         public static string Roche(string assise) => $"Fonds/{assise}/roche.png";
         public static string Rayons(string assise) => $"Fonds/{assise}/rayons.png";
         public static string Berge(string assise) => $"Fonds/{assise}/berge.png";

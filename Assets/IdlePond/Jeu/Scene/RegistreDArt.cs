@@ -35,6 +35,9 @@ namespace IdlePond.Jeu.Scene
         /// couleur en descendant, de `TeinteDeLumiere` en haut jusqu'à celle-ci au fond. Rien :
         /// la même du haut en bas.
         public int? TeinteDuFond { get; init; }
+        /// Comment le lieu se raccorde à celui d'au-dessus : en fondu (le défaut), ou par une
+        /// cassure — un seuil de roche, l'eau et la lumière qui changent net (le Gour, sa vasque).
+        public JonctionDeLieu Jonction { get; init; } = JonctionDeLieu.Fondu;
         /// Le bout des racines, qui bourgeonne (la Sève).
         public int? Bourgeon { get; init; }
         /// Les nénuphars posés à la surface : feuille, feuille claire, fleur, cœur.
@@ -54,8 +57,9 @@ namespace IdlePond.Jeu.Scene
         /// La faune d'ambiance : les méduses d'eau douce du Gour (Codex §2).
         public IReadOnlyList<int> Meduses { get; init; } = AUCUNE;
 
-        /// Ce qui se dessine par-dessus l'eau de chaque bande : des grains, des méduses, des pierres.
-        public bool AUneAmbiance => Grains.Count > 0 || Meduses.Count > 0 || Pierres.Count > 0;
+        /// Ce qui flotte dans l'eau de chaque bande : des grains, des méduses. (Les grosses pierres
+        /// sont sur le sol du fond du puits, `lit.png`, depuis le 2026-11-25.)
+        public bool AUneAmbiance => Grains.Count > 0 || Meduses.Count > 0;
 
         public IEnumerable<int> Couleurs()
         {
@@ -197,6 +201,7 @@ namespace IdlePond.Jeu.Scene
             {
                 // Du bleu vif de la vasque à l'indigo des galeries : la luminescence vient dessous.
                 TeinteDuFond = 0xA0A8EC,
+                Jonction = JonctionDeLieu.Cassure,
                 Ecume = new[] { 0xE6F8FF, 0xBFEAFF },
                 Galets = new[] { 0x8FA8C0, 0x6E88A4, 0xA8BCD0, 0x2A3E58 },
                 Mousse = 0x4FA070,
@@ -258,6 +263,24 @@ namespace IdlePond.Jeu.Scene
             if (!decor.TeinteDuFond.HasValue || assise.NombreDePaliers <= 1) return decor.TeinteDeLumiere;
             var t = Math.Min(1.0, Math.Max(0.0, (index - assise.IndexPremierPalier) / (double)(assise.NombreDePaliers - 1)));
             return Melanger(decor.TeinteDeLumiere, decor.TeinteDuFond.Value, t);
+        }
+
+        /// <summary>
+        /// La lumière et sa teinte au BAS d'un palier : celles du haut du palier suivant, pour
+        /// que la lumière glisse d'un palier à l'autre sans marche — sauf au-dessus d'une
+        /// cassure, ou au bout du contenu : la pente du lieu continue, et la marche reste.
+        /// </summary>
+        public static (double Lumiere, int Teinte) LumiereAuBasDu(int palier)
+        {
+            var assise = Assises.DuPalier(palier);
+            var suivant = palier + 1;
+            var derniere = Assises.Toutes[Assises.Toutes.Count - 1];
+            var existe = suivant < derniere.IndexPremierPalier + derniere.NombreDePaliers;
+            var dansLeLieu = suivant < assise.IndexPremierPalier + assise.NombreDePaliers;
+            if (existe && (dansLeLieu || DecorDe(Assises.DuPalier(suivant).Id).Jonction == JonctionDeLieu.Fondu))
+                return (LumiereDuPalier(suivant), TeinteDuPalier(suivant));
+            var pente = palier > assise.IndexPremierPalier ? LumiereDuPalier(palier - 1) - LumiereDuPalier(palier) : 0.04;
+            return (Math.Max(0.02, LumiereDuPalier(palier) - pente), TeinteDuPalier(palier));
         }
 
         /// Deux couleurs 0xRRGGBB mêlées : 0 la première, 1 la seconde.

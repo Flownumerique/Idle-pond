@@ -185,14 +185,74 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 54596a86cbdf4a98875fb8adb08ba5ac, type: 3}
   Decors:
   - Assise: noue
-    Fond: {fileID: 21300000, guid: db07656bf8e30cd40911d1d4c53b770a, type: 3}
+    Eaux:
+    - {fileID: 21300000, guid: 8ddd3708b22ddb24984f7547b4e810a7, type: 3}
+    - {fileID: 21300000, guid: 88d4060082a6501468822506e620e516, type: 3}
+    - {fileID: 21300000, guid: b2a5dc5b2cb82944baddc68e8276bbb9, type: 3}
+    - {fileID: 21300000, guid: 35694b4160da1e547af4fc9f6eebe1c9, type: 3}
+    - {fileID: 21300000, guid: 3092686cc1bbfa84b8b0cafba816577f, type: 3}
+    - {fileID: 21300000, guid: 6cd602e2972d15b42b9bbbd4df5d26e5, type: 3}
+    Parois:
+    - {fileID: 21300000, guid: 9fe19605e7891c54dbc6920b0f234138, type: 3}
+    - {fileID: 21300000, guid: 31fb129c772d3c3479180f610eaad68e, type: 3}
+    - {fileID: 21300000, guid: 4adbb065aace8b443957911b15b871a6, type: 3}
+    - {fileID: 21300000, guid: 7f49a19cec9034a4a9daeddc4afa8c4b, type: 3}
+    - {fileID: 21300000, guid: 7cc21ee04cc4de54ba41cf7a40994393, type: 3}
+    - {fileID: 21300000, guid: 733b663b8dbcdf9458be614155366568, type: 3}
+    Corniches:
+    - {fileID: 21300000, guid: ff0c326e9789c3442bd19f33fdf7a22c, type: 3}
+    - {fileID: 21300000, guid: abbd49ce24c5319419e1d0481e6c57e5, type: 3}
+    - {fileID: 21300000, guid: 2f2cc6dc3358c264ea8b0f789b208399, type: 3}
+    - {fileID: 21300000, guid: 0a6e46257257a5f48a4c10cd1024a738, type: 3}
+    - {fileID: 21300000, guid: 5c57cc6835395c946a1b7867511c04ba, type: 3}
+    - {fileID: 21300000, guid: 8c89f1821d23a5a4ba0f75212f00d679, type: 3}
+    Lit: {fileID: 21300000, guid: 292871e1501fb1b418df26a8c5b25690, type: 3}
     Roche: {fileID: 21300000, guid: c8a400f0f77ebb64ea565c261fb538d3, type: 3}
     Berge: {fileID: 21300000, guid: 8134562a103dfd34ab558abc833f0815, type: 3}
     Rayons: {fileID: 21300000, guid: 3183c194ed9c68c46b98c28d52934f54, type: 3}
     Ambiance: {fileID: 21300000, guid: 6d01890059883274b98359b46da54f16, type: 3}
     Seuil: {fileID: 0}
   - Assise: gour
-    Fond: {fileID: 21300000, guid: b7ead7d258583904487b42405ec41cca, type: 3}
+    Eaux:
+    - {fileID: 21300000, guid: 519eaaffa6de58942988fff3017b42e4, type: 3}
+    - {fileID: 21300000, guid: 4336a6d37ebc0bf4bb89bf9770d37404, type: 3}
+    - {fileID: 21300000, guid: b419c4311636021428c4d9d4dc8607ad, type: 3}
+    - {fileID: 21300000, guid: 932ef059259b3934d93de2dadaf6f9b5, type: 3}
+    - {fileID: 21300000, guid: 15850b3b3ed7fbf429a908f98871c88f, type: 3}
+    - {fileID: 21300000, guid: 69406b7e007ee124bbc207c159dd7ac5, type: 3}
+    - {fileID: 21300000, guid: e5892de2026fa1547a4d7583ec2ce521, type: 3}
+    - {fileID: 21300000, guid: 3ba0950286a2d394290860c725dc464d, type: 3}
+    - {fileID: 21300000, guid: 6c5efcef1b584ad4d90281128b4bbde2, type: 3}
+    - {fileID: 21300000, guid: adf72f87aebdec244ae5b9ff6bde17f8, type: 3}
+    - {fileID: 21300000, guid: 1bee755c0a2b416429aa0e279075e270, type: 3}
+    - {fileID: 21300000, guid: b525adc04311dac4199583315a051f07, type: 3}
+    Parois:
+    - {fileID: 21300000, guid: 19cea8c8521dd884fa9249066cf1e726, type: 3}
+    - {fileID: 21300000, guid: b9e36f43229108842b7d913da693e0ab, type: 3}
+    - {fileID: 21300000, guid: acbf3da1d3663f541ab4be6a96122925, type: 3}
+    - {fileID: 21300000, guid: 8cd6c917fcbb4654caf91737e39440c8, type: 3}
+    - {fileID: 21300000, guid: 8fefa7ed85af2334db4165a952da36ce, type: 3}
+    - {fileID: 21300000, guid: e632af7c3f28fc14cbeeae52b76af9ef, type: 3}
+    - {fileID: 21300000, guid: bfd76638aeab3044094869339fc07b49, type: 3}
+    - {fileID: 21300000, guid: 8f1c2e0120996184f83300c780a40c91, type: 3}
+    - {fileID: 21300000, guid: d7f374112d828f840982008e162d2587, type: 3}
+    - {fileID: 21300000, guid: 7d6c5e1bf138201498c5a04bfcd1f470, type: 3}
+    - {fileID: 21300000, guid: 71b441cc8c9d3d14c8a28bd3aba2fec4, type: 3}
+    - {fileID: 21300000, guid: d1b33b92d84963242a16e857e88b6cb9, type: 3}
+    Corniches:
+    - {fileID: 21300000, guid: f436a7ee5e3f92540a1be8a0c0a2af13, type: 3}
+    - {fileID: 21300000, guid: 059aaed5002e74d4e99250b74218cd53, type: 3}
+    - {fileID: 21300000, guid: b085d6d1f4a2a2446a6d936100bb6418, type: 3}
+    - {fileID: 21300000, guid: 66b00f6822dce2046b0120c2b72bcd1f, type: 3}
+    - {fileID: 21300000, guid: 09c5714ebdb4cca49ae7b7d14c36a100, type: 3}
+    - {fileID: 21300000, guid: d3d9a1620ade1a647974e868fda5db6d, type: 3}
+    - {fileID: 21300000, guid: 7762a9b6558fcd941ba493f7b5da56aa, type: 3}
+    - {fileID: 21300000, guid: 50f246974a959e04b9296c0ce108ea9d, type: 3}
+    - {fileID: 21300000, guid: 38b59bc86095726499760816edac1dcb, type: 3}
+    - {fileID: 21300000, guid: defc283c9cd5a404aad13bed698608d1, type: 3}
+    - {fileID: 21300000, guid: 50982e6c5cc4ce24aa2b7ad2fe7e624a, type: 3}
+    - {fileID: 21300000, guid: e5c2cd5609cdf6d46a238836943836da, type: 3}
+    Lit: {fileID: 21300000, guid: 7e3bdac931eb2be498b685f015686081, type: 3}
     Roche: {fileID: 21300000, guid: 733d72c29ed39844e8148f9949ad9fa0, type: 3}
     Berge: {fileID: 0}
     Rayons: {fileID: 21300000, guid: 1553b41af361d0c49a211f38dcc6ab81, type: 3}

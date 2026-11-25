@@ -6,8 +6,8 @@ namespace IdlePond.Jeu.Scene
     /// <summary>
     /// IdlePond — l'eau vivante dessinée (2026-11-25) : les caustiques de chaque bande, ses
     /// bulles, le pollen de la Noue et les filets du courant du Gour. Le QUAND et le OÙ sont
-    /// dans `Eau`, pur et testé. Aucune lumière 2D de plus : les caustiques sont de la lumière,
-    /// rendue sans éclairage ; le reste est dans la lumière de la scène, comme l'eau.
+    /// dans `Eau`, pur et testé. Aucune lumière 2D de plus : tout est dans la lumière de la
+    /// scène, comme l'eau — elle éteint les caustiques en descendant, sans marche.
     ///
     /// Seules les bandes visibles s'animent ; les particules sont prises dans une réserve et
     /// éteintes quand elles ne servent plus.
@@ -51,7 +51,7 @@ namespace IdlePond.Jeu.Scene
                     var rendu = Briques.Paver(racine, $"Caustiques {p.Index}.{c}", catalogue.Caustiques[c],
                         Gabarits.GAUCHE_DU_DECOR - Eau.LARGEUR_DES_CAUSTIQUES, -(p.Index + 1) * Gabarits.HAUTEUR_DE_BANDE,
                         Gabarits.LARGEUR_DU_DECOR + Eau.LARGEUR_DES_CAUSTIQUES, Gabarits.HAUTEUR_DE_BANDE, OrdreDeRendu.CAUSTIQUES);
-                    if (catalogue.SansLumiere != null) rendu.sharedMaterial = catalogue.SansLumiere;
+
                     rendu.color = new Color(couleur.r, couleur.g, couleur.b, (float)Eau.ForceDesCaustiques(c, p.Index));
                     couches[c] = rendu;
                 }
@@ -104,7 +104,7 @@ namespace IdlePond.Jeu.Scene
                         {
                             var f = Eau.Filet(palier, n, secondes);
                             // L'éclat fait 2 × 2 : un trait d'un pixel de haut, de sa longueur.
-                            Placer(f.X, f.Y, f.Longueur / 2f, 0.5f, filet);
+                            if (f != null) Placer(f.X, f.Y, f.Longueur / 2f, 0.5f, filet);
                         }
                     }
                 }

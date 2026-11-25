@@ -76,12 +76,19 @@ namespace IdlePond.Tests
             Assert.That(Faune.Jardin(2, 1), Has.Count.EqualTo(1));
             Assert.That(Faune.Jardin(2, 20), Has.Count.EqualTo(6));
             Assert.That(new[] { 1, 3, 6 }.Select(Faune.StadeDesFleurs), Is.EqualTo(new[] { 0, 1, 2 }));
-            foreach (var fleur in Faune.Jardin(4, 20)) DansLeChamp(fleur, 4);
+            foreach (var fleur in Faune.Jardin(4, 20))
+            {
+                DansLeChamp(fleur, 4);
+                var c = Puits.CornicheDe(4);
+                Assert.That(fleur.Y, Is.EqualTo(c.Sol), "sur la corniche");
+                Assert.That(fleur.X >= c.Debut && fleur.X + Faune.DESSINS[Faune.FLEUR].Cadre.Largeur <= c.Fin, Is.True, "sur la corniche");
+            }
+            Assert.That(Faune.Jardin(4, 3)[0], Is.EqualTo(Faune.Jardin(4, 4)[0] with { Image = Faune.StadeDesFleurs(3) }), "une fleur de plus ne déplace pas les autres");
             var xs = Faune.Jardin(4, 20).Select(f => f.X).ToList();
             for (var i = 1; i < xs.Count; i++) Assert.That(xs[i], Is.GreaterThan(xs[i - 1] + Faune.DESSINS[Faune.FLEUR].Cadre.Largeur));
         }
 
-        [Test, Description("la procession traverse le fond de la bande, bannière en tête, puis s'en va")]
+        [Test, Description("la procession sort de la paroi sur la corniche, bannière en tête, puis y rentre")]
         public void La_procession_traverse_la_bande()
         {
             Assert.That(Faune.Procession(2, 0), Is.Empty);
@@ -93,16 +100,24 @@ namespace IdlePond.Tests
                 var poses = Faune.Procession(2, a);
                 foreach (var p in poses)
                 {
-                    // Elles entrent et sortent par les bords : chacune touche le champ, sans y tenir toute.
+                    // Elles sortent de la paroi et rentrent dedans : toujours sur la corniche.
                     var largeur = Faune.DESSINS[p.Nom].Cadre.Largeur;
-                    Assert.That(p.X + largeur > 0 && p.X < Gabarits.LARGEUR_VISEE, Is.True, p.Nom);
-                    Assert.That(p.Y, Is.EqualTo(-3 * Gabarits.HAUTEUR_DE_BANDE + 4), "au fond de sa bande");
+                    var c = Puits.CornicheDe(2);
+                    Assert.That(p.X >= c.Debut && p.X + largeur <= c.Fin, Is.True, p.Nom);
+                    Assert.That(p.Y, Is.EqualTo(c.Sol), "sur la corniche de sa bande");
                     vues.Add(p.Nom);
                 }
                 var tete = poses.FirstOrDefault(p => p.Nom == Faune.ECREVISSE_BANNIERE);
                 if (tete == null) continue;
-                if (tetePrecedente.HasValue) Assert.That(tete.X, Is.GreaterThanOrEqualTo(tetePrecedente.Value), "de gauche à droite");
-                tetePrecedente = tete.X;
+                // La distance de la tête à la paroi : elle croît à l'aller, décroît au retour.
+                var corniche = Puits.CornicheDe(2);
+                var loin = corniche.AGauche ? tete.X - corniche.Debut : corniche.Fin - tete.X;
+                if (tetePrecedente.HasValue)
+                {
+                    if (a < 0.5) Assert.That(loin, Is.GreaterThanOrEqualTo(tetePrecedente.Value), "elle s'avance");
+                    else if (a > 0.51) Assert.That(loin, Is.LessThanOrEqualTo(tetePrecedente.Value), "elle rentre");
+                }
+                tetePrecedente = loin;
             }
             Assert.That(vues, Is.EquivalentTo(new[] { Faune.ECREVISSE, Faune.ECREVISSE_BANNIERE }));
         }

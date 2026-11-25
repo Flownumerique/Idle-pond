@@ -72,6 +72,18 @@ namespace IdlePond.TestsDeJeu
             yield return new WaitForSeconds(1.2f);
             Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-surface.png"));
 
+            // Le sol qui s'ouvre (le puits, 2026-11-25) : quatre paliers, puis un cinquième qu'on
+            // creuse — sa roche recule, le sol descend avec elle.
+            var avantDeCreuser = ScenePixelTests.EtatDeLaNoue(4, false);
+            partie.Remplacer(avantDeCreuser with { Cycle = avantDeCreuser.Cycle with { PaliersOuverts = 4 } });
+            yield return new WaitForSeconds(1.2f);
+            partie.Remplacer(avantDeCreuser with { Cycle = avantDeCreuser.Cycle with { PaliersOuverts = 5 } });
+            scene.Decor.Ouvrir(4, Time.timeAsDouble);
+            yield return new WaitForSeconds(0.3f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-sol-qui-s-ouvre.png"));
+            yield return new WaitForSeconds(1.5f);
+            Ecrire(scene.Rendu, Path.Combine(dossier, "portrait-sol-ouvert.png"));
+
             // L'éveil (bible v0.4) : au niveau 256, après 1, 3, 6 et 10 renaissances.
             foreach (var renaissances in new[] { 1, 3, 6, 10 })
             {

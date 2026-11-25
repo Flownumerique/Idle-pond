@@ -75,14 +75,16 @@ namespace IdlePond.Tests
             Assert.That(Tribus.NidsDEpinoche(1000), Is.EqualTo(4));
         }
 
-        [Test, Description("les nids tiennent dans la bande, sans se toucher")]
+        [Test, Description("les nids tiennent sur la corniche de leur bande, sans se toucher")]
         public void Les_nids_tiennent_dans_la_bande()
         {
+            for (var palier = 0; palier < 18; palier++)
             for (var n = 0; n < 4; n++)
             {
-                Assert.That(Tribus.XDuNid(n), Is.GreaterThanOrEqualTo(0));
-                Assert.That(Tribus.XDuNid(n) + Tribus.LARGEUR_DE_NID, Is.LessThanOrEqualTo(Gabarits.LARGEUR_VISEE));
-                if (n > 0) Assert.That(Tribus.XDuNid(n), Is.GreaterThan(Tribus.XDuNid(n - 1) + Tribus.LARGEUR_DE_NID));
+                var c = Puits.CornicheDe(palier);
+                Assert.That(Tribus.XDuNid(n, c), Is.GreaterThanOrEqualTo(c.Debut));
+                Assert.That(Tribus.XDuNid(n, c) + Tribus.LARGEUR_DE_NID, Is.LessThanOrEqualTo(c.Fin));
+                if (n > 0) Assert.That(Tribus.XDuNid(n, c), Is.GreaterThan(Tribus.XDuNid(n - 1, c) + Tribus.LARGEUR_DE_NID));
                 var points = Tribus.PointsDUnNid(n);
                 Assert.That(points.All(p => p.X >= 0 && p.X < Tribus.LARGEUR_DE_NID && p.Y >= 0), Is.True);
                 Assert.That(points.All(p => p.Couleur == -1 || (p.Couleur >= 0 && p.Couleur < Tribus.HERBES_DU_NID.Count)), Is.True);
@@ -193,8 +195,10 @@ namespace IdlePond.Tests
                 var cadre = Gabarits.CADRE_D_ESPECE;
                 var t = Nage.TrajetAccroche(palier, numero, cadre);
                 Assert.That(t.Amplitude, Is.EqualTo(0));
-                if (Tribus.AccrocheeAGauche(numero)) Assert.That(t.X0, Is.LessThanOrEqualTo(3));
-                else Assert.That(t.X0 + cadre.Largeur, Is.GreaterThanOrEqualTo(Gabarits.LARGEUR_VISEE - 3));
+                // Contre le bord de la paroi du puits, à sa hauteur (2026-11-25).
+                var milieu = t.Y + cadre.Hauteur / 2;
+                if (Tribus.AccrocheeAGauche(numero)) Assert.That(t.X0, Is.InRange(Puits.BordGauche(milieu) - 4, Puits.BordGauche(milieu)));
+                else Assert.That(t.X0 + cadre.Largeur, Is.InRange(Puits.BordDroit(milieu) + 1, Puits.BordDroit(milieu) + 5));
                 Assert.That(t.X0, Is.GreaterThanOrEqualTo(0));
                 Assert.That(t.X0 + cadre.Largeur, Is.LessThanOrEqualTo(Gabarits.LARGEUR_VISEE));
                 var haut = -palier * Gabarits.HAUTEUR_DE_BANDE;

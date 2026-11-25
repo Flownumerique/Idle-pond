@@ -47,7 +47,7 @@ namespace IdlePond.Tests
                     foreach (var b in vues.Where(b => b != null))
                     {
                         Assert.That(b.Y, Is.InRange(-(bande + 1) * H + 4, -bande * H - 2), $"bande {bande}");
-                        Assert.That(b.X, Is.InRange(8, Gabarits.LARGEUR_VISEE - 8));
+                        Assert.That(b.X, Is.InRange(Puits.MARGE_DES_PAROIS, Gabarits.LARGEUR_VISEE - Puits.MARGE_DES_PAROIS - 2), "entre les parois");
                     }
                 }
             // Elle monte : sur une courte durée sans pause, son Y croît.
@@ -71,12 +71,15 @@ namespace IdlePond.Tests
                 for (var n = 0; n < Eau.FILETS; n++)
                 {
                     var f = Eau.Filet(7, n, t);
+                    if (f == null) continue;
                     Assert.That(f.Y, Is.InRange(-8 * H + 10, -7 * H - 10), "entre la surface et les galets");
                     Assert.That(f.Longueur, Is.InRange(4, 10));
+                    Assert.That(f.X, Is.GreaterThanOrEqualTo(Puits.BordGauche(f.Y)), "pas dans la paroi");
+                    Assert.That(f.X + f.Longueur - 1, Is.LessThanOrEqualTo(Puits.BordDroit(f.Y)), "pas dans la paroi");
                     xs.Add(f.X);
                 }
-            Assert.That(xs.Min(), Is.LessThan(0));
-            Assert.That(xs.Max(), Is.GreaterThan(Gabarits.LARGEUR_VISEE), "il traverse tout le cadre");
+            Assert.That(xs.Min(), Is.LessThan(Puits.MARGE_DES_PAROIS));
+            Assert.That(xs.Max(), Is.GreaterThan(Gabarits.LARGEUR_VISEE - Puits.MARGE_DES_PAROIS - 12), "il traverse tout le puits");
         }
 
         [Test, Description("chaque lieu met dans son eau ce que dit son décor : pollen dans la Noue, courant dans le Gour")]

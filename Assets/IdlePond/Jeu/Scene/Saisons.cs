@@ -42,11 +42,13 @@ namespace IdlePond.Jeu.Scene
 
         public static IReadOnlyList<PoseDeFaune> Frai(int bande)
         {
+            // Sur la corniche de la bande (le puits, 2026-11-25).
             var grappes = new List<PoseDeFaune>();
+            var corniche = Puits.CornicheDe(bande);
             for (var i = 0; i < GRAPPES_PAR_BANDE; i++)
             {
-                var x = 40 + i * 120 + (int)((uint)(bande * 104729 + i * 7919 + 3) % 40u);
-                grappes.Add(new PoseDeFaune(Faune.OEUFS, 0, x, -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 4));
+                var x = Puits.XSurLaCorniche(corniche, i, GRAPPES_PAR_BANDE, Faune.DESSINS[Faune.OEUFS].Cadre.Largeur, 13);
+                grappes.Add(new PoseDeFaune(Faune.OEUFS, 0, x, corniche.Sol));
             }
             return grappes;
         }

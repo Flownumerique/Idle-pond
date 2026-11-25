@@ -46,10 +46,11 @@ namespace IdlePond.Jeu.Scene
             nidsDessines = (bande, nombre);
             Briques.Vider(nids);
             if (catalogue == null || catalogue.Eclat == null || nombre == 0) return;
-            var fond = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 3;
+            var corniche = Puits.CornicheDe(bande);
+            var fond = corniche.Sol;
             for (var numero = 0; numero < nombre; numero++)
             {
-                var x0 = Tribus.XDuNid(numero);
+                var x0 = Tribus.XDuNid(numero, corniche);
                 foreach (var point in Tribus.PointsDUnNid(numero))
                 {
                     var rendu = Briques.Poser(nids, "nid", catalogue.Eclat, x0 + point.X, fond + point.Y, OrdreDeRendu.NIDS);

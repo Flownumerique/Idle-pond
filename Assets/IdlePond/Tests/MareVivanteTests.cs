@@ -86,13 +86,14 @@ namespace IdlePond.Tests
             Assert.That(Saisons.De(Horloge.MoisLocal(juillet)), Is.EqualTo(Saison.Aucune));
         }
 
-        [Test, Description("les œufs du frai au fond de leur bande ; la glace sur la surface")]
+        [Test, Description("les œufs du frai sur la corniche de leur bande ; la glace sur la surface")]
         public void Le_frai_et_la_glace_sont_a_leur_place()
         {
+            var corniche = Puits.CornicheDe(2);
             foreach (var g in Saisons.Frai(2))
             {
-                Assert.That(g.X >= 0 && g.X + 7 <= Gabarits.LARGEUR_VISEE, Is.True);
-                Assert.That(g.Y, Is.EqualTo(-3 * Gabarits.HAUTEUR_DE_BANDE + 4));
+                Assert.That(g.X >= corniche.Debut && g.X + 7 <= corniche.Fin, Is.True);
+                Assert.That(g.Y, Is.EqualTo(corniche.Sol));
             }
             Assert.That(Saisons.Frai(0), Has.Count.EqualTo(Saisons.GRAPPES_PAR_BANDE));
             Assert.That(Saisons.YDeLaGlace + Faune.DESSINS[Faune.GLACE].Cadre.Hauteur, Is.EqualTo(0), "la glace affleure");

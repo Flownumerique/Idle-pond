@@ -30,6 +30,12 @@ namespace IdlePond.Jeu.Scene
         /// Le palier qui ouvre un lieu, hors le tout premier : là où un seuil se dessine.
         public static bool OuvreUnLieu(int palier) => IdlePond.Noyau.Economie.EstUnePercee(palier);
 
+        /// Un lieu qui s'ouvre par une cassure (2026-11-25) : c'est là, et là seulement, qu'il y
+        /// a un seuil, une brèche et une cascade. Un lieu en fondu n'en a pas : son eau prolonge
+        /// celle d'au-dessus.
+        public static bool ACassure(int palier) =>
+            OuvreUnLieu(palier) && RegistreDArt.DecorDe(Assises.DuPalier(palier).Id).Jonction == JonctionDeLieu.Cassure;
+
         /// Le pied du seuil d'un lieu qui s'ouvre au `palier` : sa lèvre affleure la jonction.
         public static int YDuSeuil(int palier) => -palier * Gabarits.HAUTEUR_DE_BANDE - HAUTEUR_DU_SEUIL;
 
