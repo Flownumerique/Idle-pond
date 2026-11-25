@@ -115,6 +115,17 @@ namespace IdlePond.Tests
             Assert.That(Format.Profondeur(3), Is.EqualTo("3 brasses"));
         }
 
+        [Test, Description("« à fleur d'eau » porte déjà sa préposition : jamais « à à » ni « jusqu'à à »")]
+        public void La_fleur_d_eau_ne_double_pas_sa_preposition()
+        {
+            Assert.That(Format.ALaProfondeur(0), Is.EqualTo("à fleur d’eau"));
+            Assert.That(Format.ALaProfondeur(1), Is.EqualTo("à 1 brasse"));
+            Assert.That(Format.ALaProfondeur(3), Is.EqualTo("à 3 brasses"));
+            Assert.That(Format.JusquA(0), Is.EqualTo("à fleur d’eau"));
+            Assert.That(Format.JusquA(1), Is.EqualTo("jusqu’à 1 brasse"));
+            Assert.That(Format.JusquA(4), Is.EqualTo("jusqu’à 4 brasses"));
+        }
+
         [Test, Description("l'écran nomme le lieu et les espèces, jamais la couche")]
         public void L_ecran_nomme_le_lieu_et_les_especes()
         {

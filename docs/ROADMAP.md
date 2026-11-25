@@ -27,7 +27,10 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 | Prototype | WebGL dans le navigateur du téléphone, Windows | APK Android (module absent) |
 
-**Tests** : 516 EditMode et 35 PlayMode, tous verts (2026-11-15), plus cinq mesures à la demande.
+**Tests** : 580 EditMode et 37 PlayMode, tous verts dans Unity (2026-11-25), plus cinq mesures à la demande.
+Le travail écrit hors de l'éditeur les 23 et 24 novembre compile et passe, et les captures de
+contrôle de la scène et des tiroirs sont saines. La bibliothèque, la percée et les saisons n'ont
+pas encore de capture.
 **Pas de CI** depuis le 2026-11-23 (retirée faute de licence Unity fournie, avec la publication
 WebGL sur Vercel) : les tests se lancent en local, `outils/unity.sh tests`. Les références de
 parité sont produites par le C# depuis le Gour (voir `RESULTATS.md`, journal des

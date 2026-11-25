@@ -109,6 +109,20 @@ namespace IdlePond.Jeu.UI
         public static string Profondeur(int palier) =>
             palier == 0 ? E.A_FLEUR_D_EAU : Remplir(palier > 1 ? E.BRASSES : E.BRASSE, palier);
 
+        /// <summary>
+        /// Où vit quelque chose : « à 3 brasses ». « À fleur d'eau » porte déjà sa
+        /// préposition, il ne prend pas la seconde.
+        /// </summary>
+        public static string ALaProfondeur(int palier) =>
+            palier == 0 ? E.A_FLEUR_D_EAU : Remplir(E.A_PROFONDEUR, Profondeur(palier));
+
+        /// <summary>
+        /// Jusqu'où un lieu est ouvert : « jusqu'à 4 brasses ». Tant que seul le premier
+        /// creux l'est, le lieu est simplement « à fleur d'eau ».
+        /// </summary>
+        public static string JusquA(int palier) =>
+            palier == 0 ? E.A_FLEUR_D_EAU : Remplir(E.JUSQU_A, Profondeur(palier));
+
         public static string NomDeLAssise(string assise) =>
             assise != null && Textes.NOM_DES_ASSISES.TryGetValue(assise, out var nom) ? nom : E.PLUS_BAS;
 

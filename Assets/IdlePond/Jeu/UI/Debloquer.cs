@@ -324,7 +324,7 @@ namespace IdlePond.Jeu.UI
                     Elements.Poser(carte.Compte, Format.Remplir(E.MAITRISE_SUR, maitrise, lieu.NombreDePaliers));
                     Elements.RegleLaLargeur(carte.Remplissage, maitrise / (double)lieu.NombreDePaliers);
                     var plusBas = Math.Max(0, Math.Min(etat.Cycle.PaliersOuverts, lieu.IndexPremierPalier + lieu.NombreDePaliers) - 1);
-                    Elements.Poser(carte.SousTitre, Format.Remplir(E.JUSQU_A, Format.Profondeur(plusBas)));
+                    Elements.Poser(carte.SousTitre, Format.JusquA(plusBas));
                     foreach (var jalon in carte.Jalons)
                     {
                         var ouvert = maitrise >= jalon.Bonus.MaitriseRequise;

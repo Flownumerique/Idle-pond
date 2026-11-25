@@ -185,14 +185,14 @@ namespace IdlePond.Jeu.UI
                 {
                     Elements.Poser(carte.Nom, E.INCONNU);
                     Elements.Marquer(carte.Nom, "tu", true);
-                    Elements.Poser(carte.Indice, Format.Remplir(E.A_PROFONDEUR, Format.Profondeur(espece.Palier)));
+                    Elements.Poser(carte.Indice, Format.ALaProfondeur(espece.Palier));
                     continue;
                 }
 
                 var cout = niveau == 0 ? Economie.CoutDeDeblocage(etat, espece) : Economie.CoutDeNiveau(etat, espece, niveau);
                 Elements.Poser(carte.Nom, niveau == 0 ? E.ESPECE_QUI_S_ATTARDE : Format.NomDeLEspece(espece.Id));
                 Elements.Marquer(carte.Nom, "tu", niveau == 0);
-                if (niveau == 0) Elements.Poser(carte.Indice, Format.Profondeur(espece.Palier));
+                if (niveau == 0) Elements.Poser(carte.Indice, Format.ALaProfondeur(espece.Palier));
                 else
                 {
                     Elements.Poser(carte.Crans, Format.CransDeLaCarte(niveau));
@@ -242,7 +242,7 @@ namespace IdlePond.Jeu.UI
                 {
                     var finDuLieu = lieu.IndexPremierPalier + lieu.NombreDePaliers;
                     var plusBas = Math.Max(0, Math.Min(etat.Cycle.PaliersOuverts, finDuLieu) - 1);
-                    Elements.Poser(groupe.SousTitre, Format.Remplir(E.JUSQU_A, Format.Profondeur(plusBas)));
+                    Elements.Poser(groupe.SousTitre, Format.JusquA(plusBas));
                 }
                 else if (precedent != null)
                     Elements.Poser(groupe.SousTitre, Format.Remplir(E.PLUS_BAS_QUE, Format.NomDeLAssise(precedent.Id)));
