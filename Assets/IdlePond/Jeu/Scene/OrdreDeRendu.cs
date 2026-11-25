@@ -8,6 +8,9 @@ namespace IdlePond.Jeu.Scene
         /// Ce qui flotte dans chaque bande (le pollen, les méduses, les grosses pierres) :
         /// devant l'eau, derrière les rayons.
         public const int AMBIANCE = 5;
+        /// Les reflets de la surface sur l'eau de chaque bande : devant ce qui flotte, derrière
+        /// les rayons et la roche.
+        public const int CAUSTIQUES = 7;
         public const int RAYONS = 10;
         /// La roche à creuser passe devant les rayons, qui débordent sur deux bandes : le jour
         /// n'entre pas dans la pierre.
@@ -24,6 +27,8 @@ namespace IdlePond.Jeu.Scene
         /// Les jardins de la Sève et la procession des écrevisses, au fond des bandes.
         public const int JARDINS = 23;
         public const int PROCESSION = 24;
+        /// Les bulles, le pollen et les filets du courant : devant le fond, derrière les nageurs.
+        public const int EAU_VIVANTE = 25;
         /// La glace du gel, sur la surface : devant la berge, derrière ce qui y patine.
         public const int GLACE = 26;
         /// Le mirage qu'une ombre laisse du nouveau venu : juste derrière les nageurs.

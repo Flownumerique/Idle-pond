@@ -80,6 +80,7 @@ namespace IdlePond.Editeur
             }).ToArray();
             catalogue.Voile = S(Chemins.VOILE);
             catalogue.Eclat = S(Chemins.ECLAT);
+            catalogue.Caustiques = Enumerable.Range(0, Eau.COUCHES_DE_CAUSTIQUES).Select(c => S(Chemins.Caustiques(c))).ToArray();
             catalogue.SansLumiere = AssetDatabase.LoadAssetAtPath<Material>(Chemins.SANS_LUMIERE);
             if (catalogue.SansLumiere == null) Debug.LogWarning("Catalogue d'art : aucun matériau à " + Chemins.SANS_LUMIERE);
 

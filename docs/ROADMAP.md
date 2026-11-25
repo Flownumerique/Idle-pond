@@ -173,6 +173,15 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   aucune lumière 2D de plus) : les lueurs du lieu qui vient — douze, dans le haut de la roche, avec
   un halo — et, parmi les gerbes, l'écume de la percée, l'or d'un seuil et l'éclair d'un ralliement
   (`Gerbes.Brille`). La roche qui cède et la vase restent éclairées.
+- **L'eau vivante** (2026-11-25, `Eau.cs` pur et testé, `EauVivante.cs`) : des **caustiques** —
+  le réseau de lumière de la surface, deux motifs générés (`Eau/caustiques-{0,1}.png`) qui glissent
+  en sens contraires, sans éclairage, pâlissant avec la lumière du palier et deux fois et demie plus
+  vite dans le courant ; des **bulles** dans chaque bande ; le **pollen** qui dérive dans la Noue et
+  les **filets du courant** qui filent dans le Gour, lus dans le décor (`Grains`, `Courant`). Et
+  **l'eau change de teinte en descendant** : chaque lieu a une `TeinteDuFond` vers laquelle glisse la
+  lumière de ses paliers — la Noue du vert doré au vert d'eau, le Gour du bleu vif à l'indigo. La
+  brèche du seuil est désormais une entaille sèche (sa nappe dessinée faisait une grille grise dans
+  la roche). Vu dans les captures ; aucune lumière 2D de plus.
 
 ---
 

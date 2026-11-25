@@ -73,7 +73,7 @@ namespace IdlePond.Jeu.Scene
                 lumiere.lightType = Light2D.LightType.Sprite;
                 lumiere.lightCookieSprite = rectangle;
                 lumiere.intensity = (float)RegistreDArt.LumiereDuPalier(p.Index);
-                lumiere.color = Briques.Couleur(RegistreDArt.DecorDe(p.Assise).TeinteDeLumiere);
+                lumiere.color = Briques.Couleur(RegistreDArt.TeinteDuPalier(p.Index));
                 parBande.Add(lumiere);
             }
             EclairerLaRoche(vue);

@@ -39,6 +39,8 @@ namespace IdlePond.Jeu.Scene
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();
         public Sprite Voile;
         public Sprite Eclat;
+        /// Les deux couches des caustiques (2026-11-25), deux motifs qui se croisent en glissant.
+        public Sprite[] Caustiques = Array.Empty<Sprite>();
         /// Le matériau des sprites qui SONT de la lumière (les lueurs du lieu qui vient, les
         /// éclairs des gerbes) : `Sprite-Unlit-Default` d'URP. Sous les lumières 2D, un sprite
         /// éclairé dans la roche reste presque noir ; celui-ci garde sa couleur. Référencé ici

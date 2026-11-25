@@ -71,6 +71,7 @@ namespace IdlePond.Editeur
             }
             sortie[Chemins.VOILE] = DessinerVoile().EnPng();
             sortie[Chemins.ECLAT] = DessinerEclat().EnPng();
+            for (var c = 0; c < Eau.COUCHES_DE_CAUSTIQUES; c++) sortie[Chemins.Caustiques(c)] = DessinerCaustiques(c).EnPng();
             return sortie;
         }
 
@@ -381,15 +382,10 @@ namespace IdlePond.Editeur
                 epaisseurs[x] = 5 + (int)Math.Round(2 * Math.Sin(x * 0.11) + 1.5 * Math.Sin(x * 0.037 + 1.3));
             for (var x = 0; x < toile.Largeur; x++)
             {
-                var dansLaBreche = Math.Abs(x - breche) <= 5;
-                if (dansLaBreche)
-                {
-                    // La nappe d'eau qui déborde : écume au bord, eau claire dedans, tramée.
-                    for (var y = haut; y >= haut - 7; y--)
-                        if (Math.Abs(x - breche) <= 3 && Toile.Seuil(x, y) < 0.75)
-                            toile.Poser(x, y, Math.Abs(x - breche) == 3 || y == haut ? (d.Ecume.Count > 0 ? d.Ecume[0] : d.Rayon) : d.Eau[0]);
-                    continue;
-                }
+                // La brèche est une entaille sèche : tant que le lieu est de la roche, on y voit la
+                // roche ; une fois percé, son eau et la cascade, que la scène anime. (Une nappe
+                // d'eau dessinée ici se lisait, dans la roche, comme une grille grise.)
+                if (Math.Abs(x - breche) <= 3) continue;
                 // La lèvre s'amincit à l'approche de la brèche.
                 var e = Math.Max(2, Math.Min(epaisseurs[x], Math.Abs(x - breche) - 3));
                 for (var i = 0; i < e; i++)
@@ -402,6 +398,45 @@ namespace IdlePond.Editeur
                 // La mousse qui pend sous la lèvre, par touffes.
                 if (d.Mousse.HasValue && hasard() < 0.12)
                     for (var i = 0; i < 1 + (int)(hasard() * 3); i++) toile.Poser(x, haut - e - i, d.Mousse.Value);
+            }
+            return toile;
+        }
+
+        /// <summary>
+        /// Une couche des caustiques (2026-11-25) : le réseau de lumière que la surface projette
+        /// dans l'eau — les arêtes d'un pavage de cellules aplaties, d'un pixel d'épaisseur, en
+        /// blanc teinté au rendu. Le réseau est plein en haut de la bande, s'émiette en
+        /// descendant et s'éteint aux deux tiers : la lumière n'atteint pas le fond. Il se
+        /// raccorde à lui-même en largeur.
+        /// </summary>
+        static Toile DessinerCaustiques(int couche)
+        {
+            var toile = new Toile(Eau.LARGEUR_DES_CAUSTIQUES, Gabarits.HAUTEUR_DE_BANDE);
+            var hasard = Hasard(couche == 0 ? 101u : 202u);
+            const int CELLULES = 14;
+            var centres = new (double X, double Y)[CELLULES];
+            for (var i = 0; i < CELLULES; i++) centres[i] = (hasard() * toile.Largeur, hasard() * toile.Hauteur);
+            for (var y = 0; y < toile.Hauteur; y++)
+            {
+                // 0 en haut de la bande, 1 au fond.
+                var profondeur = (toile.Hauteur - 1 - y) / (double)(toile.Hauteur - 1);
+                var force = 1.6 * (1 - profondeur / 0.66);
+                for (var x = 0; x < toile.Largeur; x++)
+                {
+                    if (force <= Toile.Seuil(x, y)) continue;
+                    double premier = double.MaxValue, second = double.MaxValue;
+                    foreach (var (cx, cy) in centres)
+                    {
+                        var dx = Math.Abs(x - cx);
+                        dx = Math.Min(dx, toile.Largeur - dx);
+                        // Aplaties : vues de biais, les cellules sont plus larges que hautes.
+                        var dy = (y - cy) * 1.6;
+                        var dist = Math.Sqrt(dx * dx + dy * dy);
+                        if (dist < premier) { second = premier; premier = dist; }
+                        else if (dist < second) second = dist;
+                    }
+                    if (second - premier < 1.3) toile.Poser(x, y, RegistreDArt.BLANC);
+                }
             }
             return toile;
         }

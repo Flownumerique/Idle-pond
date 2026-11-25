@@ -200,4 +200,7 @@ MonoBehaviour:
     Seuil: {fileID: 21300000, guid: 549672e458fd4ec68e0961c963639060, type: 3}
   Voile: {fileID: 21300000, guid: ce926a3c1b461854f9a1480b4d7078dc, type: 3}
   Eclat: {fileID: 21300000, guid: 476a13a1bb0d3334a95ba9f298c2a4b9, type: 3}
+  Caustiques:
+  - {fileID: 21300000, guid: 59a86420c8f05a54097fd3b1792fd38c, type: 3}
+  - {fileID: 21300000, guid: 23fbc840a98d5fa47a59e67bd81943ca, type: 3}
   SansLumiere: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}

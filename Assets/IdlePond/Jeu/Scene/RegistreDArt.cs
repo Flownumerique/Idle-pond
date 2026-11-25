@@ -31,6 +31,10 @@ namespace IdlePond.Jeu.Scene
         static readonly int[] AUCUNE = new int[0];
         /// La ligne de lumière de la surface, en haut de la berge.
         public int? Surface { get; init; }
+        /// La teinte de la lumière au DERNIER palier du lieu (2026-11-25) : l'eau change de
+        /// couleur en descendant, de `TeinteDeLumiere` en haut jusqu'à celle-ci au fond. Rien :
+        /// la même du haut en bas.
+        public int? TeinteDuFond { get; init; }
         /// Le bout des racines, qui bourgeonne (la Sève).
         public int? Bourgeon { get; init; }
         /// Les nénuphars posés à la surface : feuille, feuille claire, fleur, cœur.
@@ -167,6 +171,8 @@ namespace IdlePond.Jeu.Scene
                 new[] { 0x1E2422, 0x2A322F, 0x3A4440, 0x121614 })
             {
                 Surface = 0xD8FFF0,
+                // Du jour vert-doré de la surface au vert d'eau froid du fond, qui annonce le Gour.
+                TeinteDuFond = 0xB4E0DC,
                 Bourgeon = 0x8FE070,
                 Nenuphar = new[] { 0x4FB85A, 0x6FD070, 0xF4A8C8, 0xFFE070 },
                 Herbes = new[] { 0x3FA060, 0x5CC070, 0x7CD070 },
@@ -189,6 +195,8 @@ namespace IdlePond.Jeu.Scene
                 new[] { 0x1A1E22, 0x262C31, 0x353D43, 0x101316 },
                 Courant: true)
             {
+                // Du bleu vif de la vasque à l'indigo des galeries : la luminescence vient dessous.
+                TeinteDuFond = 0xA0A8EC,
                 Ecume = new[] { 0xE6F8FF, 0xBFEAFF },
                 Galets = new[] { 0x8FA8C0, 0x6E88A4, 0xA8BCD0, 0x2A3E58 },
                 Mousse = 0x4FA070,
@@ -236,6 +244,32 @@ namespace IdlePond.Jeu.Scene
             var assise = Assises.DuPalier(index);
             var lumieres = DecorDe(assise.Id).Lumieres;
             return lumieres[Math.Min(index - assise.IndexPremierPalier, lumieres.Count - 1)];
+        }
+
+        /// <summary>
+        /// La teinte de la lumière d'un palier : de `TeinteDeLumiere` au premier palier de son
+        /// lieu à `TeinteDuFond` au dernier, canal par canal. L'eau d'un lieu n'a pas une
+        /// couleur mais une pente ; la lumière (`LumiereDuPalier`), elle, baisse à part.
+        /// </summary>
+        public static int TeinteDuPalier(int index)
+        {
+            var assise = Assises.DuPalier(index);
+            var decor = DecorDe(assise.Id);
+            if (!decor.TeinteDuFond.HasValue || assise.NombreDePaliers <= 1) return decor.TeinteDeLumiere;
+            var t = Math.Min(1.0, Math.Max(0.0, (index - assise.IndexPremierPalier) / (double)(assise.NombreDePaliers - 1)));
+            return Melanger(decor.TeinteDeLumiere, decor.TeinteDuFond.Value, t);
+        }
+
+        /// Deux couleurs 0xRRGGBB mêlées : 0 la première, 1 la seconde.
+        public static int Melanger(int a, int b, double t)
+        {
+            int Canal(int decalage)
+            {
+                var ca = (a >> decalage) & 0xFF;
+                var cb = (b >> decalage) & 0xFF;
+                return (int)Math.Round(ca + (cb - ca) * t) << decalage;
+            }
+            return Canal(16) | Canal(8) | Canal(0);
         }
 
         public static IReadOnlyList<int> PaletteDuHeros() =>

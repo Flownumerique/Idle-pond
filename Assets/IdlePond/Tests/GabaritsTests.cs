@@ -403,6 +403,7 @@ namespace IdlePond.Tests
             Assert.That(catalogue.OeufFendu, Is.Not.Null);
             Assert.That(catalogue.Larve, Has.Length.EqualTo(2).And.All.Not.Null);
             Assert.That(catalogue.Eclat, Is.Not.Null);
+            Assert.That(catalogue.Caustiques, Has.Length.EqualTo(Eau.COUCHES_DE_CAUSTIQUES).And.All.Not.Null);
         }
 
         [Test, Description("un sprite d'Art/ est importé net : 1 px par unité, filtrage Point, sans compression")]
