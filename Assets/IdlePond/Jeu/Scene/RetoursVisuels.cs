@@ -20,6 +20,9 @@ namespace IdlePond.Jeu.Scene
         readonly CatalogueDArt catalogue;
         readonly List<Gerbe> enCours = new List<Gerbe>();
         readonly List<SpriteRenderer> pieces = new List<SpriteRenderer>();
+        /// Le matériau éclairé d'origine des pièces, pour y revenir quand une pièce qui
+        /// brillait sert à une gerbe qui ne brille pas.
+        Material eclaire;
 
         public RetoursVisuels(Transform parent, CatalogueDArt catalogue)
         {
@@ -52,11 +55,18 @@ namespace IdlePond.Jeu.Scene
                     var couleurs = Gerbes.CouleursDe(gerbe.Genre);
                     foreach (var p in Gerbes.Points(gerbe, instant))
                     {
-                        if (utilisees == pieces.Count) pieces.Add(Briques.Poser(racine, "eclat", catalogue.Eclat, 0, 0, OrdreDeRendu.PARTICULES));
+                        if (utilisees == pieces.Count)
+                        {
+                            var neuve = Briques.Poser(racine, "eclat", catalogue.Eclat, 0, 0, OrdreDeRendu.PARTICULES);
+                            if (eclaire == null) eclaire = neuve.sharedMaterial;
+                            pieces.Add(neuve);
+                        }
                         var piece = pieces[utilisees++];
                         if (!piece.gameObject.activeSelf) piece.gameObject.SetActive(true);
                         piece.transform.localPosition = new Vector3(p.X, p.Y, 0f);
                         piece.color = Briques.Couleur(couleurs[p.Couleur]);
+                        var materiau = Gerbes.Brille(gerbe.Genre, p.Couleur) && catalogue.SansLumiere != null ? catalogue.SansLumiere : eclaire;
+                        if (piece.sharedMaterial != materiau) piece.sharedMaterial = materiau;
                     }
                 }
             for (var i = utilisees; i < pieces.Count; i++)

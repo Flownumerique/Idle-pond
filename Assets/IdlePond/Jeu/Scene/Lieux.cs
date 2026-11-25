@@ -73,11 +73,13 @@ namespace IdlePond.Jeu.Scene
 
         /* ─── Voir venir le lieu suivant ───────────────────────────────────────── */
 
-        public const int LUEURS = 7;
+        public const int LUEURS = 12;
         public const double PERIODE_D_UNE_LUEUR = 3.0;
 
         /// Les lueurs de la magie du lieu suivant, à travers la roche de son premier palier :
-        /// sept points qui s'allument chacun un tiers du temps, à leur place dans la roche.
+        /// douze points qui s'allument chacun un tiers du temps, à leur place dans le HAUT de la
+        /// roche — la rive (`Cadrage.RIVE_DE_ROCHE`) n'en montre que la moitié haute quand l'eau
+        /// dépasse le cadre. Le dessin leur ajoute un halo de deux pixels.
         public static IReadOnlyList<Pixel> Lueurs(int palier, double secondes)
         {
             var lueurs = new List<Pixel>();
@@ -88,7 +90,8 @@ namespace IdlePond.Jeu.Scene
                 var phase = (h % 1000u) / 1000.0 * PERIODE_D_UNE_LUEUR;
                 if (Modulo(secondes + phase, PERIODE_D_UNE_LUEUR) > PERIODE_D_UNE_LUEUR / 3) continue;
                 var x = 12 + (int)((h >> 10) % (uint)(Gabarits.LARGEUR_VISEE - 24));
-                var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 10 + (int)((h >> 20) % (uint)(Gabarits.HAUTEUR_DE_BANDE - 20));
+                // De 6 px sous la jonction jusqu'à 6 px au-dessus du bas de la rive, halo compris.
+                var y = -palier * Gabarits.HAUTEUR_DE_BANDE - 6 - (int)((h >> 20) % (uint)(Cadrage.RIVE_DE_ROCHE - 12));
                 lueurs.Add(new Pixel(x, y));
             }
             return lueurs;

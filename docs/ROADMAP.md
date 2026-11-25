@@ -27,7 +27,7 @@ téléphone en portrait — barre, mare au centre, dock, tiroirs — et tient en
 | Absence | le mana monte jusqu'à la contenance du départ ; le séjour ne bouge pas | — |
 | Prototype | WebGL dans le navigateur du téléphone, Windows | APK Android (module absent) |
 
-**Tests** : 584 EditMode et 37 PlayMode, tous verts dans Unity (2026-11-25), plus cinq mesures à la demande.
+**Tests** : 585 EditMode et 37 PlayMode, tous verts dans Unity (2026-11-25), plus cinq mesures à la demande.
 Le travail écrit hors de l'éditeur les 23 et 24 novembre compile et passe. Les captures de contrôle
 (`outils/unity.sh captures`) couvrent désormais aussi les saisons, la percée, la bibliothèque et
 Débloquer.
@@ -168,11 +168,11 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   `ui-telephone-percee-*`). La jonction se lit bien. Deux défauts corrigés : les lueurs n'étaient
   jamais dessinées (elles ne s'allumaient que parmi les bandes d'eau, or la roche est dessous), et
   dès que l'eau dépasse le cadre, la roche qui vient sortait de l'écran — une **rive** d'une
-  demi-bande de roche reste maintenant sous l'eau (`Cadrage.RIVE_DE_ROCHE`). **Reste à trancher
-  (DA)** : les lueurs (un pixel, dans une roche sans lumière 2D, donc presque noires) et la gerbe
-  de la percée (des points clairs sur l'eau claire du Gour) sont trop discrètes pour « voir venir »
-  et pour « une grande gerbe ». Les rendre vives demande une lumière de plus (le budget est déjà
-  dépassé) ou un matériau non éclairé pour ces éclats.
+  demi-bande de roche reste maintenant sous l'eau (`Cadrage.RIVE_DE_ROCHE`). **Tranché le 2026-11-25 : ce qui est
+  lumière se rend sans éclairage** (`CatalogueDArt.SansLumiere`, le `Sprite-Unlit-Default` d'URP,
+  aucune lumière 2D de plus) : les lueurs du lieu qui vient — douze, dans le haut de la roche, avec
+  un halo — et, parmi les gerbes, l'écume de la percée, l'or d'un seuil et l'éclair d'un ralliement
+  (`Gerbes.Brille`). La roche qui cède et la vase restent éclairées.
 
 ---
 

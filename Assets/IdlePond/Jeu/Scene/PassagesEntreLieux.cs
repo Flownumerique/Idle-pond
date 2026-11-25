@@ -16,6 +16,8 @@ namespace IdlePond.Jeu.Scene
         readonly Transform racine;
         readonly CatalogueDArt catalogue;
         readonly List<SpriteRenderer> pieces = new List<SpriteRenderer>();
+        Material eclaire;
+        static readonly (int, int)[] HALO = { (-2, 0), (2, 0), (0, -2), (0, 2) };
         readonly List<int> vasquesOuvertes = new List<int>();
         readonly List<(int Palier, Color Couleur)> lieuxQuiViennent = new List<(int, Color)>();
 
@@ -47,22 +49,37 @@ namespace IdlePond.Jeu.Scene
                 {
                     // La cascade tombe du haut de la vasque : elle se voit depuis la bande d'au-dessus.
                     if (!Lieux.BandeDansLeChamp(palier, champ) && !Lieux.BandeDansLeChamp(palier - 1, champ)) continue;
-                    foreach (var g in Lieux.Cascade(palier, secondes)) Placer(ref utilisees, g.X, g.Y, EAU[g.Couleur], OrdreDeRendu.SEUIL);
+                    foreach (var g in Lieux.Cascade(palier, secondes)) Placer(ref utilisees, g.X, g.Y, EAU[g.Couleur], OrdreDeRendu.SEUIL, null);
                 }
                 foreach (var (palier, couleur) in lieuxQuiViennent)
                 {
                     if (!Lieux.BandeDansLeChamp(palier, champ)) continue;
-                    foreach (var l in Lieux.Lueurs(palier, secondes)) Placer(ref utilisees, l.X, l.Y, couleur, OrdreDeRendu.LUEURS);
+                    // Les lueurs sont de la lumière : sans éclairage, sinon la roche les éteint.
+                    // Un halo en croix, plus pâle, autour de chaque lueur.
+                    var halo = new Color(couleur.r, couleur.g, couleur.b, 0.4f);
+                    foreach (var l in Lieux.Lueurs(palier, secondes))
+                    {
+                        Placer(ref utilisees, l.X, l.Y, couleur, OrdreDeRendu.LUEURS, catalogue.SansLumiere);
+                        foreach (var (dx, dy) in HALO) Placer(ref utilisees, l.X + dx, l.Y + dy, halo, OrdreDeRendu.LUEURS, catalogue.SansLumiere);
+                    }
                 }
             }
             for (var i = utilisees; i < pieces.Count; i++)
                 if (pieces[i] != null && pieces[i].gameObject.activeSelf) pieces[i].gameObject.SetActive(false);
         }
 
-        void Placer(ref int utilisees, int x, int y, Color couleur, int ordre)
+        /// `sansLumiere` : le matériau non éclairé, ou null pour rester dans la lumière de la scène.
+        void Placer(ref int utilisees, int x, int y, Color couleur, int ordre, Material sansLumiere)
         {
-            if (utilisees == pieces.Count) pieces.Add(Briques.Poser(racine, "goutte", catalogue.Eclat, 0, 0, ordre));
+            if (utilisees == pieces.Count)
+            {
+                var neuve = Briques.Poser(racine, "goutte", catalogue.Eclat, 0, 0, ordre);
+                if (eclaire == null) eclaire = neuve.sharedMaterial;
+                pieces.Add(neuve);
+            }
             var piece = pieces[utilisees++];
+            var materiau = sansLumiere != null ? sansLumiere : eclaire;
+            if (piece.sharedMaterial != materiau) piece.sharedMaterial = materiau;
             if (!piece.gameObject.activeSelf) piece.gameObject.SetActive(true);
             piece.sortingOrder = ordre;
             piece.transform.localPosition = new Vector3(x, y, 0f);

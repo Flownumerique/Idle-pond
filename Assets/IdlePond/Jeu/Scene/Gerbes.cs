@@ -63,6 +63,19 @@ namespace IdlePond.Jeu.Scene
             _ => new[] { 0x4A3424, 0x6A4C30 },
         };
 
+        /// <summary>
+        /// Ce point brille-t-il par lui-même ? L'écume de la percée, l'or d'un seuil, l'éclair
+        /// d'un ralliement sont de la lumière : rendus sans éclairage, ils restent vifs même
+        /// là où la scène est sombre. La roche qui cède, la vase, et l'éclat de roche de la
+        /// percée (sa dernière couleur) restent dans la lumière de la scène.
+        /// </summary>
+        public static bool Brille(GenreDeGerbe genre, int couleur) => genre switch
+        {
+            GenreDeGerbe.Percee => couleur < 3,
+            GenreDeGerbe.Seuil or GenreDeGerbe.Ralliement => true,
+            _ => false,
+        };
+
         /// Un millionième de seconde de tolérance : `début + durée − début` n'est pas toujours la
         /// durée en virgule flottante.
         const double TOLERANCE = 1e-6;

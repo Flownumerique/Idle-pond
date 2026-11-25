@@ -39,6 +39,11 @@ namespace IdlePond.Jeu.Scene
         public DecorDAssise[] Decors = Array.Empty<DecorDAssise>();
         public Sprite Voile;
         public Sprite Eclat;
+        /// Le matériau des sprites qui SONT de la lumière (les lueurs du lieu qui vient, les
+        /// éclairs des gerbes) : `Sprite-Unlit-Default` d'URP. Sous les lumières 2D, un sprite
+        /// éclairé dans la roche reste presque noir ; celui-ci garde sa couleur. Référencé ici
+        /// pour que le build l'embarque. Null : ces sprites restent éclairés comme les autres.
+        public Material SansLumiere;
 
         static T A<T>(T[] tableau, int i) where T : class =>
             tableau != null && i >= 0 && i < tableau.Length ? tableau[i] : null;

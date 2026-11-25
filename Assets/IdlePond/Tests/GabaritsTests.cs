@@ -365,6 +365,10 @@ namespace IdlePond.Tests
         {
             var catalogue = AssetDatabase.LoadAssetAtPath<CatalogueDArt>(Chemins.CATALOGUE);
             Assert.That(catalogue, Is.Not.Null, Chemins.CATALOGUE);
+            // Ce qui est lumière (les lueurs, les éclairs) se rend sans éclairage : le catalogue
+            // porte le matériau, pour que le build l'embarque.
+            Assert.That(catalogue.SansLumiere, Is.Not.Null, "le matériau sans lumière");
+            Assert.That(catalogue.SansLumiere.shader.name, Does.Contain("Unlit"));
             for (var stade = 0; stade < Gabarits.LONGUEURS_DU_CORPS.Count; stade++)
             {
                 for (var image = 0; image < Gabarits.IMAGES_DE_NAGE; image++) Assert.That(catalogue.CorpsDe(stade, image), Is.Not.Null);

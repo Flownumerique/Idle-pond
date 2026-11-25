@@ -128,6 +128,9 @@ namespace IdlePond.Tests
                     vues++;
                     Assert.That(l.X >= 0 && l.X < Gabarits.LARGEUR_VISEE, Is.True);
                     Assert.That(l.Y >= -7 * Gabarits.HAUTEUR_DE_BANDE && l.Y < -6 * Gabarits.HAUTEUR_DE_BANDE, Is.True);
+                    // Dans le haut de la roche, là où la rive la montre quand l'eau dépasse le cadre ;
+                    // halo compris (deux pixels de part et d'autre).
+                    Assert.That(l.Y - 2 >= -6 * Gabarits.HAUTEUR_DE_BANDE - Cadrage.RIVE_DE_ROCHE, Is.True, $"lueur à {l.Y}");
                 }
             Assert.That(vues, Is.GreaterThan(0));
             Assert.That(Lieux.CouleurDeLaMagie("gour"), Is.EqualTo(0x8FD8FF), "le bleu de Courant");
@@ -146,6 +149,18 @@ namespace IdlePond.Tests
             Assert.That(Lieux.BandeDansLeChamp(0, Cadrage.Cadrer(portrait, 6, 7)), Is.False);
             Assert.That(Lieux.BandeDansLeChamp(5, Cadrage.Cadrer(portrait, 6, 7)), Is.True);
             Assert.That(Lieux.BandeDansLeChamp(0, null), Is.False);
+        }
+
+        [Test, Description("ce qui est lumière brille sans éclairage ; la roche et la vase restent dans la lumière de la scène")]
+        public void Seules_les_gerbes_de_lumiere_brillent()
+        {
+            // La percée : l'écume et l'eau claire brillent, l'éclat de roche (sa 4ᵉ couleur) non.
+            Assert.That(Enumerable.Range(0, 3).All(c => Gerbes.Brille(GenreDeGerbe.Percee, c)), Is.True);
+            Assert.That(Gerbes.Brille(GenreDeGerbe.Percee, 3), Is.False);
+            Assert.That(Gerbes.Brille(GenreDeGerbe.Seuil, 0), Is.True);
+            Assert.That(Gerbes.Brille(GenreDeGerbe.Ralliement, 2), Is.True);
+            Assert.That(Gerbes.Brille(GenreDeGerbe.RocheQuiCede, 0), Is.False);
+            Assert.That(Gerbes.Brille(GenreDeGerbe.Trouble, 0), Is.False);
         }
 
         [Test, Description("la percée jaillit par la brèche ; un creux ordinaire fait céder la roche")]

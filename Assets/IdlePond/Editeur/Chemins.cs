@@ -13,6 +13,8 @@ namespace IdlePond.Editeur
         public const string CATALOGUE = ART + "/Catalogue.asset";
         public const string VOILE = "Eau/voile.png";
         public const string ECLAT = "Eau/eclat.png";
+        /// Le matériau non éclairé d'URP 2D (chemin absolu, dans le paquet, pas sous `Art/`).
+        public const string SANS_LUMIERE = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
 
         public static string CorpsDuHeros(int stade, int image) => $"Heros/corps-s{stade}-i{image}.png";
         public static string MarqueDAssise(string assise, int stade) => $"Heros/marques/{assise}-s{stade}.png";
