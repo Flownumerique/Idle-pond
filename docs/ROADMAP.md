@@ -161,7 +161,7 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   tout son premier palier à l'eau d'au-dessus, sur une courbe douce. Aperçu : `docs/da/apercu-fondu-et-bulle.png`.
   **La cassure est une membrane de mana** (décidé par l'auteur le 2026-11-26) : ce qui sépare le
   Gour de la Noue est une barrière tissée du Courant, bombée d'une paroi à l'autre comme le dessus
-  d'une bulle (`Lieux.Membrane`, pur et testé). Elle ondule d'un pixel, un reflet d'écume la
+  d'une bulle (`Lieux.Membrane`, pur et testé). Épaisse de quatre pixels et bordée d'une lueur, elle ondule d'un pixel, un reflet d'écume la
   parcourt, elle luit sans éclairage, en bleu de Courant ; l'eau sombre de la Noue appuie dessus
   dans les coins (`seuil.png`). Elle reste entière : plus de brèche ni de cascade, la percée
   jaillit contre elle. Aperçus : `docs/da/apercu-membrane.png` et `.gif`. Écrit hors de l'éditeur,

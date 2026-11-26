@@ -67,8 +67,8 @@ namespace IdlePond.Jeu.Scene
         /// d'au-dessus ; la scène la trace, vivante, par-dessus. Elle reste entière : on la
         /// traverse, on ne la déchire pas.
         /// </summary>
-        public const int PROFONDEUR_AU_MILIEU = 3;
-        public const int CREUX_DE_LA_MEMBRANE = 40;
+        public const int PROFONDEUR_AU_MILIEU = 5;
+        public const int CREUX_DE_LA_MEMBRANE = 36;
         public const int RAYON_DE_LA_MEMBRANE = 176;
         public const int PAS_DE_LA_MEMBRANE = 2;
         /// Le temps que met un reflet à traverser la membrane, d'une paroi à l'autre.
@@ -87,10 +87,11 @@ namespace IdlePond.Jeu.Scene
             (int)Math.Round(0.8 * Math.Sin(2 * Math.PI * x / 64.0 - secondes * 1.7) + 0.5 * Math.Sin(2 * Math.PI * x / 23.0 + secondes * 2.3));
 
         /// <summary>
-        /// Les points de la membrane du lieu qui s'ouvre au `palier`, à `secondes` : un point de
-        /// deux pixels tous les `PAS_DE_LA_MEMBRANE`, sur toute la largeur du champ (les parois
-        /// passent devant). `Couleur` : 0 le reflet d'écume qui la parcourt, 1 la membrane, à la
-        /// couleur du mana du lieu ; 2 la lueur plus pâle qui la double dessous, un point sur trois.
+        /// Les points de la membrane du lieu qui s'ouvre au `palier`, à `secondes` : deux rangées
+        /// de points de deux pixels tous les `PAS_DE_LA_MEMBRANE` — quatre pixels d'épaisseur —,
+        /// sur toute la largeur du champ (les parois passent devant). `Couleur` : 0 le reflet
+        /// d'écume qui la parcourt, 1 la membrane, à la couleur du mana du lieu ; 2 la lueur plus
+        /// pâle qui la borde de part et d'autre, un point sur deux.
         /// </summary>
         public static IReadOnlyList<PointDeGerbe> Membrane(int palier, double secondes)
         {
@@ -101,8 +102,12 @@ namespace IdlePond.Jeu.Scene
             for (var x = 0; x < Gabarits.LARGEUR_VISEE; x += PAS_DE_LA_MEMBRANE)
             {
                 var y = jonction - (int)Math.Round(CreuxDeLaMembrane(x)) - OndeDeLaMembrane(x, secondes) - 1;
-                points.Add(new PointDeGerbe(x, y, Math.Abs(x - reflet) < 18 ? 0 : 1));
-                if (x % (3 * PAS_DE_LA_MEMBRANE) == 0) points.Add(new PointDeGerbe(x, y - 3, 2));
+                var couleur = Math.Abs(x - reflet) < 24 ? 0 : 1;
+                points.Add(new PointDeGerbe(x, y, couleur));
+                points.Add(new PointDeGerbe(x, y - 2, couleur));
+                if (x % (2 * PAS_DE_LA_MEMBRANE) != 0) continue;
+                points.Add(new PointDeGerbe(x, y + 2, 2));
+                points.Add(new PointDeGerbe(x, y - 4, 2));
             }
             return points;
         }

@@ -117,16 +117,16 @@ namespace IdlePond.Tests
             {
                 var points = Lieux.Membrane(6, t);
                 var ligne = points.Where(q => q.Couleur != 2).ToList();
-                // Entière : un point tous les deux pixels, d'un bord du champ à l'autre.
-                Assert.That(ligne, Has.Count.EqualTo(Gabarits.LARGEUR_VISEE / Lieux.PAS_DE_LA_MEMBRANE));
+                // Entière et épaisse : deux rangées, un point tous les deux pixels, d'un bord du champ à l'autre.
+                Assert.That(ligne, Has.Count.EqualTo(2 * Gabarits.LARGEUR_VISEE / Lieux.PAS_DE_LA_MEMBRANE));
                 foreach (var p in points)
                 {
                     Assert.That(p.Couleur, Is.InRange(0, 2));
                     Assert.That(p.Y + 1, Is.LessThan(jonction), "sous la jonction");
                     Assert.That(p.Y, Is.GreaterThanOrEqualTo(jonction - Lieux.HAUTEUR_DU_SEUIL), "dans le seuil");
-                    // Elle ondule d'un pixel au plus autour de son arc.
+                    // Elle ondule d'un pixel au plus autour de son arc (sa seconde rangée deux pixels dessous).
                     if (p.Couleur != 2)
-                        Assert.That(System.Math.Abs(jonction - 1 - p.Y - System.Math.Round(Lieux.CreuxDeLaMembrane(p.X))), Is.LessThanOrEqualTo(1));
+                        Assert.That(jonction - 1 - p.Y - System.Math.Round(Lieux.CreuxDeLaMembrane(p.X)), Is.InRange(-1.0, 3.0));
                 }
                 foreach (var reflet in ligne.Where(r => r.Couleur == 0)) reflets.Add(reflet.X);
             }
