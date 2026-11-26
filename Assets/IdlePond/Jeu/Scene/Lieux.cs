@@ -87,6 +87,20 @@ namespace IdlePond.Jeu.Scene
             (int)Math.Round(0.8 * Math.Sin(2 * Math.PI * x / 64.0 - secondes * 1.7) + 0.5 * Math.Sin(2 * Math.PI * x / 23.0 + secondes * 2.3));
 
         /// <summary>
+        /// Ce qu'un nageur du `palier` laisse libre sous le haut de sa bande quand il passe sur
+        /// les x de `x0` à `x1` : la marge ordinaire de nage, ou, dans la vasque d'une cassure, la
+        /// membrane et sa lueur, plus deux pixels — rien ne nage dans l'eau d'au-dessus.
+        /// </summary>
+        public static int PlafondDeNage(int palier, int x0, int x1)
+        {
+            const int MARGE = 9;
+            if (!ACassure(palier)) return MARGE;
+            var creux = 0.0;
+            for (var x = x0; x <= x1; x++) creux = Math.Max(creux, CreuxDeLaMembrane(x));
+            return Math.Max(MARGE, (int)Math.Ceiling(creux) + 7);
+        }
+
+        /// <summary>
         /// Les points de la membrane du lieu qui s'ouvre au `palier`, à `secondes` : deux rangées
         /// de points de deux pixels tous les `PAS_DE_LA_MEMBRANE` — quatre pixels d'épaisseur —,
         /// sur toute la largeur du champ (les parois passent devant). `Couleur` : 0 le reflet

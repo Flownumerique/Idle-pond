@@ -32,7 +32,8 @@ namespace IdlePond.Jeu.Scene
         // La roche à creuser et les parois : le fond, la pierre, son arête claire, les fissures
         // (dans la terre : deux lits, le limon clair, l'humus sombre).
         IReadOnlyList<int> Roche,
-        // L'eau file : des stries horizontales dans le fond (le Gour, sa contrainte).
+        // L'eau file : des traits d'écume dans chaque bande (le Gour, sa contrainte), dessinés
+        // dans l'ambiance, et les filets qui la traversent (`Eau.Filet`).
         bool Courant = false)
     {
         static readonly int[] AUCUNE = new int[0];
@@ -70,9 +71,10 @@ namespace IdlePond.Jeu.Scene
         /// La faune d'ambiance : les méduses d'eau douce du Gour (Codex §2).
         public IReadOnlyList<int> Meduses { get; init; } = AUCUNE;
 
-        /// Ce qui flotte dans l'eau de chaque bande : des grains, des méduses. (Les grosses pierres
-        /// sont sur le sol du fond du puits, `lit.png`, depuis le 2026-11-25.)
-        public bool AUneAmbiance => Grains.Count > 0 || Meduses.Count > 0;
+        /// Ce qui flotte dans l'eau de chaque bande : des grains, des méduses, les traits du
+        /// courant. (Les grosses pierres sont sur le sol du fond du puits, `lit.png`, depuis le
+        /// 2026-11-25.)
+        public bool AUneAmbiance => Grains.Count > 0 || Meduses.Count > 0 || (Courant && Ecume.Count > 0);
 
         /// L'eau d'un lieu, du haut vers le bas, avec entre deux couleurs voisines
         /// `RegistreDArt.NUANCES_D_EAU - 1` couleurs intermédiaires (2026-11-26) : le dégradé du

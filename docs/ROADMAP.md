@@ -166,11 +166,13 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   dans les coins (`seuil.png`). Elle reste entière : plus de brèche ni de cascade, la percée
   jaillit contre elle. Aperçus : `docs/da/apercu-membrane.png` et `.gif`. Écrit hors de l'éditeur,
   comme les parois : le tracé dans la scène (`PassagesEntreLieux`) n'a pas été vu dans Unity.
-  À trancher : est-ce que les nageurs du Gour doivent rester sous la membrane (les coins, au-dessus
-  de son arc, sont aujourd'hui dans leur champ de nage) ?
+  Tout reste dessous (2026-11-26, `Lieux.PlafondDeNage`) : poissons, lamproies accrochées et
+  représentants nagent sous la membrane et sa lueur — un nageur trop grand pour tenir près des
+  parois nage au milieu, où elle est mince ; les bulles s'arrêtent sous elle et s'y fondent.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
-  `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
-  réguliers, sont les premiers à reprendre.
+  `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, trop réguliers,
+  sont repris (2026-11-26) : ils quittent la tuile d'eau de 48 px pour l'ambiance de 384 px —
+  seize traits d'écume semés, effilés, de longueurs diverses (`docs/da/apercu-courant-du-gour.png`).
 - **Le budget de lumières** : la spec DA vise quatre lumières à l'écran au plus ; quand
   toute la Noue est ouverte en portrait, six bandes sont visibles, donc six lumières.
   À mesurer sur un vrai téléphone avant de trancher.

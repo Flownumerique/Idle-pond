@@ -108,5 +108,21 @@ namespace IdlePond.Tests
             Assert.That(G(bas) - R(bas), Is.LessThan(G(haut) - R(haut)), "vers l'indigo");
             Assert.That(RegistreDArt.Melanger(0x000000, 0xFF8040, 0.5), Is.EqualTo(0x804020));
         }
+    
+
+        [Test, Description("dans la vasque du Gour, les bulles s'arrêtent sous la membrane")]
+        public void Les_bulles_s_arretent_sous_la_membrane()
+        {
+            const int VASQUE = 6;
+            var vues = 0;
+            for (var n = 0; n < Eau.BULLES; n++)
+                foreach (var b in INSTANTS.Select(t => Eau.Bulle(VASQUE, n, t)).Where(b => b != null))
+                {
+                    vues++;
+                    // Le point fait deux pixels de haut ; la membrane et sa lueur descendent de 5 sous son arc.
+                    Assert.That(b.Y + 2, Is.LessThanOrEqualTo(-VASQUE * H - Lieux.CreuxDeLaMembrane(b.X) - 5 + 1e-9), $"bulle à x = {b.X}");
+                }
+            Assert.That(vues, Is.GreaterThan(0));
+        }
     }
 }

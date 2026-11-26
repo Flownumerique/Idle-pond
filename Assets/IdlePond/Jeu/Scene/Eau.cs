@@ -72,8 +72,11 @@ namespace IdlePond.Jeu.Scene
             var x0 = Puits.MARGE_DES_PAROIS + 2 + (int)((h >> 12) % (uint)(Gabarits.LARGEUR_VISEE - 2 * Puits.MARGE_DES_PAROIS - 4));
             var x = x0 + (int)Math.Round(1.5 * Math.Sin(secondes * 4.0 + numero * 2.1));
             var bas = -(bande + 1) * Gabarits.HAUTEUR_DE_BANDE + 6;
+            // Dans la vasque d'une cassure, elle s'arrête sous la membrane et s'y fond (2026-11-26).
+            var montee = Gabarits.HAUTEUR_DE_BANDE - 10;
+            if (Lieux.ACassure(bande)) montee -= (int)Math.Ceiling(Lieux.CreuxDeLaMembrane(x)) + 5;
             // Elle accélère un peu en montant.
-            return new Pixel(x, bas + (int)Math.Round(t * (0.6 + 0.4 * t) * (Gabarits.HAUTEUR_DE_BANDE - 10)));
+            return new Pixel(x, bas + (int)Math.Round(t * (0.6 + 0.4 * t) * montee));
         }
 
         /// La couleur des bulles : la lumière de la surface, ou l'écume, ou les rayons.

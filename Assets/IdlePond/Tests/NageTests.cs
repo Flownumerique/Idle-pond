@@ -64,5 +64,31 @@ namespace IdlePond.Tests
             Assert.That(Nage.Position(t, 0).X, Is.EqualTo(10));
             Assert.That(Nage.Position(t, 2.0).X, Is.EqualTo(30));
         }
+    
+
+        [Test, Description("dans la vasque du Gour, tout nage sous la membrane de mana, jamais dans l'eau de la Noue")]
+        public void Rien_ne_nage_au_dessus_de_la_membrane()
+        {
+            const int VASQUE = 6;
+            Assert.That(Lieux.ACassure(VASQUE), Is.True);
+            var haut = -VASQUE * Gabarits.HAUTEUR_DE_BANDE;
+            void SousLaMembrane(Trajet t, Cadre cadre, string qui)
+            {
+                for (var s = 0.0; s < 20; s += 0.37)
+                {
+                    var (x, _) = Nage.Position(t, s);
+                    for (var px = x; px < x + cadre.Largeur; px++)
+                        Assert.That(t.Y + cadre.Hauteur, Is.LessThanOrEqualTo(haut - Lieux.CreuxDeLaMembrane(px) - 5), $"{qui} à x = {px}");
+                }
+            }
+            for (var numero = 0; numero < VueDeScene.POISSONS_MAX_PAR_GROUPE; numero++)
+            {
+                SousLaMembrane(Nage.TrajetDe(VASQUE, numero, Gabarits.CADRE_D_ESPECE), Gabarits.CADRE_D_ESPECE, $"poisson {numero}");
+                SousLaMembrane(Nage.TrajetAccroche(VASQUE, numero, Gabarits.CADRE_D_ESPECE), Gabarits.CADRE_D_ESPECE, $"lamproie {numero}");
+            }
+            SousLaMembrane(Nage.TrajetDe(VASQUE, Tribus.NUMERO_DU_REPRESENTANT, Gabarits.CADRE_DE_REPRESENTANT), Gabarits.CADRE_DE_REPRESENTANT, "représentant");
+            // Ailleurs, rien ne change : la marge ordinaire.
+            Assert.That(Lieux.PlafondDeNage(VASQUE + 1, 0, Gabarits.LARGEUR_VISEE), Is.EqualTo(9));
+        }
     }
 }

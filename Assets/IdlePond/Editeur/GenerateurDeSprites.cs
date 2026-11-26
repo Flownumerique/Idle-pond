@@ -146,10 +146,6 @@ namespace IdlePond.Editeur
                         var u = Math.Min(1.0, descente / (toile.Hauteur - 1.0));
                         if (Toile.Seuil(x, y) >= u * u * (3 - 2 * u)) couleur = fondu.Eau[fondu.Eau.Count - 1];
                     }
-                    // Le courant du Gour : des traits d'écume qui filent, en pointillés décalés
-                    // d'une rangée à l'autre.
-                    if (d.Courant && y > 9 && y % 13 == 6 && (x + y * 3) % 24 < 10 && x % 2 == 0)
-                        couleur = d.Ecume.Count > 0 ? d.Ecume[(y / 13) % d.Ecume.Count] : d.Rayon;
                     toile.Poser(x, y, couleur);
                 }
             return toile;
@@ -713,7 +709,10 @@ namespace IdlePond.Editeur
         }
 
         /// Ce qui flotte dans chaque bande, sur 384 px pour ne pas se répéter tous les 48 :
-        /// le pollen de la Sève ; les méduses et les grosses pierres du Gour.
+        /// le pollen de la Sève ; les méduses du Gour et les traits de son courant (2026-11-26 :
+        /// ils étaient dans l'eau, en pointillés réguliers que la tuile de 48 px répétait ; ici,
+        /// seize traits d'écume de longueurs diverses, semés au hasard, effilés aux deux bouts, dont
+        /// certains montent ou descendent d'un pixel à mi-course).
         static Toile DessinerAmbiance(DecorDArt d)
         {
             var toile = new Toile(Gabarits.LARGEUR_DE_BERGE, Gabarits.HAUTEUR_DE_BANDE);
@@ -740,6 +739,26 @@ namespace IdlePond.Editeur
                         if (i < 4) toile.Poser(cx + 2 - (i % 2), cy - i, d.Meduses[1]);
                     }
                 }
+            if (d.Courant && d.Ecume.Count > 0)
+            {
+                var filets = Hasard(23);
+                for (var k = 0; k < 16; k++)
+                {
+                    var x0 = (int)(filets() * toile.Largeur);
+                    var y = 8 + (int)(filets() * (toile.Hauteur - 16));
+                    var longueur = 5 + (int)(filets() * 12);
+                    var couleur = d.Ecume[k % d.Ecume.Count];
+                    var tirage = filets();
+                    var marche = tirage < 0.5 ? 0 : tirage < 0.75 ? 1 : -1;
+                    for (var i = 0; i < longueur; i++)
+                    {
+                        var bout = i < 2 || i >= longueur - 2;
+                        if (bout && i % 2 == 1) continue;
+                        var dy = marche != 0 && i >= longueur / 2 ? marche : 0;
+                        toile.Poser((x0 + i) % toile.Largeur, y + dy, couleur);
+                    }
+                }
+            }
             return toile;
         }
 

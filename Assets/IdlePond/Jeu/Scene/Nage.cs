@@ -34,7 +34,14 @@ namespace IdlePond.Jeu.Scene
             // n'avancent jamais au-delà de `Puits.MARGE_DES_PAROIS`.
             var marge = Gabarits.LARGEUR_VISEE - 2 * Puits.MARGE_DES_PAROIS - amplitude - cadre.Largeur;
             var x0 = Puits.MARGE_DES_PAROIS + (int)((h >> 5) % (uint)marge);
-            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
+            // Sous la membrane d'une cassure (2026-11-26) : plus creuse contre les parois. Un
+            // nageur trop grand pour y tenir là où il est tiré nage au milieu, où elle est mince.
+            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 9 - Lieux.PlafondDeNage(palier, x0, x0 + amplitude + cadre.Largeur) - cadre.Hauteur;
+            if (hauteurLibre < 1)
+            {
+                x0 = (Gabarits.LARGEUR_VISEE - amplitude - cadre.Largeur) / 2;
+                hauteurLibre = Math.Max(1, Gabarits.HAUTEUR_DE_BANDE - 9 - Lieux.PlafondDeNage(palier, x0, x0 + amplitude + cadre.Largeur) - cadre.Hauteur);
+            }
             var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
             var periode = 2.0 + ((h >> 17) % 20u) / 10.0;
             var phase = ((h >> 23) % 100u) / 100.0 * periode * 2;
@@ -50,7 +57,9 @@ namespace IdlePond.Jeu.Scene
         public static Trajet TrajetAccroche(int palier, int numero, Cadre cadre)
         {
             var h = Melanger((uint)(palier * 7919 + numero * 104729 + 7));
-            var hauteurLibre = Gabarits.HAUTEUR_DE_BANDE - 18 - cadre.Hauteur;
+            // Contre la paroi, la membrane d'une cassure descend le plus bas : la lamproie s'accroche dessous.
+            var cote = Tribus.AccrocheeAGauche(numero) ? 0 : Gabarits.LARGEUR_VISEE - 1 - cadre.Largeur;
+            var hauteurLibre = Math.Max(1, Gabarits.HAUTEUR_DE_BANDE - 9 - Lieux.PlafondDeNage(palier, cote, cote + cadre.Largeur) - cadre.Hauteur);
             var y = -(palier + 1) * Gabarits.HAUTEUR_DE_BANDE + 9 + (int)((h >> 11) % (uint)hauteurLibre);
             // Contre le bord de la paroi du puits à sa hauteur, mordant de deux pixels dans la roche.
             var milieu = y + cadre.Hauteur / 2;
