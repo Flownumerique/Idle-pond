@@ -15,8 +15,11 @@ namespace IdlePond.Jeu.Scene
     /// De quoi sont faites les parois d'un lieu (2026-11-26) : des pierres jointes (le défaut,
     /// pour les assises sans dessin), une berge de terre en lits où des galets sont pris et
     /// d'où sortent des racines (la Noue), un calcaire en lits épais, que l'eau croûte de calcite et
-    /// qui retient des flaques sur ses corniches — des gours (le Gour).
-    public enum MatiereDeParoi { Pierres, Terre, Calcaire }
+    /// qui retient des flaques sur ses corniches — des gours (le Gour). Préparées en avance
+    /// (2026-11-26) : le calcaire à fossiles et veines d'éclat de l'Aven, la glace à facettes
+    /// de la fosse, le basalte en colonnes veiné de lave de la faille chaude, le sel en lits et en
+    /// cubes de la mer relique.
+    public enum MatiereDeParoi { Pierres, Terre, Calcaire, Fossiles, Glace, Basalte, Sel }
 
     public sealed record DecorDArt(
         string Assise,
@@ -46,6 +49,9 @@ namespace IdlePond.Jeu.Scene
         /// Comment le lieu se raccorde à celui d'au-dessus : en fondu (le défaut), ou par une
         /// cassure — un seuil de roche, l'eau et la lumière qui changent net (le Gour, sa vasque).
         public JonctionDeLieu Jonction { get; init; } = JonctionDeLieu.Fondu;
+        /// La couleur de la magie du lieu, quand le héros n'en porte pas encore la marque : celle de
+        /// sa membrane et de ses lueurs (Codex §2, « Les six magies »).
+        public int? Magie { get; init; }
         /// La matière des parois, des corniches, de la roche à creuser et du seuil.
         public MatiereDeParoi Paroi { get; init; } = MatiereDeParoi.Pierres;
         /// Ce que la matière porte en plus de ses quatre couleurs, le sombre puis le clair : les
@@ -99,6 +105,7 @@ namespace IdlePond.Jeu.Scene
             if (Surface.HasValue) toutes = toutes.Append(Surface.Value);
             if (Bourgeon.HasValue) toutes = toutes.Append(Bourgeon.Value);
             if (Mousse.HasValue) toutes = toutes.Append(Mousse.Value);
+            if (Magie.HasValue) toutes = toutes.Append(Magie.Value);
             return toutes;
         }
     }
@@ -187,8 +194,15 @@ namespace IdlePond.Jeu.Scene
 
         public static CouleursDePoisson CouleursDEspece(int rang) => ESPECES_PAR_RANG[Math.Max(0, rang) % ESPECES_PAR_RANG.Length];
 
-        /// Les assises qui ont leurs dessins, dans l'ordre. Les autres empruntent la Noue.
+        /// Les assises qui ont leurs dessins, dans l'ordre — jouables, avec la marque du héros. Les
+        /// autres empruntent la Noue.
         public static readonly IReadOnlyList<string> ASSISES_DESSINEES = new[] { "noue", "gour" };
+
+        /// Les lieux dont le décor est dessiné, dans l'ordre (2026-11-26) : les assises dessinées,
+        /// puis les quatre lieux à venir, préparés en avance — eau, parois, corniches, fond, roche,
+        /// membrane. Leurs identifiants restent ceux du noyau tant qu'ils ne sont pas livrés :
+        /// `assise-3` est l'Aven.
+        public static readonly IReadOnlyList<string> DECORS_DESSINES = new[] { "noue", "gour", "assise-3", "assise-4", "assise-5", "assise-6" };
 
         static readonly Dictionary<string, DecorDArt> DECORS = new Dictionary<string, DecorDArt>
         {
@@ -248,6 +262,100 @@ namespace IdlePond.Jeu.Scene
                 Mousse = 0x4FA070,
                 Pierres = new[] { 0x7A90A8, 0x93A8BE },
                 Meduses = new[] { 0xE8F4FF, 0xC8E8FF },
+            },
+
+            /* ─── Les lieux à venir, préparés en avance (2026-11-26) ─────────────────
+             * Le décor seulement : pas encore jouables. Leurs lumières continuent de baisser,
+             * mais le merveilleux croît vers le bas (Codex §2) : ce qui luit tient la vue. Les
+             * valeurs de lumière sont de l'art, à valider à l'écran — pas des graines du noyau. */
+
+            // III · l'Aven (le récif fossile), l'Éclat : violet électrique, blanc. Un calcaire
+            // sombre où dorment des ammonites et des coquilles, fendu de veines d'éclat.
+            ["assise-3"] = new DecorDArt(
+                "assise-3",
+                new[] { 0.34, 0.33, 0.32, 0.31, 0.30, 0.29, 0.28, 0.27, 0.26, 0.25, 0.24, 0.23 },
+                0xC8B8F0,
+                new[] { 0x8C7CE0, 0x6A58C8, 0x4C3CA0, 0x30267A, 0x1C1650 },
+                0x2E2A3C,
+                new int[0],
+                0xE8D8FF,
+                false,
+                0x4A3A6A,
+                new[] { 0x2E2A3C, 0x3B3650, 0x58527A, 0x1A1724 })
+            {
+                TeinteDuFond = 0xA890E8,
+                Jonction = JonctionDeLieu.Cassure,
+                Magie = 0xC080FF,
+                Paroi = MatiereDeParoi.Fossiles,
+                // Les fossiles, leur cœur clair, la veine d'éclat.
+                Inclusions = new[] { 0x9A90B8, 0xD0C8F0, 0xC080FF },
+                Grains = new[] { 0xE0C0FF, 0xFFFFFF, 0xB080FF },
+            },
+
+            // IV · la fosse, le Gel : bleu glacier, argent. De la glace à grandes facettes,
+            // givrée au bord, et des glaçons sous les corniches.
+            ["assise-4"] = new DecorDArt(
+                "assise-4",
+                new[] { 0.30, 0.29, 0.28, 0.27, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.20, 0.19 },
+                0xD8F4FF,
+                new[] { 0xA8E8F8, 0x78C8E8, 0x4C98C8, 0x2C6898, 0x183C60 },
+                0x2A3A4E,
+                new int[0],
+                0xF0FAFF,
+                false,
+                0x5A7A8A,
+                new[] { 0x2A3A4E, 0x3A5068, 0x8FB8D8, 0x18222E })
+            {
+                TeinteDuFond = 0xB0D0F0,
+                Jonction = JonctionDeLieu.Cassure,
+                Magie = 0xBFF0FF,
+                Paroi = MatiereDeParoi.Glace,
+                Inclusions = new[] { 0xBFE6FF, 0xF0FAFF },
+                Grains = new[] { 0xF0FAFF, 0xC8E8FF },
+            },
+
+            // V · la faille chaude, la Braise : rouge sang, orange, soufre. Du basalte en colonnes,
+            // veiné de lave, et des bassins de lave au fond.
+            ["assise-5"] = new DecorDArt(
+                "assise-5",
+                new[] { 0.38, 0.37, 0.36, 0.35, 0.34, 0.33, 0.32, 0.31, 0.30, 0.29, 0.28, 0.27 },
+                0xFFD0A0,
+                new[] { 0xE88850, 0xC85A38, 0x983A2C, 0x642420, 0x381414 },
+                0x241C1C,
+                new int[0],
+                0xFFD8A0,
+                false,
+                0x6A3A2A,
+                new[] { 0x241C1C, 0x34282A, 0x4E3C3A, 0x120C0C })
+            {
+                TeinteDuFond = 0xFF9870,
+                Jonction = JonctionDeLieu.Cassure,
+                Magie = 0xFF8A30,
+                Paroi = MatiereDeParoi.Basalte,
+                Inclusions = new[] { 0xFF6A20, 0xFFC040 },
+                Grains = new[] { 0xFFB040, 0xFF6A20, 0xFFE070 },
+            },
+
+            // VI · la mer relique, le Sel : nacre, vert-de-gris, noir. Des lits de sel et de
+            // schiste noir, des cubes de sel, une croûte blanche sur les corniches.
+            ["assise-6"] = new DecorDArt(
+                "assise-6",
+                new[] { 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.20, 0.19 },
+                0xD8E8DC,
+                new[] { 0x8CB8A8, 0x5E9888, 0x3E7468, 0x26504A, 0x14302E },
+                0x1C2020,
+                new int[0],
+                0xF0F0E0,
+                false,
+                0x3A4A44,
+                new[] { 0x1C2020, 0x2E3634, 0x7F9C90, 0x0E1010 })
+            {
+                TeinteDuFond = 0xA8C0B4,
+                Jonction = JonctionDeLieu.Cassure,
+                Magie = 0xE8E0D0,
+                Paroi = MatiereDeParoi.Sel,
+                Inclusions = new[] { 0xE8E0D0, 0xFFF8EE },
+                Grains = new[] { 0xE8E0D0, 0xB8D0C0 },
             },
         };
 
@@ -400,10 +508,10 @@ namespace IdlePond.Jeu.Scene
         {
             var decor = DecorDe(assise);
             var couleurs = decor.Couleurs();
-            var rang = ASSISES_DESSINEES.ToList().IndexOf(assise);
+            var rang = DECORS_DESSINES.ToList().IndexOf(assise);
             if (rang > 0)
             {
-                var dessus = DecorDe(ASSISES_DESSINEES[rang - 1]).Eau;
+                var dessus = DecorDe(DECORS_DESSINES[rang - 1]).Eau;
                 couleurs = couleurs.Append(dessus[dessus.Count - 1]);
             }
             return couleurs.Distinct().ToList();

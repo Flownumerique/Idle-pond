@@ -65,7 +65,7 @@ namespace IdlePond.Editeur
                 Nom = f.Key,
                 Images = Enumerable.Range(0, f.Value.Images).Select(i => S(Chemins.ImageDeFaune(f.Key, i))).ToArray(),
             }).ToArray();
-            catalogue.Decors = RegistreDArt.ASSISES_DESSINEES.Select(a => new CatalogueDArt.DecorDAssise
+            catalogue.Decors = RegistreDArt.DECORS_DESSINES.Select(a => new CatalogueDArt.DecorDAssise
             {
                 Assise = a,
                 Eaux = Chemins.Rangs(a).Select(r => S(Chemins.Eau(a, r))).ToArray(),
@@ -79,7 +79,7 @@ namespace IdlePond.Editeur
                 // Ce qui flotte dans chaque bande : seulement là où il y a quelque chose.
                 Ambiance = RegistreDArt.DecorDe(a).AUneAmbiance ? S(Chemins.Ambiance(a)) : null,
                 // La lèvre de la vasque : pour un lieu qu'on atteint en perçant (2026-11-25).
-                Seuil = a != RegistreDArt.ASSISES_DESSINEES[0] ? S(Chemins.Seuil(a)) : null,
+                Seuil = a != RegistreDArt.DECORS_DESSINES[0] ? S(Chemins.Seuil(a)) : null,
             }).ToArray();
             catalogue.Voile = S(Chemins.VOILE);
             catalogue.Eclat = S(Chemins.ECLAT);

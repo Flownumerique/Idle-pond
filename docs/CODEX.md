@@ -122,7 +122,7 @@ typologie du mana que le code nomme encore `type-mana-N`.
 |---|---|---|---|---|
 | I · la Noue | **la Sève** | faire pousser, guérir, respirer | vert tendre, or de pollen | les branchies |
 | II · le Gour | **le Courant** | porter, pousser, se souvenir du chemin | bleu clair, écume | les membranes |
-| III · le récif fossile | **l'Éclat** | la lumière et la foudre, la décharge | violet électrique, blanc | la luminescence |
+| III · l'Aven (le récif fossile) | **l'Éclat** | la lumière et la foudre, la décharge | violet électrique, blanc | la luminescence |
 | IV · la fosse | **le Gel** | figer, cristalliser, faire taire | bleu glacier, argent | la minéralisation |
 | V · la faille chaude | **la Braise** | changer, fondre, forger | rouge sang, orange, soufre | l'épaississement |
 | VI · la mer relique | **le Sel** | conserver, sceller, se rappeler | nacre, vert-de-gris, noir | — (la pierre) |
@@ -188,6 +188,10 @@ des magies qu'il a traversées. Les couleurs exactes sont dans `docs/da/gabarits
 ### Les quinze espèces à venir (noms provisoires)
 
 Retenues le 2026-11-22. Leurs noms se fixent lieu par lieu, au moment de produire le lieu.
+**Fixés le 2026-11-26 pour le lieu III**, avec son nom : **l'Aven**, /a.vɛ̃/ — le puits naturel
+du calcaire, qui s'ouvre vers le bas ; une voyelle nasale, plus sombre que la Noue et le Gour. Ses
+quatre espèces gardent leurs noms tels quels : le Torpillon, les Néonelles, l'Archer,
+l'Hachette-miroir. Le code garde l'identifiant `assise-3` jusqu'à ce que le lieu soit livré.
 
 | Lieu | Espèce | Racine réelle | Ce qu'elle est |
 |---|---|---|---|

@@ -135,5 +135,30 @@ namespace IdlePond.Tests
                 for (var p = premier; p < dernier; p++)
                     Assert.That(RegistreDArt.LumiereAuBasDu(p).Lumiere, Is.EqualTo(RegistreDArt.LumiereDuPalier(p + 1)));
         }
+    
+
+        [Test, Description("les quatre lieux à venir ont leur décor en avance : une matière, une eau, une magie chacun, et une membrane à leur cassure")]
+        public void Les_lieux_a_venir_ont_leur_decor()
+        {
+            Assert.That(RegistreDArt.DECORS_DESSINES, Is.EqualTo(Assises.Toutes.Select(a => a.Id)), "les six lieux, dans l'ordre du puits");
+            Assert.That(RegistreDArt.DECORS_DESSINES.Take(RegistreDArt.ASSISES_DESSINEES.Count), Is.EqualTo(RegistreDArt.ASSISES_DESSINEES));
+            Assert.That(RegistreDArt.DECORS_DESSINES.Select(a => RegistreDArt.DecorDe(a).Paroi), Is.Unique);
+            foreach (var lieu in RegistreDArt.DECORS_DESSINES.Skip(RegistreDArt.ASSISES_DESSINEES.Count))
+            {
+                var decor = RegistreDArt.DecorDe(lieu);
+                var assise = Assises.ParId(lieu);
+                Assert.That(decor.Assise, Is.EqualTo(lieu), "un vrai décor, pas celui de la Noue par défaut");
+                Assert.That(decor.Lumieres, Has.Count.EqualTo(assise.NombreDePaliers), lieu);
+                Assert.That(decor.Eau, Has.Count.EqualTo(5), lieu);
+                Assert.That(decor.Roche, Has.Count.EqualTo(4), lieu);
+                Assert.That(decor.Inclusions.Count, Is.GreaterThanOrEqualTo(2), lieu);
+                Assert.That(decor.Jonction, Is.EqualTo(JonctionDeLieu.Cassure), $"{lieu} : une membrane de sa magie");
+                Assert.That(decor.Magie.HasValue, Is.True, lieu);
+                Assert.That(Lieux.CouleurDeLaMagie(lieu), Is.EqualTo(decor.Magie.Value), $"{lieu} : ses lueurs et sa membrane");
+                Assert.That(decor.Berge, Is.False);
+            }
+            // Les lueurs de l'Aven, sous le Gour, sont violettes : l'Éclat.
+            Assert.That(Lieux.CouleurDeLaMagie("assise-3"), Is.EqualTo(0xC080FF));
+        }
     }
 }

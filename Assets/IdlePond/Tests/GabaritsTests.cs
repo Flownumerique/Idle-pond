@@ -303,10 +303,10 @@ namespace IdlePond.Tests
             }
         }
 
-        [Test, Description("chaque assise dessinée a son fond, ses rayons, et sa berge si elle en déclare une")]
+        [Test, Description("chaque lieu au décor dessiné — les lieux à venir compris — a son eau, ses parois, son fond, ses rayons, et sa berge si elle en déclare une")]
         public void Chaque_assise_dessinee_a_son_decor()
         {
-            foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
+            foreach (var assise in RegistreDArt.DECORS_DESSINES)
             {
                 int l, h;
                 foreach (var rang in Chemins.Rangs(assise))

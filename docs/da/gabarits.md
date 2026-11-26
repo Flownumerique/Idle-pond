@@ -107,6 +107,10 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 
 ## Le décor — `Fonds/{assise}/`
 
+Pour chaque lieu de `RegistreDArt.DECORS_DESSINES` : les deux jouables et, préparés en avance
+(2026-11-26), `assise-3` (l'Aven), `assise-4` (la fosse), `assise-5` (la faille chaude) et
+`assise-6` (la mer relique) — sans berge, avec un seuil et une ambiance.
+
 | Fichier | Taille | Rôle |
 |---|---|---|
 | `eau-{rang}.png` | 48 × 84 | l'eau d'un palier, tranche d'un dégradé qui court sur tout le lieu, répétée en largeur (le puits, 2026-11-25) ; trois nuances entre deux couleurs du registre et un tramage continu, sans aplat (2026-11-26) |
@@ -150,6 +154,12 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 - **Parois et roche à creuser** (2026-11-26, `DecorDArt.Paroi`) : la terre de la Noue `#3E2C20`
   `#503A2A`, limon `#6E5238`, humus `#24180F`, galets `#7C705E` `#9C8E74` ; le calcaire du Gour
   `#34404C` `#43505E`, dessus des lits `#5E6E80`, joints `#1A2028`, calcite `#8CA2B6` `#B8CCDA`.
+- **Lieux à venir** (2026-11-26, provisoires) : l'Aven, eau `#8C7CE0`→`#1C1650`, roche `#2E2A3C`
+  `#3B3650` `#58527A` `#1A1724`, fossiles `#9A90B8` `#D0C8F0`, éclat `#C080FF` ; la fosse, eau
+  `#A8E8F8`→`#183C60`, glace `#2A3A4E` `#3A5068` `#8FB8D8` `#18222E`, givre `#BFE6FF` `#F0FAFF` ;
+  la faille chaude, eau `#E88850`→`#381414`, basalte `#241C1C` `#34282A` `#4E3C3A` `#120C0C`, lave
+  `#FF6A20` `#FFC040` ; la mer relique, eau `#8CB8A8`→`#14302E`, roche `#1C2020` `#2E3634` `#7F9C90`
+  `#0E1010`, sel `#E8E0D0` `#FFF8EE`. Le détail : `RegistreDArt.cs`.
 - **Eau** : blanc `#FFFFFF`.
 
 ## Rendu et contrôle

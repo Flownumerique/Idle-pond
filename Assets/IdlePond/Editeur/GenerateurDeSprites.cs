@@ -59,7 +59,8 @@ namespace IdlePond.Editeur
             // par `outils/da/heros.py` (bible v0.4), les poissons de troupe par
             // `outils/da/especes.py` (Codex v1.4, maquette validée).
             DecorDArt precedent = null;
-            foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
+            // Les décors des lieux à venir aussi, préparés en avance (2026-11-26).
+            foreach (var assise in RegistreDArt.DECORS_DESSINES)
             {
                 var decor = RegistreDArt.DecorDe(assise);
                 var dessus = precedent;
@@ -82,7 +83,7 @@ namespace IdlePond.Editeur
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
                 if (decor.AUneAmbiance) sortie[Chemins.Ambiance(assise)] = DessinerAmbiance(decor).EnPng();
                 // Le seuil : seulement pour un lieu qu'on atteint en perçant, pas pour la surface.
-                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor, dessus).EnPng();
+                if (assise != RegistreDArt.DECORS_DESSINES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor, dessus).EnPng();
             }
             sortie[Chemins.VOILE] = DessinerVoile().EnPng();
             sortie[Chemins.ECLAT] = DessinerEclat().EnPng();
@@ -169,10 +170,16 @@ namespace IdlePond.Editeur
             var r = d.Roche;
             var matiere = d.Paroi != MatiereDeParoi.Pierres && d.Inclusions.Count >= 2;
             var calcaire = matiere && d.Paroi == MatiereDeParoi.Calcaire && d.Eau.Count >= 2;
+            // Les bassins : des gours d'eau dans le calcaire, des bassins de lave dans le basalte.
+            var basalte = matiere && d.Paroi == MatiereDeParoi.Basalte;
+            var liquide = calcaire ? d.Eau[1] : basalte ? d.Inclusions[0] : 0;
+            var surfaceDuLiquide = calcaire ? d.Eau[0] : basalte ? d.Inclusions[1] : 0;
+            var rebordDuBassin = calcaire ? d.Inclusions[0] : r[1];
+            var dessusDuRebord = calcaire ? d.Inclusions[1] : r[2];
             var clair = calcaire ? d.Inclusions[1] : r[2];
             int Surface(int x) => 5 + (int)Math.Round(1.4 * Math.Sin(2 * Math.PI * x / LARGEUR_DU_LIT * 2)
                 + 1.0 * Math.Sin(2 * Math.PI * x / LARGEUR_DU_LIT * 5 + 1));
-            var bassins = calcaire
+            var bassins = calcaire || basalte
                 ? new (int Debut, int Fin, int Niveau)[] { (4, 36, 1), (60, 96, 4), (104, 126, 2), (152, 186, 5) }
                 : new (int Debut, int Fin, int Niveau)[0];
             (int Debut, int Fin, int Niveau)? Bassin(int x)
@@ -196,11 +203,11 @@ namespace IdlePond.Editeur
                 {
                     // Le rebord du gour : deux pixels de calcite qui montent au-dessus de l'eau.
                     var haut = sol + (bord == 0 ? 4 : 3);
-                    for (var y = sol; y < haut; y++) toile.Poser(x, y, y == haut - 1 ? d.Inclusions[1] : d.Inclusions[0]);
+                    for (var y = sol; y < haut; y++) toile.Poser(x, y, y == haut - 1 ? dessusDuRebord : rebordDuBassin);
                 }
                 else
                 {
-                    for (var y = sol; y < sol + 3; y++) toile.Poser(x, y, y == sol + 2 ? d.Eau[0] : d.Eau[1]);
+                    for (var y = sol; y < sol + 3; y++) toile.Poser(x, y, y == sol + 2 ? surfaceDuLiquide : liquide);
                     // Le fond du bassin, plus sombre sous l'eau.
                     toile.Poser(x, sol - 1, r[1]);
                 }
@@ -231,6 +238,18 @@ namespace IdlePond.Editeur
                     var y0 = Surface(x0);
                     for (var dx = 0; dx < 3; dx++) toile.Poser(x0 + dx, y0, galet);
                     toile.Poser(x0 + 1, y0 + 1, d.Inclusions[1]);
+                }
+            // Des cristaux qui montent du fond : de glace dans la fosse, de sel dans la mer relique.
+            if (matiere && (d.Paroi == MatiereDeParoi.Glace || d.Paroi == MatiereDeParoi.Sel))
+                foreach (var (xc, hauteur) in new[] { (30, 9), (34, 5), (98, 7), (150, 10), (155, 6), (176, 4) })
+                {
+                    var pied = Surface(xc);
+                    for (var i = 0; i < hauteur; i++)
+                    {
+                        var demi = (hauteur - i) / 4;
+                        for (var dx = -demi; dx <= demi; dx++)
+                            toile.Poser(xc + dx, pied + i, dx < 0 || i == hauteur - 1 ? d.Inclusions[1] : d.Inclusions[0]);
+                    }
                 }
             if (d.Pierres.Count > 0)
                 foreach (var (cx, rx, ry) in new[] { (47.0, 8.0, 7.0), (139.0, 9.0, 8.0) })
@@ -295,6 +314,12 @@ namespace IdlePond.Editeur
                     return profond == 2 || Toile.Seuil(xw & 3, yw & 3) >= 0.8 ? d.Inclusions[1] : d.Inclusions[0];
                 if (profond == epaisseur) return d.Roche[3];
             }
+            // Le givre de la glace, la croûte du sel : sur le bord, tramés.
+            if ((d.Paroi == MatiereDeParoi.Glace || d.Paroi == MatiereDeParoi.Sel) && d.Inclusions.Count >= 2)
+            {
+                if (profond == 2 && Toile.Seuil(xw & 3, yw & 3) < 0.6) return d.Inclusions[1];
+                if (profond == 3 && Toile.Seuil(xw & 3, yw & 3) < 0.3) return d.Inclusions[0];
+            }
             return Matiere(d, xw, yw, 0, 0);
         }
 
@@ -326,6 +351,10 @@ namespace IdlePond.Editeur
         {
             if (d.Paroi == MatiereDeParoi.Terre && d.Inclusions.Count >= 2) return Terre(d, x, y, periodeX, periodeY);
             if (d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2) return Calcaire(d, x, y, periodeX, periodeY);
+            if (d.Paroi == MatiereDeParoi.Fossiles && d.Inclusions.Count >= 2) return Fossiles(d, x, y, periodeX, periodeY);
+            if (d.Paroi == MatiereDeParoi.Glace && d.Inclusions.Count >= 2) return Glace(d, x, y, periodeX, periodeY);
+            if (d.Paroi == MatiereDeParoi.Basalte && d.Inclusions.Count >= 2) return Basalte(d, x, y, periodeX, periodeY);
+            if (d.Paroi == MatiereDeParoi.Sel && d.Inclusions.Count >= 2) return Sel(d, x, y, periodeX, periodeY);
             // Les pierres jointes, celles d'avant : sans période (la roche à creuser des pierres a
             // son propre dessin, `DessinerRocheDePierres`).
             var (claire, ecart) = PierreDuMonde(x, y);
@@ -401,6 +430,140 @@ namespace IdlePond.Editeur
             if (yy == haut - 1) return Toile.Seuil(x, yy) < 0.75 ? r[2] : corps;
             var couleur = fente && x == xf + 1 ? r[0] : corps;
             if (Toile.Seuil(x, yy) < 0.07) couleur = couleur == r[1] ? r[0] : r[1];
+            return couleur;
+        }
+
+        /// L'ammonite, du haut vers le bas.
+        static readonly string[] AMMONITE = { ".###.", "#...#", "#.#.#", "#..##", ".##.." };
+
+        /// <summary>
+        /// Le calcaire de l'Aven (2026-11-26) : des lits de douze pixels, sombres, dont certains
+        /// joints s'effacent ; de loin en loin une ammonite ou une coquille, pâles, et une veine
+        /// d'éclat qui zigzague (la troisième inclusion).
+        /// </summary>
+        static int Fossiles(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            var r = d.Roche;
+            var inclusions = d.Inclusions;
+            var cycle = periodeY / 12;
+            var yy = y + (int)Math.Round(1.2 * Math.Sin(2 * Math.PI * x / 48 + 1.1));
+            var (k, bas, _) = LitDeRoche(yy, 12, cycle, 71);
+            var hl = HacherLaParoi(Boucler(k, cycle), 73);
+            if (yy == bas && hl % 2u == 0) return r[3];
+            var corps = hl % 3u == 0 ? r[0] : r[1];
+            if (hl % 3u == 2 && Toile.Seuil(x, yy) < 0.2) corps = r[2];
+            var vx = Plancher(x, 24);
+            var vy = Plancher(y, 12);
+            var hv = HacherLaCase(vx, vy, periodeX / 24, periodeY / 12, 79);
+            if (hv % 6u == 0 && inclusions.Count > 2)
+            {
+                var t = y - vy * 12;
+                var zig = t % 4 < 2 ? t % 4 : 4 - t % 4;
+                if (x == vx * 24 + 6 + (int)((hv >> 4) % 12u) + zig) return inclusions[2];
+            }
+            var gx = Plancher(x, 12);
+            var gy = Plancher(y, 12);
+            var h = HacherLaCase(gx, gy, periodeX / 12, periodeY / 12, 77);
+            var ox = gx * 12 + 3 + (int)((h >> 4) % 5u);
+            var oy = gy * 12 + 3 + (int)((h >> 8) % 5u);
+            var dx = x - ox;
+            var dy = oy + 2 - y;
+            if (h % 7u == 0 && dx >= 0 && dx < 5 && dy >= 0 && dy < 5)
+            {
+                if (dx == 2 && dy == 2) return inclusions[1];
+                if (AMMONITE[dy][dx] == '#') return inclusions[0];
+            }
+            if ((h % 7u == 1 || h % 7u == 2) && dx >= 0 && dx < 3 && dy >= 0 && dy < 2)
+            {
+                if (dy == 0 && dx == 1) return inclusions[1];
+                if (dy == 1) return inclusions[0];
+            }
+            return corps;
+        }
+
+        /// <summary>
+        /// La glace de la fosse : de grandes facettes (une cellule de Voronoï chacune), d'une
+        /// teinte ou de l'autre, éclairées sur leur bord haut, cernées d'une fêlure ; des éclats
+        /// de givre semés pixel à pixel — jamais sur la trame, qui ferait une grille.
+        /// </summary>
+        static int Glace(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            const int CASE = 12;
+            var r = d.Roche;
+            var cx = Plancher(x, CASE);
+            var cy = Plancher(y, CASE);
+            double premiere = double.MaxValue, seconde = double.MaxValue, hautDuGerme = 0;
+            uint germe = 0;
+            for (var dy = -1; dy <= 1; dy++)
+                for (var dx = -1; dx <= 1; dx++)
+                {
+                    var c = cx + dx;
+                    var l = cy + dy;
+                    var h = HacherLaCase(c, l, periodeX / CASE, periodeY / CASE, 87);
+                    var gx = c * CASE + 1 + (h & 0xFF) / 255.0 * (CASE - 2);
+                    var gy = l * CASE + 1 + ((h >> 8) & 0xFF) / 255.0 * (CASE - 2);
+                    var distance = Math.Sqrt((x - gx) * (x - gx) + (y - gy) * (y - gy));
+                    if (distance < premiere) { seconde = premiere; premiere = distance; germe = h; hautDuGerme = gy; }
+                    else if (distance < seconde) seconde = distance;
+                }
+            var ecart = seconde - premiere;
+            if (ecart < 1.0) return r[3];
+            if (ecart < 2.2 && y > hautDuGerme) return r[2];
+            var couleur = (germe >> 16) % 3u != 0 ? r[1] : r[0];
+            if (HacherLaCase(x, y, periodeX, periodeY, 89) % 29u == 0) return couleur == r[1] ? d.Inclusions[1] : d.Inclusions[0];
+            return couleur;
+        }
+
+        /// <summary>
+        /// Le basalte de la faille chaude : des colonnes de huit pixels, chacune coupée en blocs
+        /// décalés d'une colonne à l'autre, éclairés en haut et à gauche ; un joint sur cinq
+        /// rougeoie de lave.
+        /// </summary>
+        static int Basalte(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            const int LARGE = 8, PAS = 12;
+            var r = d.Roche;
+            var colonne = Plancher(x, LARGE);
+            var c = Boucler(colonne, periodeX / LARGE);
+            var cycle = periodeY / PAS;
+            var yy = y + (int)(HacherLaParoi(c, 81) % (uint)PAS);
+            var (k, bas, haut) = LitDeRoche(yy, PAS, cycle, 83);
+            var hb = HacherLaCase(c, k, 0, cycle, 85);
+            var lave = hb % 5u == 0;
+            var dedans = x - colonne * LARGE;
+            if (dedans == 0) return lave && Toile.Seuil(x, y) < 0.6 ? d.Inclusions[0] : r[3];
+            if (yy == bas) return lave ? d.Inclusions[1] : r[3];
+            if (yy == haut - 1 || dedans == 1) return Toile.Seuil(x, y) < 0.6 ? r[2] : r[1];
+            return hb % 2u == 1 ? r[1] : r[0];
+        }
+
+        /// <summary>
+        /// Le sel de la mer relique : des lits minces de six pixels — schiste noir, vert-de-gris,
+        /// sel blanc tramé — et des cubes de sel, leur arête claire.
+        /// </summary>
+        static int Sel(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            var r = d.Roche;
+            var inclusions = d.Inclusions;
+            var cycle = periodeY / 6;
+            var yy = y + (int)Math.Round(0.6 * Math.Sin(2 * Math.PI * x / 24));
+            var (k, _, _) = LitDeRoche(yy, 6, cycle, 91);
+            int couleur;
+            switch (HacherLaParoi(Boucler(k, cycle), 93) % 4u)
+            {
+                case 0: couleur = r[0]; break;
+                case 1: couleur = r[1]; break;
+                case 3: couleur = r[2]; break;
+                default: couleur = Toile.Seuil(x, yy) < 0.55 ? inclusions[0] : r[2]; break;
+            }
+            var gx = Plancher(x, 12);
+            var gy = Plancher(y, 12);
+            var h = HacherLaCase(gx, gy, periodeX / 12, periodeY / 12, 95);
+            if (h % 3u != 0) return couleur;
+            var ox = gx * 12 + 2 + (int)((h >> 4) % 7u);
+            var oy = gy * 12 + 2 + (int)((h >> 8) % 7u);
+            if (x - ox >= 0 && x - ox < 3 && y - oy >= 0 && y - oy < 3)
+                return x - ox == 0 || y - oy == 2 ? inclusions[1] : inclusions[0];
             return couleur;
         }
 
@@ -532,6 +695,13 @@ namespace IdlePond.Editeur
                     toile.Poser(x, haut + 1, d.Inclusions[1]);
                     if (reste == 3) toile.Poser(x, haut + 2, d.Inclusions[1]);
                 }
+                // Les glaçons qui pendent sous une corniche de glace ; la croûte d'une corniche de sel.
+                if (d.Paroi == MatiereDeParoi.Glace && d.Inclusions.Count >= 2 && reste > 4 && HacherLaParoi(xw, (uint)palier + 11) % 7u == 0)
+                {
+                    var glacon = 2 + (int)(HacherLaParoi(xw, 13) % 5u);
+                    for (var i = 1; i <= glacon; i++) toile.Poser(x, dessous - i, i == glacon ? d.Inclusions[1] : d.Inclusions[0]);
+                }
+                if (d.Paroi == MatiereDeParoi.Sel && d.Inclusions.Count >= 2 && Toile.Seuil(x, haut) < 0.8) toile.Poser(x, haut, d.Inclusions[1]);
                 if (s < 0 || reste < 3) continue;
                 // Ce qui pousse dessus.
                 if (d.Herbes.Count > 0 && hasard() < 0.16)

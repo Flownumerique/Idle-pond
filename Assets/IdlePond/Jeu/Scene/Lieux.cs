@@ -157,7 +157,9 @@ namespace IdlePond.Jeu.Scene
         public static int CouleurDeLaMagie(string lieu)
         {
             var marque = RegistreDArt.MarqueDe(lieu);
-            return marque != null && marque.Couleurs.Count > 0 ? marque.Couleurs[0] : 0xFFE070;
+            if (marque != null && marque.Couleurs.Count > 0) return marque.Couleurs[0];
+            // Un lieu préparé en avance porte sa magie dans son décor (2026-11-26).
+            return RegistreDArt.DecorDe(lieu).Magie ?? 0xFFE070;
         }
 
         static double Modulo(double a, double b)

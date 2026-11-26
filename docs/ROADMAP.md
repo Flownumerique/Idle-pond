@@ -169,6 +169,20 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   Tout reste dessous (2026-11-26, `Lieux.PlafondDeNage`) : poissons, lamproies accrochées et
   représentants nagent sous la membrane et sa lueur — un nageur trop grand pour tenir près des
   parois nage au milieu, où elle est mince ; les bulles s'arrêtent sous elle et s'y fondent.
+- **Les décors des lieux à venir, préparés en avance** (2026-11-26, décidé par l'auteur : le
+  décor d'abord, sans toucher au noyau) : `RegistreDArt.DECORS_DESSINES` ajoute aux deux lieux
+  jouables les quatre suivants, chacun avec son eau, sa matière, son fond, sa roche, sa membrane
+  et ce qui flotte dans son eau. **III · l'Aven** (nom fixé le 2026-11-26, Codex §2), l'Éclat : un
+  calcaire sombre à ammonites et coquilles, fendu de veines d'éclat violettes. **IV · la fosse**,
+  le Gel : de la glace à facettes, givrée, des glaçons sous les corniches, des cristaux au fond.
+  **V · la faille chaude**, la Braise : du basalte en colonnes veiné de lave, des bassins de lave
+  au fond. **VI · la mer relique**, le Sel : des lits de sel et de schiste noir, des cubes de sel,
+  des corniches croûtées. Chacun s'ouvre par une cassure, sa membrane à la couleur de sa magie
+  (`DecorDArt.Magie`). Déjà visible en jeu une fois le catalogue reconstruit : la roche de l'Aven
+  sous le Gour, et ses lueurs violettes. Aperçu : `docs/da/apercu-lieux-a-venir.png`. Les valeurs
+  de lumière de ces lieux sont de l'art, à valider à l'écran. **Reste, pour les rendre jouables** :
+  le noyau (paliers livrés, identifiants, succès, textes, parité), les espèces dessinées, la
+  marque du héros, les noms des lieux IV à VI et de leurs espèces.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, trop réguliers,
   sont repris (2026-11-26) : ils quittent la tuile d'eau de 48 px pour l'ambiance de 384 px —
