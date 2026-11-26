@@ -725,7 +725,9 @@ namespace IdlePond.Editeur
                     toile.Poser(x, y, d.Grains[k % d.Grains.Count]);
                 }
             if (d.Meduses.Count > 0)
-                foreach (var (cx, cy) in new[] { (60, 60), (225, 45), (333, 66) })
+                // (60, 48) : pavée depuis `GAUCHE_DU_DECOR`, elle revient à x = 336 du champ, où la
+                // membrane d'une cassure descend à une trentaine de pixels (2026-11-26).
+                foreach (var (cx, cy) in new[] { (60, 48), (225, 45), (333, 66) })
                 {
                     // Une cloche de sept pixels, son bord, et ses filaments qui pendent.
                     for (var dx = -1; dx <= 1; dx++) toile.Poser(cx + dx, cy + 2, d.Meduses[0]);
