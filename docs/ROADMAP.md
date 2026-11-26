@@ -154,6 +154,14 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   Python du générateur, vérifié à l'octet sur ce qui n'a pas changé (géométrie des corniches et des
   parois, seuil, encodeur PNG). À lancer dans Unity : `outils/unity.sh tests EditMode`, puis
   « Générer les sprites provisoires » (aucun fichier ne devrait bouger) et les captures.
+- **Le fondu et la cassure** (2026-11-26, retour de l'auteur) : l'eau d'un lieu n'a plus d'aplats
+  séparés par des bandes tramées ; trois nuances s'intercalent entre deux couleurs du registre
+  (`DecorDArt.EauFine`) et le tramage avance pixel à pixel du haut du lieu à son fond — avec la
+  lumière qui glissait déjà d'un palier à l'autre, plus aucune marche. Un lieu en fondu mêlera
+  tout son premier palier à l'eau d'au-dessus, sur une courbe douce. La **cassure** prend l'aspect
+  d'une bulle : le seuil du Gour (48 px) est une voûte en arc de cercle, mince au milieu, qui
+  rejoint les parois, avec le reflet d'une bulle sous elle et quelques bulles prises. Aperçu :
+  `docs/da/apercu-fondu-et-bulle.png`. Écrit hors de l'éditeur, comme les parois.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
   réguliers, sont les premiers à reprendre.

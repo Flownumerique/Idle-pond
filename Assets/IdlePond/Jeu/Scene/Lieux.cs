@@ -21,8 +21,9 @@ namespace IdlePond.Jeu.Scene
     /// </summary>
     public static class Lieux
     {
-        /// La hauteur du seuil dessiné, à cheval sur le haut de la bande du lieu.
-        public const int HAUTEUR_DU_SEUIL = 20;
+        /// La hauteur du seuil dessiné, sous le haut de la bande du lieu : la voûte de la bulle
+        /// (2026-11-26) y descend jusqu'aux parois.
+        public const int HAUTEUR_DU_SEUIL = 48;
 
         /// La brèche de la cascade, en fraction de la largeur visée : un peu à gauche du héros.
         public const double BRECHE = 0.36;

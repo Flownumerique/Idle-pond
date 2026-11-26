@@ -109,14 +109,14 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 
 | Fichier | Taille | Rôle |
 |---|---|---|
-| `eau-{rang}.png` | 48 × 84 | l'eau d'un palier, tranche d'un dégradé qui court sur tout le lieu, répétée en largeur (le puits, 2026-11-25) |
+| `eau-{rang}.png` | 48 × 84 | l'eau d'un palier, tranche d'un dégradé qui court sur tout le lieu, répétée en largeur (le puits, 2026-11-25) ; trois nuances entre deux couleurs du registre et un tramage continu, sans aplat (2026-11-26) |
 | `parois-{rang}.png` | 576 × 84 | les deux parois d'un palier, dans la matière du lieu (2026-11-26) : la **terre** de la Noue — lits ondulés de quatre teintes, galets pris dedans, racines qui pendent sur l'eau ; le **calcaire** du Gour — lits épais, fentes, croûte et draperies de calcite le long du bord |
 | `corniche-{rang}.png` | 576 × 44 | la corniche d'un palier, dans la même matière ; celle du Gour retient au bout une flaque derrière un rebord de calcite (un gour) |
 | `lit.png` | 192 × 30 | le sol du fond du puits : la vase et ses herbes, ou les galets, leur mousse et les grosses pierres |
 | `roche.png` | 48 × 84 | la roche à creuser, dans la matière du lieu, raccordée à elle-même en largeur et en hauteur |
 | `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
 | `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
-| `seuil.png` | 576 × 20 | la lèvre de roche de la vasque, posée à `GAUCHE_DU_DECOR` en haut du premier palier du lieu (sauf la Noue), avec la brèche de la cascade au tiers gauche du champ (2026-11-25) |
+| `seuil.png` | 576 × 48 | la voûte de la vasque, vue du dedans comme une bulle (2026-11-26) : un arc de roche mince au milieu qui rejoint les parois, cerné de calcite, le reflet clair d'une bulle et quelques bulles prises dessous ; posé à `GAUCHE_DU_DECOR` en haut du premier palier d'un lieu en cassure, avec la brèche de la cascade au tiers gauche du champ |
 | `ambiance.png` | 384 × 84 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
 
 ## L'eau — `Eau/`

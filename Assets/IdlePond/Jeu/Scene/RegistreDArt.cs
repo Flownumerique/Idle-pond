@@ -74,9 +74,25 @@ namespace IdlePond.Jeu.Scene
         /// sont sur le sol du fond du puits, `lit.png`, depuis le 2026-11-25.)
         public bool AUneAmbiance => Grains.Count > 0 || Meduses.Count > 0;
 
+        /// L'eau d'un lieu, du haut vers le bas, avec entre deux couleurs voisines
+        /// `RegistreDArt.NUANCES_D_EAU - 1` couleurs intermédiaires (2026-11-26) : le dégradé du
+        /// puits se trame d'une nuance à la suivante, sans aplat ni marche visible.
+        public IReadOnlyList<int> EauFine
+        {
+            get
+            {
+                var fine = new List<int>();
+                for (var i = 0; i + 1 < Eau.Count; i++)
+                    for (var k = 0; k < RegistreDArt.NUANCES_D_EAU; k++)
+                        fine.Add(RegistreDArt.Melanger(Eau[i], Eau[i + 1], k / (double)RegistreDArt.NUANCES_D_EAU));
+                if (Eau.Count > 0) fine.Add(Eau[Eau.Count - 1]);
+                return fine;
+            }
+        }
+
         public IEnumerable<int> Couleurs()
         {
-            var toutes = Eau.Concat(Racines).Concat(Roche).Append(Vase).Append(Rayon)
+            var toutes = EauFine.Concat(Racines).Concat(Roche).Append(Vase).Append(Rayon)
                 .Concat(Nenuphar).Concat(Herbes).Concat(Grains).Concat(Ecume).Concat(Galets).Concat(Pierres).Concat(Meduses).Concat(Inclusions);
             if (Surface.HasValue) toutes = toutes.Append(Surface.Value);
             if (Bourgeon.HasValue) toutes = toutes.Append(Bourgeon.Value);
@@ -122,6 +138,8 @@ namespace IdlePond.Jeu.Scene
         public const double LUMIERE_DE_ROCHE_EN_HAUT = 0.55;
         public const double LUMIERE_DE_ROCHE_EN_BAS = 0.12;
         public const int TEINTE_DE_ROCHE = 0xB8C8C4;
+        /// Le pas du dégradé de l'eau entre deux couleurs du registre (`DecorDArt.EauFine`).
+        public const int NUANCES_D_EAU = 4;
 
         /// Le héros (bible v0.3) : la seule chose chaude de la mare, en or ; il se détache sur
         /// le vert de la Noue comme sur le bleu du Gour.
@@ -348,6 +366,19 @@ namespace IdlePond.Jeu.Scene
         public static IReadOnlyList<int> PaletteDesEspeces() =>
             ESPECES_DESSINEES.Concat(ESPECES_PAR_RANG.SelectMany(c => c.Couleurs())).Append(CONTOUR).Distinct().ToList();
 
-        public static IReadOnlyList<int> PaletteDuDecor(string assise) => DecorDe(assise).Couleurs().Distinct().ToList();
+        /// Les couleurs d'un décor ; un lieu en fondu y ajoute l'eau la plus sombre du lieu
+        /// d'au-dessus, qui descend dans son premier palier.
+        public static IReadOnlyList<int> PaletteDuDecor(string assise)
+        {
+            var decor = DecorDe(assise);
+            var couleurs = decor.Couleurs();
+            var rang = ASSISES_DESSINEES.ToList().IndexOf(assise);
+            if (rang > 0 && decor.Jonction == JonctionDeLieu.Fondu)
+            {
+                var dessus = DecorDe(ASSISES_DESSINEES[rang - 1]).Eau;
+                couleurs = couleurs.Append(dessus[dessus.Count - 1]);
+            }
+            return couleurs.Distinct().ToList();
+        }
     }
 }

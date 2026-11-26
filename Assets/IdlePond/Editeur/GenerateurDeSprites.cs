@@ -81,7 +81,7 @@ namespace IdlePond.Editeur
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
                 if (decor.AUneAmbiance) sortie[Chemins.Ambiance(assise)] = DessinerAmbiance(decor).EnPng();
                 // Le seuil : seulement pour un lieu qu'on atteint en perçant, pas pour la surface.
-                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor).EnPng();
+                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor, Chemins.PremierPalier(assise)).EnPng();
             }
             sortie[Chemins.VOILE] = DessinerVoile().EnPng();
             sortie[Chemins.ECLAT] = DessinerEclat().EnPng();
@@ -117,14 +117,18 @@ namespace IdlePond.Editeur
         /// <summary>
         /// L'eau du `rang`-ième des `nombre` paliers d'un lieu (le puits, 2026-11-25) : une
         /// tranche d'un seul dégradé qui court du haut du lieu à son fond — du clair au sombre
-        /// (bible v0.3), en aplats dont seul le dernier quart est tramé vers le suivant. Plus de
-        /// sol ici : il n'y en a qu'au fond du puits (`DessinerLit`). Un lieu en fondu mêle le haut
-        /// de son premier palier à l'eau la plus sombre de celui d'au-dessus (`fondu`). La lumière,
-        /// elle, vient des Light2D. Se répète en largeur : tout y a une période qui divise 48.
+        /// (bible v0.3). Progressif de bout en bout (2026-11-26) : entre deux couleurs du registre,
+        /// des nuances intermédiaires (`DecorDArt.EauFine`), et de l'une à la suivante un tramage
+        /// qui avance pixel à pixel — ni aplat, ni marche. Plus de sol ici : il n'y en a qu'au fond
+        /// du puits (`DessinerLit`). Un lieu en fondu mêle tout son premier palier à l'eau la plus
+        /// sombre de celui d'au-dessus (`fondu`), de moins en moins en descendant, sur une courbe
+        /// douce. La lumière, elle, vient des Light2D. Se répète en largeur : tout y a une période
+        /// qui divise 48.
         /// </summary>
         static Toile DessinerEau(DecorDArt d, int rang, int nombre, DecorDArt fondu)
         {
             var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
+            var fine = d.EauFine;
             var hauteurDuLieu = nombre * toile.Hauteur - 1.0;
             for (var y = 0; y < toile.Hauteur; y++)
                 for (var x = 0; x < toile.Largeur; x++)
@@ -132,13 +136,15 @@ namespace IdlePond.Editeur
                     var descente = rang * toile.Hauteur + (toile.Hauteur - 1 - y);
                     // Les nappes ondulent : leur passage de l'une à l'autre n'est pas une règle.
                     var onde = 3 * Math.Sin(2 * Math.PI * x / toile.Largeur) + 2 * Math.Sin(4 * Math.PI * x / toile.Largeur + 1);
-                    var profondeur = Math.Max(0, Math.Min(hauteurDuLieu, descente + onde)) / hauteurDuLieu * (d.Eau.Count - 1);
-                    var i = Math.Min((int)profondeur, d.Eau.Count - 1);
-                    var passage = (profondeur - i - 0.75) / 0.25;
-                    var couleur = i + 1 < d.Eau.Count && Toile.Seuil(x, y) < passage ? d.Eau[i + 1] : d.Eau[i];
+                    var profondeur = Math.Max(0, Math.Min(hauteurDuLieu, descente + onde)) / hauteurDuLieu * (fine.Count - 1);
+                    var i = Math.Min((int)profondeur, fine.Count - 1);
+                    var couleur = i + 1 < fine.Count && Toile.Seuil(x, y) < profondeur - i ? fine[i + 1] : fine[i];
                     // Le fondu : l'eau d'au-dessus descend dans la première bande et s'y perd.
-                    if (fondu != null && rang == 0 && 1 - descente / (toile.Hauteur * 0.7) > Toile.Seuil(x, y))
-                        couleur = fondu.Eau[fondu.Eau.Count - 1];
+                    if (fondu != null && rang == 0)
+                    {
+                        var u = Math.Min(1.0, descente / (toile.Hauteur - 1.0));
+                        if (Toile.Seuil(x, y) >= u * u * (3 - 2 * u)) couleur = fondu.Eau[fondu.Eau.Count - 1];
+                    }
                     // Le courant du Gour : des traits d'écume qui filent, en pointillés décalés
                     // d'une rangée à l'autre.
                     if (d.Courant && y > 9 && y % 13 == 6 && (x + y * 3) % 24 < 10 && x % 2 == 0)
@@ -736,41 +742,82 @@ namespace IdlePond.Editeur
             return toile;
         }
 
+        public const int RAYON_DE_LA_BULLE = 176;
+
         /// <summary>
-        /// Le seuil d'un lieu (2026-11-25) : la lèvre de roche de sa vasque, en haut de son
-        /// premier palier, sur toute la largeur du décor — irrégulière, éclairée sur le dessus,
-        /// de la mousse qui pend dessous — et la brèche où l'eau du lieu d'au-dessus déborde en
-        /// cascade (les gouttes, elles, sont animées par la scène).
+        /// Le seuil d'un lieu qui s'ouvre par une cassure : la voûte de sa vasque, vue du dedans
+        /// comme une bulle (2026-11-26). Sur toute la largeur du décor, la roche du lieu descend
+        /// du haut de son premier palier en arc de cercle — mince au milieu, jusqu'aux parois sur
+        /// les côtés —, cernée dessous d'une ligne de calcite ; sous la voûte, le reflet d'une
+        /// bulle, un arc clair par morceaux qui en suit la courbe, et quelques bulles prises. La
+        /// brèche, où l'eau du lieu d'au-dessus déborde en cascade (les gouttes, elles, sont
+        /// animées par la scène), est une entaille sèche : une nappe d'eau dessinée ici se lisait,
+        /// dans la roche, comme une grille grise.
         /// </summary>
-        static Toile DessinerSeuil(DecorDArt d)
+        static Toile DessinerSeuil(DecorDArt d, int palier)
         {
             var toile = new Toile(Gabarits.LARGEUR_DU_DECOR, Lieux.HAUTEUR_DU_SEUIL);
             var breche = Lieux.XDeLaBreche - Gabarits.GAUCHE_DU_DECOR;
+            var centre = Gabarits.LARGEUR_VISEE / 2 - Gabarits.GAUCHE_DU_DECOR;
             var haut = toile.Hauteur - 1;
+            var pied = Lieux.YDuSeuil(palier);
             var hasard = Hasard(19);
             var calcite = d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2;
-            var epaisseurs = new int[toile.Largeur];
+            var clair = calcite ? d.Inclusions[1] : d.Roche[2];
+            var bord = calcite ? d.Inclusions[0] : d.Roche[3];
+            var reflet = d.Ecume.Count > 0 ? d.Ecume[0] : clair;
+            // L'épaisseur de la voûte, sans ses bosses : un arc de cercle.
+            double Lisse(int x)
+            {
+                var u = (x - centre) / (double)RAYON_DE_LA_BULLE;
+                return 3 + (toile.Hauteur - 8) * (1 - Math.Sqrt(Math.Max(0.0, 1 - u * u)));
+            }
+            var voute = new int[toile.Largeur];
             for (var x = 0; x < toile.Largeur; x++)
-                epaisseurs[x] = 5 + (int)Math.Round(2 * Math.Sin(x * 0.11) + 1.5 * Math.Sin(x * 0.037 + 1.3));
+                voute[x] = Math.Max(2, Math.Min(toile.Hauteur - 1,
+                    (int)Math.Round(Lisse(x) + 1.2 * Math.Sin(x * 0.11) + 0.8 * Math.Sin(x * 0.037 + 1.3))));
             for (var x = 0; x < toile.Largeur; x++)
             {
-                // La brèche est une entaille sèche : tant que le lieu est de la roche, on y voit la
-                // roche ; une fois percé, son eau et la cascade, que la scène anime. (Une nappe
-                // d'eau dessinée ici se lisait, dans la roche, comme une grille grise.)
                 if (Math.Abs(x - breche) <= 3) continue;
-                // La lèvre s'amincit à l'approche de la brèche.
-                var e = Math.Max(2, Math.Min(epaisseurs[x], Math.Abs(x - breche) - 3));
+                // La voûte s'amincit à l'approche de la brèche.
+                var e = Math.Max(2, Math.Min(voute[x], Math.Abs(x - breche) - 3));
                 for (var i = 0; i < e; i++)
                 {
                     var y = haut - i;
-                    // Le dessus de la lèvre d'un calcaire est de calcite : c'est le rebord du gour.
-                    var couleur = i == 0 ? (calcite ? d.Inclusions[1] : d.Roche[2]) : (Toile.Seuil(x, y) < 0.3 ? d.Roche[1] : d.Roche[0]);
-                    if (i == e - 1) couleur = d.Roche[3];
+                    var couleur = i == 0 ? clair : Matiere(d, Gabarits.GAUCHE_DU_DECOR + x, pied + y, 0, 0);
+                    if (i == e - 2 && e > 3) couleur = d.Roche[3];
+                    if (i == e - 1) couleur = bord;
                     toile.Poser(x, y, couleur);
                 }
-                // La mousse qui pend sous la lèvre, par touffes.
+                // La mousse qui pend sous la voûte, par touffes.
                 if (d.Mousse.HasValue && hasard() < 0.12)
                     for (var i = 0; i < 1 + (int)(hasard() * 3); i++) toile.Poser(x, haut - e - i, d.Mousse.Value);
+            }
+            // Le reflet de la bulle : trois pixels sous la voûte, par morceaux ; épais de deux
+            // pixels au cœur du grand morceau, tramé ailleurs.
+            for (var x = 0; x < toile.Largeur; x++)
+            {
+                var xs = x + Gabarits.GAUCHE_DU_DECOR;
+                if (Math.Abs(x - breche) <= 7) continue;
+                var grand = xs >= 22 && xs <= 116;
+                var petit = (xs >= 236 && xs <= 256) || (xs >= 266 && xs <= 271);
+                if (!grand && !petit) continue;
+                var y = haut - (int)Math.Round(Lisse(x)) - 3;
+                if (y < 0) continue;
+                toile.Poser(x, y, reflet);
+                if (grand && xs >= 44 && xs <= 92) toile.Poser(x, y - 1, reflet);
+                else if (Toile.Seuil(x, y - 1) < 0.25) toile.Poser(x, y - 1, reflet);
+            }
+            // Des bulles prises sous la voûte : un anneau clair, son éclat.
+            foreach (var (xs, r) in new[] { (206, 1), (300, 2), (322, 1) })
+            {
+                var x = xs - Gabarits.GAUCHE_DU_DECOR;
+                var cy = haut - voute[x] - 2 - r;
+                var anneau = r == 1
+                    ? new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }
+                    : new[] { (2, 0), (-2, 0), (0, 2), (0, -2), (1, 1), (-1, 1), (1, -1), (-1, -1) };
+                foreach (var (dx, dy) in anneau) toile.Poser(x + dx, cy + dy, clair);
+                toile.Poser(x - r + 1, cy + r - 1, reflet);
             }
             return toile;
         }
