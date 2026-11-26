@@ -116,7 +116,7 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 | `roche.png` | 48 × 84 | la roche à creuser, dans la matière du lieu, raccordée à elle-même en largeur et en hauteur |
 | `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
 | `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
-| `seuil.png` | 576 × 48 | la voûte de la vasque, vue du dedans comme une bulle (2026-11-26) : un arc de roche mince au milieu qui rejoint les parois, cerné de calcite, le reflet clair d'une bulle et quelques bulles prises dessous ; posé à `GAUCHE_DU_DECOR` en haut du premier palier d'un lieu en cassure, avec la brèche de la cascade au tiers gauche du champ |
+| `seuil.png` | 576 × 48 | l'eau la plus sombre du lieu d'au-dessus, qui appuie sur la membrane de mana d'un lieu en cassure, au-dessus de son arc (`Lieux.CreuxDeLaMembrane`), bord tramé sur deux rangées ; posé à `GAUCHE_DU_DECOR` en haut du premier palier du lieu (2026-11-26). La membrane elle-même n'est pas un dessin : la scène la trace, vivante et sans éclairage, en éclats teintés du mana du lieu |
 | `ambiance.png` | 384 × 84 | ce qui flotte dans chaque bande, devant l'eau : le pollen ; les méduses et les grosses pierres (si l'assise en a) |
 
 ## L'eau — `Eau/`

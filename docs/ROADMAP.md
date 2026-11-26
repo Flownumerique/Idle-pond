@@ -158,10 +158,16 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   séparés par des bandes tramées ; trois nuances s'intercalent entre deux couleurs du registre
   (`DecorDArt.EauFine`) et le tramage avance pixel à pixel du haut du lieu à son fond — avec la
   lumière qui glissait déjà d'un palier à l'autre, plus aucune marche. Un lieu en fondu mêlera
-  tout son premier palier à l'eau d'au-dessus, sur une courbe douce. La **cassure** prend l'aspect
-  d'une bulle : le seuil du Gour (48 px) est une voûte en arc de cercle, mince au milieu, qui
-  rejoint les parois, avec le reflet d'une bulle sous elle et quelques bulles prises. Aperçu :
-  `docs/da/apercu-fondu-et-bulle.png`. Écrit hors de l'éditeur, comme les parois.
+  tout son premier palier à l'eau d'au-dessus, sur une courbe douce. Aperçu : `docs/da/apercu-fondu-et-bulle.png`.
+  **La cassure est une membrane de mana** (décidé par l'auteur le 2026-11-26) : ce qui sépare le
+  Gour de la Noue est une barrière tissée du Courant, bombée d'une paroi à l'autre comme le dessus
+  d'une bulle (`Lieux.Membrane`, pur et testé). Elle ondule d'un pixel, un reflet d'écume la
+  parcourt, elle luit sans éclairage, en bleu de Courant ; l'eau sombre de la Noue appuie dessus
+  dans les coins (`seuil.png`). Elle reste entière : plus de brèche ni de cascade, la percée
+  jaillit contre elle. Aperçus : `docs/da/apercu-membrane.png` et `.gif`. Écrit hors de l'éditeur,
+  comme les parois : le tracé dans la scène (`PassagesEntreLieux`) n'a pas été vu dans Unity.
+  À trancher : est-ce que les nageurs du Gour doivent rester sous la membrane (les coins, au-dessus
+  de son arc, sont aujourd'hui dans leur champ de nage) ?
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
   réguliers, sont les premiers à reprendre.

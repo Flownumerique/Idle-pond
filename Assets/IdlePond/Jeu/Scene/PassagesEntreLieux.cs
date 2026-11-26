@@ -4,21 +4,22 @@ using UnityEngine;
 namespace IdlePond.Jeu.Scene
 {
     /// <summary>
-    /// IdlePond — ce qui bouge au passage d'un lieu à l'autre (2026-11-25) : la cascade qui
-    /// déborde par la brèche du seuil dans la vasque d'un lieu ouvert, et les lueurs de la
-    /// magie du lieu suivant à travers la roche qu'on voit venir. La lèvre de roche elle-même
-    /// est au décor (`Decor`) ; le QUAND et le OÙ sont dans `Lieux`, pur et testé.
+    /// IdlePond — ce qui bouge au passage d'un lieu à l'autre (2026-11-25) : la membrane de mana
+    /// qui ferme la vasque d'un lieu ouvert par une cassure (2026-11-26), et les lueurs de la
+    /// magie du lieu suivant à travers la roche qu'on voit venir. L'eau d'au-dessus qui appuie
+    /// sur la membrane est au décor (`Decor`) ; le QUAND et le OÙ sont dans `Lieux`, pur et testé.
     /// </summary>
     public sealed class PassagesEntreLieux
     {
-        static readonly Color[] EAU = { Briques.Couleur(0xE6F8FF), Briques.Couleur(0xBFEAFF) };
+        /// Le reflet d'écume qui parcourt la membrane.
+        static readonly Color REFLET = Briques.Couleur(0xE6F8FF);
 
         readonly Transform racine;
         readonly CatalogueDArt catalogue;
         readonly List<SpriteRenderer> pieces = new List<SpriteRenderer>();
         Material eclaire;
         static readonly (int, int)[] HALO = { (-2, 0), (2, 0), (0, -2), (0, 2) };
-        readonly List<int> vasquesOuvertes = new List<int>();
+        readonly List<(int Palier, Color Couleur)> vasquesOuvertes = new List<(int, Color)>();
         readonly List<(int Palier, Color Couleur)> lieuxQuiViennent = new List<(int, Color)>();
 
         public PassagesEntreLieux(Transform parent, CatalogueDArt catalogue)
@@ -34,7 +35,7 @@ namespace IdlePond.Jeu.Scene
             lieuxQuiViennent.Clear();
             if (vue == null) return;
             foreach (var p in vue.Paliers)
-                if (Lieux.ACassure(p.Index)) vasquesOuvertes.Add(p.Index);
+                if (Lieux.ACassure(p.Index)) vasquesOuvertes.Add((p.Index, Briques.Couleur(Lieux.CouleurDeLaMagie(p.Assise))));
             foreach (var r in vue.Roches)
                 if (Lieux.OuvreUnLieu(r.Index))
                     lieuxQuiViennent.Add((r.Index, Briques.Couleur(Lieux.CouleurDeLaMagie(r.Assise))));
@@ -45,11 +46,16 @@ namespace IdlePond.Jeu.Scene
             var utilisees = 0;
             if (catalogue != null && catalogue.Eclat != null)
             {
-                foreach (var palier in vasquesOuvertes)
+                foreach (var (palier, couleur) in vasquesOuvertes)
                 {
-                    // La cascade tombe du haut de la vasque : elle se voit depuis la bande d'au-dessus.
-                    if (!Lieux.BandeDansLeChamp(palier, champ) && !Lieux.BandeDansLeChamp(palier - 1, champ)) continue;
-                    foreach (var g in Lieux.Cascade(palier, secondes)) Placer(ref utilisees, g.X, g.Y, EAU[g.Couleur], OrdreDeRendu.SEUIL, null);
+                    if (!Lieux.BandeDansLeChamp(palier, champ)) continue;
+                    // La membrane est du mana, donc de la lumière : sans éclairage, elle luit dans la
+                    // pénombre du lieu. Les parois passent devant ses bouts.
+                    var membrane = new Color(couleur.r, couleur.g, couleur.b, 0.9f);
+                    var lueur = new Color(couleur.r, couleur.g, couleur.b, 0.35f);
+                    foreach (var m in Lieux.Membrane(palier, secondes))
+                        Placer(ref utilisees, m.X, m.Y, m.Couleur == 0 ? REFLET : m.Couleur == 1 ? membrane : lueur,
+                            OrdreDeRendu.MEMBRANE, catalogue.SansLumiere);
                 }
                 foreach (var (palier, couleur) in lieuxQuiViennent)
                 {

@@ -19,6 +19,9 @@ namespace IdlePond.Jeu.Scene
         /// devant sa roche comme devant son eau ; les lueurs du lieu suivant juste devant.
         public const int SEUIL = 16;
         public const int LUEURS = 17;
+        /// La membrane de mana d'une cassure (2026-11-26) : devant l'eau d'au-dessus qui appuie
+        /// sur elle (le seuil), derrière les parois.
+        public const int MEMBRANE = 17;
         /// Le puits (2026-11-25) : le sol du fond, devant la roche qui recule quand on creuse ;
         /// les parois et les corniches devant lui — le sol s'arrête à la paroi.
         public const int LIT = 18;

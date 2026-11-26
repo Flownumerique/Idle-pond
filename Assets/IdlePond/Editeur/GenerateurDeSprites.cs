@@ -62,6 +62,7 @@ namespace IdlePond.Editeur
             foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
             {
                 var decor = RegistreDArt.DecorDe(assise);
+                var dessus = precedent;
                 // Le puits (2026-11-25) : l'eau de chaque palier, tranche d'un dégradé qui court
                 // sur tout le lieu, fondue dans celle d'au-dessus si le lieu se raccorde en fondu ;
                 // les parois et la corniche de chaque palier ; le sol du fond.
@@ -81,7 +82,7 @@ namespace IdlePond.Editeur
                 if (decor.Berge) sortie[Chemins.Berge(assise)] = DessinerBerge(decor).EnPng();
                 if (decor.AUneAmbiance) sortie[Chemins.Ambiance(assise)] = DessinerAmbiance(decor).EnPng();
                 // Le seuil : seulement pour un lieu qu'on atteint en perçant, pas pour la surface.
-                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor, Chemins.PremierPalier(assise)).EnPng();
+                if (assise != RegistreDArt.ASSISES_DESSINEES[0]) sortie[Chemins.Seuil(assise)] = DessinerSeuil(decor, dessus).EnPng();
             }
             sortie[Chemins.VOILE] = DessinerVoile().EnPng();
             sortie[Chemins.ECLAT] = DessinerEclat().EnPng();
@@ -742,82 +743,28 @@ namespace IdlePond.Editeur
             return toile;
         }
 
-        public const int RAYON_DE_LA_BULLE = 176;
-
         /// <summary>
-        /// Le seuil d'un lieu qui s'ouvre par une cassure : la voûte de sa vasque, vue du dedans
-        /// comme une bulle (2026-11-26). Sur toute la largeur du décor, la roche du lieu descend
-        /// du haut de son premier palier en arc de cercle — mince au milieu, jusqu'aux parois sur
-        /// les côtés —, cernée dessous d'une ligne de calcite ; sous la voûte, le reflet d'une
-        /// bulle, un arc clair par morceaux qui en suit la courbe, et quelques bulles prises. La
-        /// brèche, où l'eau du lieu d'au-dessus déborde en cascade (les gouttes, elles, sont
-        /// animées par la scène), est une entaille sèche : une nappe d'eau dessinée ici se lisait,
-        /// dans la roche, comme une grille grise.
+        /// Le seuil d'un lieu qui s'ouvre par une cassure (2026-11-26) : l'eau la plus sombre du
+        /// lieu d'au-dessus (`dessus`), qui appuie sur la membrane de mana du lieu — au-dessus de
+        /// son arc (`Lieux.CreuxDeLaMembrane`), sur toute la largeur du décor ; les parois passent
+        /// devant. Son bord se trame sur deux rangées, que la membrane, tracée vivante par la
+        /// scène, recouvre en ondulant.
         /// </summary>
-        static Toile DessinerSeuil(DecorDArt d, int palier)
+        static Toile DessinerSeuil(DecorDArt d, DecorDArt dessus)
         {
             var toile = new Toile(Gabarits.LARGEUR_DU_DECOR, Lieux.HAUTEUR_DU_SEUIL);
-            var breche = Lieux.XDeLaBreche - Gabarits.GAUCHE_DU_DECOR;
-            var centre = Gabarits.LARGEUR_VISEE / 2 - Gabarits.GAUCHE_DU_DECOR;
+            var eau = dessus != null && dessus.Eau.Count > 0 ? dessus.Eau[dessus.Eau.Count - 1] : d.Eau[d.Eau.Count - 1];
             var haut = toile.Hauteur - 1;
-            var pied = Lieux.YDuSeuil(palier);
-            var hasard = Hasard(19);
-            var calcite = d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2;
-            var clair = calcite ? d.Inclusions[1] : d.Roche[2];
-            var bord = calcite ? d.Inclusions[0] : d.Roche[3];
-            var reflet = d.Ecume.Count > 0 ? d.Ecume[0] : clair;
-            // L'épaisseur de la voûte, sans ses bosses : un arc de cercle.
-            double Lisse(int x)
-            {
-                var u = (x - centre) / (double)RAYON_DE_LA_BULLE;
-                return 3 + (toile.Hauteur - 8) * (1 - Math.Sqrt(Math.Max(0.0, 1 - u * u)));
-            }
-            var voute = new int[toile.Largeur];
-            for (var x = 0; x < toile.Largeur; x++)
-                voute[x] = Math.Max(2, Math.Min(toile.Hauteur - 1,
-                    (int)Math.Round(Lisse(x) + 1.2 * Math.Sin(x * 0.11) + 0.8 * Math.Sin(x * 0.037 + 1.3))));
             for (var x = 0; x < toile.Largeur; x++)
             {
-                if (Math.Abs(x - breche) <= 3) continue;
-                // La voûte s'amincit à l'approche de la brèche.
-                var e = Math.Max(2, Math.Min(voute[x], Math.Abs(x - breche) - 3));
-                for (var i = 0; i < e; i++)
+                var creux = (int)Math.Round(Lieux.CreuxDeLaMembrane(x + Gabarits.GAUCHE_DU_DECOR));
+                // `i` : les pixels sous la jonction. La membrane au repos occupe `creux - 1` et `creux`.
+                for (var i = 0; i <= creux && i < toile.Hauteur; i++)
                 {
                     var y = haut - i;
-                    var couleur = i == 0 ? clair : Matiere(d, Gabarits.GAUCHE_DU_DECOR + x, pied + y, 0, 0);
-                    if (i == e - 2 && e > 3) couleur = d.Roche[3];
-                    if (i == e - 1) couleur = bord;
-                    toile.Poser(x, y, couleur);
+                    var tenue = i < creux - 1 ? 1.0 : i == creux - 1 ? 0.75 : 0.4;
+                    if (Toile.Seuil(x, y) < tenue) toile.Poser(x, y, eau);
                 }
-                // La mousse qui pend sous la voûte, par touffes.
-                if (d.Mousse.HasValue && hasard() < 0.12)
-                    for (var i = 0; i < 1 + (int)(hasard() * 3); i++) toile.Poser(x, haut - e - i, d.Mousse.Value);
-            }
-            // Le reflet de la bulle : trois pixels sous la voûte, par morceaux ; épais de deux
-            // pixels au cœur du grand morceau, tramé ailleurs.
-            for (var x = 0; x < toile.Largeur; x++)
-            {
-                var xs = x + Gabarits.GAUCHE_DU_DECOR;
-                if (Math.Abs(x - breche) <= 7) continue;
-                var grand = xs >= 22 && xs <= 116;
-                var petit = (xs >= 236 && xs <= 256) || (xs >= 266 && xs <= 271);
-                if (!grand && !petit) continue;
-                var y = haut - (int)Math.Round(Lisse(x)) - 3;
-                if (y < 0) continue;
-                toile.Poser(x, y, reflet);
-                if (grand && xs >= 44 && xs <= 92) toile.Poser(x, y - 1, reflet);
-                else if (Toile.Seuil(x, y - 1) < 0.25) toile.Poser(x, y - 1, reflet);
-            }
-            // Des bulles prises sous la voûte : un anneau clair, son éclat.
-            foreach (var (xs, r) in new[] { (206, 1), (300, 2), (322, 1) })
-            {
-                var x = xs - Gabarits.GAUCHE_DU_DECOR;
-                var cy = haut - voute[x] - 2 - r;
-                var anneau = r == 1
-                    ? new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }
-                    : new[] { (2, 0), (-2, 0), (0, 2), (0, -2), (1, 1), (-1, 1), (1, -1), (-1, -1) };
-                foreach (var (dx, dy) in anneau) toile.Poser(x + dx, cy + dy, clair);
-                toile.Poser(x - r + 1, cy + r - 1, reflet);
             }
             return toile;
         }

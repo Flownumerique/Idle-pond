@@ -15,8 +15,8 @@ namespace IdlePond.Jeu.Scene
         Ralliement,
         /// L'eau se trouble : de la vase monte du fond.
         Trouble,
-        /// La percée vers un nouveau lieu (2026-11-25) : l'eau d'au-dessus s'engouffre par la
-        /// brèche, avec les éclats de la lèvre de roche.
+        /// La percée vers un nouveau lieu (2026-11-25) : la roche cède contre la membrane de mana
+        /// du lieu (2026-11-26), qui tient ; l'écume en jaillit, avec des éclats de roche.
         Percee,
     }
 

@@ -8,10 +8,10 @@ namespace IdlePond.Jeu.Scene
     /// IdlePond — le passage d'un lieu à l'autre (décidé par l'auteur le 2026-11-25) : ce qui se
     /// voit à la jonction de deux lieux, et ce qui se voit du lieu suivant avant de l'atteindre.
     ///
-    /// - **La jonction** : en haut du premier palier d'un lieu, son seuil — la lèvre de roche
-    ///   de la vasque (`Fonds/{lieu}/seuil.png`), et l'eau du lieu d'au-dessus qui y déborde en
-    ///   cascade par une brèche. C'est le nom même du Gour : la vasque d'où l'eau déborde vers la
-    ///   suivante.
+    /// - **La jonction** : en haut du premier palier d'un lieu qui s'ouvre par une cassure, la
+    ///   membrane de son mana (2026-11-26) — une barrière bombée comme une bulle, qui sépare son
+    ///   eau de celle d'au-dessus ; l'eau d'au-dessus, qui appuie sur elle, est dessinée au seuil
+    ///   (`Fonds/{lieu}/seuil.png`), la membrane vivante est tracée par la scène.
     /// - **Voir venir** : la roche du premier palier du lieu suivant se montre sous celle du
     ///   lieu actuel (`VueDeScene.IndicesDeRoche`), et la magie de ce lieu suinte à travers,
     ///   en lueurs de sa couleur.
@@ -21,19 +21,20 @@ namespace IdlePond.Jeu.Scene
     /// </summary>
     public static class Lieux
     {
-        /// La hauteur du seuil dessiné, sous le haut de la bande du lieu : la voûte de la bulle
-        /// (2026-11-26) y descend jusqu'aux parois.
+        /// La hauteur du seuil dessiné, sous le haut de la bande du lieu : l'eau d'au-dessus y
+        /// appuie sur la membrane jusqu'aux parois (2026-11-26).
         public const int HAUTEUR_DU_SEUIL = 48;
 
-        /// La brèche de la cascade, en fraction de la largeur visée : un peu à gauche du héros.
+        /// Là où la percée jaillit contre la membrane, en fraction de la largeur visée : un peu à
+        /// gauche du héros.
         public const double BRECHE = 0.36;
 
         /// Le palier qui ouvre un lieu, hors le tout premier : là où un seuil se dessine.
         public static bool OuvreUnLieu(int palier) => IdlePond.Noyau.Economie.EstUnePercee(palier);
 
         /// Un lieu qui s'ouvre par une cassure (2026-11-25) : c'est là, et là seulement, qu'il y
-        /// a un seuil, une brèche et une cascade. Un lieu en fondu n'en a pas : son eau prolonge
-        /// celle d'au-dessus.
+        /// a un seuil et une membrane. Un lieu en fondu n'en a pas : son eau prolonge celle
+        /// d'au-dessus.
         public static bool ACassure(int palier) =>
             OuvreUnLieu(palier) && RegistreDArt.DecorDe(Assises.DuPalier(palier).Id).Jonction == JonctionDeLieu.Cassure;
 
@@ -55,27 +56,55 @@ namespace IdlePond.Jeu.Scene
             return bas < champ.Haut && haut > champ.Bas;
         }
 
-        /* ─── La cascade ───────────────────────────────────────────────────────── */
+        /* ─── La membrane ───────────────────────────────────────────────────────── */
 
-        public const int GOUTTES = 10;
-        public const double CHUTE_D_UNE_GOUTTE = 1.1;
+        /// <summary>
+        /// La membrane d'un lieu qui s'ouvre par une cassure (2026-11-26) : une barrière tissée
+        /// du mana du lieu, qui sépare son eau de celle d'au-dessus et justifie la cassure. Bombée
+        /// d'une paroi à l'autre comme le dessus d'une bulle : à `PROFONDEUR_AU_MILIEU` pixels sous
+        /// la jonction au milieu du champ, en arc de cercle jusqu'à `CREUX_DE_LA_MEMBRANE` de plus
+        /// contre les parois. Le seuil dessiné (`seuil.png`) met au-dessus d'elle l'eau du lieu
+        /// d'au-dessus ; la scène la trace, vivante, par-dessus. Elle reste entière : on la
+        /// traverse, on ne la déchire pas.
+        /// </summary>
+        public const int PROFONDEUR_AU_MILIEU = 3;
+        public const int CREUX_DE_LA_MEMBRANE = 40;
+        public const int RAYON_DE_LA_MEMBRANE = 176;
+        public const int PAS_DE_LA_MEMBRANE = 2;
+        /// Le temps que met un reflet à traverser la membrane, d'une paroi à l'autre.
+        public const double TRAVERSEE_DU_REFLET = 4.0;
 
-        /// Les gouttes qui tombent par la brèche dans la vasque du lieu qui s'ouvre au
-        /// `palier` : elles chutent du haut de la bande sur un tiers de sa hauteur, en s'écartant
-        /// un peu. Un point de deux pixels chacune ; `Couleur` : 0 l'écume, 1 l'eau claire.
-        public static IReadOnlyList<PointDeGerbe> Cascade(int palier, double secondes)
+        /// La profondeur de la membrane sous la jonction à l'abscisse `x` du champ, au repos.
+        public static double CreuxDeLaMembrane(int x)
         {
-            var gouttes = new List<PointDeGerbe>();
-            var haut = -palier * Gabarits.HAUTEUR_DE_BANDE - 4;
-            for (var i = 0; i < GOUTTES; i++)
+            var u = (x - Gabarits.LARGEUR_VISEE / 2) / (double)RAYON_DE_LA_MEMBRANE;
+            return PROFONDEUR_AU_MILIEU + CREUX_DE_LA_MEMBRANE * (1 - Math.Sqrt(Math.Max(0.0, 1 - u * u)));
+        }
+
+        /// L'ondulation de la membrane : d'un pixel au plus, deux ondes qui courent en sens
+        /// contraires.
+        public static int OndeDeLaMembrane(int x, double secondes) =>
+            (int)Math.Round(0.8 * Math.Sin(2 * Math.PI * x / 64.0 - secondes * 1.7) + 0.5 * Math.Sin(2 * Math.PI * x / 23.0 + secondes * 2.3));
+
+        /// <summary>
+        /// Les points de la membrane du lieu qui s'ouvre au `palier`, à `secondes` : un point de
+        /// deux pixels tous les `PAS_DE_LA_MEMBRANE`, sur toute la largeur du champ (les parois
+        /// passent devant). `Couleur` : 0 le reflet d'écume qui la parcourt, 1 la membrane, à la
+        /// couleur du mana du lieu ; 2 la lueur plus pâle qui la double dessous, un point sur trois.
+        /// </summary>
+        public static IReadOnlyList<PointDeGerbe> Membrane(int palier, double secondes)
+        {
+            var points = new List<PointDeGerbe>();
+            var jonction = -palier * Gabarits.HAUTEUR_DE_BANDE;
+            // Le reflet glisse d'une paroi à l'autre, puis repart : sa position dans le champ.
+            var reflet = Modulo(secondes, TRAVERSEE_DU_REFLET) / TRAVERSEE_DU_REFLET * (Gabarits.LARGEUR_VISEE + 80) - 40;
+            for (var x = 0; x < Gabarits.LARGEUR_VISEE; x += PAS_DE_LA_MEMBRANE)
             {
-                var phase = i * CHUTE_D_UNE_GOUTTE / GOUTTES;
-                var t = Modulo(secondes + phase, CHUTE_D_UNE_GOUTTE) / CHUTE_D_UNE_GOUTTE;
-                var ecart = (i % 3 - 1) * (1 + (int)Math.Round(4 * t));
-                var y = haut - (int)Math.Round(t * t * Gabarits.HAUTEUR_DE_BANDE / 3.0);
-                gouttes.Add(new PointDeGerbe(XDeLaBreche + ecart + (i % 2) * 2, y, i % 2));
+                var y = jonction - (int)Math.Round(CreuxDeLaMembrane(x)) - OndeDeLaMembrane(x, secondes) - 1;
+                points.Add(new PointDeGerbe(x, y, Math.Abs(x - reflet) < 18 ? 0 : 1));
+                if (x % (3 * PAS_DE_LA_MEMBRANE) == 0) points.Add(new PointDeGerbe(x, y - 3, 2));
             }
-            return gouttes;
+            return points;
         }
 
         /* ─── Voir venir le lieu suivant ───────────────────────────────────────── */

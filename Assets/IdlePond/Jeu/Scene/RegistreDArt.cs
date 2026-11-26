@@ -366,14 +366,15 @@ namespace IdlePond.Jeu.Scene
         public static IReadOnlyList<int> PaletteDesEspeces() =>
             ESPECES_DESSINEES.Concat(ESPECES_PAR_RANG.SelectMany(c => c.Couleurs())).Append(CONTOUR).Distinct().ToList();
 
-        /// Les couleurs d'un décor ; un lieu en fondu y ajoute l'eau la plus sombre du lieu
-        /// d'au-dessus, qui descend dans son premier palier.
+        /// Les couleurs d'un décor ; un lieu sous un autre y ajoute l'eau la plus sombre du lieu
+        /// d'au-dessus, qui descend dans son premier palier (le fondu) ou appuie sur sa membrane
+        /// (la cassure).
         public static IReadOnlyList<int> PaletteDuDecor(string assise)
         {
             var decor = DecorDe(assise);
             var couleurs = decor.Couleurs();
             var rang = ASSISES_DESSINEES.ToList().IndexOf(assise);
-            if (rang > 0 && decor.Jonction == JonctionDeLieu.Fondu)
+            if (rang > 0)
             {
                 var dessus = DecorDe(ASSISES_DESSINEES[rang - 1]).Eau;
                 couleurs = couleurs.Append(dessus[dessus.Count - 1]);

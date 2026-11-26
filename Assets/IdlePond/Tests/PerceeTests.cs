@@ -93,7 +93,7 @@ namespace IdlePond.Tests
 
         /* ─── Ce qui s'en voit ─────────────────────────────────────────────────────── */
 
-        [Test, Description("le seuil affleure la jonction ; la brèche est dans le champ")]
+        [Test, Description("le seuil affleure la jonction ; la percée jaillit dans le champ")]
         public void Le_seuil_affleure_la_jonction()
         {
             Assert.That(Lieux.YDuSeuil(6) + Lieux.HAUTEUR_DU_SEUIL, Is.EqualTo(-6 * Gabarits.HAUTEUR_DE_BANDE));
@@ -102,20 +102,36 @@ namespace IdlePond.Tests
             Assert.That(Lieux.OuvreUnLieu(7), Is.False);
         }
 
-        [Test, Description("la cascade tombe par la brèche, dans le haut de la vasque")]
-        public void La_cascade_tombe_par_la_breche()
+        [Test, Description("la membrane de mana ferme la vasque d'une paroi à l'autre, bombée comme une bulle, et vit")]
+        public void La_membrane_ferme_la_vasque()
         {
-            for (var t = 0.0; t < 5; t += 0.13)
+            var jonction = -6 * Gabarits.HAUTEUR_DE_BANDE;
+            // Bombée : mince au milieu du champ, plus creuse vers les parois, jamais plus bas que le seuil dessiné.
+            Assert.That(Lieux.CreuxDeLaMembrane(Gabarits.LARGEUR_VISEE / 2), Is.EqualTo(Lieux.PROFONDEUR_AU_MILIEU).Within(1e-9));
+            Assert.That(Lieux.CreuxDeLaMembrane(10), Is.GreaterThan(Lieux.CreuxDeLaMembrane(90)));
+            Assert.That(Lieux.CreuxDeLaMembrane(350), Is.GreaterThan(Lieux.CreuxDeLaMembrane(270)));
+            for (var x = Gabarits.GAUCHE_DU_DECOR; x < Gabarits.GAUCHE_DU_DECOR + Gabarits.LARGEUR_DU_DECOR; x++)
+                Assert.That(Lieux.CreuxDeLaMembrane(x) + 2, Is.LessThan(Lieux.HAUTEUR_DU_SEUIL), $"x = {x}");
+            var reflets = new System.Collections.Generic.HashSet<int>();
+            for (var t = 0.0; t < 8; t += 0.13)
             {
-                var gouttes = Lieux.Cascade(6, t);
-                Assert.That(gouttes, Has.Count.EqualTo(Lieux.GOUTTES));
-                foreach (var g in gouttes)
+                var points = Lieux.Membrane(6, t);
+                var ligne = points.Where(q => q.Couleur != 2).ToList();
+                // Entière : un point tous les deux pixels, d'un bord du champ à l'autre.
+                Assert.That(ligne, Has.Count.EqualTo(Gabarits.LARGEUR_VISEE / Lieux.PAS_DE_LA_MEMBRANE));
+                foreach (var p in points)
                 {
-                    Assert.That(System.Math.Abs(g.X - Lieux.XDeLaBreche), Is.LessThanOrEqualTo(8));
-                    Assert.That(g.Y, Is.LessThan(-6 * Gabarits.HAUTEUR_DE_BANDE));
-                    Assert.That(g.Y, Is.GreaterThan(-7 * Gabarits.HAUTEUR_DE_BANDE + Gabarits.HAUTEUR_DE_BANDE / 2));
+                    Assert.That(p.Couleur, Is.InRange(0, 2));
+                    Assert.That(p.Y + 1, Is.LessThan(jonction), "sous la jonction");
+                    Assert.That(p.Y, Is.GreaterThanOrEqualTo(jonction - Lieux.HAUTEUR_DU_SEUIL), "dans le seuil");
+                    // Elle ondule d'un pixel au plus autour de son arc.
+                    if (p.Couleur != 2)
+                        Assert.That(System.Math.Abs(jonction - 1 - p.Y - System.Math.Round(Lieux.CreuxDeLaMembrane(p.X))), Is.LessThanOrEqualTo(1));
                 }
+                foreach (var reflet in ligne.Where(r => r.Couleur == 0)) reflets.Add(reflet.X);
             }
+            Assert.That(reflets.Min(), Is.LessThan(40), "le reflet la parcourt d'un bord...");
+            Assert.That(reflets.Max(), Is.GreaterThan(Gabarits.LARGEUR_VISEE - 40), "... à l'autre");
         }
 
         [Test, Description("les lueurs du lieu qui vient s'allument dans sa roche, à la couleur de sa magie")]
