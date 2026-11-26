@@ -173,8 +173,15 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, trop réguliers,
   sont repris (2026-11-26) : ils quittent la tuile d'eau de 48 px pour l'ambiance de 384 px —
   seize traits d'écume semés, effilés, de longueurs diverses (`docs/da/apercu-courant-du-gour.png`).
-- **Le budget de lumières** : la spec DA vise quatre lumières à l'écran au plus ; quand
-  toute la Noue est ouverte en portrait, six bandes sont visibles, donc six lumières.
+- ~~**Le budget de lumières**~~ — **réglé le 2026-11-26** : une lumière par nappe — une suite
+  de paliers où la lumière glisse sans marche (`RegistreDArt.NappesDeLumiere`) —, et non plus par
+  palier : la Noue entière est une lumière, le Gour une autre, coupées à la cassure. À l'écran,
+  deux lumières d'eau au plus, plus celle de la roche (quatre au plus avec l'ambiante). Le cookie
+  porte toujours seize marches par palier ; rien ne change à l'œil. À mesurer sur un téléphone.
+- **Le fond du puits** (2026-11-26) : le sol suit la matière du lieu — un lit de terre ondulé et
+  ses herbes semées dans la Noue (plus de motif de 48 px) ; dans le Gour, des gours, bassins en
+  terrasses bordés de calcite, et les grosses pierres moussues entre eux. Aperçu :
+  `docs/da/apercu-fond-du-puits.png`.
   À mesurer sur un vrai téléphone avant de trancher.
 - **Le build téléphone** : les modules Android / iOS ne sont pas installés dans Unity Hub. En
   attendant, un **prototype WebGL** se joue dans le navigateur du téléphone

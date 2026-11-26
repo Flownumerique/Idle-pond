@@ -126,7 +126,7 @@ namespace IdlePond.TestsDeJeu
         }
 
         [UnityTest]
-        public IEnumerator Seules_les_lumieres_des_bandes_visibles_sont_allumees()
+        public IEnumerator Une_nappe_de_lumiere_eclaire_la_noue_et_s_allume_dans_le_champ()
         {
             SceneDeLaMare scene = null;
             yield return ChargerLaMare(s => scene = s);
@@ -135,12 +135,16 @@ namespace IdlePond.TestsDeJeu
             yield return null;
             yield return null;
             Assert.That(scene.Eclairage.Ambiante.lightType, Is.EqualTo(Light2D.LightType.Global));
-            Assert.That(scene.Eclairage.ParBande.Count, Is.EqualTo(PALIERS_DE_LA_NOUE));
+            // Le budget de lumières (2026-11-26) : toute la Noue est une seule nappe, une seule lumière.
+            Assert.That(scene.Eclairage.Nappes.Count, Is.EqualTo(1));
+            Assert.That(scene.Eclairage.PaliersDesNappes[0], Is.EqualTo((0, PALIERS_DE_LA_NOUE - 1)));
             // Portrait : 256 px de haut, six bandes de 84 et la rive de roche dessous (42 px) →
-            // les bandes 3 à 5 ; la bande 2 n'y montrait que 4 px avant la rive.
-            var allumees = scene.Eclairage.ParBande.Select((l, i) => (l, i)).Where(x => x.l.enabled).Select(x => x.i).ToList();
-            Assert.That(allumees, Is.EqualTo(new[] { 3, 4, 5 }));
-            Assert.That(scene.Eclairage.ParBande[5].intensity, Is.LessThan(scene.Eclairage.ParBande[3].intensity));
+            // les bandes 3 à 5 sont visibles ; la nappe qui les porte est allumée.
+            Assert.That(scene.Eclairage.Nappes[0].enabled, Is.True);
+            scene.Eclairage.Activer(PALIERS_DE_LA_NOUE, PALIERS_DE_LA_NOUE + 2);
+            Assert.That(scene.Eclairage.Nappes[0].enabled, Is.False, "une nappe hors du champ s'éteint");
+            scene.Eclairage.Activer(3, 5);
+            Assert.That(scene.Eclairage.ForceAuHautDu(5), Is.LessThan(scene.Eclairage.ForceAuHautDu(3)), "la lumière baisse en descendant");
         }
 
         [UnityTest]

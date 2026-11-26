@@ -155,35 +155,90 @@ namespace IdlePond.Editeur
         const int LARGEUR_DU_LIT = 192;
 
         /// <summary>
-        /// Le sol du fond du puits : la vase et ses herbes, ou le lit de galets et sa mousse, et
-        /// les grosses pierres du Gour. Posé au bas du dernier palier ouvert seulement ; il
-        /// descend quand on creuse. Pave le décor (192 divise 576).
+        /// Le sol du fond du puits, dans la matière du lieu (2026-11-26) : un lit qui ondule,
+        /// éclairé sur le dessus ; dans la Noue, la terre et ses herbes semées — de toutes les
+        /// tailles, plus une période de 48 px —, des galets posés ; dans le Gour, des gours, ces
+        /// bassins en terrasses que l'eau calcaire se bâtit, chacun à son niveau, bordés d'un
+        /// rebord de calcite qui monte au-dessus de son eau, et entre eux les grosses pierres
+        /// moussues et des galets. Posé au bas du dernier palier ouvert seulement ; il descend
+        /// quand on creuse. Pave le décor (192 divise 576) : tout s'y répète sur 192 px.
         /// </summary>
         static Toile DessinerLit(DecorDArt d)
         {
-            var motif = new Toile(Gabarits.LARGEUR_DE_FOND, HAUTEUR_DU_LIT);
-            if (d.Galets.Count == 0)
-                for (var x = 0; x < motif.Largeur; x++)
-                {
-                    for (var y = 0; y <= 2; y++) motif.Poser(x, y, d.Vase);
-                    if (x % 2 == 0) motif.Poser(x, 3, d.Vase);
-                }
-            if (d.Galets.Count > 0) DessinerGalets(motif, d);
-            if (d.Herbes.Count > 0) DessinerHerbes(motif, d);
             var toile = new Toile(LARGEUR_DU_LIT, HAUTEUR_DU_LIT);
-            for (var y = 0; y < toile.Hauteur; y++)
-                for (var x = 0; x < toile.Largeur; x++)
+            var r = d.Roche;
+            var matiere = d.Paroi != MatiereDeParoi.Pierres && d.Inclusions.Count >= 2;
+            var calcaire = matiere && d.Paroi == MatiereDeParoi.Calcaire && d.Eau.Count >= 2;
+            var clair = calcaire ? d.Inclusions[1] : r[2];
+            int Surface(int x) => 5 + (int)Math.Round(1.4 * Math.Sin(2 * Math.PI * x / LARGEUR_DU_LIT * 2)
+                + 1.0 * Math.Sin(2 * Math.PI * x / LARGEUR_DU_LIT * 5 + 1));
+            var bassins = calcaire
+                ? new (int Debut, int Fin, int Niveau)[] { (4, 36, 1), (60, 96, 4), (104, 126, 2), (152, 186, 5) }
+                : new (int Debut, int Fin, int Niveau)[0];
+            (int Debut, int Fin, int Niveau)? Bassin(int x)
+            {
+                foreach (var b in bassins) if (x >= b.Debut && x <= b.Fin) return b;
+                return null;
+            }
+            for (var x = 0; x < toile.Largeur; x++)
+            {
+                var bassin = Bassin(x);
+                var sol = bassin.HasValue ? 3 + bassin.Value.Niveau : Surface(x);
+                for (var y = 0; y < sol; y++)
                 {
-                    var c = motif.Lire(x % motif.Largeur, y);
-                    if (c.HasValue) toile.Poser(x, y, c.Value);
+                    var couleur = matiere ? Matiere(d, x, y, LARGEUR_DU_LIT, 0) : d.Vase;
+                    if (y == sol - 1 && Toile.Seuil(x, y) < 0.7) couleur = clair;
+                    toile.Poser(x, y, couleur);
+                }
+                if (!bassin.HasValue) continue;
+                var bord = Math.Min(x - bassin.Value.Debut, bassin.Value.Fin - x);
+                if (bord < 2)
+                {
+                    // Le rebord du gour : deux pixels de calcite qui montent au-dessus de l'eau.
+                    var haut = sol + (bord == 0 ? 4 : 3);
+                    for (var y = sol; y < haut; y++) toile.Poser(x, y, y == haut - 1 ? d.Inclusions[1] : d.Inclusions[0]);
+                }
+                else
+                {
+                    for (var y = sol; y < sol + 3; y++) toile.Poser(x, y, y == sol + 2 ? d.Eau[0] : d.Eau[1]);
+                    // Le fond du bassin, plus sombre sous l'eau.
+                    toile.Poser(x, sol - 1, r[1]);
+                }
+            }
+            var hasard = Hasard(43);
+            if (d.Herbes.Count > 0)
+                for (var k = 0; k < 34; k++)
+                {
+                    var x0 = (int)(hasard() * LARGEUR_DU_LIT);
+                    var longueur = 6 + (int)(hasard() * 17);
+                    var brin = d.Herbes[k % d.Herbes.Count];
+                    var phase = hasard() * 6;
+                    var pied = Surface(x0);
+                    for (var i = 0; i < longueur; i++)
+                    {
+                        var x = x0 + (int)Math.Round(Math.Sin(i * 0.3 + phase) * 1.8);
+                        toile.Poser(Boucler(x, LARGEUR_DU_LIT), pied + i, brin);
+                        if (i < longueur / 2) toile.Poser(Boucler(x + 1, LARGEUR_DU_LIT), pied + i, brin);
+                    }
+                }
+            // Des galets posés sur le fond, hors des bassins.
+            if (matiere)
+                for (var k = 0; k < 7; k++)
+                {
+                    var x0 = (int)(hasard() * (LARGEUR_DU_LIT - 4));
+                    var galet = d.Inclusions[k % 2];
+                    if (Bassin(x0).HasValue || Bassin(x0 + 3).HasValue) continue;
+                    var y0 = Surface(x0);
+                    for (var dx = 0; dx < 3; dx++) toile.Poser(x0 + dx, y0, galet);
+                    toile.Poser(x0 + 1, y0 + 1, d.Inclusions[1]);
                 }
             if (d.Pierres.Count > 0)
-                foreach (var (cx, rx, ry) in new[] { (52.0, 15.0, 9.0), (141.0, 18.0, 10.5) })
-                    for (var y = 0; y <= (int)ry + 3; y++)
+                foreach (var (cx, rx, ry) in new[] { (47.0, 8.0, 7.0), (139.0, 9.0, 8.0) })
+                    for (var y = 0; y < (int)Math.Round(ry) + 5; y++)
                         for (var x = (int)(cx - rx); x <= (int)(cx + rx); x++)
                         {
                             var u = (x - cx) / rx;
-                            var v = (y - 3) / ry;
+                            var v = (y - 4) / ry;
                             if (u * u + v * v > 1) continue;
                             var couleur = v > 0.45 ? d.Pierres[1] : d.Pierres[0];
                             if (d.Mousse.HasValue && v > 0.75 && Toile.Seuil(x, y) < 0.5) couleur = d.Mousse.Value;
@@ -496,51 +551,6 @@ namespace IdlePond.Editeur
                 }
             }
             return toile;
-        }
-
-        /// Les herbes qui montent de la vase et ondulent.
-        static void DessinerHerbes(Toile toile, DecorDArt d)
-        {
-            var pieds = new[] { 3, 12, 20, 28, 36, 44 };
-            var hauteurs = new[] { 13, 21, 9, 16, 24, 12 };
-            for (var k = 0; k < pieds.Length; k++)
-                for (var i = 0; i < hauteurs[k]; i++)
-                {
-                    var x = pieds[k] + (int)Math.Round(Math.Sin(i * 0.3 + k * 1.7) * 1.8);
-                    {
-                        // Une herbe de deux pixels d'épaisseur sur sa moitié basse.
-                        toile.Poser((x + toile.Largeur) % toile.Largeur, 3 + i, d.Herbes[k % d.Herbes.Count]);
-                        if (i < hauteurs[k] / 2) toile.Poser((x + 1 + toile.Largeur) % toile.Largeur, 3 + i, d.Herbes[k % d.Herbes.Count]);
-                    }
-                }
-        }
-
-        /// Le lit de galets du Gour : des galets gris-bleu sur un fond sombre, de la mousse
-        /// sur le dessus de certains.
-        static void DessinerGalets(Toile toile, DecorDArt d)
-        {
-            var galets = new (double X, double Y, double Rx, double Ry, int Couleur)[]
-            {
-                (4.5, 3, 4.5, 3, 0), (13.5, 2.25, 3.75, 2.25, 1), (21.75, 3.75, 4.5, 3.3, 2),
-                (30.75, 2.25, 3.75, 2.4, 0), (39, 3.75, 4.5, 3, 1), (45.75, 1.5, 3, 1.95, 2),
-            };
-            var fond = d.Galets[d.Galets.Count - 1];
-            for (var y = 0; y <= 8; y++)
-                for (var x = 0; x < toile.Largeur; x++)
-                {
-                    var couleur = y <= 2 ? fond : (int?)null;
-                    for (var g = 0; g < galets.Length; g++)
-                    {
-                        var dx = Math.Abs(x - galets[g].X);
-                        dx = Math.Min(dx, toile.Largeur - dx) / galets[g].Rx;
-                        var dy = (y - galets[g].Y) / galets[g].Ry;
-                        if (dx * dx + dy * dy > 1) continue;
-                        couleur = d.Galets[galets[g].Couleur];
-                        // La mousse : sur le dessus d'un galet sur deux.
-                        if (d.Mousse.HasValue && g % 2 == 0 && dy > 0.5 && Toile.Seuil(x, y) < 0.6) couleur = d.Mousse.Value;
-                    }
-                    if (couleur.HasValue) toile.Poser(x, y, couleur.Value);
-                }
         }
 
         /// <summary>

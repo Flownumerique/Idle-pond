@@ -115,5 +115,25 @@ namespace IdlePond.Tests
             // Les racines qui sortent de la terre sont celles de la berge.
             Assert.That(RegistreDArt.DecorDe("noue").Racines, Is.Not.Empty);
         }
+    
+
+        [Test, Description("une lumière par nappe : la Noue entière, puis le Gour — coupées à la cassure, jamais plus de deux à l'écran")]
+        public void Une_lumiere_par_nappe()
+        {
+            var tous = Enumerable.Range(0, Assises.PALIERS_LIVRES);
+            var gour = Assises.Toutes.First(a => a.Id == "gour");
+            Assert.That(RegistreDArt.NappesDeLumiere(tous), Is.EqualTo(new[]
+            {
+                (0, gour.IndexPremierPalier - 1),
+                (gour.IndexPremierPalier, Assises.PALIERS_LIVRES - 1),
+            }));
+            Assert.That(RegistreDArt.NappesDeLumiere(Enumerable.Range(0, 4)), Is.EqualTo(new[] { (0, 3) }));
+            Assert.That(RegistreDArt.NappesDeLumiere(new[] { 0, 1, 3 }), Is.EqualTo(new[] { (0, 1), (3, 3) }), "des paliers qui ne se suivent pas");
+            Assert.That(RegistreDArt.NappesDeLumiere(new int[0]), Is.Empty);
+            // Dans une nappe, la lumière glisse sans marche : le bas de chaque palier est le haut du suivant.
+            foreach (var (premier, dernier) in RegistreDArt.NappesDeLumiere(tous))
+                for (var p = premier; p < dernier; p++)
+                    Assert.That(RegistreDArt.LumiereAuBasDu(p).Lumiere, Is.EqualTo(RegistreDArt.LumiereDuPalier(p + 1)));
+        }
     }
 }

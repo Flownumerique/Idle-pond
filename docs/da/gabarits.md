@@ -112,7 +112,7 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 | `eau-{rang}.png` | 48 × 84 | l'eau d'un palier, tranche d'un dégradé qui court sur tout le lieu, répétée en largeur (le puits, 2026-11-25) ; trois nuances entre deux couleurs du registre et un tramage continu, sans aplat (2026-11-26) |
 | `parois-{rang}.png` | 576 × 84 | les deux parois d'un palier, dans la matière du lieu (2026-11-26) : la **terre** de la Noue — lits ondulés de quatre teintes, galets pris dedans, racines qui pendent sur l'eau ; le **calcaire** du Gour — lits épais, fentes, croûte et draperies de calcite le long du bord |
 | `corniche-{rang}.png` | 576 × 44 | la corniche d'un palier, dans la même matière ; celle du Gour retient au bout une flaque derrière un rebord de calcite (un gour) |
-| `lit.png` | 192 × 30 | le sol du fond du puits : la vase et ses herbes, ou les galets, leur mousse et les grosses pierres |
+| `lit.png` | 192 × 30 | le sol du fond du puits, dans la matière du lieu (2026-11-26) : la terre de la Noue et ses herbes semées, des galets ; les gours du Gour — bassins en terrasses bordés de calcite — et ses grosses pierres moussues |
 | `roche.png` | 48 × 84 | la roche à creuser, dans la matière du lieu, raccordée à elle-même en largeur et en hauteur |
 | `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
 | `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |

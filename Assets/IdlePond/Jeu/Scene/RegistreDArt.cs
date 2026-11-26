@@ -324,6 +324,31 @@ namespace IdlePond.Jeu.Scene
             return (Math.Max(0.02, LumiereDuPalier(palier) - pente), TeinteDuPalier(palier));
         }
 
+        /// <summary>
+        /// Les nappes de lumière (2026-11-26, le budget de lumières) : les paliers d'eau, en suites
+        /// où la lumière glisse d'un palier à l'autre sans marche — une coupure à chaque cassure,
+        /// et là où les paliers ne se suivent pas. Une seule lumière éclaire toute une nappe : la
+        /// Noue entière en est une, le Gour une autre ; à l'écran, deux lumières d'eau au plus.
+        /// </summary>
+        public static IReadOnlyList<(int Premier, int Dernier)> NappesDeLumiere(IEnumerable<int> paliers)
+        {
+            var nappes = new List<(int Premier, int Dernier)>();
+            var debut = -1;
+            var precedent = -1;
+            foreach (var p in paliers.Distinct().OrderBy(x => x))
+            {
+                if (debut < 0) debut = p;
+                else if (p != precedent + 1 || Lieux.ACassure(p))
+                {
+                    nappes.Add((debut, precedent));
+                    debut = p;
+                }
+                precedent = p;
+            }
+            if (debut >= 0) nappes.Add((debut, precedent));
+            return nappes;
+        }
+
         /// Deux couleurs 0xRRGGBB mêlées : 0 la première, 1 la seconde.
         public static int Melanger(int a, int b, double t)
         {
