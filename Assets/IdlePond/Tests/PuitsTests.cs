@@ -97,5 +97,23 @@ namespace IdlePond.Tests
             Assert.That(RegistreDArt.LumiereAuBasDu(Assises.PALIERS_LIVRES - 1).Lumiere, Is.GreaterThan(0));
             Assert.That(RegistreDArt.DecorDe("lieu-sans-dessin").Jonction, Is.EqualTo(JonctionDeLieu.Fondu), "le fondu est le défaut");
         }
+
+        [Test, Description("chaque lieu dessiné a ses parois à lui : la terre de la Noue, le calcaire du Gour")]
+        public void Chaque_lieu_a_la_matiere_de_ses_parois()
+        {
+            var matieres = RegistreDArt.ASSISES_DESSINEES.Select(a => RegistreDArt.DecorDe(a).Paroi).ToList();
+            Assert.That(matieres, Is.Unique, "deux lieux aux mêmes parois ne se distinguent que par la couleur");
+            Assert.That(RegistreDArt.DecorDe("noue").Paroi, Is.EqualTo(MatiereDeParoi.Terre));
+            Assert.That(RegistreDArt.DecorDe("gour").Paroi, Is.EqualTo(MatiereDeParoi.Calcaire));
+            foreach (var assise in RegistreDArt.ASSISES_DESSINEES)
+            {
+                var decor = RegistreDArt.DecorDe(assise);
+                Assert.That(decor.Roche.Count, Is.EqualTo(4), assise);
+                if (decor.Paroi != MatiereDeParoi.Pierres)
+                    Assert.That(decor.Inclusions.Count, Is.GreaterThanOrEqualTo(2), $"{assise} : la matière dessine ses galets ou sa calcite");
+            }
+            // Les racines qui sortent de la terre sont celles de la berge.
+            Assert.That(RegistreDArt.DecorDe("noue").Racines, Is.Not.Empty);
+        }
     }
 }

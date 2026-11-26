@@ -221,15 +221,129 @@ namespace IdlePond.Editeur
         }
 
         /// La couleur d'un pixel de roche à `profond` pixels du bord de l'eau : l'arête éclairée
-        /// au bord, puis la pierre et ses fissures.
+        /// au bord, puis la matière du lieu. Le calcaire porte en plus, le long du bord, la croûte
+        /// de calcite que l'eau y dépose : des plaques d'épaisseur inégale, et de loin en loin une
+        /// draperie qui coule plus loin dans la roche, cernée d'une ligne sombre.
         static int CouleurDeParoi(DecorDArt d, int xw, int yw, int profond)
         {
             if (profond == 0) return d.Roche[2];
             if (profond == 1) return Toile.Seuil(xw & 3, yw & 3) < 0.5 ? d.Roche[2] : d.Roche[1];
-            var (claire, ecart) = PierreDuMonde(xw, yw);
+            if (d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2)
+            {
+                var h = HacherLaParoi(Plancher(yw, 7), 61);
+                var epaisseur = h % 4u == 0 ? 0 : 2 + (int)((h >> 4) % 3u);
+                if ((h >> 8) % 5u == 0) epaisseur += 2 + Boucler(yw, 7) / 2;
+                if (profond < epaisseur)
+                    return profond == 2 || Toile.Seuil(xw & 3, yw & 3) >= 0.8 ? d.Inclusions[1] : d.Inclusions[0];
+                if (profond == epaisseur) return d.Roche[3];
+            }
+            return Matiere(d, xw, yw, 0, 0);
+        }
+
+        /* ─── Les matières (2026-11-26) ──────────────────────────────────────────
+         * Une couleur par pixel de roche, en coordonnées du monde, d'après `DecorDArt.Paroi`.
+         * `periodeX` et `periodeY` (0 : aucune) font raccorder le motif à lui-même : la roche à
+         * creuser pave en 48 × 84 ; tout ce qui s'y répète a une période qui les divise. */
+
+        static int Plancher(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
+
+        static int Boucler(int k, int cycle) => cycle > 0 ? ((k % cycle) + cycle) % cycle : k;
+
+        static uint HacherLaCase(int cx, int cy, int cycleX, int cycleY, uint sel) =>
+            HacherLaParoi(Boucler(cx, cycleX) * 92821 + Boucler(cy, cycleY), sel);
+
+        /// Le lit de roche où tombe la hauteur `y` : son numéro, sa limite basse (comprise) et sa
+        /// limite haute (exclue). Les limites sont espacées de `pas`, chacune décalée au hasard
+        /// d'un quart de pas au plus : les lits n'ont pas tous la même épaisseur.
+        static (int Numero, int Bas, int Haut) LitDeRoche(int y, int pas, int cycle, uint sel)
+        {
+            int Limite(int n) => n * pas + (int)(HacherLaParoi(Boucler(n, cycle), sel) % (uint)(pas / 2)) - pas / 4;
+            var k = Plancher(y, pas);
+            if (y < Limite(k)) k--;
+            else if (y >= Limite(k + 1)) k++;
+            return (k, Limite(k), Limite(k + 1));
+        }
+
+        static int Matiere(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            if (d.Paroi == MatiereDeParoi.Terre && d.Inclusions.Count >= 2) return Terre(d, x, y, periodeX, periodeY);
+            if (d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2) return Calcaire(d, x, y, periodeX, periodeY);
+            // Les pierres jointes, celles d'avant : sans période (la roche à creuser des pierres a
+            // son propre dessin, `DessinerRocheDePierres`).
+            var (claire, ecart) = PierreDuMonde(x, y);
             if (ecart < 1.35) return d.Roche[3];
-            if (PierreDuMonde(xw, yw + 1).Ecart < 1.35 && Toile.Seuil(xw & 3, yw & 3) < 0.7) return d.Roche[2];
+            if (PierreDuMonde(x, y + 1).Ecart < 1.35 && Toile.Seuil(x & 3, y & 3) < 0.7) return d.Roche[2];
             return claire ? d.Roche[1] : d.Roche[0];
+        }
+
+        /// <summary>
+        /// La terre de la Noue : des lits de sept pixels environ qui ondulent, chacun d'une des
+        /// quatre teintes (deux bruns, un limon clair tramé, un humus sombre piqueté), fondus
+        /// l'un dans l'autre par une rangée tramée ; et de loin en loin un galet pris dedans,
+        /// éclairé en haut à gauche, son ombre portée dessous.
+        /// </summary>
+        static int Terre(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            const int PAS = 7, CASE = 12;
+            var r = d.Roche;
+            var inclusions = d.Inclusions;
+            var cycle = periodeY / PAS;
+            var yy = y + (int)Math.Round(1.6 * Math.Sin(2 * Math.PI * x / 48) + 0.9 * Math.Sin(2 * Math.PI * x / 16 + 1.3));
+            var (k, _, haut) = LitDeRoche(yy, PAS, cycle, 41);
+            int Teinte(int lit)
+            {
+                switch (HacherLaParoi(Boucler(lit, cycle), 43) % 4u)
+                {
+                    case 0: return r[0];
+                    case 1: return r[1];
+                    case 2: return Toile.Seuil(x, yy) < 0.3 ? r[2] : r[1];
+                    default: return Toile.Seuil(x, yy) < 0.2 ? r[3] : r[0];
+                }
+            }
+            var couleur = yy == haut - 1 && Toile.Seuil(x, yy) < 0.5 ? Teinte(k + 1) : Teinte(k);
+            var gx = Plancher(x, CASE);
+            var gy = Plancher(y, CASE);
+            var h = HacherLaCase(gx, gy, periodeX / CASE, periodeY / CASE, 47);
+            if (h % 5u != 0) return couleur;
+            var ox = gx * CASE + 3 + (int)((h >> 4) % 6u);
+            var oy = gy * CASE + 3 + (int)((h >> 8) % 6u);
+            var rayon = 1.0 + ((h >> 12) % 4u) * 0.5;
+            var u = (x - ox) / (rayon * 1.4);
+            var v = (y - oy) / rayon;
+            if (u * u + v * v <= 1)
+            {
+                var clair = (h >> 16) % 2u == 1 ? inclusions[1] : inclusions[0];
+                return v > 0.2 && u < 0.5 ? clair : clair == inclusions[1] ? inclusions[0] : r[2];
+            }
+            var sous = (y + 1 - oy) / rayon;
+            return u * u + sous * sous <= 1 ? r[3] : couleur;
+        }
+
+        /// <summary>
+        /// Le calcaire du Gour : des lits épais de douze pixels environ, presque droits, d'une
+        /// teinte ou de l'autre ; le joint sombre qui les sépare, leur dessus éclairé ; et dans
+        /// chaque lit, de loin en loin, une fente presque verticale qui penche un peu.
+        /// </summary>
+        static int Calcaire(DecorDArt d, int x, int y, int periodeX, int periodeY)
+        {
+            const int PAS = 12, FENTES = 24;
+            var r = d.Roche;
+            var cycle = periodeY / PAS;
+            var yy = y + (int)Math.Round(0.8 * Math.Sin(2 * Math.PI * x / 48 + 0.5));
+            var (k, bas, haut) = LitDeRoche(yy, PAS, cycle, 51);
+            var lit = Boucler(k, cycle);
+            if (yy == bas) return r[3];
+            var hl = HacherLaParoi(lit, 53);
+            var jc = Plancher(x, FENTES);
+            var hj = HacherLaCase(jc, lit, periodeX / FENTES, 0, 57);
+            var fente = hj % 3u != 0;
+            var xf = jc * FENTES + 4 + (int)(hj % 16u) + Plancher((yy - bas) * ((int)((hj >> 8) % 3u) - 1), 5);
+            if (fente && x == xf) return r[3];
+            var corps = hl % 2u == 1 ? r[1] : r[0];
+            if (yy == haut - 1) return Toile.Seuil(x, yy) < 0.75 ? r[2] : corps;
+            var couleur = fente && x == xf + 1 ? r[0] : corps;
+            if (Toile.Seuil(x, yy) < 0.07) couleur = couleur == r[1] ? r[0] : r[1];
+            return couleur;
         }
 
         static uint HacherLaParoi(int a, uint sel)
@@ -268,6 +382,33 @@ namespace IdlePond.Editeur
                 if ((h >> 4) % 9u == 0)
                     for (var i = 0; i < 1 + (int)((h >> 12) % 3u); i++) toile.Poser(droit - i - Gabarits.GAUCHE_DU_DECOR, y, touffe);
             }
+            // Les racines qui sortent de la berge de terre et pendent sur l'eau, leur bout qui
+            // bourgeonne : celles de la surface (`berge.png`) descendent jusqu'ici.
+            if (d.Paroi == MatiereDeParoi.Terre && d.Racines.Count > 0)
+                for (var y = 0; y < toile.Hauteur; y++)
+                {
+                    var yw = bas + y;
+                    var h = HacherLaParoi(yw, 67);
+                    if (h % 17u != 0) continue;
+                    var aGauche = (h >> 5) % 2u == 0;
+                    var sens = aGauche ? 1 : -1;
+                    var x = (aGauche ? Puits.BordGauche(yw) : Puits.BordDroit(yw)) - sens - Gabarits.GAUCHE_DU_DECOR;
+                    var sortie = 2 + (int)((h >> 7) % 4u);
+                    var chute = 4 + (int)((h >> 10) % 9u);
+                    var yr = y;
+                    for (var i = 0; i < sortie; i++)
+                    {
+                        x += sens;
+                        toile.Poser(x, yr, d.Racines[0]);
+                    }
+                    for (var i = 0; i < chute; i++)
+                    {
+                        yr--;
+                        if (i % 4 == 2) x += sens;
+                        var bourgeon = d.Bourgeon.HasValue && i >= chute - 2;
+                        toile.Poser(x, yr, bourgeon ? d.Bourgeon.Value : d.Racines[0]);
+                    }
+                }
             return toile;
         }
 
@@ -281,8 +422,9 @@ namespace IdlePond.Editeur
         /// épais contre elle, qui s'amincit en pointe ; son dessus presque plat (on s'y pose, à
         /// `Corniche.Sol`), son dessous bosselé qui pend sous le palier, avec quelques gouttes de
         /// pierre ; le dessus éclairé, et ce qui y pousse — des herbes dans la Noue, de la mousse
-        /// et des galets dans le Gour. Sa toile couvre la largeur du décor et commence
-        /// `PENDANT_DE_CORNICHE` pixels sous le bas du palier.
+        /// et des galets dans le Gour. Le calcaire retient au bout de sa corniche une flaque derrière
+        /// un rebord de calcite : un gour, le bassin que l'eau se bâtit (2026-11-26). Sa toile couvre
+        /// la largeur du décor et commence `PENDANT_DE_CORNICHE` pixels sous le bas du palier.
         /// </summary>
         static Toile DessinerCorniche(DecorDArt d, int palier)
         {
@@ -293,6 +435,7 @@ namespace IdlePond.Editeur
             var dessus = c.Sol - 1 - pied;
             var hasard = Hasard(31u + (uint)palier);
             const int EPAISSEUR_A_LA_PAROI = 16;
+            var calcaire = d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2 && d.Eau.Count >= 2;
             for (var x = 0; x < toile.Largeur; x++)
             {
                 var xw = Gabarits.GAUCHE_DU_DECOR + x;
@@ -305,6 +448,9 @@ namespace IdlePond.Editeur
                     + 1.6 * Math.Sin(xw * 0.23 + palier) + 1.1 * Math.Sin(xw * 0.57 + 2 * palier);
                 var reste = c.Longueur - s;
                 var haut = dessus - (reste < 4 ? 4 - reste : 0) + ((xw + palier) % 23 == 0 && reste > 8 ? 1 : 0);
+                var flaque = calcaire && reste >= 4 && reste <= 15;
+                var rebord = calcaire && reste >= 2 && reste <= 3;
+                if (flaque) haut--;
                 var dessous = Math.Max(0, haut - (int)Math.Round(Math.Max(2, epaisseur)));
                 // Une goutte de pierre qui pend, de loin en loin.
                 if (reste > 10 && s > 4 && HacherLaParoi(xw, (uint)palier + 7) % 29u == 0) dessous = Math.Max(0, dessous - 2 - (int)(HacherLaParoi(xw, 9) % 3u));
@@ -314,12 +460,19 @@ namespace IdlePond.Editeur
                     if (y == haut) couleur = d.Roche[2];
                     else if (y == haut - 1 && Toile.Seuil(x, y) < 0.5) couleur = d.Roche[2];
                     else if (y == dessous) couleur = d.Roche[3];
-                    else
-                    {
-                        var (claire, ecart) = PierreDuMonde(xw, pied + y);
-                        couleur = ecart < 1.35 ? d.Roche[3] : claire ? d.Roche[1] : d.Roche[0];
-                    }
+                    else couleur = Matiere(d, xw, pied + y, 0, 0);
                     toile.Poser(x, y, couleur);
+                }
+                if (flaque)
+                {
+                    toile.Poser(x, haut, reste == 4 || reste == 15 ? d.Inclusions[0] : d.Eau[1]);
+                    toile.Poser(x, haut + 1, reste >= 5 && reste <= 14 ? d.Eau[0] : d.Inclusions[1]);
+                }
+                if (rebord)
+                {
+                    toile.Poser(x, haut, d.Inclusions[0]);
+                    toile.Poser(x, haut + 1, d.Inclusions[1]);
+                    if (reste == 3) toile.Poser(x, haut + 2, d.Inclusions[1]);
                 }
                 if (s < 0 || reste < 3) continue;
                 // Ce qui pousse dessus.
@@ -330,8 +483,8 @@ namespace IdlePond.Editeur
                     for (var i = 1; i <= longueur; i++)
                         toile.Poser(x + (int)Math.Round(Math.Sin(i * 0.5 + x) * 0.8), haut + i, brin);
                 }
-                if (d.Mousse.HasValue && Toile.Seuil(x, haut) < 0.45) toile.Poser(x, haut, d.Mousse.Value);
-                if (d.Galets.Count > 1 && hasard() < 0.05)
+                if (d.Mousse.HasValue && !flaque && Toile.Seuil(x, haut) < 0.45) toile.Poser(x, haut, d.Mousse.Value);
+                if (d.Galets.Count > 1 && hasard() < 0.05 && !flaque)
                 {
                     var galet = d.Galets[(int)(hasard() * (d.Galets.Count - 1))];
                     toile.Poser(x, haut + 1, galet);
@@ -388,7 +541,24 @@ namespace IdlePond.Editeur
         }
 
         /// <summary>
-        /// La roche d'un palier pas encore creusé : des pierres irrégulières (une cellule de
+        /// La roche d'un palier pas encore creusé, dans la matière de ses parois (2026-11-26) ; en
+        /// haut de la bande, le seuil, la ligne sombre où l'eau creusée s'arrête. Se raccorde à
+        /// elle-même en largeur comme en hauteur. Dessinée dans ses couleurs ; c'est l'absence de
+        /// lumière qui la plonge dans l'obscurité.
+        /// </summary>
+        static Toile DessinerRoche(DecorDArt d)
+        {
+            if (d.Paroi == MatiereDeParoi.Pierres || d.Inclusions.Count < 2)
+                return DessinerRocheDePierres(d);
+            var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
+            for (var y = 0; y < toile.Hauteur; y++)
+                for (var x = 0; x < toile.Largeur; x++)
+                    toile.Poser(x, y, y >= toile.Hauteur - 3 ? d.Roche[3] : Matiere(d, x, y, toile.Largeur, toile.Hauteur));
+            return toile;
+        }
+
+        /// <summary>
+        /// La roche des pierres jointes : des pierres irrégulières (une cellule de
         /// Voronoï chacune, autour d'un germe tiré au hasard dans une grille de 12 × 12), jointes
         /// par des fissures, éclairées d'une arête claire sur leur bord haut ; en haut de la
         /// bande, le seuil, la ligne sombre où l'eau creusée s'arrête. Les distances se
@@ -396,7 +566,7 @@ namespace IdlePond.Editeur
         /// pave. Dessinée dans ses couleurs ; c'est l'absence de lumière qui la plonge dans
         /// l'obscurité.
         /// </summary>
-        static Toile DessinerRoche(DecorDArt d)
+        static Toile DessinerRocheDePierres(DecorDArt d)
         {
             const int CASE = 12;
             var toile = new Toile(Gabarits.LARGEUR_DE_FOND, Gabarits.HAUTEUR_DE_BANDE);
@@ -578,6 +748,7 @@ namespace IdlePond.Editeur
             var breche = Lieux.XDeLaBreche - Gabarits.GAUCHE_DU_DECOR;
             var haut = toile.Hauteur - 1;
             var hasard = Hasard(19);
+            var calcite = d.Paroi == MatiereDeParoi.Calcaire && d.Inclusions.Count >= 2;
             var epaisseurs = new int[toile.Largeur];
             for (var x = 0; x < toile.Largeur; x++)
                 epaisseurs[x] = 5 + (int)Math.Round(2 * Math.Sin(x * 0.11) + 1.5 * Math.Sin(x * 0.037 + 1.3));
@@ -592,7 +763,8 @@ namespace IdlePond.Editeur
                 for (var i = 0; i < e; i++)
                 {
                     var y = haut - i;
-                    var couleur = i == 0 ? d.Roche[2] : (Toile.Seuil(x, y) < 0.3 ? d.Roche[1] : d.Roche[0]);
+                    // Le dessus de la lèvre d'un calcaire est de calcite : c'est le rebord du gour.
+                    var couleur = i == 0 ? (calcite ? d.Inclusions[1] : d.Roche[2]) : (Toile.Seuil(x, y) < 0.3 ? d.Roche[1] : d.Roche[0]);
                     if (i == e - 1) couleur = d.Roche[3];
                     toile.Poser(x, y, couleur);
                 }

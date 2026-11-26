@@ -12,6 +12,12 @@ namespace IdlePond.Jeu.Scene
     /// luminescence, une décharge).
     public sealed record MarqueDArt(AncrageId Ancrage, IReadOnlyList<int> Couleurs, int? Teinte, LumiereEmise Lumiere);
 
+    /// De quoi sont faites les parois d'un lieu (2026-11-26) : des pierres jointes (le défaut,
+    /// pour les assises sans dessin), une berge de terre en lits où des galets sont pris et
+    /// d'où sortent des racines (la Noue), un calcaire en lits épais, que l'eau croûte de calcite et
+    /// qui retient des flaques sur ses corniches — des gours (le Gour).
+    public enum MatiereDeParoi { Pierres, Terre, Calcaire }
+
     public sealed record DecorDArt(
         string Assise,
         IReadOnlyList<double> Lumieres,
@@ -23,7 +29,8 @@ namespace IdlePond.Jeu.Scene
         int Rayon,
         bool Berge,
         int Voile,
-        // La roche à creuser : le fond, la pierre, son arête claire, les fissures.
+        // La roche à creuser et les parois : le fond, la pierre, son arête claire, les fissures
+        // (dans la terre : deux lits, le limon clair, l'humus sombre).
         IReadOnlyList<int> Roche,
         // L'eau file : des stries horizontales dans le fond (le Gour, sa contrainte).
         bool Courant = false)
@@ -38,6 +45,12 @@ namespace IdlePond.Jeu.Scene
         /// Comment le lieu se raccorde à celui d'au-dessus : en fondu (le défaut), ou par une
         /// cassure — un seuil de roche, l'eau et la lumière qui changent net (le Gour, sa vasque).
         public JonctionDeLieu Jonction { get; init; } = JonctionDeLieu.Fondu;
+        /// La matière des parois, des corniches, de la roche à creuser et du seuil.
+        public MatiereDeParoi Paroi { get; init; } = MatiereDeParoi.Pierres;
+        /// Ce que la matière porte en plus de ses quatre couleurs, le sombre puis le clair : les
+        /// galets pris dans la terre ; la calcite qui croûte le calcaire. Deux au moins, sauf
+        /// pour les pierres.
+        public IReadOnlyList<int> Inclusions { get; init; } = AUCUNE;
         /// Le bout des racines, qui bourgeonne (la Sève).
         public int? Bourgeon { get; init; }
         /// Les nénuphars posés à la surface : feuille, feuille claire, fleur, cœur.
@@ -64,7 +77,7 @@ namespace IdlePond.Jeu.Scene
         public IEnumerable<int> Couleurs()
         {
             var toutes = Eau.Concat(Racines).Concat(Roche).Append(Vase).Append(Rayon)
-                .Concat(Nenuphar).Concat(Herbes).Concat(Grains).Concat(Ecume).Concat(Galets).Concat(Pierres).Concat(Meduses);
+                .Concat(Nenuphar).Concat(Herbes).Concat(Grains).Concat(Ecume).Concat(Galets).Concat(Pierres).Concat(Meduses).Concat(Inclusions);
             if (Surface.HasValue) toutes = toutes.Append(Surface.Value);
             if (Bourgeon.HasValue) toutes = toutes.Append(Bourgeon.Value);
             if (Mousse.HasValue) toutes = toutes.Append(Mousse.Value);
@@ -172,9 +185,13 @@ namespace IdlePond.Jeu.Scene
                 0xFFF0A0,
                 true,
                 0x8A7A3A,
-                new[] { 0x1E2422, 0x2A322F, 0x3A4440, 0x121614 })
+                new[] { 0x3E2C20, 0x503A2A, 0x6E5238, 0x24180F })
             {
                 Surface = 0xD8FFF0,
+                // Une berge de terre brune (2026-11-26) : la Noue est un fossé creusé dans la
+                // prairie, pas une carrière. Des galets beiges y sont pris.
+                Paroi = MatiereDeParoi.Terre,
+                Inclusions = new[] { 0x7C705E, 0x9C8E74 },
                 // Du jour vert-doré de la surface au vert d'eau froid du fond, qui annonce le Gour.
                 TeinteDuFond = 0xB4E0DC,
                 Bourgeon = 0x8FE070,
@@ -196,9 +213,13 @@ namespace IdlePond.Jeu.Scene
                 0xE6F8FF,
                 false,
                 0x5A6A5A,
-                new[] { 0x1A1E22, 0x262C31, 0x353D43, 0x101316 },
+                new[] { 0x34404C, 0x43505E, 0x5E6E80, 0x1A2028 },
                 Courant: true)
             {
+                // Un calcaire gris-bleu en lits épais (2026-11-26), croûté de calcite : le gour est le
+                // bassin que l'eau calcaire se bâtit à elle-même.
+                Paroi = MatiereDeParoi.Calcaire,
+                Inclusions = new[] { 0x8CA2B6, 0xB8CCDA },
                 // Du bleu vif de la vasque à l'indigo des galeries : la luminescence vient dessous.
                 TeinteDuFond = 0xA0A8EC,
                 Jonction = JonctionDeLieu.Cassure,

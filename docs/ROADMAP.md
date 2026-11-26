@@ -1,6 +1,6 @@
 # IdlePond — la roadmap
 
-**Tenue à jour le** : 2026-11-24
+**Tenue à jour le** : 2026-11-26
 **Objet** : ce qui reste à faire, dans l'ordre, et pourquoi cet ordre.
 **Ce document churne.** Le Codex ne bouge presque jamais ; celui-ci bouge à chaque
 chantier fini. Ne jamais y écrire de définition — elle irait dans `CODEX.md`.
@@ -143,6 +143,17 @@ aussi (spec `2026-10-07-ecran-mobile-mare-au-centre-design.md`). Restent :
     renaissance (les strates de la version web, proches des couches et des marques), plus
     d'espèces par lieu sous forme de faune d'ambiance, et les saisons cosmétiques (frai, gel,
     crue) décidées le 2026-11-18.
+- **Des parois qui disent le lieu** (2026-11-26, `DecorDArt.Paroi`) : le puits avait les mêmes
+  pierres grises dans la Noue et dans le Gour. La Noue a désormais une **berge de terre** brune —
+  lits ondulés, limon clair, humus sombre, galets pris dedans, racines qui sortent de la paroi et
+  bourgeonnent sur l'eau ; le Gour un **calcaire en lits épais**, gris-bleu, fendu, croûté de
+  calcite le long du bord avec ses draperies, et chaque corniche du Gour retient à son bout une
+  flaque derrière un rebord de calcite — un gour. La roche à creuser et la lèvre de la vasque
+  suivent la matière de leur lieu. Aperçu : `docs/da/apercu-parois-v1.png` (avant à gauche).
+  **Écrit hors de l'éditeur** : le C# n'a pas été compilé ; les PNG ont été produits par un portage
+  Python du générateur, vérifié à l'octet sur ce qui n'a pas changé (géométrie des corniches et des
+  parois, seuil, encodeur PNG). À lancer dans Unity : `outils/unity.sh tests EditMode`, puis
+  « Générer les sprites provisoires » (aucun fichier ne devrait bouger) et les captures.
 - **Le vrai dessin** : remplacer les provisoires fichier par fichier, au nom exact, selon
   `docs/da/gabarits.md`, sans toucher au code. Les traits de courant du Gour, très
   réguliers, sont les premiers à reprendre.

@@ -109,7 +109,11 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 
 | Fichier | Taille | Rôle |
 |---|---|---|
-| `fond.png` | 48 × 84 | une bande d'eau, répétée en largeur, du clair en haut au sombre en bas ; en bas, la vase et ses herbes, ou les galets et leur mousse |
+| `eau-{rang}.png` | 48 × 84 | l'eau d'un palier, tranche d'un dégradé qui court sur tout le lieu, répétée en largeur (le puits, 2026-11-25) |
+| `parois-{rang}.png` | 576 × 84 | les deux parois d'un palier, dans la matière du lieu (2026-11-26) : la **terre** de la Noue — lits ondulés de quatre teintes, galets pris dedans, racines qui pendent sur l'eau ; le **calcaire** du Gour — lits épais, fentes, croûte et draperies de calcite le long du bord |
+| `corniche-{rang}.png` | 576 × 44 | la corniche d'un palier, dans la même matière ; celle du Gour retient au bout une flaque derrière un rebord de calcite (un gour) |
+| `lit.png` | 192 × 30 | le sol du fond du puits : la vase et ses herbes, ou les galets, leur mousse et les grosses pierres |
+| `roche.png` | 48 × 84 | la roche à creuser, dans la matière du lieu, raccordée à elle-même en largeur et en hauteur |
 | `rayons.png` | 384 × 168 | les rayons du jour sur les deux premières bandes, tramés |
 | `berge.png` | 384 × 84 | la surface, les nénuphars, les racines qui pendent de la première bande (si l'assise a une berge) |
 | `seuil.png` | 576 × 20 | la lèvre de roche de la vasque, posée à `GAUCHE_DU_DECOR` en haut du premier palier du lieu (sauf la Noue), avec la brèche de la cascade au tiers gauche du champ (2026-11-25) |
@@ -143,7 +147,9 @@ est une de ses images (la lanterne allumée, la gorge gonflée, la bannière, la
 - **Gour** (le Courant) : eau `#9ADCF8` `#5AB0E6` `#3A80C8` `#24589A` `#16345E` ; écume `#E6F8FF`
   `#BFEAFF` ; galets `#8FA8C0` `#6E88A4` `#A8BCD0`, fond `#2A3E58` ; mousse `#4FA070` ; grosses
   pierres `#7A90A8` `#93A8BE` ; méduses `#E8F4FF` `#C8E8FF`.
-- **Roche à creuser** : inchangée, voir `RegistreDArt.cs`.
+- **Parois et roche à creuser** (2026-11-26, `DecorDArt.Paroi`) : la terre de la Noue `#3E2C20`
+  `#503A2A`, limon `#6E5238`, humus `#24180F`, galets `#7C705E` `#9C8E74` ; le calcaire du Gour
+  `#34404C` `#43505E`, dessus des lits `#5E6E80`, joints `#1A2028`, calcite `#8CA2B6` `#B8CCDA`.
 - **Eau** : blanc `#FFFFFF`.
 
 ## Rendu et contrôle
